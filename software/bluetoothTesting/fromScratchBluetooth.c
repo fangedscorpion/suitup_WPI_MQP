@@ -1,6 +1,10 @@
-#include <bluetooth/bluetooth.h>
+	#include <bluetooth/bluetooth.h>
 #include <bluetooth/hci.h>
 #include <bluetooth/hci_lib.h>
+
+#include <bluetooth/rfcomm.h>
+
+#include <sys/socket.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,7 +12,7 @@
 
 #define TRUE 1
 #define FALSE 0
-#define SEARCH_TIME 20
+#define SEARCH_TIME 8
 
 volatile int printing = TRUE;
 
@@ -18,8 +22,29 @@ void parseArgs(int, char **);
 int main(int argc, char **argv) {
 
 	parseArgs(argc, argv);
+	int keepScanning = TRUE;
+	int buffLen = 5;
+	char line[buffLen];
+	char *fgetsResult;
 
-	bluetoothDetermineDevices();
+	int goodInput = FALSE;
+
+
+	while (keepScanning) {
+		bluetoothDetermineDevices();
+		printf("Enter y to continue scanning or n to quit\n");
+		goodInput = FALSE;
+		while (!goodInput) {
+			fgetsResult = fgets(line, buffLen, stdin);
+			if (strncmp(line, "n\n", buffLen) == 0) {
+				goodInput = TRUE;
+				keepScanning = FALSE;
+			}
+			else if (strncmp(line, "y\n", buffLen) == 0) {
+				goodInput = TRUE;
+			}
+		}
+	}
 }
 
 
@@ -94,3 +119,54 @@ void parseArgs(int argc, char **argv) {
 		}
 	}
 }
+
+/*
+Returns socket with connection
+*/
+int connectToStringAddr(char* dest) {
+	struct sockaddr_rc addr;
+    
+    // set the connection parameters (who to connect to)
+    addr.rc_family = AF_BLUETOOTH;
+    addr.rc_channel = (uint8_t) 1;
+    str2ba(dest, &addr.rc_bdaddr );
+
+    return connectToBAddr(&addr);
+}
+
+int connectToBAddr(struct sockaddr_rc* addr) {
+    int s, status;
+
+    // allocate a socket
+    s = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
+
+    // connect to server
+    status = connect(s, (struct sockaddr *)&addr, sizeof(addr));
+    if (status < 0) {
+    	return -1;
+    }
+    return s;
+}
+
+int closeSocket(int socketToClose) {
+	close(socketToClose);
+}
+
+int sendCharacterSequence(char* sequence, int datalen, int sock) {
+	int status;
+	status = send(sock, sequence, datalen, 0);
+	if (printing && (status < 0)) {
+		printf("Error sending character sequence %s", sequence);
+	}
+	return status;
+}
+
+/*
+dataBuff should have memory allocated before passing to this function
+
+returns number of characters read
+*/
+int recvCharacterSequence(char *dataBuff, int sock, int readInMaxBytes) {
+	return recv(sock, dataBuff, readInMaxBytes, 0);
+}
+
