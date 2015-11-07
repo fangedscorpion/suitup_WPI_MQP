@@ -1,0 +1,1 @@
+load MPU6050_calibrate.ino onto an arduino with MPU6050 set up. place the MPU6050 on a flat surface and play with accelgyro.setXXXX() values to make accel x,y = 0; gyro x,y,z = 0; accel z = 16384. 
