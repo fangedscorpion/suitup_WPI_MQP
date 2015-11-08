@@ -71,7 +71,7 @@ void setup() {
     //String portName = Serial.list()[0];
     
     // get a specific serial port (use EITHER this OR the first-available code above)
-    String portName = "/dev/ttyUSB1";
+    String portName = "/dev/ttyUSB0";
     
     // open the serial port
     port = new Serial(this, portName, 115200);
@@ -148,7 +148,6 @@ void serialEvent(Serial port) {
 
         if (synced == 0 && ch != '$') return;   // initial synchronization - also used to resync/realign if needed
         synced = 1;
-        print ((char)ch);
 
         if ((serialCount == 1 && ch != 2)
             || (serialCount == 12 && ch != '\r')
@@ -172,7 +171,7 @@ void serialEvent(Serial port) {
                 
                 // set our toxilibs quaternion to new data
                 quat.set(q[0], q[1], q[2], q[3]);
-
+                
                 /*
                 // below calculations unnecessary for orientation only using toxilibs
                 
