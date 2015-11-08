@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <unistd.h>
 
 #define TRUE 1
 #define FALSE 0
@@ -18,6 +19,12 @@ volatile int printing = TRUE;
 
 void bluetoothDetermineDevices();
 void parseArgs(int, char **);
+int connectToStringAddr(char*);
+int connectToBAddr(struct sockaddr_rc*);
+int closeSocket(int);
+
+
+// password for nonLE BT modules is 1234
 
 int main(int argc, char **argv) {
 
@@ -45,6 +52,16 @@ int main(int argc, char **argv) {
 			}
 		}
 	}
+
+	// pair with 20:15:05:12:51:35
+	int sockNum;
+	sockNum = connectToStringAddr("20:15:05:12:51:35");
+
+	sleep(5);
+
+	closeSocket(sockNum);	
+
+
 }
 
 
@@ -99,8 +116,9 @@ void bluetoothDetermineDevices() {
         ba2str(&(bluetoothDevicesFound+i)->bdaddr, addr);
         memset(name, 0, sizeof(name));
         if (hci_read_remote_name(sock, &(bluetoothDevicesFound+i)->bdaddr, sizeof(name), 
-            name, 0) < 0)
-        strcpy(name, "[unknown]");
+            name, 0) < 0) {
+        	strcpy(name, "[unknown]");
+    	}
     	if (printing) {
         	printf("%s  %s\n", addr, name);
         }
@@ -124,28 +142,46 @@ void parseArgs(int argc, char **argv) {
 Returns socket with connection
 */
 int connectToStringAddr(char* dest) {
-	struct sockaddr_rc addr;
+	struct sockaddr_rc *addr;
+	addr = (struct sockaddr_rc*) malloc(sizeof(struct sockaddr_rc));
     
     // set the connection parameters (who to connect to)
-    addr.rc_family = AF_BLUETOOTH;
-    addr.rc_channel = (uint8_t) 1;
-    str2ba(dest, &addr.rc_bdaddr );
+    addr->rc_family = AF_BLUETOOTH;
+    addr->rc_channel = (uint8_t) 1;
+    str2ba(dest, &addr->rc_bdaddr );
 
-    return connectToBAddr(&addr);
+    return connectToBAddr(addr);
 }
 
 int connectToBAddr(struct sockaddr_rc* addr) {
+
+    char addrStr[19] = { 0 };
+
+	ba2str(&(addr->rc_bdaddr), addrStr);
+	if (printing) {
+       	printf("Connecting to %s\n", addrStr);
+    } 
+
     int s, status;
 
     // allocate a socket
     s = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
+    if (printing) {
+    	printf("Socket: %d\n", s);
+    }
 
     // connect to server
     status = connect(s, (struct sockaddr *)&addr, sizeof(addr));
-    if (status < 0) {
-    	return -1;
+    if (printing) {
+    	printf("Connect returned %d\n", status);
     }
-    return s;
+    if (status < 0) {
+    	if (printing) {
+    		printf("Could not connect\n");
+    		printf("Error code: %d, %s\n", errno, strerror(errno));
+    	}
+    }
+    return status;
 }
 
 int closeSocket(int socketToClose) {
