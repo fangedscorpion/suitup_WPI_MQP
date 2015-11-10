@@ -198,21 +198,12 @@ void setup() {
     devStatus = mpu.dmpInitialize();
 
     // supply your own gyro offsets here, scaled for min sensitivity
-        // ITG/MPU CALIBRATION (GREEN LIGHT CHIP)
-//    mpu.setXAccelOffset(-3338);
-//    mpu.setYAccelOffset(-4657);
-//    mpu.setZAccelOffset(1540);
-//    mpu.setXGyroOffset(-14);
-//    mpu.setYGyroOffset(-2);
-//    mpu.setZGyroOffset(2);
-
-        // MPU-6050 CALIBRATION (RED LIGHT CHIP)
-    mpu.setXAccelOffset(-3359);
-    mpu.setYAccelOffset(-2690);
-    mpu.setZAccelOffset(1449);
-    mpu.setXGyroOffset(77);
-    mpu.setYGyroOffset(36);
-    mpu.setZGyroOffset(33);
+    mpu.setXAccelOffset(-3338);
+    mpu.setYAccelOffset(-4657);
+    mpu.setZAccelOffset(1540);
+    mpu.setXGyroOffset(-14);
+    mpu.setYGyroOffset(-2);
+    mpu.setZGyroOffset(2);
 
     // make sure it worked (returns 0 if so)
     if (devStatus == 0) {
