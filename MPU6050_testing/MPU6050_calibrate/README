@@ -1,1 +1,18 @@
-load MPU6050_calibrate.ino onto an arduino with MPU6050 set up. place the MPU6050 on a flat surface and play with accelgyro.setXXXX() values to make accel x,y = 0; gyro x,y,z = 0; accel z = 16384. 
+load MPU6050_calibrate.ino onto an arduino with MPU6050 set up. place the MPU6050 on a flat surface open the serial console at baud 38400. Watch the LED on the arduino blink until it transmits the final calibration values to the serial console. These values are in the following order:
+
+ax
+ay
+az
+gx
+gy
+gz
+
+
+the calibration values get used as follows:
+
+mpu.setXAccelOffset(ax);
+mpu.setYAccelOffset(ay);
+mpu.setZAccelOffset(az);
+mpu.setXGyroOffset(gx);
+mpu.setYGyroOffset(gy);
+mpu.setZGyroOffset(gz);

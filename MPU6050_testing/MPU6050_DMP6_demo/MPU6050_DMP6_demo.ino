@@ -197,22 +197,22 @@ void setup() {
     Serial.println(F("Initializing DMP..."));
     devStatus = mpu.dmpInitialize();
 
-    // supply your own gyro offsets here, scaled for min sensitivity
-        // ITG/MPU CALIBRATION (GREEN LIGHT CHIP)
-//    mpu.setXAccelOffset(-3338);
-//    mpu.setYAccelOffset(-4657);
-//    mpu.setZAccelOffset(1540);
-//    mpu.setXGyroOffset(-14);
-//    mpu.setYGyroOffset(-2);
-//    mpu.setZGyroOffset(2);
+    // use MPU6050_calibrate to get calibration values specific to each MPU6050 chip
+    // ITG/MPU CALIBRATION (GREEN LIGHT CHIP)
+    mpu.setXAccelOffset(-3301);
+    mpu.setYAccelOffset(-4657);
+    mpu.setZAccelOffset(1548);
+    mpu.setXGyroOffset(-14);
+    mpu.setYGyroOffset(-1);
+    mpu.setZGyroOffset(2);
 
-        // MPU-6050 CALIBRATION (RED LIGHT CHIP)
-    mpu.setXAccelOffset(-3359);
-    mpu.setYAccelOffset(-2690);
-    mpu.setZAccelOffset(1449);
-    mpu.setXGyroOffset(77);
-    mpu.setYGyroOffset(36);
-    mpu.setZGyroOffset(33);
+    // MPU-6050 CALIBRATION (RED LIGHT CHIP)
+//    mpu.setXAccelOffset(-3365);
+//    mpu.setYAccelOffset(-2685);
+//    mpu.setZAccelOffset(1447);
+//    mpu.setXGyroOffset(77);
+//    mpu.setYGyroOffset(35);
+//    mpu.setZGyroOffset(33);
 
     // make sure it worked (returns 0 if so)
     if (devStatus == 0) {

@@ -31,10 +31,30 @@ THE SOFTWARE.
 ===============================================
 */
 
+// MANUAL CALIBRATION VALUES
+
+    // ITG/MPU CALIBRATION (GREEN LIGHT CHIP)
+//    mpu.setXAccelOffset(-3301);
+//    mpu.setYAccelOffset(-4657);
+//    mpu.setZAccelOffset(1548);
+//    mpu.setXGyroOffset(-14);
+//    mpu.setYGyroOffset(-1);
+//    mpu.setZGyroOffset(2);
+
+    // MPU-6050 CALIBRATION (RED LIGHT CHIP)
+//    mpu.setXAccelOffset(-3365);
+//    mpu.setYAccelOffset(-2685);
+//    mpu.setZAccelOffset(1447);
+//    mpu.setXGyroOffset(77);
+//    mpu.setYGyroOffset(35);
+//    mpu.setZGyroOffset(33);
+
+
 // I2Cdev and MPU6050 must be installed as libraries, or else the .cpp/.h files
 // for both classes must be in the include path of your project
 #include "I2Cdev.h"
 #include "MPU6050.h"
+#include <math.h>
 
 // Arduino Wire library is required if I2Cdev I2CDEV_ARDUINO_WIRE implementation
 // is used in I2Cdev.h
@@ -52,22 +72,29 @@ MPU6050 mpu;
 int16_t ax, ay, az;
 int16_t gx, gy, gz;
 
-
-
-// uncomment "OUTPUT_READABLE_ACCELGYRO" if you want to see a tab-separated
-// list of the accel X/Y/Z and then gyro X/Y/Z values in decimal. Easy to read,
-// not so easy to parse, and slow(er) over UART.
-#define OUTPUT_READABLE_ACCELGYRO
-
-// uncomment "OUTPUT_BINARY_ACCELGYRO" to send all 6 axes of data as 16-bit
-// binary, one right after the other. This is very fast (as fast as possible
-// without compression or data loss), and easy to parse, but impossible to read
-// for a human.
-//#define OUTPUT_BINARY_ACCELGYRO
-
+int16_t adjustCalibration(int16_t agAxis, int16_t delta);
 
 #define LED_PIN 13
 bool blinkState = false;
+#define AX 0
+#define AY 1
+#define AZ 2
+#define GX 3
+#define GY 4
+#define GZ 5
+#define WINDOW 100
+int counter = 0;
+int16_t calArray[6][WINDOW];
+int32_t calAvg[6] = {0,0,0,0,0,0};
+int16_t calAvgPrev[6] {32000,32000,32000,32000,32000,32000};
+int16_t calGoals[6] = {0,0,16384,0,0,0};
+int16_t calDiffs[6];
+int16_t calCurr[6];
+int16_t calFinal[6] = {0,0,0,0,0,0};
+bool calFinalSet[6] = {false,false,false,false,false,false};
+bool allCalFinalSet = false;
+
+//#define PRINT_DEBUG
 
 void setup() {
     // join I2C bus (I2Cdev library doesn't do this automatically)
@@ -83,84 +110,191 @@ void setup() {
     Serial.begin(38400);
 
     // initialize device
-    Serial.println("Initializing I2C devices...");
+    Serial.println(F("Initializing I2C devices..."));
     mpu.initialize();
 
     // verify connection
-    Serial.println("Testing device connections...");
-    Serial.println(mpu.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
-
-    // use the code below to change accel/gyro offset values
-    
-    Serial.println("Updating internal sensor offsets...");
-    // -76	-2359	1688	0	0	0
-    Serial.print(mpu.getXAccelOffset()); Serial.print("\t"); // -76
-    Serial.print(mpu.getYAccelOffset()); Serial.print("\t"); // -2359
-    Serial.print(mpu.getZAccelOffset()); Serial.print("\t"); // 1688
-    Serial.print(mpu.getXGyroOffset()); Serial.print("\t"); // 0
-    Serial.print(mpu.getYGyroOffset()); Serial.print("\t"); // 0
-    Serial.print(mpu.getZGyroOffset()); Serial.print("\t"); // 0
+    Serial.println(F("Testing device connections..."));
+    Serial.println(mpu.testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
     Serial.print("\n");
-    
-    
-    // ITG/MPU CALIBRATION (GREEN LIGHT CHIP)
-//    mpu.setXAccelOffset(-3338);
-//    mpu.setYAccelOffset(-4657);
-//    mpu.setZAccelOffset(1540);
-//    mpu.setXGyroOffset(-14);
-//    mpu.setYGyroOffset(-2);
-//    mpu.setZGyroOffset(2);
-
-    // MPU-6050 CALIBRATION (RED LIGHT CHIP)
-    mpu.setXAccelOffset(-3359);
-    mpu.setYAccelOffset(-2690);
-    mpu.setZAccelOffset(1449);
-    mpu.setXGyroOffset(77);
-    mpu.setYGyroOffset(36);
-    mpu.setZGyroOffset(33);
-
-    Serial.print(mpu.getXAccelOffset()); Serial.print("\t"); // -76
-    Serial.print(mpu.getYAccelOffset()); Serial.print("\t"); // -2359
-    Serial.print(mpu.getZAccelOffset()); Serial.print("\t"); // 1688
-    Serial.print(mpu.getXGyroOffset()); Serial.print("\t"); // 0
-    Serial.print(mpu.getYGyroOffset()); Serial.print("\t"); // 0
-    Serial.print(mpu.getZGyroOffset()); Serial.print("\t"); // 0
-    Serial.print("\n");
-    
 
     // configure Arduino LED for
     pinMode(LED_PIN, OUTPUT);
+
+    mpu.setXAccelOffset(0);
+    mpu.setYAccelOffset(0);
+    mpu.setZAccelOffset(0);
+    mpu.setXGyroOffset(0);
+    mpu.setYGyroOffset(0);
+    mpu.setZGyroOffset(0);
+    
 }
 
 void loop() {
+    if (counter >= WINDOW){
+        // reset counter
+        counter = 0;
+        
+        // blink LED to indicate activity
+        blinkState = !blinkState;
+        digitalWrite(LED_PIN, blinkState);
+
+        // calculate the average values of each acc/gyro axis over the window
+        for (int i = 0; i < 6; i++){
+            // reset avg
+            calAvg[i] = 0;
+            // sum
+            for (int j = 0; j < WINDOW; j++)
+                calAvg[i] += calArray[i][j];
+            // average
+            calAvg[i] /= WINDOW;
+        }
+
+        // calculate the differences between avg actual values and goal values
+        for (int i = 0; i < 6; i++){
+            calDiffs[i] = calGoals[i] - calAvg[i];
+        }
+
+        //if calDiffs within a good tolerance, hold those calibration values as final
+        for (int i = 0; i < 6; i++){
+            if (abs(calDiffs[i]) < 5){
+                calFinal[i] = calCurr[i];
+                calFinalSet[i] = true;
+            }
+        }
+        
+        // adjust the calibration values
+        for (int i = 0; i < 6; i++){
+            // if calFinalSet, don't change the calibration value
+            if (calFinalSet[i]){
+                calCurr[i] = adjustCalibration(i,0);
+            }
+            // otherwise adjust the calibration value according to its error
+            else {
+                // large adjustments: adjust by error/10
+                if (abs(calDiffs[i]) > 30){
+                    calCurr[i] = adjustCalibration(i,calDiffs[i]/10);
+                }
+                // small adjustments: change by +/-1
+                else {
+                    calCurr[i] = adjustCalibration(i,copysign(1,calDiffs[i]));
+                }
+            }
+        }
+
+        // allCalFinalSet becomes false if any of calFinalSet are true
+        allCalFinalSet = true;
+        for (int i = 0; i < 6; i++){
+            allCalFinalSet &= calFinalSet[i];
+        }
+        
+        #ifdef PRINT_DEBUG
+            Serial.println(allCalFinalSet);
+    
+            Serial.print("cal: \t");
+            for (int i = 0; i < 6; i++){
+                Serial.print(calCurr[i]);
+                Serial.print("\t");
+            }
+            Serial.print("\n");
+    
+            Serial.print("avg: \t");
+            for (int i = 0; i < 6; i++){
+                Serial.print(calAvg[i]);
+                Serial.print("\t");
+            }
+            Serial.print("\n");
+    
+            Serial.print("dif: \t");
+            for (int i = 0; i < 6; i++){
+                Serial.print(calDiffs[i]);
+                Serial.print("\t");
+            }
+            Serial.print("\n");
+    
+            Serial.print("set: \t");
+            for (int i = 0; i < 6; i++){
+                Serial.print(calFinalSet[i]);
+                Serial.print("\t");
+            }
+            Serial.print("\n\n");
+        #endif // #ifdef PRINT_DEBUG
+
+        if (allCalFinalSet){
+            #ifdef PRINT_DEBUG
+                Serial.print(F("---------------------------------------------\n"));
+                Serial.print("\n");
+            #endif // #ifdef PRINT_DEBUG
+            for (int i = 0; i < 6; i++){
+                Serial.print(calCurr[i]);
+                Serial.print("\n");
+            }
+            Serial.print("\n");
+            delay(1000);
+            exit(0);
+        }
+    }
+
+
+    delay(20);
+    
     // read raw accel/gyro measurements from device
     mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
-
-    // these methods (and a few others) are also available
-    //mpu.getAcceleration(&ax, &ay, &az);
-    //mpu.getRotation(&gx, &gy, &gz);
-
-    #ifdef OUTPUT_READABLE_ACCELGYRO
-        // display tab-separated accel/gyro x/y/z values
-        Serial.print("a/g:\t");
-        Serial.print(ax); Serial.print("\t");
-        Serial.print(ay); Serial.print("\t");
-        Serial.print(az); Serial.print("\t");
-        Serial.print(gx); Serial.print("\t");
-        Serial.print(gy); Serial.print("\t");
-        Serial.println(gz);
-    #endif
-
-    #ifdef OUTPUT_BINARY_ACCELGYRO
-        Serial.write((uint8_t)(ax >> 8)); Serial.write((uint8_t)(ax & 0xFF));
-        Serial.write((uint8_t)(ay >> 8)); Serial.write((uint8_t)(ay & 0xFF));
-        Serial.write((uint8_t)(az >> 8)); Serial.write((uint8_t)(az & 0xFF));
-        Serial.write((uint8_t)(gx >> 8)); Serial.write((uint8_t)(gx & 0xFF));
-        Serial.write((uint8_t)(gy >> 8)); Serial.write((uint8_t)(gy & 0xFF));
-        Serial.write((uint8_t)(gz >> 8)); Serial.write((uint8_t)(gz & 0xFF));
-    #endif
-
-    // blink LED to indicate activity
-    blinkState = !blinkState;
-    digitalWrite(LED_PIN, blinkState);
+    for (int i = 0; i < 6; i++){
+        switch (i){
+            case AX:
+              calArray[i][counter] = ax;
+              break;
+            case AY:
+              calArray[i][counter] = ay;
+              break;
+            case AZ:
+              calArray[i][counter] = az;
+              break;
+            case GX:
+              calArray[i][counter] = gx;
+              break;
+            case GY:
+              calArray[i][counter] = gy;
+              break;
+            case GZ:
+              calArray[i][counter] = gz;
+              break;
+        }
+    }
+    
+    counter++;
 }
+
+
+int16_t adjustCalibration(int16_t agAxis, int16_t delta){
+    int16_t val;
+    switch (agAxis){
+        case AX:
+          val = delta + mpu.getXAccelOffset();
+          mpu.setXAccelOffset(val);
+          break;
+        case AY:
+          val = delta + mpu.getYAccelOffset();
+          mpu.setYAccelOffset(val);
+          break;
+        case AZ:
+          val = delta + mpu.getZAccelOffset();
+          mpu.setZAccelOffset(val);
+          break;
+        case GX:
+          val = delta + mpu.getXGyroOffset();
+          mpu.setXGyroOffset(val);
+          break;
+        case GY:
+          val = delta + mpu.getYGyroOffset();
+          mpu.setYGyroOffset(val);
+          break;
+        case GZ:
+          val = delta + mpu.getZGyroOffset();
+          mpu.setZGyroOffset(val);
+          break;
+    }
+    return val;
+}
+
