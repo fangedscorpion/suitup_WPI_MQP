@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>715</width>
+    <height>326</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="horizontalLayoutWidget_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>701</width>
+      <height>284</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QGroupBox" name="playbackGroup">
+       <property name="minimumSize">
+        <size>
+         <width>235</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="title">
+        <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_4">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>232</width>
+          <height>265</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="playbackLayout">
+         <item>
+          <widget class="QLabel" name="playbackRecordingLbl">
+           <property name="text">
+            <string>Playback Recording</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="suitPlayChk">
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
+           <property name="text">
+            <string>Play on Suit</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="modeCmb">
+           <item>
+            <property name="text">
+             <string>Step-through mode</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Timed mode</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="SpeedFrameLbl">
+           <property name="text">
+            <string>Speed / Frame interval</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="speedFrameSlider">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="speedSliderLabels">
+           <item>
+            <widget class="QLabel" name="quarterSpeed">
+             <property name="text">
+              <string>1/4x</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="normalSpeed">
+             <property name="text">
+              <string>1x</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="fourSpeed">
+             <property name="text">
+              <string>4x</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="holdFrameLayout">
+           <item>
+            <widget class="QLabel" name="holdFrame">
+             <property name="text">
+              <string>Hold last frame for</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="secondsSpn"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="seconds">
+             <property name="text">
+              <string>sec(s)</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QLabel" name="positionLbl">
+           <property name="text">
+            <string>Position matching tolerance</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="positionSlider">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="positionSliderLabels">
+           <item>
+            <widget class="QLabel" name="close">
+             <property name="text">
+              <string>close</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="rough">
+             <property name="text">
+              <string>rough</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <zorder>verticalLayoutWidget_5</zorder>
+       <zorder>verticalLayoutWidget_5</zorder>
+       <zorder>verticalLayoutWidget_4</zorder>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="recordGroup">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="title">
+        <string/>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_5">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>102</width>
+          <height>282</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="editRecordingLayout">
+         <item>
+          <widget class="QLabel" name="editRecordingLbl">
+           <property name="text">
+            <string>Edit Recording</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="editRecordingSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="cropBtn">
+           <property name="text">
+            <string>Crop</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="undoBtn">
+           <property name="text">
+            <string>Undo</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="splitBtn">
+           <property name="text">
+            <string>Split</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="visualizationLayout">
+       <item>
+        <layout class="QHBoxLayout" name="videoFileLayout">
+         <item>
+          <widget class="QLabel" name="filenameLbl">
+           <property name="maximumSize">
+            <size>
+             <width>80</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Filename: </string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="fileLbl">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QOpenGLWidget" name="videoPlayer">
+         <property name="minimumSize">
+          <size>
+           <width>300</width>
+           <height>220</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="videoBarLayout">
+         <item>
+          <widget class="QPushButton" name="videoControllerBtn">
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Play</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="videoSlider">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>715</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
