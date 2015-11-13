@@ -1,0 +1,3 @@
+load MPU6050_DMP6_demo.ino onto an arduino with MPU6050 set up. run the file in the processing folder with processing to get a cool plane visualization. use the calibration values you determined from MPU6050_calibrate
+
+see this page for more useful info: http://www.i2cdevlib.com/forums/topic/10-why-is-the-dmp-yaw-stable/
