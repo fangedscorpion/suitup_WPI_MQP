@@ -314,7 +314,8 @@ def create_quaternion(data):
     for i in range(len(q)): 
         if (q[i] >= 2): 
             q[i] = -4 + q[i]
-    return Quaternion([q[0],-q[1],q[3],q[2]])
+#    return Quaternion([-q[0],-q[1],q[3],-q[2]]) # mirror about z-axis (like looking in a mirror)
+    return Quaternion([q[0],-q[1],q[3],q[2]]) # no mirror, matches your motion
 
 def main():
     plt.ion()
