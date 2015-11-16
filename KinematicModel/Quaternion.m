@@ -1,8 +1,8 @@
-classdef Quaternion < handle
+classdef Quaternion
     % Quaternion: [w,x,y,z]
     
     properties
-        arr = [1 0 0 0].'; % identity
+        quat = [1 0 0 0].'; % identity
     end
     
     methods
@@ -14,25 +14,25 @@ classdef Quaternion < handle
             if any(size(q_arr) ~= [4 1])
                 error('            q_arr must be a 4-element vector');
             end
-            q.arr = q_arr;
+            q.quat = q_arr;
         end
         function q_out = unit(q)
             % unit quaternion
-            q_out = Quaternion(q.arr/norm(q));
+            q_out = Quaternion(q.quat/norm(q));
         end
         function m = norm(q)
             % vector norm of quaternion
-            m = norm(q.arr);
+            m = norm(q.quat);
         end
         function q_out = inv(q)
             % quaternion inversion
-            q_out = Quaternion(q.arr .* [1 -1 -1 -1].');
+            q_out = Quaternion(q.quat .* [1 -1 -1 -1].');
         end
         function t = mtimes(q,r)
             % quaternion multiplication
             t_vec = [0 0 0 0].';
-            r_vec = r.arr;
-            q_vec = q.arr;
+            r_vec = r.quat;
+            q_vec = q.quat;
             t_vec(1) = r_vec(1)*q_vec(1) - r_vec(2)*q_vec(2) - r_vec(3)*q_vec(3) - r_vec(4)*q_vec(4);
             t_vec(2) = r_vec(1)*q_vec(2) + r_vec(2)*q_vec(1) - r_vec(3)*q_vec(4) + r_vec(4)*q_vec(3);
             t_vec(3) = r_vec(1)*q_vec(3) + r_vec(2)*q_vec(4) + r_vec(3)*q_vec(1) - r_vec(4)*q_vec(2);
@@ -42,8 +42,8 @@ classdef Quaternion < handle
         function t = mrdivide(q,r)
             % right quaternion division
             t_vec = [0 0 0 0].';
-            r_vec = r.arr;
-            q_vec = q.arr;
+            r_vec = r.quat;
+            q_vec = q.quat;
             t_vec(1) = r_vec(1)*q_vec(1) + r_vec(2)*q_vec(2) + r_vec(3)*q_vec(3) + r_vec(4)*q_vec(4);
             t_vec(2) = r_vec(1)*q_vec(2) - r_vec(2)*q_vec(1) - r_vec(3)*q_vec(4) + r_vec(4)*q_vec(3);
             t_vec(3) = r_vec(1)*q_vec(3) + r_vec(2)*q_vec(4) - r_vec(3)*q_vec(1) - r_vec(4)*q_vec(2);
@@ -56,11 +56,11 @@ classdef Quaternion < handle
         end
         function out = ne(q,r)
             % not equal
-            out = any(q.arr ~= r.arr);
+            out = any(q.quat ~= r.quat);
         end
         function out = eq(q,r)
             % equal
-            out = all(q.arr == r.arr);
+            out = all(q.quat == r.quat);
         end
     end
 end
