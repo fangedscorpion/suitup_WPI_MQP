@@ -14,12 +14,18 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    superslider.cpp
+    superslider.cpp \
+    glwidget.cpp \
+    rectangularprism.cpp
 
 HEADERS  += mainwindow.h \
-    superslider.h
+    superslider.h \
+    glwidget.h \
+    rectangularprism.h
 
 FORMS    +=
 
 RESOURCES += \
     icons.qrc
+
+CONFIG += console

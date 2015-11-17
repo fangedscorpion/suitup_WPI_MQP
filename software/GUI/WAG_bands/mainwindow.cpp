@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "superslider.h"
+#include "glwidget.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
@@ -41,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     viewerTitle->addWidget(filename, 1);
 
     // viewer window
-    QOpenGLWidget *viewer = new QOpenGLWidget;
+    GLWidget *viewer = new GLWidget;
 
     // playback controls
     QHBoxLayout *controls = new QHBoxLayout;
@@ -50,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //    videoSlider->setStyleSheet("QSlider::handle { image: url(:/icons/handle.png); }");
 //    videoSlider->paintEvent(new QPaintEvent(new QRegion()));
     SuperSlider *videoSlider = new SuperSlider;
+    videoSlider->setGLWindow(viewer);
     QIcon playIcon(QPixmap(":/icons/play.png"));
     QLabel *curTime = new QLabel("00:00");
     QLabel *totalTime = new QLabel("00:10");

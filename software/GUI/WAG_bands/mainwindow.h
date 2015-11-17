@@ -9,6 +9,8 @@
 #include <QAction>
 #include <QOpenGLWidget>
 
+class GLWidget;
+
 namespace Ui {
 class MainWindow;
 }
@@ -28,6 +30,7 @@ private:
     QMenu *fileMenu;
     QMenu *modeMenu;
     QMenu *helpMenu;
+    GLWidget *glWidget;
 
     QAction *newAct;
     QAction *openAct;
