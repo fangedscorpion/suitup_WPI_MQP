@@ -15,9 +15,9 @@ MainWindow::MainWindow(QWidget *parent) :
     createActions(menu);
 
     // Edit recording options
-    QLabel *title = new QLabel;
-    title->setText("Edit Recording");
-    title->setAlignment(Qt::AlignCenter);
+    editOptions = new QWidget;
+    QLabel *editTitle = new QLabel("Edit Recording");
+    editTitle->setAlignment(Qt::AlignCenter);
     QPushButton *undoBtn = new QPushButton;
     undoBtn->setText("Undo");
     QPushButton *cropBtn = new QPushButton;
@@ -26,19 +26,83 @@ MainWindow::MainWindow(QWidget *parent) :
     splitBtn->setText("Split");
     QVBoxLayout *recordPlaybackLayout = new QVBoxLayout;
     QVBoxLayout *buttons = new QVBoxLayout;
-    recordPlaybackLayout->addWidget(title, -1);
+    recordPlaybackLayout->addWidget(editTitle, -1);
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     buttons->addWidget(undoBtn);
     buttons->addWidget(cropBtn);
     buttons->addWidget(splitBtn);
     recordPlaybackLayout->addLayout(buttons, 1);
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    editOptions->setLayout(recordPlaybackLayout);
+
+    // Playback options
+    playbackOptions = new QWidget;
+    QVBoxLayout *playbackLayout = new QVBoxLayout;
+    QVBoxLayout *options = new QVBoxLayout;
+    QLabel *playbackTitle = new QLabel("Playback Motion");
+    playbackTitle->setAlignment(Qt::AlignCenter);
+    QCheckBox *playOnSuit = new QCheckBox("Play on suit");
+    QComboBox *stepThrough = new QComboBox;
+    stepThrough->addItem("Step Through mode");
+    stepThrough->addItem("Timed mode");
+    playbackLayout->addWidget(playbackTitle, -1);
+    playbackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    options->addWidget(playOnSuit);
+    options->addWidget(stepThrough);
+    // speed/frame slider
+    QVBoxLayout *speedSliderLayout = new QVBoxLayout;
+    QLabel *sfi = new QLabel("Speed/Frame interval");
+    sfi->setAlignment(Qt::AlignCenter);
+    speedSliderLayout->addWidget(sfi);
+    QSlider *speedSlider = new QSlider(Qt::Horizontal);
+    speedSlider->setValue(speedSlider->maximum()/2);
+    speedSliderLayout->addWidget(speedSlider);
+    QHBoxLayout *speeds = new QHBoxLayout;
+    speeds->addWidget(new QLabel("1/4x"));
+    QLabel *x1 = new QLabel("1x");
+    x1->setAlignment(Qt::AlignCenter);
+    speeds->addWidget(x1);
+    QLabel *x4 = new QLabel("4x");
+    x4->setAlignment(Qt::AlignRight);
+    speeds->addWidget(x4);
+    speedSliderLayout->addLayout(speeds);
+    //hold last frame ticket
+    QHBoxLayout *holdLast = new QHBoxLayout;
+    holdLast->addWidget(new QLabel("Hold last frame for"));
+    QSpinBox *seconds = new QSpinBox;
+    holdLast->addWidget(seconds);
+    holdLast->addWidget(new QLabel("sec(s)"), -1);
+    // speed/frame slider
+    QVBoxLayout *positionToleranceLayout = new QVBoxLayout;
+    QLabel *pmt = new QLabel("Position matching tolerance");
+    pmt->setAlignment(Qt::AlignCenter);
+    positionToleranceLayout->addWidget(pmt);
+    QSlider *toleranceSlider = new QSlider(Qt::Horizontal);
+    positionToleranceLayout->addWidget(toleranceSlider);
+    QHBoxLayout *tolerance = new QHBoxLayout;
+    tolerance->addWidget(new QLabel("close"));
+    QLabel *rough = new QLabel("rough");
+    rough->setAlignment(Qt::AlignRight);
+    tolerance->addWidget(rough);
+    positionToleranceLayout->addLayout(tolerance);
+
+    options->addLayout(speedSliderLayout, -1);
+    options->addLayout(holdLast, -1);
+    options->addLayout(positionToleranceLayout, -1);
+
+    playbackLayout->addLayout(options);
+    playbackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+
+
+    playbackOptions->setLayout(playbackLayout);
+    playbackOptions->setVisible(false);
+
 
     // Filename: boop.xxx
     QHBoxLayout *viewerTitle = new QHBoxLayout;
     viewerTitle->addWidget(new QLabel("Filename: "));
     QLabel *filename = new QLabel;
-    filename->setText("boop.xxx");
+    filename->setText("high-five.wagz");
     viewerTitle->addWidget(filename, 1);
 
     // viewer window
@@ -47,9 +111,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // playback controls
     QHBoxLayout *controls = new QHBoxLayout;
     QPushButton *playPause = new QPushButton;
-//    QSlider *videoSlider = new QSlider(Qt::Horizontal);
-//    videoSlider->setStyleSheet("QSlider::handle { image: url(:/icons/handle.png); }");
-//    videoSlider->paintEvent(new QPaintEvent(new QRegion()));
     SuperSlider *videoSlider = new SuperSlider;
     videoSlider->setGLWindow(viewer);
     QIcon playIcon(QPixmap(":/icons/play.png"));
@@ -70,7 +131,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // contains both options and viewer
     QHBoxLayout *splitPanes = new QHBoxLayout;
-    splitPanes->addLayout(recordPlaybackLayout, 1);
+    splitPanes->addWidget(editOptions, 1);
+    splitPanes->addWidget(playbackOptions, 1);
     splitPanes->addLayout(viewerPane, 2);
 
     QFrame *line = new QFrame();
@@ -124,11 +186,11 @@ void MainWindow::createActions(QMenuBar *menu)
 
     playbackAct = new QAction(tr("Playback Mode"), this);
     playbackAct->setStatusTip(tr("Enter playback mode"));
-//    connect(playbackAct, SIGNAL(triggered()), this, SLOT(playbackMode()));
+    connect(playbackAct, SIGNAL(triggered()), this, SLOT(playbackMode()));
 
     recordAct = new QAction(tr("Record Mode"), this);
     recordAct->setStatusTip(tr("Enter record mode"));
-//    connect(recordAct, SIGNAL(triggered()), this, SLOT(recordMode()));
+    connect(recordAct, SIGNAL(triggered()), this, SLOT(recordMode()));
 
     settingsAct = new QAction(tr("Settings"), this);
     settingsAct->setStatusTip(tr("Open settings window"));
@@ -156,5 +218,12 @@ void MainWindow::createActions(QMenuBar *menu)
     helpMenu->addAction(helpAct);
 }
 
-//void MainWindow::createRecordPlaybackPane(QWidget* mainWidget) {
-//}
+void MainWindow::playbackMode() {
+    editOptions->setVisible(false);
+    playbackOptions->setVisible(true);
+}
+
+void MainWindow::recordMode() {
+    editOptions->setVisible(true);
+    playbackOptions->setVisible(false);
+}
