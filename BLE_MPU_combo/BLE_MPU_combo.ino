@@ -51,7 +51,8 @@ THE SOFTWARE.
 // Arduino Wire library is required if I2Cdev I2CDEV_ARDUINO_WIRE implementation
 // is used in I2Cdev.h
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
-    #include "Wire.h"
+//    #include "Wire.h"
+  #include <i2c_t3.h>
 #endif
 
 #define ADAFRUITBLE_REQ 10
@@ -65,7 +66,14 @@ THE SOFTWARE.
 MPU6050 mpu;
 Adafruit_BLE_UART uart = Adafruit_BLE_UART(ADAFRUITBLE_REQ, ADAFRUITBLE_RDY, ADAFRUITBLE_RST);
 
-#define LED_PIN 4 // (Arduino is 13, Teensy is 11, Teensy++ is 6)
+#if defined(CORE_TEENSY) && defined(__MK20DX256__)
+  #define LED_PIN 4 //Teensy3.2 using pin 4
+#elif defined(__AVR_ATmega328P__)
+  #define LED_PIN 4 // (Arduino is 13, Teensy is 11, Teensy++ is 6)
+#else
+  #define LED_PIN 4
+#endif
+
 bool blinkState = false;
 
 // MPU control/status vars
@@ -140,15 +148,30 @@ void rxCallback(uint8_t *buffer, uint8_t len)
 /**************************************************************************/
 void setup(void)
 { 
+  delay(500);
   // join I2C bus (I2Cdev library doesn't do this automatically)
   #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
       Wire.begin();
+      #ifdef __AVR__
       TWBR = 24; // 400kHz I2C clock (200kHz if CPU is 8MHz)
+      #endif
+      #ifdef __ARM__ //Had to add this as the Teensy3.2 is ARM based not AVR :( but it compiles now!
+        uint8_t twbrback = TWI_CWGR_CKDIV;
+        TWI_CWGR_CKDIV(twbrback/4); //400 kHz
+      #endif
   #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
       Fastwire::setup(400, true);
   #endif
+
+  // configure LED for output
+  pinMode(LED_PIN, OUTPUT);
+
+  digitalWrite(LED_PIN,LOW); //Testing for Where teensy is dying
+  
   Serial.begin(115200);
-  while(!Serial); // Leonardo/Micro should wait for serial init
+  //while(!Serial); // Leonardo/Micro should wait for serial init //I think this futzes up on Teensy3.2
+  
+  digitalWrite(LED_PIN,HIGH);//Testing for Where teensy is dying
   Serial.println(F("Adafruit Bluefruit Low Energy nRF8001 Callback Echo demo"));
   mpu.initialize();
   Serial.println(mpu.testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
@@ -156,9 +179,13 @@ void setup(void)
   uart.setACIcallback(aciCallback);
   // uart.setDeviceName("NEWNAME"); /* 7 characters max! */
   uart.begin();
-  while (Serial.available() && Serial.read()); // empty buffer
-  //while (!Serial.available());                 // wait for data
-  while (Serial.available() && Serial.read()); // empty buffer again
+
+  
+  
+  //while (Serial.available() && Serial.read()); // empty buffer
+  ////while (!Serial.available());                 // wait for data
+  //while (Serial.available() && Serial.read()); // empty buffer again
+  
 
   // load and configure the DMP
   devStatus = mpu.dmpInitialize();
@@ -179,8 +206,16 @@ void setup(void)
         mpu.setDMPEnabled(true);
 
         // enable Arduino interrupt detection
-        Serial.println(F("Enabling interrupt detection (Arduino external interrupt 0)..."));
-        attachInterrupt(1, dmpDataReady, RISING);
+        #ifdef __AVR__
+          Serial.println(F("Enabling interrupt detection (Arduino external interrupt 0)..."));
+          attachInterrupt(1, dmpDataReady, RISING); //Pin 2 on Arduino Uno
+          
+        #elif defined(CORE_TEENSY) && defined(__MK20DX256__) //Teensy 3.2!
+          Serial.println(F("Enabling Teensy interrupt detection (Pin 3)..."));
+          pinMode(3, INPUT);
+          attachInterrupt(3, dmpDataReady, RISING); // For Teensy this is just the pin number you want, not multiplexed. See the pins_teensy.c in teensy3/ folder
+        #endif
+        
         mpuIntStatus = mpu.getIntStatus();
 
         // set our DMP Ready flag so the main loop() function knows it's okay to use it
@@ -199,8 +234,7 @@ void setup(void)
         Serial.println(F(")"));
     }
 
-    // configure LED for output
-    pinMode(LED_PIN, OUTPUT);
+
 }
 
 /**************************************************************************/
@@ -224,6 +258,7 @@ void loop()
         // .
         // .
         // .
+       // Serial.println("Waiting on DMP");
     }
 
     // reset interrupt flag and get INT_STATUS byte

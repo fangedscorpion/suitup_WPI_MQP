@@ -3,42 +3,42 @@
 #define HOST_NAME   "192.168.1.10"
 #define HOST_PORT   (80)
 
-#include <SoftwareSerial.h>
-
-SoftwareSerial mySerial(3, 2); // RX, TX
+//#include <SoftwareSerial.h>
+//
+//SoftwareSerial mySerial(3, 2); // RX, TX
 
 void setup() {
-  mySerial.begin(115200);
+  Serial1.begin(115200);
   Serial.begin(115200);
 
-  mySerial.write("AT\r\n");
-  if (mySerial.available()) {
-    Serial.write(mySerial.read());
+  Serial1.write("AT\r\n");
+  if (Serial1.available()) {
+    Serial.write(Serial1.read());
   
   }
   Serial.println("Waiting for restart");
   delay(2000);
 
-  mySerial.write("AT+CIPMUX=1\r\n");
-  if (mySerial.available()) {
-    Serial.write(mySerial.read());
+  Serial1.write("AT+CIPMUX=1\r\n");
+  if (Serial1.available()) {
+    Serial.write(Serial1.read());
   }
-  
-    mySerial.write("AT+CIPSTART=4,\"UDP\",\"192.168.1.10\",80,1112,0\r\n");
-  if (mySerial.available()) {
-    Serial.write(mySerial.read());
-  }
+//  
+//    Serial1.write("AT+CIPSTART=4,\"UDP\",\"192.168.1.10\",80,1112,0\r\n");
+//  if (Serial1.available()) {
+//    Serial.write(Serial1.read());
+//  }
 }
 
 void loop() {
-  if (mySerial.available()) {
-    while(mySerial.available() > 0){
-      Serial.write(mySerial.read());
+  if (Serial1.available()) {
+    while(Serial1.available() > 0){
+      Serial.write(Serial1.read());
     }
     Serial.println();
   }
   if (Serial.available()) {
-    mySerial.write(Serial.read());
+    Serial1.write(Serial.read());
   }
 
 }
