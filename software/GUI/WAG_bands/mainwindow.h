@@ -3,6 +3,11 @@
 
 #include <QMainWindow>
 #include <QLabel>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QMenuBar>
+#include <QAction>
+#include <QOpenGLWidget>
 
 namespace Ui {
 class MainWindow;

@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include <QApplication>
+#include <QPushButton>
+#include <QOpenGLWidget>
 
 int main(int argc, char *argv[])
 {

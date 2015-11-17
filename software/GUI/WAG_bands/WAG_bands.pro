@@ -13,8 +13,13 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    superslider.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    superslider.h
 
-FORMS    += mainwindow.ui
+FORMS    +=
+
+RESOURCES += \
+    icons.qrc
