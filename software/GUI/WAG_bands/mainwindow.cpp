@@ -112,7 +112,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QHBoxLayout *controls = new QHBoxLayout;
     QPushButton *playPause = new QPushButton;
     SuperSlider *videoSlider = new SuperSlider;
-    videoSlider->setGLWindow(viewer);
     QIcon playIcon(QPixmap(":/icons/play.png"));
     QLabel *curTime = new QLabel("00:00");
     QLabel *totalTime = new QLabel("00:10");
