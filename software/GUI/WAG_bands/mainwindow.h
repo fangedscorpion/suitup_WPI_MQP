@@ -8,6 +8,9 @@
 #include <QMenuBar>
 #include <QAction>
 #include <QOpenGLWidget>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QSpinBox>
 
 namespace Ui {
 class MainWindow;
@@ -39,13 +42,16 @@ private:
     QAction *recordAct;
     QAction *helpAct;
 
+    QWidget *editOptions;
+    QWidget *playbackOptions;
+
 private slots:
 //    void newFile();
 //    void open();
 //    void save();
 //    void saveAs();
-//    void playbackMode();
-//    void recordMode();
+    void playbackMode();
+    void recordMode();
 //    void settings();
 //    void help();
 };
