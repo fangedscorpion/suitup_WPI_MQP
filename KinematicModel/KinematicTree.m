@@ -21,23 +21,23 @@ classdef KinematicTree < handle
             kt.sub = subtrees; 
         end
         
-        function pts = getPoints(kt,parent_quat,parent_offset)
+        function pts = getPoints(kt,parent_r,parent_t)
             % return an array of pure quaternion positions in the tree
             
             % set default argument for parent_quat to identity unit quaternion
             % set default argument for parent_offset to zero pure quaternion
             if nargin == 1
-                parent_quat = Quaternion([1,0,0,0]);
-                parent_offset = Quaternion([0,0,0,0]);
+                parent_r = Quaternion([1,0,0,0]);
+                parent_t = Quaternion([0,0,0,0]);
             end
             
-            trans_norot = inv(parent_quat)*kt.t*parent_quat + parent_offset;
+            trans_norot = inv(parent_r)*kt.t*parent_r + parent_t;
             trans_rot = inv(kt.r)*kt.rt*kt.r;
             trans_total = trans_rot + trans_norot;
             
             pts = [trans_total; trans_norot];
             
-            % generate the array of points from each subtree
+            % generate the array of points from each subtree recursively
             for i = 1:numel(kt.sub)
                 pts = [pts; kt.sub(i).getPoints(kt.r,trans_total)];
             end
