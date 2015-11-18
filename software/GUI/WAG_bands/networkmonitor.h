@@ -3,19 +3,21 @@
 
 #include <QQuaternion>
 #include <QString>
+#include <QObject>
 
-class NetworkMonitor
-{
+class NetworkMonitor: public QObject {
+    Q_OBJECT
+
 public:
-    NetworkMonitor(int portNumber);
+    NetworkMonitor(QObject *parent=0, int portNumber=-1);
     ~NetworkMonitor();
+
+public slots:
+    void sendMotorCommand();
 
 signals:
     void receievedQuaternion(QQuaternion quat);
     void acceptedConnection(QString ipAddress);
-
-public slots:
-    void sendMotorCommand();
 
 private:
     int clntSocket;
