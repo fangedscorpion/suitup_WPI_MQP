@@ -20,26 +20,26 @@ classdef KinematicTree < handle
             kt.t = trans;
             kt.sub = subtrees; 
         end
-        function pts = getPoints(kt)
+        function pts = getPoints(kt,parent_quat)
             % return an array of pure quaternion positions in the tree
             subpts = [];
             % generate the array of points from each subtree
             for i = 1:numel(kt.sub)
-                subpts = [subpts; kt.sub(i).getPoints()];
+                subpts = [subpts; kt.sub(i).getPoints(kt.r)];
             end
             % add this tree's rotated vector and unrotated vector components to
             % each subpoint
             for i=1:numel(subpts)
-                subpts(i) = subpts(i) + inv(kt.r)*kt.rt*kt.r + kt.t;
+                subpts(i) = subpts(i) + inv(kt.r)*kt.rt*kt.r + inv(parent_quat)*kt.t*parent_quat;
             end
             % append this tree's point to the array of points
-            pts = [kt.r\kt.rt*kt.r + kt.t;subpts];
+            pts = [inv(kt.r)*kt.rt*kt.r + inv(parent_quat)*kt.t*parent_quat;subpts];
             
             % uncomment the following lines to append additional points at the end of
             % each unrotated translation
-%             for i = 1:numel(kt.sub)
-%                 pts = [pts;kt.sub(i).t + kt.r\kt.rt*kt.r + kt.t];
-%             end
+            for i = 1:numel(kt.sub)
+                pts = [pts;inv(kt.r)*kt.sub(i).t*kt.r + inv(kt.r)*kt.rt*kt.r + inv(parent_quat)*kt.t*parent_quat];
+            end
         end
         function rotateAll(kt,quat)
             % rotate all of the subtree orientations by the given unit quaternion
