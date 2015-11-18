@@ -8,7 +8,7 @@ RectangularPrism::RectangularPrism()
 
 
     //drawTriangle(QVector3D(0, 0, 0), QVector3D(0.1, 0, 0), QVector3D(0.05, 0.05, 0));
-    drawRectangularPrism(0.7, 0.4, 0.2);
+    drawRectangularPrism(0.7, 0.4, 1);
     //makeRectangularPrism(0.3, 0.6, 0.9);
 
     /*const GLfloat x1 = +0.06f;
@@ -114,8 +114,9 @@ void RectangularPrism::drawRectangularPrism(GLfloat width, GLfloat height, GLflo
     drawRectangle(vertices[2], vertices[1], vertices[5], vertices[6]);
 }
 
+// draws a rectangle
+// give corner points ordered counter clockwise when looking at rectangle from side that'd normally be seen
 void RectangularPrism::drawRectangle(QVector3D llcorner, QVector3D lrcorner, QVector3D trcorner, QVector3D tlcorner) {
-    // draw front face
     drawTriangle(llcorner, trcorner, tlcorner);
     drawTriangle(llcorner, lrcorner, trcorner);
 }

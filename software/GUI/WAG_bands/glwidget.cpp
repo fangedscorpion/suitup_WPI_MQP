@@ -279,8 +279,16 @@ void GLWidget::resizeGL(int w, int h)
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
+    static bool toggle = true;
     m_lastPos = event->pos();
-    m_camera.zoomToDepth(lastZoomedTo);
+    //m_camera.zoomToDepth(lastZoomedTo);
+    if (toggle) {
+        m_camera.moveCameraToLocation(QVector3D(2, 2, -2));
+    }
+    else {
+        m_camera.moveCameraToLocation(QVector3D(-2, -2, -2));
+    }
+    toggle = !toggle;
     qDebug("mouse pressed");
     update();
 }

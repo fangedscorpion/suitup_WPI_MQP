@@ -34,11 +34,15 @@ void GLCamera::zoomToDepth(GLfloat newDepth) {
 void GLCamera::moveCameraToLocation(QVector3D cameraLocation) {
     setToIdentity();
     // get camera ray vector projected onto x,z plane
-    // get right vector of result
-    // find normal vector of camera ray and right vector -> upVector
+    QVector3D currentDisplacement = cameraLocation - lookingAt;
+    currentDisplacement.setY(0);
+    // find the vector pointing left from the camera (this should remain constant and parallel to the x, z place
+    // no matter where we put the camera
+    QVector3D leftVect = QVector3D::crossProduct(QVector3D(0, 1, 0), currentDisplacement);
+    // the upvector should be perpendicular to the ray to what we're looking at and the left vector
+    upVector = QVector3D::crossProduct((cameraLocation - lookingAt), leftVect);
 
     currentPos = cameraLocation;
-    // recalculate upvector
     this->lookAt(cameraLocation, lookingAt, upVector);
 }
 
