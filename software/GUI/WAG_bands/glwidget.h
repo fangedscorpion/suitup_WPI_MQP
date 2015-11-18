@@ -47,6 +47,7 @@
 #include <QOpenGLBuffer>
 #include <QMatrix4x4>
 #include "rectangularprism.h"
+#include "glcamera.h"
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
@@ -78,10 +79,11 @@ protected:
     void resizeGL(int width, int height) Q_DECL_OVERRIDE;
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void moveCamera(QVector3D lookAt, QVector3D cameraPoint, QVector3D upVector);
 
 private:
     void setupVertexAttribs();
-
+    GLfloat lastZoomedTo;
     bool m_core;
     int m_xRot;
     int m_yRot;
@@ -96,7 +98,7 @@ private:
     int m_normalMatrixLoc;
     int m_lightPosLoc;
     QMatrix4x4 m_proj;
-    QMatrix4x4 m_camera;
+    GLCamera m_camera;
     QMatrix4x4 m_world;
     bool m_transparent;
 };

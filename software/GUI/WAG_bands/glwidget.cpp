@@ -76,6 +76,7 @@ QSize GLWidget::sizeHint() const
     return QSize(400, 400);
 }
 
+// puts angle back in range
 static void qNormalizeAngle(int &angle)
 {
     while (angle < 0)
@@ -84,6 +85,8 @@ static void qNormalizeAngle(int &angle)
         angle -= 360 * 16;
 }
 
+// update the x rotation
+// resulting angle will be between 0 and 360*16 (I think)
 void GLWidget::setXRotation(int angle)
 {
     qNormalizeAngle(angle);
@@ -94,6 +97,8 @@ void GLWidget::setXRotation(int angle)
     }
 }
 
+// update the y rotation
+// resulting angle will be between 0 and 360*16 (I think)//
 void GLWidget::setYRotation(int angle)
 {
     qNormalizeAngle(angle);
@@ -104,6 +109,8 @@ void GLWidget::setYRotation(int angle)
     }
 }
 
+// update the z rotation
+// resulting angle will be between 0 and 360*16 (I think)
 void GLWidget::setZRotation(int angle)
 {
     qNormalizeAngle(angle);
@@ -188,7 +195,7 @@ void GLWidget::initializeGL()
     // the signal will be followed by an invocation of initializeGL() where we
     // can recreate all resources.
     connect(context(), &QOpenGLContext::aboutToBeDestroyed, this, &GLWidget::cleanup);
-
+    lastZoomedTo = 2;
     initializeOpenGLFunctions();
     glClearColor(0, 0, 0, m_transparent ? 0 : 1);
 
@@ -221,8 +228,8 @@ void GLWidget::initializeGL()
     setupVertexAttribs();
 
     // Our camera never changes in this example.
-    m_camera.setToIdentity();
-    m_camera.translate(0, 0, -3);
+    //m_camera.setToIdentity();
+    //m_camera.translate(0, 0, -3);
 
     // Light position is fixed.
     m_program->setUniformValue(m_lightPosLoc, QVector3D(0, 0, 70));
@@ -273,7 +280,9 @@ void GLWidget::resizeGL(int w, int h)
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
     m_lastPos = event->pos();
+    m_camera.zoomToDepth(lastZoomedTo);
     qDebug("mouse pressed");
+    update();
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
@@ -284,6 +293,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     if (event->buttons() & Qt::LeftButton) {
         setXRotation(m_xRot + 8 * dy);
         setYRotation(m_yRot + 8 * dx);
+
     } else if (event->buttons() & Qt::RightButton) {
         setXRotation(m_xRot + 8 * dy);
         setZRotation(m_zRot + 8 * dx);

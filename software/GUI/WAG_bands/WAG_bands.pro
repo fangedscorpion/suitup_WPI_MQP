@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     superslider.cpp \
     glwidget.cpp \
-    rectangularprism.cpp
+    rectangularprism.cpp \
+    glcamera.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
     glwidget.h \
-    rectangularprism.h
+    rectangularprism.h \
+    glcamera.h
 
 FORMS    +=
 
