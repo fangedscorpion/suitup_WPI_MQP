@@ -2,7 +2,7 @@ classdef Quaternion
     % Quaternion: [w,x,y,z]
     
     properties
-        quat = [1 0 0 0].'; % identity
+        quat; 
     end
     
     methods
@@ -61,6 +61,18 @@ classdef Quaternion
         function out = eq(q,r)
             % equal
             out = all(q.quat == r.quat);
+        end
+        function t = plus(q,r)
+            % add
+            t = Quaternion(q.quat + r.quat);
+        end
+        function t = minus(q,r)
+            % subtract
+            t = Quaternion(q.quat - r.quat);
+        end
+        function v = getVec(q)
+            % returns the xyz vector components of a quaternion
+            v = q.quat(2:4);
         end
     end
 end
