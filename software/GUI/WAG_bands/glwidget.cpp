@@ -45,6 +45,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <QDebug>
+#include "bluetoothmanager.h"
 
 GLWidget::GLWidget(QWidget *parent)
     : QOpenGLWidget(parent),
@@ -282,6 +283,8 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     static bool toggle = true;
     m_lastPos = event->pos();
     //m_camera.zoomToDepth(lastZoomedTo);
+
+    BluetoothManager *blueMan = new BluetoothManager();
     if (toggle) {
         m_camera.moveCameraToLocation(QVector3D(2, 2, -2));
     }

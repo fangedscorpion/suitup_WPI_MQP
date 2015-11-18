@@ -9,7 +9,7 @@
 #define BUFFER_SIZE 1024
 
 
-NetworkMonitor::NetworkMonitor(QObject *parent, int portNumber):QObject(parent) {
+NetworkMonitor::NetworkMonitor(int portNumber):QObject() {
 
   int servSock;                       /* Socket descriptor for server */
   int clntSock;                       /* Socket descriptor */

@@ -9,7 +9,7 @@ class NetworkMonitor: public QObject {
     Q_OBJECT
 
 public:
-    NetworkMonitor(QObject *parent=0, int portNumber=-1);
+    NetworkMonitor(int portNumber=-1);
     ~NetworkMonitor();
 
 public slots:
