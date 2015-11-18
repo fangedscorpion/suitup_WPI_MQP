@@ -9,6 +9,8 @@ class Band {
 private:
 	BandType type;
 	bool active;
+	// the band that this relies on. ie) lower arm relies on upper arm.
+	// Band *previousBand;
 	//BandCalibration data
 
 public:

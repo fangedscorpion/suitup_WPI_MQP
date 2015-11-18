@@ -43,11 +43,13 @@ protected:
   bool eventFilter(QObject* obj, QEvent* event);
 private:
   bool pressed;
+  int getOffset();
 signals:
   /** Constructor */
   void alt_valueChanged(int);
 public slots:
   void update();
+  void resized();
 };
 
 class SliderEventFilter : public QObject
@@ -93,6 +95,7 @@ public:
 private:
   /** Store the filter for installation on the qguiapp */
   SliderEventFilter *filter;
+  int m_value;
 
   public slots:
     /** Sets the value of the handle with respect to the slider */

@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "superslider.h"
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
@@ -17,11 +17,11 @@ MainWindow::MainWindow(QWidget *parent) :
     editOptions = new QWidget;
     QLabel *editTitle = new QLabel("Edit Recording");
     editTitle->setAlignment(Qt::AlignCenter);
-    QPushButton *undoBtn = new QPushButton;
+    undoBtn = new QPushButton;
     undoBtn->setText("Undo");
-    QPushButton *cropBtn = new QPushButton;
+    cropBtn = new QPushButton;
     cropBtn->setText("Crop");
-    QPushButton *splitBtn = new QPushButton;
+    splitBtn = new QPushButton;
     splitBtn->setText("Split");
     QVBoxLayout *recordPlaybackLayout = new QVBoxLayout;
     QVBoxLayout *buttons = new QVBoxLayout;
@@ -38,22 +38,28 @@ MainWindow::MainWindow(QWidget *parent) :
     playbackOptions = new QWidget;
     QVBoxLayout *playbackLayout = new QVBoxLayout;
     QVBoxLayout *options = new QVBoxLayout;
+    options->setAlignment(Qt::AlignCenter);
     QLabel *playbackTitle = new QLabel("Playback Motion");
     playbackTitle->setAlignment(Qt::AlignCenter);
-    QCheckBox *playOnSuit = new QCheckBox("Play on suit");
-    QComboBox *stepThrough = new QComboBox;
+    QWidget *checkbox = new QWidget;
+    QHBoxLayout *checkboxLayout = new QHBoxLayout;
+    checkboxLayout->setAlignment(Qt::AlignCenter);
+    playOnSuit = new QCheckBox("Play on suit");
+    checkboxLayout->addWidget(playOnSuit, -1);
+    checkbox->setLayout(checkboxLayout);
+    stepThrough = new QComboBox;
     stepThrough->addItem("Step Through mode");
     stepThrough->addItem("Timed mode");
     playbackLayout->addWidget(playbackTitle, -1);
     playbackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
-    options->addWidget(playOnSuit);
+    options->addWidget(checkbox);
     options->addWidget(stepThrough);
     // speed/frame slider
     QVBoxLayout *speedSliderLayout = new QVBoxLayout;
     QLabel *sfi = new QLabel("Speed/Frame interval");
     sfi->setAlignment(Qt::AlignCenter);
     speedSliderLayout->addWidget(sfi);
-    QSlider *speedSlider = new QSlider(Qt::Horizontal);
+    speedSlider = new QSlider(Qt::Horizontal);
     speedSlider->setValue(speedSlider->maximum()/2);
     speedSliderLayout->addWidget(speedSlider);
     QHBoxLayout *speeds = new QHBoxLayout;
@@ -68,7 +74,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //hold last frame ticket
     QHBoxLayout *holdLast = new QHBoxLayout;
     holdLast->addWidget(new QLabel("Hold last frame for"));
-    QSpinBox *seconds = new QSpinBox;
+    seconds = new QSpinBox;
     holdLast->addWidget(seconds);
     holdLast->addWidget(new QLabel("sec(s)"), -1);
     // speed/frame slider
@@ -76,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QLabel *pmt = new QLabel("Position matching tolerance");
     pmt->setAlignment(Qt::AlignCenter);
     positionToleranceLayout->addWidget(pmt);
-    QSlider *toleranceSlider = new QSlider(Qt::Horizontal);
+    toleranceSlider = new QSlider(Qt::Horizontal);
     positionToleranceLayout->addWidget(toleranceSlider);
     QHBoxLayout *tolerance = new QHBoxLayout;
     tolerance->addWidget(new QLabel("close"));
@@ -84,42 +90,41 @@ MainWindow::MainWindow(QWidget *parent) :
     rough->setAlignment(Qt::AlignRight);
     tolerance->addWidget(rough);
     positionToleranceLayout->addLayout(tolerance);
-
+    // add everything
     options->addLayout(speedSliderLayout, -1);
     options->addLayout(holdLast, -1);
     options->addLayout(positionToleranceLayout, -1);
-
     playbackLayout->addLayout(options);
     playbackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
-
-
     playbackOptions->setLayout(playbackLayout);
     playbackOptions->setVisible(false);
 
-
-    // Filename: boop.xxx
+    // Filename: example.wagz
     QHBoxLayout *viewerTitle = new QHBoxLayout;
     viewerTitle->addWidget(new QLabel("Filename: "));
-    QLabel *filename = new QLabel;
-    filename->setText("high-five.wagz");
+    filename = new QLabel;
+    filename->setText("example.wagz");
     viewerTitle->addWidget(filename, 1);
 
     // viewer window
-    QOpenGLWidget *viewer = new QOpenGLWidget;
+    viewer = new QOpenGLWidget;
 
-    // playback controls
+    // video controls
     QHBoxLayout *controls = new QHBoxLayout;
-    QPushButton *playPause = new QPushButton;
-    SuperSlider *videoSlider = new SuperSlider;
-    QIcon playIcon(QPixmap(":/icons/play.png"));
-    QLabel *curTime = new QLabel("00:00");
-    QLabel *totalTime = new QLabel("00:10");
+    playPause = new QPushButton;
+    videoSlider = new SuperSlider;
+    connect(this, SIGNAL(resizedWindow()), videoSlider, SLOT(resized()));
+    playIcon = QIcon(QPixmap(":/icons/play.png"));
+    pauseIcon = QIcon(QPixmap(":/icons/pause.png"));
+    recordIcon = QIcon(QPixmap(":/icons/record.png"));
+    handle1Time = new QLabel("00:00");
+    handle2Time = new QLabel("00:10");
     playPause->setIcon(playIcon);
     playPause->setIconSize(QSize(15,15));
     controls->addWidget(playPause);
-    controls->addWidget(curTime);
+    controls->addWidget(handle1Time);
     controls->addWidget(videoSlider);
-    controls->addWidget(totalTime);
+    controls->addWidget(handle2Time);
 
     // viewer side of the GUI
     QVBoxLayout *viewerPane = new QVBoxLayout;
@@ -133,6 +138,7 @@ MainWindow::MainWindow(QWidget *parent) :
     splitPanes->addWidget(playbackOptions, 1);
     splitPanes->addLayout(viewerPane, 2);
 
+    // line under menubar
     QFrame *line = new QFrame();
     line->setObjectName(QString::fromUtf8("line"));
     line->setGeometry(QRect(320, 150, 118, 3));
@@ -146,13 +152,13 @@ MainWindow::MainWindow(QWidget *parent) :
     centralWidget()->setLayout(layout);
 
     setWindowTitle(tr("WAG bands"));
-    setMinimumSize(160, 160);
+    setMinimumSize(600, 300);
+    setMaximumSize(1000, 600);
     resize(600, 400);
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
 }
 
 void MainWindow::createActions(QMenuBar *menu)
@@ -224,4 +230,9 @@ void MainWindow::playbackMode() {
 void MainWindow::recordMode() {
     editOptions->setVisible(true);
     playbackOptions->setVisible(false);
+}
+
+void MainWindow::resizeEvent(QResizeEvent* r) {
+    QMainWindow::resizeEvent(r);
+    emit resizedWindow();
 }
