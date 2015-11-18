@@ -17,13 +17,15 @@ SOURCES += main.cpp\
     superslider.cpp \
     glwidget.cpp \
     rectangularprism.cpp \
-    glcamera.cpp
+    glcamera.cpp \
+    networkmonitor.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
     glwidget.h \
     rectangularprism.h \
-    glcamera.h
+    glcamera.h \
+    networkmonitor.h
 
 FORMS    +=
 
