@@ -57,7 +57,7 @@ degsPerStep = 6;
 for i=1:(360/degsPerStep)
     for i = 1:degsPerStep
         % 1 degree rotation about z
-        ktree.rotateAll(deg1z);
+        ktree.sub(1).rotateAll(deg1z);
     end
     
     qs = ktree.getPoints();
