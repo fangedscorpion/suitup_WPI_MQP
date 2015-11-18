@@ -46,6 +46,10 @@ int main(int argc, char *argv[]) {
   if (bind(servSock, (struct sockaddr*) &echoServerAddr, sizeof(echoServerAddr)) < 0) {
     DieWithError("bind() failed");
   }
+  int option = 1;
+  if (setsockopt(servSock, SOL_SOCKET, (SO_REUSEPORT), (char*) &option, sizeof(option)) < 0) {
+    DieWithError("setting socket option failed");
+  }
 
   /* Markt the socket so it will listen for incoming connections */
   if (listen(servSock, MAX_PENDING) < 0) {
@@ -81,6 +85,7 @@ void HandleTCPClient(int clntSocket) {
   char buffer[BUF_SIZE];
   // receive the data from the client */
   ssize_t numBytesRcvd = recv(clntSocket, buffer, BUF_SIZE, 0);
+  printf("Received %s\n", buffer);
   if (numBytesRcvd < 0) {
     DieWithError("recv() failed");
   }
@@ -88,6 +93,7 @@ void HandleTCPClient(int clntSocket) {
   while (numBytesRcvd > 0) {
     // send back the message just received
     reverseString(buffer, numBytesRcvd -1);
+    printf("Sending %s\n", buffer);
     ssize_t numBytesSent = send(clntSocket, buffer, numBytesRcvd, 0);
     if (numBytesSent < 0) {
       DieWithError("send() failed");
@@ -100,6 +106,8 @@ void HandleTCPClient(int clntSocket) {
     if (numBytesRcvd < 0) {
       DieWithError("recv() failed");
     }
+    printf("Received %s\n", buffer);
+  
   }
   // close the socket
   close(clntSocket);
