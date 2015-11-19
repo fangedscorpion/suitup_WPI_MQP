@@ -60,6 +60,9 @@ GLWidget::GLWidget(QWidget *parent)
     m_transparent = QCoreApplication::arguments().contains(QStringLiteral("--transparent"));
     if (m_transparent)
         setAttribute(Qt::WA_TranslucentBackground);
+
+
+    blueMan = new BluetoothManager();
 }
 
 GLWidget::~GLWidget()
@@ -283,8 +286,15 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     static bool toggle = true;
     m_lastPos = event->pos();
     //m_camera.zoomToDepth(lastZoomedTo);
-
-    BluetoothManager *blueMan = new BluetoothManager();
+    if (event->buttons() & Qt::LeftButton) {
+        qDebug("Discovering");
+        blueMan->startDiscovery();
+    }
+    else if (event->buttons() & Qt::RightButton) {
+        qDebug("Try to connect");
+        blueMan->connectToSelectedDevice();
+        //blueMan->tryToPairWithSelectedDevice();
+    }
     if (toggle) {
         m_camera.moveCameraToLocation(QVector3D(2, 2, -2));
     }

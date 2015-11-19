@@ -48,6 +48,7 @@
 #include <QMatrix4x4>
 #include "rectangularprism.h"
 #include "glcamera.h"
+#include "bluetoothmanager.h"
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
@@ -101,6 +102,7 @@ private:
     GLCamera m_camera;
     QMatrix4x4 m_world;
     bool m_transparent;
+    BluetoothManager *blueMan;
 };
 
 #endif
