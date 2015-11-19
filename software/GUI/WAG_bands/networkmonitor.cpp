@@ -3,13 +3,13 @@
 #include <string.h>           /* for memset() */
 #include <unistd.h>           /* for close() */
 #include <QString>
+#include <QQuaternion>
 #include "networkmonitor.h"
 
 #define BUFFER_SIZE 1024
 
 
-NetworkMonitor::NetworkMonitor(int portNumber)
-{
+NetworkMonitor::NetworkMonitor(int portNumber):QObject() {
 
   int servSock;                       /* Socket descriptor for server */
   int clntSock;                       /* Socket descriptor */
@@ -45,14 +45,13 @@ NetworkMonitor::NetworkMonitor(int portNumber)
     qDebug("Error accepting connection. Please restart program");
   }
   /* indicate the the server has connected  */
-  emit acceptedConnection(QString::fromAscii(inet_ntoa(echoClntAddr.sin_addr)));
+  QString ipString = QString(inet_ntoa(echoClntAddr.sin_addr));
+  emit acceptedConnection(ipString);
 
   while(true) {
       // receive data
 
   }
-
-
 }
 NetworkMonitor::~NetworkMonitor()
 {

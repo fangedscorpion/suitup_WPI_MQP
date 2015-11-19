@@ -45,6 +45,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <QDebug>
+#include "bluetoothmanager.h"
 
 GLWidget::GLWidget(QWidget *parent)
     : QOpenGLWidget(parent),
@@ -59,6 +60,9 @@ GLWidget::GLWidget(QWidget *parent)
     m_transparent = QCoreApplication::arguments().contains(QStringLiteral("--transparent"));
     if (m_transparent)
         setAttribute(Qt::WA_TranslucentBackground);
+
+
+    blueMan = new BluetoothManager();
 }
 
 GLWidget::~GLWidget()
@@ -283,6 +287,15 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     static bool toggle = true;
     m_lastPos = event->pos();
     //m_camera.zoomToDepth(lastZoomedTo);
+    if (event->buttons() & Qt::LeftButton) {
+        qDebug("Discovering");
+        blueMan->startDiscovery();
+    }
+    else if (event->buttons() & Qt::RightButton) {
+        qDebug("Try to connect");
+        blueMan->connectToSelectedDevice();
+        //blueMan->tryToPairWithSelectedDevice();
+    }
     if (toggle) {
         m_camera.moveCameraToLocation(QVector3D(2, 2, -2));
     }

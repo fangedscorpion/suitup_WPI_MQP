@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui bluetooth
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -18,14 +18,16 @@ SOURCES += main.cpp\
     glwidget.cpp \
     rectangularprism.cpp \
     glcamera.cpp \
-    networkmonitor.cpp
+    networkmonitor.cpp \
+    bluetoothmanager.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
     glwidget.h \
     rectangularprism.h \
     glcamera.h \
-    networkmonitor.h
+    networkmonitor.h \
+    bluetoothmanager.h
 
 FORMS    +=
 
