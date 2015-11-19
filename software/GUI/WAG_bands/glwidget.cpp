@@ -232,7 +232,7 @@ void GLWidget::initializeGL()
     //m_camera.translate(0, 0, -3);
 
     // Light position is fixed.
-    m_program->setUniformValue(m_lightPosLoc, QVector3D(0, 0, 70));
+    m_program->setUniformValue(m_lightPosLoc, QVector3D(0, 0, -5));
 
     m_program->release();
 }
@@ -265,6 +265,7 @@ void GLWidget::paintGL()
     m_program->setUniformValue(m_mvMatrixLoc, m_camera * m_world);
     QMatrix3x3 normalMatrix = m_world.normalMatrix();
     m_program->setUniformValue(m_normalMatrixLoc, normalMatrix);
+    m_program->setUniformValue(m_lightPosLoc, m_camera.getCurrentPosition());
 
     glDrawArrays(GL_TRIANGLES, 0, m_rectPrism.vertexCount());
 
