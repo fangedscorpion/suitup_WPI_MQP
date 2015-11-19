@@ -13,7 +13,7 @@ public:
     void zoomToDepth(GLfloat newDepth);
     void moveCameraToLocation(QVector3D cameraLocation);
 
-
+    QVector3D getCurrentPosition();
 
 
 private:

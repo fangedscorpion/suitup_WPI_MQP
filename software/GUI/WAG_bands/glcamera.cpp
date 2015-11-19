@@ -50,3 +50,6 @@ void GLCamera::printVect(QVector3D *vectToPrint) {
     qDebug("%f, %f, %f", vectToPrint->x(), vectToPrint->y(), vectToPrint->z());
 }
 
+QVector3D GLCamera::getCurrentPosition() {
+    return currentPos;
+}
