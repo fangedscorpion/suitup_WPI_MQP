@@ -11,6 +11,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QSpinBox>
+#include "playbackcontroller.h"
 
 class GLWidget;
 
@@ -47,6 +48,10 @@ private:
 
     QWidget *editOptions;
     QWidget *playbackOptions;
+
+    QPushButton *playPause;
+    PlaybackController *playbackControls;
+
 
 private slots:
 //    void newFile();

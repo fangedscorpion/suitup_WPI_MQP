@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "superslider.h"
 #include "glwidget.h"
+#include "playbackcontroller.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
@@ -8,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QWidget *widget = new QWidget;
     setCentralWidget(widget);
     QVBoxLayout *layout = new QVBoxLayout;
+
+    playbackControls = new PlaybackController;
 
     // menubar
     QMenuBar *menu = new QMenuBar;
@@ -110,7 +113,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // playback controls
     QHBoxLayout *controls = new QHBoxLayout;
-    QPushButton *playPause = new QPushButton;
+    playPause = new QPushButton;
     SuperSlider *videoSlider = new SuperSlider;
     QIcon playIcon(QPixmap(":/icons/play.png"));
     QLabel *curTime = new QLabel("00:00");
@@ -121,6 +124,7 @@ MainWindow::MainWindow(QWidget *parent) :
     controls->addWidget(curTime);
     controls->addWidget(videoSlider);
     controls->addWidget(totalTime);
+
 
     // viewer side of the GUI
     QVBoxLayout *viewerPane = new QVBoxLayout;
@@ -218,11 +222,13 @@ void MainWindow::createActions(QMenuBar *menu)
 }
 
 void MainWindow::playbackMode() {
+    connect(playPause, SIGNAL(released()), playbackControls, SLOT (togglePlay()));
     editOptions->setVisible(false);
     playbackOptions->setVisible(true);
 }
 
 void MainWindow::recordMode() {
+    disconnect(playPause, SIGNAL(released()), playbackControls, 0);
     editOptions->setVisible(true);
     playbackOptions->setVisible(false);
 }

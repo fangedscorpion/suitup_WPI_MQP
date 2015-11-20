@@ -19,7 +19,9 @@ SOURCES += main.cpp\
     rectangularprism.cpp \
     glcamera.cpp \
     networkmonitor.cpp \
-    bluetoothmanager.cpp
+    bluetoothmanager.cpp \
+    playbackcontroller.cpp \
+    motion.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
@@ -27,7 +29,9 @@ HEADERS  += mainwindow.h \
     rectangularprism.h \
     glcamera.h \
     networkmonitor.h \
-    bluetoothmanager.h
+    bluetoothmanager.h \
+    playbackcontroller.h \
+    motion.h
 
 FORMS    +=
 
