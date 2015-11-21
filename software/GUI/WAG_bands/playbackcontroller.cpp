@@ -1,5 +1,7 @@
 #include "playbackcontroller.h"
 #include <QDebug>
+#include <QString>
+#include <math.h>
 
 #define HOLD_POSE_DEFAULT_MILLIS 500 // change later
 #define STEP_THROUGH_INTERVAL_DEFAULT 30 // can change later,
@@ -7,12 +9,13 @@
 // out of every half second moved if motion recorded at 60fps
 #define DEFAULT_FRAME_RATE 1 // how are we expressing frame rate? Multiplier by actual time progression (0.5 -> half speed)
 #define DEFAULT_TOLERANCE 1 // how are we expressing tolerance
+#define RECORDING_RATE 60 // 60 fps
 
 
 PlaybackController::PlaybackController()
 {
     playing = false;
-    stepThrough = false;
+    stepThrough = true;
     frameRate = 1;
     voiceControl = false;
     suitActive = true;
@@ -29,8 +32,18 @@ void PlaybackController::togglePlay() {
     qDebug()<<"Play status: "<<playing;
 }
 
-void PlaybackController::setStepThrough(bool shouldStepThrough) {
-    stepThrough = shouldStepThrough;
+void PlaybackController::setStepThroughMode(QString desiredPlaybackMode) {
+    if (desiredPlaybackMode == "Step through mode") {
+        stepThrough = true;
+        qDebug("stepThroughMode");
+    }
+    else if (desiredPlaybackMode == "Timed mode") {
+        stepThrough = false;
+        qDebug("Timed mode");
+    }
+    else {
+        qDebug("Neither option matched, please examine strings to match");
+    }
 }
 
 void PlaybackController::changeFrameRate(float newFrameRate) {
@@ -41,8 +54,9 @@ void PlaybackController::toggleVoiceControl() {
     voiceControl = !voiceControl;
 }
 
-void PlaybackController::toggleSuitActive() {
-    suitActive = !suitActive;
+void PlaybackController::toggleSuitActive(bool active) {
+    suitActive = active;
+    qDebug()<<"Suit activated: "<<suitActive;
 }
 
 void PlaybackController::moveFramePointer(int newFrame) {
@@ -52,9 +66,10 @@ void PlaybackController::moveFramePointer(int newFrame) {
     }
 }
 
-void PlaybackController::modifyHoldTime(int newHoldTimeMillis) {
+void PlaybackController::modifyHoldTime(double holdSeconds) {
     // again, may have to add bounds checking here
-    timeToHoldFrameMillis = newHoldTimeMillis;
+    timeToHoldFrameMillis = holdSeconds*1000;
+    qDebug()<<"Holding last pose for "<<timeToHoldFrameMillis<<" milliseconds";
 }
 
 void PlaybackController::setStepThroughInterval(int newInterval) {
@@ -65,5 +80,29 @@ void PlaybackController::setStepThroughInterval(int newInterval) {
 void PlaybackController::setStepThroughTolerance(float newTolerance) {
     // bounds checking
     stepThroughTolerance = newTolerance;
+}
+
+// sliderPosition seems to be 0-99
+void PlaybackController::updateStepThroughTolerance(int sliderPosition) {
+    // scale tolerance
+    qDebug()<<"Tolerance on slider: "<<sliderPosition;
+    setStepThroughTolerance((float) sliderPosition);
+}
+
+void PlaybackController::speedChanged(int sliderPosition) {
+    if (stepThrough) {
+        // modify slider position into interval value somehow
+        float positionsToHoldPerSecond = pow(2, ((100.0 - sliderPosition)/25) - 1);
+        // may want to round
+        setStepThroughInterval(((float) RECORDING_RATE)/positionsToHoldPerSecond);
+        qDebug()<<"Step through interval "<<stepThroughInterval;
+    }
+    else {
+        qDebug()<<"Slider pos "<<sliderPosition;
+        float exponent = sliderPosition - 50.0;
+        // may want to round this result somehow
+        changeFrameRate(pow(2, (exponent/25)));
+        qDebug()<<"Playback speed is now "<<frameRate;
+    }
 }
 

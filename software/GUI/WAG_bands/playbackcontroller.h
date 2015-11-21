@@ -15,14 +15,13 @@ public:
 public slots: // some of these might be better as normal functions
     // but for now, I'm making them slots so they can be called asynchronously
     void togglePlay();
-    void setStepThrough(bool shouldStepThrough);
-    void changeFrameRate(float newFrameRate);
+    void setStepThroughMode(QString desiredModeString);
     void toggleVoiceControl();
-    void toggleSuitActive();
+    void toggleSuitActive(bool active);
     void moveFramePointer(int newFrame);
-    void modifyHoldTime(int newHoldTimeMillis);
-    void setStepThroughInterval(int newInterval);
-    void setStepThroughTolerance(float newTolerance);
+    void modifyHoldTime(double holdSeconds);
+    void updateStepThroughTolerance(int sliderValue);
+    void speedChanged(int sliderValue);
 
 signals:
     void frameChanged(int newFrame);
@@ -39,6 +38,10 @@ private:
     //Time timeToHoldFinalFrame;
     //Time stepThroughInterval;
     float stepThroughTolerance;
+
+    void changeFrameRate(float newFrameRate);
+    void setStepThroughInterval(int newInterval);
+    void setStepThroughTolerance(float newTolerance);
 };
 
 #endif // PLAYBACKCONTROLLER_H

@@ -27,6 +27,7 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+
 private:
     Ui::MainWindow *ui;
     void createActions(QMenuBar *menu);
@@ -50,6 +51,10 @@ private:
     QWidget *playbackOptions;
 
     QPushButton *playPause;
+    QLabel *sfi;
+    QLabel *minSpeed;
+    QLabel *midSpeed;
+    QLabel *maxSpeed;
     PlaybackController *playbackControls;
 
 
@@ -60,6 +65,7 @@ private slots:
 //    void saveAs();
     void playbackMode();
     void recordMode();
+    void updateSpeedSliderText(QString playbackModeString);
 //    void settings();
 //    void help();
 };

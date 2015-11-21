@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     playbackTitle->setAlignment(Qt::AlignCenter);
     QCheckBox *playOnSuit = new QCheckBox("Play on suit");
     QComboBox *stepThrough = new QComboBox;
-    stepThrough->addItem("Step Through mode");
+    stepThrough->addItem("Step through mode");
     stepThrough->addItem("Timed mode");
     playbackLayout->addWidget(playbackTitle, -1);
     playbackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -54,25 +54,29 @@ MainWindow::MainWindow(QWidget *parent) :
     options->addWidget(stepThrough);
     // speed/frame slider
     QVBoxLayout *speedSliderLayout = new QVBoxLayout;
-    QLabel *sfi = new QLabel("Speed/Frame interval");
+    sfi = new QLabel("Frame Interval");
     sfi->setAlignment(Qt::AlignCenter);
     speedSliderLayout->addWidget(sfi);
     QSlider *speedSlider = new QSlider(Qt::Horizontal);
     speedSlider->setValue(speedSlider->maximum()/2);
     speedSliderLayout->addWidget(speedSlider);
     QHBoxLayout *speeds = new QHBoxLayout;
-    speeds->addWidget(new QLabel("1/4x"));
-    QLabel *x1 = new QLabel("1x");
-    x1->setAlignment(Qt::AlignCenter);
-    speeds->addWidget(x1);
-    QLabel *x4 = new QLabel("4x");
-    x4->setAlignment(Qt::AlignRight);
-    speeds->addWidget(x4);
+    minSpeed = new QLabel("8 fpm");
+    speeds->addWidget(minSpeed);
+    midSpeed = new QLabel("2 fpm");
+    midSpeed->setAlignment(Qt::AlignCenter);
+    speeds->addWidget(midSpeed);
+    maxSpeed = new QLabel("1/2 fpm");
+    maxSpeed->setAlignment(Qt::AlignRight);
+    speeds->addWidget(maxSpeed);
     speedSliderLayout->addLayout(speeds);
     //hold last frame ticket
     QHBoxLayout *holdLast = new QHBoxLayout;
     holdLast->addWidget(new QLabel("Hold last frame for"));
-    QSpinBox *seconds = new QSpinBox;
+    QDoubleSpinBox *seconds = new QDoubleSpinBox;
+    seconds->setMinimum(0.1);
+    seconds->setMaximum(15); // consider changing
+    seconds->setDecimals(1);
     holdLast->addWidget(seconds);
     holdLast->addWidget(new QLabel("sec(s)"), -1);
     // speed/frame slider
@@ -100,6 +104,12 @@ MainWindow::MainWindow(QWidget *parent) :
     playbackOptions->setLayout(playbackLayout);
     playbackOptions->setVisible(false);
 
+    connect(stepThrough, SIGNAL(currentIndexChanged(QString)), playbackControls, SLOT(setStepThroughMode(QString)));
+    connect(stepThrough, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateSpeedSliderText(QString)));
+    connect(toleranceSlider, SIGNAL(sliderMoved(int)), playbackControls, SLOT(updateStepThroughTolerance(int)));
+    connect(speedSlider, SIGNAL(sliderMoved(int)), playbackControls, SLOT(speedChanged(int)));
+    connect(playOnSuit, SIGNAL(toggled(bool)), playbackControls, SLOT(toggleSuitActive(bool)));
+    connect(seconds, SIGNAL(valueChanged(double)), playbackControls, SLOT(modifyHoldTime(double)));
 
     // Filename: boop.xxx
     QHBoxLayout *viewerTitle = new QHBoxLayout;
@@ -231,4 +241,25 @@ void MainWindow::recordMode() {
     disconnect(playPause, SIGNAL(released()), playbackControls, 0);
     editOptions->setVisible(true);
     playbackOptions->setVisible(false);
+}
+
+void MainWindow::updateSpeedSliderText(QString playbackModeString) {
+    if (playbackModeString == "Step through mode") {
+        qDebug("stepThroughMode");
+        sfi->setText("Frame Interval");
+        // this is motions to hold per second of recording
+        minSpeed->setText("8 fpm"); // I feel like we should have something more descriptive than this, but 4x didn't really make sense
+        midSpeed->setText("2 fpm");
+        maxSpeed->setText("1/2 fpm");
+    }
+    else if (playbackModeString == "Timed mode") {
+        qDebug("Timed mode");
+        sfi->setText("Playback Speed");
+        minSpeed->setText("1/4 x");
+        midSpeed->setText("1x");
+        maxSpeed->setText("4x");
+    }
+    else {
+        qDebug("Neither option matched, please examine strings to match");
+    }
 }
