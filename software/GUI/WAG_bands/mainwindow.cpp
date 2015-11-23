@@ -4,7 +4,8 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
-    QWidget *widget = new QWidget;
+    widget = new QStackedWidget;
+    QWidget *w = new QWidget;
     setCentralWidget(widget);
     QVBoxLayout *layout = new QVBoxLayout;
 
@@ -113,7 +114,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QHBoxLayout *controls = new QHBoxLayout;
     playPause = new QPushButton;
     videoSlider = new SuperSlider;
-    connect(this, SIGNAL(resizedWindow()), videoSlider, SLOT(resized()));
     playIcon = QIcon(QPixmap(":/icons/play.png"));
     pauseIcon = QIcon(QPixmap(":/icons/pause.png"));
     recordIcon = QIcon(QPixmap(":/icons/record.png"));
@@ -149,17 +149,93 @@ MainWindow::MainWindow(QWidget *parent) :
     layout->addWidget(menu);
     layout->addWidget(line);
     layout->addLayout(splitPanes, 1);
-    centralWidget()->setLayout(layout);
+    w->setLayout(layout);
+    widget->addWidget(w);
+
+    overlay = new Overlay(this);
+    overlay->makeTransparent();
+
+    ow = new OverlayWidget(this);
+    QVBoxLayout *settingsLayout = new QVBoxLayout;
+    QLabel *lbl = new QLabel("Settings");
+    lbl->setAlignment(Qt::AlignCenter);
+    lbl->setMinimumHeight(50);
+    settingsLayout->addWidget(lbl);
+    settingsLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    QHBoxLayout *h = new QHBoxLayout;
+    QVBoxLayout *o = new QVBoxLayout;
+
+    voiceControl = new QCheckBox("Voice Control");
+    o->addWidget(voiceControl);
+    h->addLayout(o, -1);
+    // line
+    QFrame *vLine = new QFrame();
+    vLine->setObjectName(QString::fromUtf8("line"));
+    vLine->setGeometry(QRect(3, 3, 3, 3));
+    vLine->setFrameShape(QFrame::VLine);
+    h->addWidget(vLine);
+    // Graphic of bands
+    view = new QGraphicsView;
+    view->setMinimumHeight(250);
+    QVBoxLayout *left = new QVBoxLayout;
+    QVBoxLayout *right = new QVBoxLayout;
+    right->setAlignment(Qt::AlignLeft);
+    left->setAlignment(Qt::AlignRight);
+    h->addLayout(left, 1);
+    h->addWidget(view, 2);
+    h->addLayout(right, 1);
+    settingsLayout->addLayout(h);
+    settingsLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    // checkboxes
+    leftShoulder = new QCheckBox("Left Shoulder");
+    leftShoulder->setChecked(true);
+    leftUpperArm = new QCheckBox("Left Upper Arm");
+    leftUpperArm->setChecked(true);
+    leftLowerArm = new QCheckBox("Left Lower Arm");
+    leftLowerArm->setChecked(true);
+    leftHand = new QCheckBox("Left Hand");
+    leftHand->setChecked(true);
+    rightShoulder = new QCheckBox("Right Shoulder");
+    rightShoulder->setChecked(true);
+    rightUpperArm = new QCheckBox("Right Upper Arm");
+    rightUpperArm->setChecked(true);
+    rightLowerArm = new QCheckBox("Right Lower Arm");
+    rightLowerArm->setChecked(true);
+    rightHand = new QCheckBox("Right Hand");
+    rightHand->setChecked(true);
+    left->addWidget(leftShoulder);
+    left->addWidget(leftUpperArm);
+    left->addWidget(leftLowerArm);
+    left->addWidget(leftHand);
+    right->addWidget(rightShoulder);
+    right->addWidget(rightUpperArm);
+    right->addWidget(rightLowerArm);
+    right->addWidget(rightHand);
+    // Buttons on bottom of settings
+    QHBoxLayout *settingsButtons = new QHBoxLayout;
+    calibrate = new QPushButton("Calibrate");
+    connectBands = new QPushButton("Connect Bands");
+    ok = new QPushButton("OK");
+    cancel = new QPushButton("Cancel");
+    settingsButtons->addWidget(calibrate);
+    settingsButtons->addWidget(connectBands);
+    settingsButtons->addWidget(cancel);
+    settingsButtons->addWidget(ok);
+    settingsLayout->addLayout(settingsButtons);
+
+    ow->setLayout(settingsLayout);
+    connect(this, SIGNAL(resizedWindow()), videoSlider, SLOT(resized()));
+    connect(this, SIGNAL(resizedWindow()), ow, SLOT(resizeWindow()));
+    connect(this, SIGNAL(resizedWindow()), overlay, SLOT(resizeWindow()));
+    connect(ok, SIGNAL(released()), this, SLOT(saveSettings()));
+    connect(cancel, SIGNAL(released()), this, SLOT(cancelSettings()));
 
     setWindowTitle(tr("WAG bands"));
-    setMinimumSize(600, 300);
+    setMinimumSize(750, 500);
     setMaximumSize(1000, 600);
-    resize(600, 400);
 }
 
-MainWindow::~MainWindow()
-{
-}
+MainWindow::~MainWindow() {}
 
 void MainWindow::createActions(QMenuBar *menu)
 {
@@ -198,7 +274,7 @@ void MainWindow::createActions(QMenuBar *menu)
 
     settingsAct = new QAction(tr("Settings"), this);
     settingsAct->setStatusTip(tr("Open settings window"));
-//    connect(settingsAct, SIGNAL(triggered()), this, SLOT(settings()));
+    connect(settingsAct, SIGNAL(triggered()), this, SLOT(openSettings()));
 
     helpAct = new QAction(tr("Help"), this);
     helpAct->setStatusTip(tr("Help!"));
@@ -234,5 +310,20 @@ void MainWindow::recordMode() {
 
 void MainWindow::resizeEvent(QResizeEvent* r) {
     QMainWindow::resizeEvent(r);
+    overlay->resize(this->width(), this->height());
     emit resizedWindow();
+}
+
+void MainWindow::openSettings(){
+    overlay->show();
+    ow->show();
+}
+
+void MainWindow::cancelSettings() {
+    overlay->hide();
+    ow->hide();
+}
+
+void MainWindow::saveSettings() {
+    cancelSettings();
 }

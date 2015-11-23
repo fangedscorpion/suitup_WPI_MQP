@@ -8,11 +8,11 @@
 
 ArmBand::ArmBand(BandType b) : Band(b) {}
 
-bool ArmBand::moveTo(Pose& x) const {
+bool ArmBand::moveTo(Pose* x) const {
 	if (!isActive())
 		return true;
 
-	printf("%f \n", static_cast<Quaternion&>(x).x);
+	printf("%f \n", static_cast<Quaternion*>(x)->x * static_cast<Quaternion*>(getCalibrationPose())->x);
 	return true;
 }
 

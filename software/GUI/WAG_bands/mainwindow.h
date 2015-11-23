@@ -11,7 +11,12 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QSpinBox>
+#include <QPainter>
+#include <QStackedWidget>
+#include <QGraphicsView>
 #include "superslider.h"
+#include "overlay.h"
+#include "overlaywidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -59,6 +64,9 @@ private:
     QSlider *toleranceSlider;
 
     // viewer window
+    OverlayWidget *ow;
+    Overlay *overlay;
+    QStackedWidget *widget;
     QLabel *filename;
     QOpenGLWidget *viewer;
     QPushButton *playPause;
@@ -69,6 +77,23 @@ private:
     QLabel *handle1Time;
     QLabel *handle2Time;
 
+    // settings
+    QGraphicsView *view;
+    QCheckBox *voiceControl;
+    QCheckBox *leftShoulder;
+    QCheckBox *leftUpperArm;
+    QCheckBox *leftLowerArm;
+    QCheckBox *leftHand;
+    QCheckBox *rightShoulder;
+    QCheckBox *rightUpperArm;
+    QCheckBox *rightLowerArm;
+    QCheckBox *rightHand;
+    QPushButton *ok;
+    QPushButton *cancel;
+    QPushButton *calibrate;
+    QPushButton *connectBands;
+
+
 private slots:
 //    void newFile();
 //    void open();
@@ -76,6 +101,9 @@ private slots:
 //    void saveAs();
     void playbackMode();
     void recordMode();
+    void openSettings();
+    void cancelSettings();
+    void saveSettings();
 //    void settings();
 //    void help();
 signals:

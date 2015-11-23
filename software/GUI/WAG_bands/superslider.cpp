@@ -94,11 +94,11 @@ void SuperSlider::mousePressEvent(QMouseEvent *mouseEvent)
 void SuperSlider::alt_update()
 {
     int curser = (QPoint(this->mapFromGlobal(QCursor::pos()).x(),this->y())).x()-13;
+    // ratio is curser's position from 0-100 in relation to the slider
     float ratio = ((float)curser)/((float)width()-25.0)*100.0;
     int offset = getOffset();
-    int max = value(); // -10 for offset.
+    int max = value();
     int min = 0;
-    qDebug("ratio: %lf, width: %i", ratio, width());
     bool lessThanMax = ratio < max-offset;
     bool greaterThanMin = ratio > min;
     if(lessThanMax && greaterThanMin)
@@ -113,16 +113,15 @@ void SuperSlider::alt_update()
 // The right handle
 void SuperSlider::update()
 {
-    // curser in same coordinate frame as slider
     int curser = (QPoint(this->mapFromGlobal(QCursor::pos()).x(),this->y())).x()-13;
+    // ratio is curser's position from 0-100 in relation to the slider
     float ratio = ((float)curser)/((float)width()-25.0)*100.0;
     int sliderVal = value();
     int offset = getOffset()+1;
     if (ratio > sliderVal +15 || ratio < sliderVal-15)
         return;
-    int max = 100; // -10 for offset.
+    int max = 100;
     int min = alt_handle->value();
-    qDebug("curser: %lf, min: %i", ratio, width());
     bool lessThanMax = ratio < max;
     bool greaterThanMin = ratio > min+offset;
     if(lessThanMax && greaterThanMin)
@@ -225,12 +224,8 @@ void SuperSlider::resized(){
 }
 
 int SuperSlider::getOffset() {
-    if (width() > 920)
-        return 0;
-    else if (width() > 400)
+    if (width() > 400)
         return 1;
-//    else if (width() > 420)
-//        return 2;
     else if (width() > 310)
         return 3;
     else if (width() > 250)

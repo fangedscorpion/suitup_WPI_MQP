@@ -14,10 +14,16 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    superslider.cpp
+    superslider.cpp \
+    overlay.cpp \
+    overlaywidget.cpp \
+    customshadoweffect.cpp
 
 HEADERS  += mainwindow.h \
-    superslider.h
+    superslider.h \
+    overlay.h \
+    overlaywidget.h \
+    customshadoweffect.h
 
 FORMS    +=
 
