@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui bluetooth
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,14 +13,28 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
+    mainwindow.cpp \
     superslider.cpp \
     overlay.cpp \
     overlaywidget.cpp \
-    customshadoweffect.cpp
+    customshadoweffect.cpp \
+    glwidget.cpp \
+    rectangularprism.cpp \
+    glcamera.cpp \
+    networkmonitor.cpp \
+    bluetoothmanager.cpp \
+    playbackcontroller.cpp \
+    motion.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
+    glwidget.h \
+    rectangularprism.h \
+    glcamera.h \
+    networkmonitor.h \
+    bluetoothmanager.h \
+    playbackcontroller.h \
+    motion.h \
     overlay.h \
     overlaywidget.h \
     customshadoweffect.h
@@ -29,3 +43,5 @@ FORMS    +=
 
 RESOURCES += \
     icons.qrc
+
+CONFIG += console

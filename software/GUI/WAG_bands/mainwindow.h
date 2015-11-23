@@ -17,6 +17,9 @@
 #include "superslider.h"
 #include "overlay.h"
 #include "overlaywidget.h"
+#include "playbackcontroller.h"
+
+class GLWidget;
 
 namespace Ui {
 class MainWindow;
@@ -30,6 +33,7 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+
 private:
     Ui::MainWindow *ui;
     void createActions(QMenuBar *menu);
@@ -38,6 +42,7 @@ private:
     QMenu *fileMenu;
     QMenu *modeMenu;
     QMenu *helpMenu;
+    GLWidget *glWidget;
 
     QAction *newAct;
     QAction *openAct;
@@ -68,8 +73,7 @@ private:
     Overlay *overlay;
     QStackedWidget *widget;
     QLabel *filename;
-    QOpenGLWidget *viewer;
-    QPushButton *playPause;
+    GLWidget *viewer;
     SuperSlider *videoSlider;
     QIcon playIcon;
     QIcon pauseIcon;
@@ -94,6 +98,14 @@ private:
     QPushButton *connectBands;
 
 
+    QPushButton *playPause;
+    QLabel *sfi;
+    QLabel *minSpeed;
+    QLabel *midSpeed;
+    QLabel *maxSpeed;
+    PlaybackController *playbackControls;
+
+
 private slots:
 //    void newFile();
 //    void open();
@@ -104,7 +116,7 @@ private slots:
     void openSettings();
     void cancelSettings();
     void saveSettings();
-//    void settings();
+    void updateSpeedSliderText(QString playbackModeString);
 //    void help();
 signals:
     void resizedWindow();
