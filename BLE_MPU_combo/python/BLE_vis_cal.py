@@ -344,7 +344,7 @@ def main():
         try:
             data = ble.char_write_cmd("b","4849").split("0x000d value: ")[1].split(" \r\n")[0].replace(" ","")
         except:
-            pass # just use the data from last time because something screwed up...
+            pass # just use the data from last time because something screwed up...            
         ax.current_rot = create_quaternion(data)
         ax.draw_cube()
         plt.pause(period)

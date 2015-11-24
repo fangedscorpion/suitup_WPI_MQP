@@ -55,7 +55,7 @@ THE SOFTWARE.
 #endif
 
 #define ADAFRUITBLE_REQ 10
-#define ADAFRUITBLE_RDY 2
+#define ADAFRUITBLE_RDY 3
 #define ADAFRUITBLE_RST 9
 
 // uncomment "OUTPUT_TEAPOT" if you want output that matches the
@@ -180,7 +180,7 @@ void setup(void)
 
         // enable Arduino interrupt detection
         Serial.println(F("Enabling interrupt detection (Arduino external interrupt 0)..."));
-        attachInterrupt(1, dmpDataReady, RISING);
+        attachInterrupt(0, dmpDataReady, RISING);
         mpuIntStatus = mpu.getIntStatus();
 
         // set our DMP Ready flag so the main loop() function knows it's okay to use it
