@@ -14,6 +14,10 @@
 #include <QPainter>
 #include <QStackedWidget>
 #include <QGraphicsView>
+#include <QLineEdit>
+#include <QRadioButton>
+#include <QFileDialog>
+#include <QTextEdit>
 #include "superslider.h"
 #include "overlay.h"
 #include "overlaywidget.h"
@@ -38,6 +42,11 @@ private:
     Ui::MainWindow *ui;
     void createActions(QMenuBar *menu);
     void resizeEvent(QResizeEvent* r);
+    void createSettings();
+    void createPlaybackOptionsAndControls();
+    void createEditRecordingOptionsAndControls();
+    void createViewer();
+    void createSaveAs();
 
     QMenu *fileMenu;
     QMenu *modeMenu;
@@ -45,7 +54,8 @@ private:
     GLWidget *glWidget;
 
     QAction *newAct;
-    QAction *openAct;
+    QAction *openFromCompAct;
+    QAction *openFromLibAct;
     QAction *saveAct;
     QAction *saveAsAct;
     QAction *exitAct;
@@ -54,14 +64,14 @@ private:
     QAction *recordAct;
     QAction *helpAct;
 
+    QStackedWidget *playbackEditOptions;
+
     // edit recording options
-    QWidget *editOptions;
     QPushButton *undoBtn;
     QPushButton *cropBtn;
     QPushButton *splitBtn;
 
     // playback recording options
-    QWidget *playbackOptions;
     QCheckBox *playOnSuit;
     QComboBox *stepThrough;
     QSlider *speedSlider;
@@ -69,10 +79,11 @@ private:
     QSlider *toleranceSlider;
 
     // viewer window
-    OverlayWidget *ow;
+    QVBoxLayout *viewerPane;
+    OverlayWidget *settingsWidget;
     Overlay *overlay;
-    QStackedWidget *widget;
-    QLabel *filename;
+    QWidget *mainWidget;
+    QLabel *currentLoadedFilename;
     GLWidget *viewer;
     SuperSlider *videoSlider;
     QIcon playIcon;
@@ -97,6 +108,13 @@ private:
     QPushButton *calibrate;
     QPushButton *connectBands;
 
+    // save as
+    OverlayWidget *saveAsWidget;
+    QLineEdit *saveAsFilename;
+    QLabel *tags;
+    QLineEdit *inputTags;
+    QTextEdit *description;
+    QString filename;
 
     QPushButton *playPause;
     QLabel *sfi;
@@ -108,15 +126,20 @@ private:
 
 private slots:
 //    void newFile();
-//    void open();
-//    void save();
-//    void saveAs();
+    void openFromComputer();
+    void save();
     void playbackMode();
     void recordMode();
     void openSettings();
-    void cancelSettings();
+    void closeSettings();
     void saveSettings();
     void updateSpeedSliderText(QString playbackModeString);
+    void openSaveAs();
+    void saveSaveAs();
+    void closeSaveAs();
+    void saveToComputer();
+    void addTag();
+
 //    void help();
 signals:
     void resizedWindow();

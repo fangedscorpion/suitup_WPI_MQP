@@ -1,4 +1,4 @@
 obj/*
 *.x
 
-*.user
+**.pro.user

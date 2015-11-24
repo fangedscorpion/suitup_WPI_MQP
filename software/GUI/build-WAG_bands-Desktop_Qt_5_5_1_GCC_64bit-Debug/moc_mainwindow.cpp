@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[10];
-    char stringdata0[132];
+    QByteArrayData data[17];
+    char stringdata0[209];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -32,19 +32,28 @@ static const qt_meta_stringdata_MainWindow_t qt_meta_stringdata_MainWindow = {
 QT_MOC_LITERAL(0, 0, 10), // "MainWindow"
 QT_MOC_LITERAL(1, 11, 13), // "resizedWindow"
 QT_MOC_LITERAL(2, 25, 0), // ""
-QT_MOC_LITERAL(3, 26, 12), // "playbackMode"
-QT_MOC_LITERAL(4, 39, 10), // "recordMode"
-QT_MOC_LITERAL(5, 50, 12), // "openSettings"
-QT_MOC_LITERAL(6, 63, 14), // "cancelSettings"
-QT_MOC_LITERAL(7, 78, 12), // "saveSettings"
-QT_MOC_LITERAL(8, 91, 21), // "updateSpeedSliderText"
-QT_MOC_LITERAL(9, 113, 18) // "playbackModeString"
+QT_MOC_LITERAL(3, 26, 16), // "openFromComputer"
+QT_MOC_LITERAL(4, 43, 4), // "save"
+QT_MOC_LITERAL(5, 48, 12), // "playbackMode"
+QT_MOC_LITERAL(6, 61, 10), // "recordMode"
+QT_MOC_LITERAL(7, 72, 12), // "openSettings"
+QT_MOC_LITERAL(8, 85, 13), // "closeSettings"
+QT_MOC_LITERAL(9, 99, 12), // "saveSettings"
+QT_MOC_LITERAL(10, 112, 21), // "updateSpeedSliderText"
+QT_MOC_LITERAL(11, 134, 18), // "playbackModeString"
+QT_MOC_LITERAL(12, 153, 10), // "openSaveAs"
+QT_MOC_LITERAL(13, 164, 10), // "saveSaveAs"
+QT_MOC_LITERAL(14, 175, 11), // "closeSaveAs"
+QT_MOC_LITERAL(15, 187, 14), // "saveToComputer"
+QT_MOC_LITERAL(16, 202, 6) // "addTag"
 
     },
-    "MainWindow\0resizedWindow\0\0playbackMode\0"
-    "recordMode\0openSettings\0cancelSettings\0"
-    "saveSettings\0updateSpeedSliderText\0"
-    "playbackModeString"
+    "MainWindow\0resizedWindow\0\0openFromComputer\0"
+    "save\0playbackMode\0recordMode\0openSettings\0"
+    "closeSettings\0saveSettings\0"
+    "updateSpeedSliderText\0playbackModeString\0"
+    "openSaveAs\0saveSaveAs\0closeSaveAs\0"
+    "saveToComputer\0addTag"
 };
 #undef QT_MOC_LITERAL
 
@@ -54,7 +63,7 @@ static const uint qt_meta_data_MainWindow[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
+      14,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -62,15 +71,22 @@ static const uint qt_meta_data_MainWindow[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   49,    2, 0x06 /* Public */,
+       1,    0,   84,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       3,    0,   50,    2, 0x08 /* Private */,
-       4,    0,   51,    2, 0x08 /* Private */,
-       5,    0,   52,    2, 0x08 /* Private */,
-       6,    0,   53,    2, 0x08 /* Private */,
-       7,    0,   54,    2, 0x08 /* Private */,
-       8,    1,   55,    2, 0x08 /* Private */,
+       3,    0,   85,    2, 0x08 /* Private */,
+       4,    0,   86,    2, 0x08 /* Private */,
+       5,    0,   87,    2, 0x08 /* Private */,
+       6,    0,   88,    2, 0x08 /* Private */,
+       7,    0,   89,    2, 0x08 /* Private */,
+       8,    0,   90,    2, 0x08 /* Private */,
+       9,    0,   91,    2, 0x08 /* Private */,
+      10,    1,   92,    2, 0x08 /* Private */,
+      12,    0,   95,    2, 0x08 /* Private */,
+      13,    0,   96,    2, 0x08 /* Private */,
+      14,    0,   97,    2, 0x08 /* Private */,
+      15,    0,   98,    2, 0x08 /* Private */,
+      16,    0,   99,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void,
@@ -81,7 +97,14 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString,    9,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::QString,   11,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
 
        0        // eod
 };
@@ -93,12 +116,19 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->resizedWindow(); break;
-        case 1: _t->playbackMode(); break;
-        case 2: _t->recordMode(); break;
-        case 3: _t->openSettings(); break;
-        case 4: _t->cancelSettings(); break;
-        case 5: _t->saveSettings(); break;
-        case 6: _t->updateSpeedSliderText((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 1: _t->openFromComputer(); break;
+        case 2: _t->save(); break;
+        case 3: _t->playbackMode(); break;
+        case 4: _t->recordMode(); break;
+        case 5: _t->openSettings(); break;
+        case 6: _t->closeSettings(); break;
+        case 7: _t->saveSettings(); break;
+        case 8: _t->updateSpeedSliderText((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 9: _t->openSaveAs(); break;
+        case 10: _t->saveSaveAs(); break;
+        case 11: _t->closeSaveAs(); break;
+        case 12: _t->saveToComputer(); break;
+        case 13: _t->addTag(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -138,13 +168,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 14)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 14;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
+        if (_id < 14)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 7;
+        _id -= 14;
     }
     return _id;
 }

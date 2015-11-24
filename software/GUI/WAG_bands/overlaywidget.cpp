@@ -2,12 +2,13 @@
 
 OverlayWidget::OverlayWidget(QWidget *parent) : Overlay(parent){
 
+    // drop shadow
     CustomShadowEffect *bodyShadow = new CustomShadowEffect();
     this->setAutoFillBackground(true);
     this->setGraphicsEffect(bodyShadow);
 
-    QPalette Pal(palette());
     // set background
+    QPalette Pal(palette());
     Pal.setColor(QPalette::Background, QColor(235,235,235));
     this->setAutoFillBackground(true);
     this->setPalette(Pal);
