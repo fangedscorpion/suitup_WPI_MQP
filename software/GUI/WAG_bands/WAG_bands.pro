@@ -13,8 +13,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
+    mainwindow.cpp \
     superslider.cpp \
+    overlay.cpp \
+    overlaywidget.cpp \
+    customshadoweffect.cpp \
     glwidget.cpp \
     rectangularprism.cpp \
     glcamera.cpp \
@@ -36,6 +39,9 @@ HEADERS  += mainwindow.h \
     motion.h \
     visualization.h \
     positionsnapshot.h
+    overlay.h \
+    overlaywidget.h \
+    customshadoweffect.h
 
 FORMS    +=
 

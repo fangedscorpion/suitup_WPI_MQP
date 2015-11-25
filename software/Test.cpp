@@ -4,11 +4,13 @@
 #include "Suit.h"
 
 int main(int argc, char** argv) {
-	Quaternion p = Quaternion(2.1, 3.1, 4.1, 5.1);
-	// Band* b = new LeftLowerArm();
+	Quaternion *p = new Quaternion(2.0, 3.0, 4.0, 5.0);
 	Suit s = Suit();
 	Band* b = s.getBand(LEFT_LOWER_ARM);
-	b->moveTo(p);
-	printf("test\n");
+	b->setCalibrationPose(p);
+	s.getBand(LEFT_HAND)->getDependentBand()->moveTo(p);
+	// printf("Pose x: %f\n", static_cast<Quaternion*>(b->getCalibrationPose())->x);
+	// printf("Pose x: %f\n", static_cast<Quaternion*>(s.getBand(LEFT_LOWER_ARM)->getCalibrationPose())->x);
+
 	return 1;
 }

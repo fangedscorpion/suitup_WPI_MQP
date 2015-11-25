@@ -42,7 +42,8 @@ SuperSlider::SuperSlider(QWidget *parent)
   //setting up the alternate handle
   alt_handle = new SuperSliderHandle(this);
   addAction(new QWidgetAction(alt_handle));
-  alt_handle->move(this->pos().x()+8, this->pos().y() +3);
+  alt_handle->move(this->pos().x(), this->pos().y() +3);
+  alt_handle->setValue(0);
 
   //set up timebar slider thing
 //  time_bar = new SuperSliderTimeBar(this);
@@ -92,41 +93,43 @@ void SuperSlider::mousePressEvent(QMouseEvent *mouseEvent)
 // The left handle
 void SuperSlider::alt_update()
 {
-    // curser position
-  QPoint point(alt_handle->mapToParent(alt_handle->mapFromGlobal(QCursor::pos())).x(),alt_handle->y());
-  QPoint max = QPoint((this->x()+value()-295)/.430434, alt_handle->y());
-  QPoint min(alt_handle->mapToParent(alt_handle->mapFromGlobal(QPoint(this->pos().x()+10, alt_handle->y()))).x(),alt_handle->y());
-  bool lessThanMax = point.x() < max.x();
-  bool greaterThanMin = point.x() > min.x();
-  qDebug("slider: %i, min: %i, max: %i, point: %i", alt_handle->x(), min.x(), max.x(), point.x());
-  if(lessThanMax && greaterThanMin)
-    alt_handle->move(point);
-  else if(!lessThanMax)
-      alt_handle->move(max);
-  else if(!greaterThanMin)
-      alt_handle->move(min);
+    int curser = (QPoint(this->mapFromGlobal(QCursor::pos()).x(),this->y())).x()-13;
+    // ratio is curser's position from 0-100 in relation to the slider
+    float ratio = ((float)curser)/((float)width()-25.0)*100.0;
+    int offset = getOffset();
+    int max = value();
+    int min = 0;
+    bool lessThanMax = ratio < max-offset;
+    bool greaterThanMin = ratio > min;
+    if(lessThanMax && greaterThanMin)
+      alt_handle->setValue(ratio);
+    else if (!lessThanMax)
+        alt_handle->setValue(max-offset);
+    else if (!greaterThanMin)
+        alt_handle->setValue(min);
   emit alt_valueChanged(alt_value());
 }
 
 // The right handle
 void SuperSlider::update()
 {
-    // curser in same coordinate frame as slider
-    int curser = ((QPoint(this->mapFromGlobal(QCursor::pos()).x(),this->y())).x()-10)/2.33;
+    int curser = (QPoint(this->mapFromGlobal(QCursor::pos()).x(),this->y())).x()-13;
+    // ratio is curser's position from 0-100 in relation to the slider
+    float ratio = ((float)curser)/((float)width()-25.0)*100.0;
     int sliderVal = value();
-    if (curser > sliderVal +8 || curser < sliderVal-8)
+    int offset = getOffset()+1;
+    if (ratio > sliderVal +15 || ratio < sliderVal-15)
         return;
-    int max = 100; // -10 for offset.
-    int min = (alt_handle->x()-9)*0.4323144; // +6 is for offset of left handle. +5 is to go next to left handle
-    qDebug("sliderVal: %i, min: %i", sliderVal, min);
-    bool lessThanMax = curser < max;
-    bool greaterThanMin = curser > min+5;
+    int max = 100;
+    int min = alt_handle->value();
+    bool lessThanMax = ratio < max;
+    bool greaterThanMin = ratio > min+offset;
     if(lessThanMax && greaterThanMin)
-      this->setValue(curser);
+      this->setValue(ratio);
     else if (!lessThanMax)
         this->setValue(max);
     else if (!greaterThanMin)
-        this->setValue(min+5);
+        this->setValue(min+offset);
 }
 
 bool SuperSlider::eventFilter(QObject* obj, QEvent* event)
@@ -171,21 +174,18 @@ bool SliderEventFilter::eventFilter(QObject* obj, QEvent* event)
   return false;
 }
 
-void SuperSliderHandle::setValue(double value)
+void SuperSliderHandle::setValue(double in_value)
 {
-  double width = parent->width(), position = pos().x();
-  double range = parent->maximum() - parent->minimum();
-  int location = (value - parent->minimum())/range;
-  location = location *width;
-  move(y(),location);
+  float range = parent->width()-26.0; // 8 on left, 18 on right
+  float ratio = in_value/100.0;
+  int location = ratio*range + 8;
+  move(location, y());
+  m_value = in_value;
 }
 
 int SuperSliderHandle::value()
 {
-  double width = parent->width(), position = pos().x();
-  double value = position/width;
-  double range = parent->maximum() - parent->minimum();
-  return parent->minimum() + (value * range);
+  return m_value;
 }
 void SuperSlider::Reset()
 {
@@ -204,7 +204,7 @@ void SuperSlider::Reset()
 
 void SuperSliderTimeBar::setValue(double value)
 {
-  double width = parent->width(), position = pos().x();
+  double width = parent->width();
   double range = parent->maximum() - parent->minimum();
   int location = (value - parent->minimum())/range;
   location = location *width;
@@ -217,4 +217,27 @@ int SuperSliderTimeBar::value()
   double value = position/width;
   double range = parent->maximum() - parent->minimum();
   return parent->minimum() + (value * range);
+}
+
+void SuperSlider::resized(){
+    alt_handle->setValue(alt_handle->value());
+}
+
+int SuperSlider::getOffset() {
+    if (width() > 400)
+        return 1;
+    else if (width() > 310)
+        return 3;
+    else if (width() > 250)
+        return 4;
+    else if (width() > 200)
+        return 5;
+    else if (width() > 180)
+        return 6;
+    else if (width() > 162)
+        return 7;
+    else if (width() > 144)
+        return 8;
+    else
+        return 9;
 }
