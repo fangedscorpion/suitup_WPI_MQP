@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QString>
 #include <math.h>
+#include "motion.h"
 
 #define HOLD_POSE_DEFAULT_MILLIS 500 // change later
 #define STEP_THROUGH_INTERVAL_DEFAULT 30 // can change later,
@@ -10,6 +11,8 @@
 #define DEFAULT_FRAME_RATE 1 // how are we expressing frame rate? Multiplier by actual time progression (0.5 -> half speed)
 #define DEFAULT_TOLERANCE 1 // how are we expressing tolerance
 #define RECORDING_RATE 60 // 60 fps
+
+#define MILLISECONDS_PER_FRAME 16
 
 
 PlaybackController::PlaybackController()
@@ -23,13 +26,22 @@ PlaybackController::PlaybackController()
     timeToHoldFrameMillis = HOLD_POSE_DEFAULT_MILLIS;
     stepThroughInterval = STEP_THROUGH_INTERVAL_DEFAULT;
     stepThroughTolerance = DEFAULT_TOLERANCE; // how are we expressing this
-
+    lastFrameNum = 1000;
+    connect(this, SIGNAL(endOfTimeRange()), this, SLOT(togglePlay()));
 }
 
 void PlaybackController::togglePlay() {
-    playing = !playing;
-    qDebug("toggle play");
-    qDebug()<<"Play status: "<<playing;
+    if (!((!playing) && (currentFrame >= lastFrameNum))) {
+        playing = !playing;
+        qDebug("toggle play");
+        qDebug()<<"Play status: "<<playing;
+        if (playing) {
+            startPlaying();
+        }
+        else {
+            stopPlaying();
+        }
+    }
 }
 
 void PlaybackController::setStepThroughMode(QString desiredPlaybackMode) {
@@ -106,3 +118,53 @@ void PlaybackController::speedChanged(int sliderPosition) {
     }
 }
 
+void PlaybackController::startPlaying() {
+    if (stepThrough && !suitActive) {
+        qDebug("Step through suit off");
+    }
+    else {
+        timerId = startTimer(MILLISECONDS_PER_FRAME/frameRate);
+    }
+    emit startPlayback();
+}
+
+void PlaybackController::timerEvent(QTimerEvent *event) {
+    currentFrame += 1;
+    qDebug()<<"Current frame: "<<currentFrame<<", event: "<<event;
+    if (currentFrame < lastFrameNum) {
+        emit frameChanged(currentFrame);
+    }
+    else {
+        emit endOfTimeRange();
+    }
+}
+
+void PlaybackController::positionMet() {
+    currentFrame += stepThroughInterval;
+    if (currentFrame < lastFrameNum) {
+        emit frameChanged(currentFrame);
+    }
+    else {
+        emit endOfTimeRange();
+    }
+}
+
+void PlaybackController::stopPlaying() {
+    if (stepThrough && !suitActive) {
+
+    }
+    else {
+        killTimer(timerId);
+    }
+    currentFrame = 0;
+    emit stopPlayback();
+}
+
+
+Motion PlaybackController::loadMotionFrom(QString fileLocation) {
+    return Motion();
+}
+
+bool playMotion(Motion motionToPlay) { // play from currentFrame to end
+    return true;
+}

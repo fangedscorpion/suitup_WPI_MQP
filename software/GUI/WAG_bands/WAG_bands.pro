@@ -21,7 +21,9 @@ SOURCES += main.cpp\
     networkmonitor.cpp \
     bluetoothmanager.cpp \
     playbackcontroller.cpp \
-    motion.cpp
+    motion.cpp \
+    visualization.cpp \
+    positionsnapshot.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
@@ -31,7 +33,9 @@ HEADERS  += mainwindow.h \
     networkmonitor.h \
     bluetoothmanager.h \
     playbackcontroller.h \
-    motion.h
+    motion.h \
+    visualization.h \
+    positionsnapshot.h
 
 FORMS    +=
 
