@@ -38,7 +38,7 @@ HEADERS  += mainwindow.h \
     playbackcontroller.h \
     motion.h \
     visualization.h \
-    positionsnapshot.h
+    positionsnapshot.h \
     overlay.h \
     overlaywidget.h \
     customshadoweffect.h
