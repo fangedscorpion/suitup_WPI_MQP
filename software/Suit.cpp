@@ -3,11 +3,11 @@
 
 Suit::Suit() {
 	bands.insert(std::make_pair<BandType, Band*>(CHEST,
-				 new ArmBand(CHEST)));
+				 new ChestBand()));
 	bands.insert(std::make_pair<BandType, Band*>(LEFT_SHOULDER,
-				 new ArmBand(LEFT_SHOULDER)));
+				 new ShoulderBand(LEFT_SHOULDER)));
 	bands.insert(std::make_pair<BandType, Band*>(RIGHT_SHOULDER,
-				 new ArmBand(RIGHT_SHOULDER)));
+				 new ShoulderBand(RIGHT_SHOULDER)));
 	bands.insert(std::make_pair<BandType, Band*>(LEFT_UPPER_ARM,
 				 new ArmBand(LEFT_UPPER_ARM)));
 	bands.insert(std::make_pair<BandType, Band*>(RIGHT_UPPER_ARM,
@@ -17,9 +17,9 @@ Suit::Suit() {
 	bands.insert(std::make_pair<BandType, Band*>(RIGHT_LOWER_ARM,
 				 new ArmBand(RIGHT_LOWER_ARM)));
 	bands.insert(std::make_pair<BandType, Band*>(RIGHT_HAND,
-				 new ArmBand(RIGHT_HAND)));
+				 new Glove(RIGHT_HAND)));
 	bands.insert(std::make_pair<BandType, Band*>(LEFT_HAND,
-	             new ArmBand(LEFT_HAND)));
+	             new Glove(LEFT_HAND)));
 
 	bands[RIGHT_SHOULDER]->setDependentBand(bands[CHEST]);
 	bands[LEFT_SHOULDER]->setDependentBand(bands[CHEST]);

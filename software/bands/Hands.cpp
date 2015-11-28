@@ -4,7 +4,11 @@
 // RIGHT_HAND
 // LEFT_HAND
 
-Glove::Glove(BandType b) : Band(b) {}
+Glove::Glove(BandType b) : Band(b) {
+	if (b != LEFT_HAND && b != RIGHT_HAND) {
+		printf("Created Glove with bad BandType\n");
+	}
+}
 
 bool Glove::moveTo(Pose* x) const {
 	if (!isActive())
@@ -14,7 +18,7 @@ bool Glove::moveTo(Pose* x) const {
 	return true;
 }
 
-Pose Glove::getPosition() const {
+Pose Glove::getPose() const {
 	// query for IMU position
 	// parse value into Quaternion
 }

@@ -6,7 +6,12 @@
 // LEFT_LOWER_ARM or
 // RIGHT_LOWER_ARM
 
-ArmBand::ArmBand(BandType b) : Band(b) {}
+ArmBand::ArmBand(BandType b) : Band(b) {
+	if (b != LEFT_LOWER_ARM && b != LEFT_UPPER_ARM &&
+	    b != RIGHT_LOWER_ARM && b != RIGHT_UPPER_ARM) {
+		printf("Created ArmBand with bad BandType\n");
+	}
+}
 
 bool ArmBand::moveTo(Pose* x) const {
 	if (!isActive())
@@ -16,7 +21,7 @@ bool ArmBand::moveTo(Pose* x) const {
 	return true;
 }
 
-Pose ArmBand::getPosition() const {
+Pose ArmBand::getPose() const {
 	// query for IMU position
 	// parse value into Quaternion
 	return Pose();

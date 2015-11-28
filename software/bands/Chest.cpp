@@ -14,7 +14,7 @@ bool ChestBand::moveTo(Pose* x) const {
 	return true;
 }
 
-Pose ChestBand::getPosition() const {
+Pose ChestBand::getPose() const {
 	// query for IMU position
 	// parse value into Quaternion
 }

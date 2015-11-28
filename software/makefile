@@ -2,6 +2,7 @@
 # Run 'make'
 # Run 'make tests'
 CC := g++
+HDRS := $(wildcard *.h) $(wildcard, bands/*.h)
 SRCS := $(wildcard *.cpp) $(wildcard bands/*.cpp)
 OBJS := $(addprefix obj/,$(notdir $(subst .cpp,.o,$(SRCS))))
 PGRM := WAGBands.x
@@ -24,7 +25,7 @@ TEST_OBJS := $(addprefix test_obj/,$(notdir $(subst .h,.o,$(TEST_HEADERS))))
 NON_MAIN_OBJS := $(filter-out obj/Test.o, $(OBJS))
 TESTS := tests.x
 
-tests: $(TESTS)
+tests: $(PGRM) $(TESTS)
 	./$(TESTS)
 
 tests.x: $(TEST_OBJS) $(NON_MAIN_OBJS)
@@ -34,7 +35,7 @@ test_obj/%.o: tests/%.cpp
 	$(CC) $(CC_FLAGS) -o $@ $<
 
 tests/%.cpp: tests/%.h
-	cxxtestgen --error-printer -o $@ $< Suit.h bands/Bands.h
+	cxxtestgen --error-printer -o $@ $< $(HDRS)
 
 clean:
 	rm -f $(OBJS) $(PGRM) $(TESTS) $(TEST_OBJS)

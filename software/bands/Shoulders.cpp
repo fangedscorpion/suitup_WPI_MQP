@@ -4,7 +4,11 @@
 // RIGHT_SHOULDER
 // LEFT_SHOULDER
 
-ShoulderBand::ShoulderBand(BandType b) : Band(b) {}
+ShoulderBand::ShoulderBand(BandType b) : Band(b) {
+	if (b != LEFT_SHOULDER && b != RIGHT_SHOULDER) {
+		printf("Created ShoulderBand with bad BandType\n");
+	}
+}
 
 bool ShoulderBand::moveTo(Pose* x) const {
 	if (!isActive())
@@ -14,7 +18,7 @@ bool ShoulderBand::moveTo(Pose* x) const {
 	return true;
 }
 
-Pose ShoulderBand::getPosition() const {
+Pose ShoulderBand::getPose() const {
 	// query for IMU position
 	// parse value into Quaternion
 }
