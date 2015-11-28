@@ -1,6 +1,6 @@
-# First create the directories obj/ and test_obj/
-# Run make
-# Run make tests
+# Confirm that the directories obj/ and test_obj/ exist or make them
+# Run 'make'
+# Run 'make tests'
 CC := g++
 SRCS := $(wildcard *.cpp) $(wildcard bands/*.cpp)
 OBJS := $(addprefix obj/,$(notdir $(subst .cpp,.o,$(SRCS))))
