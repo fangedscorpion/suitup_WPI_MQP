@@ -6,11 +6,11 @@
 
 Glove::Glove(BandType b) : Band(b) {}
 
-bool Glove::moveTo(Pose& x) const {
+bool Glove::moveTo(Pose* x) const {
 	if (!isActive())
 		return true;
 
-	printf("%f \n", static_cast<Quaternion&>(x).x);
+	printf("%f \n", static_cast<Quaternion*>(x)->x);
 	return true;
 }
 

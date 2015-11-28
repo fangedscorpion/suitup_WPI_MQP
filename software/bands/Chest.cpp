@@ -6,11 +6,11 @@
 
 ChestBand::ChestBand() : Band(CHEST) {}
 
-bool ChestBand::moveTo(Pose& x) const {
+bool ChestBand::moveTo(Pose* x) const {
 	if (!isActive())
 		return true;
 
-	printf("%f \n", static_cast<Quaternion&>(x).x);
+	printf("%f \n", static_cast<Quaternion*>(x)->x);
 	return true;
 }
 

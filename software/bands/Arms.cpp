@@ -19,4 +19,5 @@ bool ArmBand::moveTo(Pose* x) const {
 Pose ArmBand::getPosition() const {
 	// query for IMU position
 	// parse value into Quaternion
+	return Pose();
 }

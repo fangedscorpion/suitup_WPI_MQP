@@ -6,11 +6,11 @@
 
 ShoulderBand::ShoulderBand(BandType b) : Band(b) {}
 
-bool ShoulderBand::moveTo(Pose& x) const {
+bool ShoulderBand::moveTo(Pose* x) const {
 	if (!isActive())
 		return true;
 
-	printf("%f \n", static_cast<Quaternion&>(x).x);
+	printf("%f \n", static_cast<Quaternion*>(x)->x);
 	return true;
 }
 
