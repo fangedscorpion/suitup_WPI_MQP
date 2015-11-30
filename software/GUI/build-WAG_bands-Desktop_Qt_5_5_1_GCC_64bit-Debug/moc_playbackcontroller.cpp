@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_PlaybackController_t {
-    QByteArrayData data[16];
-    char stringdata0[229];
+    QByteArrayData data[20];
+    char stringdata0[283];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,27 +33,32 @@ QT_MOC_LITERAL(0, 0, 18), // "PlaybackController"
 QT_MOC_LITERAL(1, 19, 12), // "frameChanged"
 QT_MOC_LITERAL(2, 32, 0), // ""
 QT_MOC_LITERAL(3, 33, 8), // "newFrame"
-QT_MOC_LITERAL(4, 42, 10), // "togglePlay"
-QT_MOC_LITERAL(5, 53, 18), // "setStepThroughMode"
-QT_MOC_LITERAL(6, 72, 17), // "desiredModeString"
-QT_MOC_LITERAL(7, 90, 18), // "toggleVoiceControl"
-QT_MOC_LITERAL(8, 109, 16), // "toggleSuitActive"
-QT_MOC_LITERAL(9, 126, 6), // "active"
-QT_MOC_LITERAL(10, 133, 16), // "moveFramePointer"
-QT_MOC_LITERAL(11, 150, 14), // "modifyHoldTime"
-QT_MOC_LITERAL(12, 165, 11), // "holdSeconds"
-QT_MOC_LITERAL(13, 177, 26), // "updateStepThroughTolerance"
-QT_MOC_LITERAL(14, 204, 11), // "sliderValue"
-QT_MOC_LITERAL(15, 216, 12) // "speedChanged"
+QT_MOC_LITERAL(4, 42, 13), // "startPlayback"
+QT_MOC_LITERAL(5, 56, 12), // "stopPlayback"
+QT_MOC_LITERAL(6, 69, 14), // "endOfTimeRange"
+QT_MOC_LITERAL(7, 84, 10), // "togglePlay"
+QT_MOC_LITERAL(8, 95, 18), // "setStepThroughMode"
+QT_MOC_LITERAL(9, 114, 17), // "desiredModeString"
+QT_MOC_LITERAL(10, 132, 18), // "toggleVoiceControl"
+QT_MOC_LITERAL(11, 151, 16), // "toggleSuitActive"
+QT_MOC_LITERAL(12, 168, 6), // "active"
+QT_MOC_LITERAL(13, 175, 16), // "moveFramePointer"
+QT_MOC_LITERAL(14, 192, 14), // "modifyHoldTime"
+QT_MOC_LITERAL(15, 207, 11), // "holdSeconds"
+QT_MOC_LITERAL(16, 219, 26), // "updateStepThroughTolerance"
+QT_MOC_LITERAL(17, 246, 11), // "sliderValue"
+QT_MOC_LITERAL(18, 258, 12), // "speedChanged"
+QT_MOC_LITERAL(19, 271, 11) // "positionMet"
 
     },
     "PlaybackController\0frameChanged\0\0"
-    "newFrame\0togglePlay\0setStepThroughMode\0"
+    "newFrame\0startPlayback\0stopPlayback\0"
+    "endOfTimeRange\0togglePlay\0setStepThroughMode\0"
     "desiredModeString\0toggleVoiceControl\0"
     "toggleSuitActive\0active\0moveFramePointer\0"
     "modifyHoldTime\0holdSeconds\0"
     "updateStepThroughTolerance\0sliderValue\0"
-    "speedChanged"
+    "speedChanged\0positionMet"
 };
 #undef QT_MOC_LITERAL
 
@@ -63,38 +68,46 @@ static const uint qt_meta_data_PlaybackController[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       9,   14, // methods
+      13,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       1,       // signalCount
+       4,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   59,    2, 0x06 /* Public */,
+       1,    1,   79,    2, 0x06 /* Public */,
+       4,    0,   82,    2, 0x06 /* Public */,
+       5,    0,   83,    2, 0x06 /* Public */,
+       6,    0,   84,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       4,    0,   62,    2, 0x0a /* Public */,
-       5,    1,   63,    2, 0x0a /* Public */,
-       7,    0,   66,    2, 0x0a /* Public */,
-       8,    1,   67,    2, 0x0a /* Public */,
-      10,    1,   70,    2, 0x0a /* Public */,
-      11,    1,   73,    2, 0x0a /* Public */,
-      13,    1,   76,    2, 0x0a /* Public */,
-      15,    1,   79,    2, 0x0a /* Public */,
+       7,    0,   85,    2, 0x0a /* Public */,
+       8,    1,   86,    2, 0x0a /* Public */,
+      10,    0,   89,    2, 0x0a /* Public */,
+      11,    1,   90,    2, 0x0a /* Public */,
+      13,    1,   93,    2, 0x0a /* Public */,
+      14,    1,   96,    2, 0x0a /* Public */,
+      16,    1,   99,    2, 0x0a /* Public */,
+      18,    1,  102,    2, 0x0a /* Public */,
+      19,    0,  105,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
 
  // slots: parameters
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString,    6,
+    QMetaType::Void, QMetaType::QString,    9,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Bool,    9,
+    QMetaType::Void, QMetaType::Bool,   12,
     QMetaType::Void, QMetaType::Int,    3,
-    QMetaType::Void, QMetaType::Double,   12,
-    QMetaType::Void, QMetaType::Int,   14,
-    QMetaType::Void, QMetaType::Int,   14,
+    QMetaType::Void, QMetaType::Double,   15,
+    QMetaType::Void, QMetaType::Int,   17,
+    QMetaType::Void, QMetaType::Int,   17,
+    QMetaType::Void,
 
        0        // eod
 };
@@ -106,14 +119,18 @@ void PlaybackController::qt_static_metacall(QObject *_o, QMetaObject::Call _c, i
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->frameChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 1: _t->togglePlay(); break;
-        case 2: _t->setStepThroughMode((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 3: _t->toggleVoiceControl(); break;
-        case 4: _t->toggleSuitActive((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 5: _t->moveFramePointer((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 6: _t->modifyHoldTime((*reinterpret_cast< double(*)>(_a[1]))); break;
-        case 7: _t->updateStepThroughTolerance((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 8: _t->speedChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 1: _t->startPlayback(); break;
+        case 2: _t->stopPlayback(); break;
+        case 3: _t->endOfTimeRange(); break;
+        case 4: _t->togglePlay(); break;
+        case 5: _t->setStepThroughMode((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 6: _t->toggleVoiceControl(); break;
+        case 7: _t->toggleSuitActive((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 8: _t->moveFramePointer((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 9: _t->modifyHoldTime((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 10: _t->updateStepThroughTolerance((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 11: _t->speedChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 12: _t->positionMet(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -123,6 +140,24 @@ void PlaybackController::qt_static_metacall(QObject *_o, QMetaObject::Call _c, i
             typedef void (PlaybackController::*_t)(int );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&PlaybackController::frameChanged)) {
                 *result = 0;
+            }
+        }
+        {
+            typedef void (PlaybackController::*_t)();
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&PlaybackController::startPlayback)) {
+                *result = 1;
+            }
+        }
+        {
+            typedef void (PlaybackController::*_t)();
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&PlaybackController::stopPlayback)) {
+                *result = 2;
+            }
+        }
+        {
+            typedef void (PlaybackController::*_t)();
+            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&PlaybackController::endOfTimeRange)) {
+                *result = 3;
             }
         }
     }
@@ -153,13 +188,13 @@ int PlaybackController::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 9)
+        if (_id < 13)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 9;
+        _id -= 13;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 9)
+        if (_id < 13)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 9;
+        _id -= 13;
     }
     return _id;
 }
@@ -169,5 +204,23 @@ void PlaybackController::frameChanged(int _t1)
 {
     void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+
+// SIGNAL 1
+void PlaybackController::startPlayback()
+{
+    QMetaObject::activate(this, &staticMetaObject, 1, Q_NULLPTR);
+}
+
+// SIGNAL 2
+void PlaybackController::stopPlayback()
+{
+    QMetaObject::activate(this, &staticMetaObject, 2, Q_NULLPTR);
+}
+
+// SIGNAL 3
+void PlaybackController::endOfTimeRange()
+{
+    QMetaObject::activate(this, &staticMetaObject, 3, Q_NULLPTR);
 }
 QT_END_MOC_NAMESPACE

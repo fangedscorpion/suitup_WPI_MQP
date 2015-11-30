@@ -44,14 +44,14 @@ MainWindow::MainWindow(QWidget *parent) :
     overlay->makeTransparent();
     createSettings();
     createSaveAs();
+    createOpenFromLib();
 
     //connections
     connect(this, SIGNAL(resizedWindow()), videoSlider, SLOT(resized()));
     connect(this, SIGNAL(resizedWindow()), settingsWidget, SLOT(resizeWindow()));
     connect(this, SIGNAL(resizedWindow()), saveAsWidget, SLOT(resizeWindow()));
+    connect(this, SIGNAL(resizedWindow()), openFromLibWidget, SLOT(resizeWindow()));
     connect(this, SIGNAL(resizedWindow()), overlay, SLOT(resizeWindow()));
-    connect(ok, SIGNAL(released()), this, SLOT(saveSettings()));
-    connect(cancel, SIGNAL(released()), this, SLOT(closeSettings()));
 
     mainLayout->setMargin(5);
     mainLayout->addWidget(menu);
@@ -65,52 +65,52 @@ MainWindow::~MainWindow() {}
 // TODO: finish actions
 void MainWindow::createActions(QMenuBar *menu)
 {
-    newAct = new QAction(tr("New"), this);
+    QAction *newAct = new QAction(tr("New"), this);
     newAct->setShortcuts(QKeySequence::New);
     newAct->setStatusTip(tr("Create a new file"));
 //    connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 
-    openFromCompAct = new QAction(tr("Open from computer"), this);
+    QAction *openFromCompAct = new QAction(tr("Open from computer"), this);
     openFromCompAct->setStatusTip(tr("Open an existing file from your computer"));
     connect(openFromCompAct, SIGNAL(triggered()), this, SLOT(openFromComputer()));
 
-    openFromLibAct = new QAction(tr("Open from motion library"), this);
+    QAction *openFromLibAct = new QAction(tr("Open from motion library"), this);
     openFromLibAct->setShortcuts(QKeySequence::Open);
     openFromLibAct->setStatusTip(tr("Open an existing file from the library"));
-//    connect(openFromLibAct, SIGNAL(triggered()), this, SLOT(OpenFromLib()));
+    connect(openFromLibAct, SIGNAL(triggered()), this, SLOT(launchOpenFromLibrary()));
 
-    saveAct = new QAction(tr("Save"), this);
+    QAction *saveAct = new QAction(tr("Save"), this);
     saveAct->setShortcuts(QKeySequence::Save);
     saveAct->setStatusTip(tr("Save the current file"));
     connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
-    saveAsAct = new QAction(tr("Save As"), this);
+    QAction *saveAsAct = new QAction(tr("Save As"), this);
     saveAsAct->setShortcuts(QKeySequence::SaveAs);
     saveAsAct->setStatusTip(tr("Save the current file to a new name"));
-    connect(saveAsAct, SIGNAL(triggered()), this, SLOT(openSaveAs()));
+    connect(saveAsAct, SIGNAL(triggered()), this, SLOT(launchSaveAs()));
 
-    exitAct = new QAction(tr("Exit"), this);
+    QAction *exitAct = new QAction(tr("Exit"), this);
     exitAct->setShortcuts(QKeySequence::Quit);
     exitAct->setStatusTip(tr("Exit the program"));
 //    connect(saveAct, SIGNAL(triggered()), this, SLOT(exit()));
 
-    playbackAct = new QAction(tr("Playback Mode"), this);
+    QAction *playbackAct = new QAction(tr("Playback Mode"), this);
     playbackAct->setStatusTip(tr("Enter playback mode"));
     connect(playbackAct, SIGNAL(triggered()), this, SLOT(playbackMode()));
 
-    recordAct = new QAction(tr("Record Mode"), this);
+    QAction *recordAct = new QAction(tr("Record Mode"), this);
     recordAct->setStatusTip(tr("Enter record mode"));
     connect(recordAct, SIGNAL(triggered()), this, SLOT(recordMode()));
 
-    settingsAct = new QAction(tr("Settings"), this);
+    QAction *settingsAct = new QAction(tr("Settings"), this);
     settingsAct->setStatusTip(tr("Open settings window"));
-    connect(settingsAct, SIGNAL(triggered()), this, SLOT(openSettings()));
+    connect(settingsAct, SIGNAL(triggered()), this, SLOT(launchSettings()));
 
-    helpAct = new QAction(tr("Help"), this);
+    QAction *helpAct = new QAction(tr("Help"), this);
     helpAct->setStatusTip(tr("Help!"));
 //    connect(helpAct, SIGNAL(triggered()), this, SLOT(help()));
 
-    fileMenu = menu->addMenu(tr("File"));
+    QMenu *fileMenu = menu->addMenu(tr("File"));
     fileMenu->addAction(newAct);
     QMenu *open = new QMenu("Open");
     open->addAction(openFromCompAct);
@@ -123,11 +123,11 @@ void MainWindow::createActions(QMenuBar *menu)
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 
-    modeMenu = menu->addMenu(tr("Mode"));
+    QMenu *modeMenu = menu->addMenu(tr("Mode"));
     modeMenu->addAction(playbackAct);
     modeMenu->addAction(recordAct);
 
-    helpMenu = menu->addMenu(tr("Help"));
+    QMenu *helpMenu = menu->addMenu(tr("Help"));
     helpMenu->addAction(helpAct);
 }
 
@@ -197,16 +197,19 @@ void MainWindow::createSettings() {
     right->addWidget(rightHand);
     // Buttons on bottom of settings
     QHBoxLayout *settingsButtons = new QHBoxLayout;
-    calibrate = new QPushButton("Calibrate");
-    connectBands = new QPushButton("Connect Bands");
-    ok = new QPushButton("OK");
-    cancel = new QPushButton("Cancel");
+    QPushButton *calibrate = new QPushButton("Calibrate");
+    QPushButton *connectBands = new QPushButton("Connect Bands");
+    QPushButton *ok = new QPushButton("OK");
+    QPushButton *cancel = new QPushButton("Cancel");
     settingsButtons->addWidget(calibrate);
     settingsButtons->addWidget(connectBands);
     settingsButtons->addWidget(cancel);
     settingsButtons->addWidget(ok);
     settingsLayout->addLayout(settingsButtons);
 
+    connect(ok, SIGNAL(released()), this, SLOT(saveSettings()));
+    connect(cancel, SIGNAL(released()), this, SLOT(closeSettings()));
+    // TODO: connect calibrate and connectBands
     settingsWidget->setLayout(settingsLayout);
 }
 
@@ -297,11 +300,11 @@ void MainWindow::createEditRecordingOptionsAndControls() {
     QWidget *editOptions = new QWidget;
     QLabel *editTitle = new QLabel("Edit Recording");
     editTitle->setAlignment(Qt::AlignCenter);
-    undoBtn = new QPushButton;
+    QPushButton *undoBtn = new QPushButton;
     undoBtn->setText("Undo");
-    cropBtn = new QPushButton;
+    QPushButton *cropBtn = new QPushButton;
     cropBtn->setText("Crop");
-    splitBtn = new QPushButton;
+    QPushButton *splitBtn = new QPushButton;
     splitBtn->setText("Split");
     QVBoxLayout *recordPlaybackLayout = new QVBoxLayout;
     QVBoxLayout *buttons = new QVBoxLayout;
@@ -422,6 +425,28 @@ void MainWindow::createSaveAs() {
     saveAsWidget->setLayout(saveAsLayout);
 }
 
+void MainWindow::createOpenFromLib() {
+    openFromLibWidget = new OverlayWidget(this);
+    openFromLibWidget->hide();
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    QLabel *lbl = new QLabel("Open from library");
+    lbl->setAlignment(Qt::AlignCenter);
+    layout->addWidget(lbl);
+    layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+
+    QHBoxLayout *btns = new QHBoxLayout;
+    QPushButton *open = new QPushButton("Open");
+    QPushButton *cancel = new QPushButton("Cancel");
+    btns->addWidget(open);
+    btns->addWidget(cancel);
+    layout->addLayout(btns);
+
+    connect(open, SIGNAL(released()), this, SLOT(openFromLibrary()));
+    connect(cancel, SIGNAL(released()), this, SLOT(closeOpenFromLibrary());
+    openFromLibWidget->setLayout(layout);
+}
+
 // save the motion file!
 void MainWindow::save() {
     /*
@@ -463,6 +488,23 @@ void MainWindow::openFromComputer() {
     }
 }
 
+// opens the user determined file
+void MainWindow::openFromLibrary() {
+    // TODO: open file somehow...
+}
+
+// launches the open from library overlay
+void MainWindow::launchOpenFromLibrary() {
+    overlay->show();
+    openFromLibWidget->show();
+}
+
+// closes the open from library overlay
+void MainWindow::closeOpenFromLibrary() {
+    overlay->hide();
+    openFromLibWidget->hide();
+}
+
 void MainWindow::playbackMode() {
     connect(playPause, SIGNAL(released()), playbackControls, SLOT (togglePlay()));
     playbackEditOptions->setCurrentIndex(1);
@@ -485,7 +527,7 @@ void MainWindow::resizeEvent(QResizeEvent* r) {
 }
 
 // opens the settings window
-void MainWindow::openSettings(){
+void MainWindow::launchSettings(){
     overlay->show();
     settingsWidget->show();
     //TODO: set focus on the "OK button"
@@ -527,7 +569,7 @@ void MainWindow::updateSpeedSliderText(QString playbackModeString) {
 }
 
 // opens the Save As window
-void MainWindow::openSaveAs() {
+void MainWindow::launchSaveAs() {
     overlay->show();
     saveAsWidget->show();
     //TODO: set focus on the "Save to library" button

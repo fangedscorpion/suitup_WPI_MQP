@@ -1,12 +1,13 @@
 #include "Band.h"
 #include <stdio.h>
+#include <stdexcept>
 // Glove class should ONLY be extended into either:
 // RIGHT_HAND
 // LEFT_HAND
 
 Glove::Glove(BandType b) : Band(b) {
 	if (b != LEFT_HAND && b != RIGHT_HAND) {
-		printf("Created Glove with bad BandType\n");
+		throw std::invalid_argument("Created Glove with bad BandType");
 	}
 }
 

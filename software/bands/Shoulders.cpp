@@ -1,12 +1,13 @@
 #include "Band.h"
 #include <stdio.h>
+#include <stdexcept>
 // ShoulderBand class should ONLY be extended into either:
 // RIGHT_SHOULDER
 // LEFT_SHOULDER
 
 ShoulderBand::ShoulderBand(BandType b) : Band(b) {
 	if (b != LEFT_SHOULDER && b != RIGHT_SHOULDER) {
-		printf("Created ShoulderBand with bad BandType\n");
+		throw std::invalid_argument("Created ShoulderBand with bad BandType");
 	}
 }
 

@@ -1,5 +1,6 @@
 #include "Band.h"
 #include <stdio.h>
+#include <stdexcept>
 // ArmBand class should ONLY be extended into either:
 // LEFT_UPPER_ARM
 // RIGHT_UPPER_ARM
@@ -8,8 +9,8 @@
 
 ArmBand::ArmBand(BandType b) : Band(b) {
 	if (b != LEFT_LOWER_ARM && b != LEFT_UPPER_ARM &&
-	    b != RIGHT_LOWER_ARM && b != RIGHT_UPPER_ARM) {
-		printf("Created ArmBand with bad BandType\n");
+		b != RIGHT_LOWER_ARM && b != RIGHT_UPPER_ARM) {
+		throw std::invalid_argument("Created ArmBand with bad BandType");
 	}
 }
 

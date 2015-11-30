@@ -47,29 +47,11 @@ private:
     void createEditRecordingOptionsAndControls();
     void createViewer();
     void createSaveAs();
+    void createOpenFromLib();
 
-    QMenu *fileMenu;
-    QMenu *modeMenu;
-    QMenu *helpMenu;
     GLWidget *glWidget;
 
-    QAction *newAct;
-    QAction *openFromCompAct;
-    QAction *openFromLibAct;
-    QAction *saveAct;
-    QAction *saveAsAct;
-    QAction *exitAct;
-    QAction *settingsAct;
-    QAction *playbackAct;
-    QAction *recordAct;
-    QAction *helpAct;
-
     QStackedWidget *playbackEditOptions;
-
-    // edit recording options
-    QPushButton *undoBtn;
-    QPushButton *cropBtn;
-    QPushButton *splitBtn;
 
     // playback recording options
     QCheckBox *playOnSuit;
@@ -103,10 +85,6 @@ private:
     QCheckBox *rightUpperArm;
     QCheckBox *rightLowerArm;
     QCheckBox *rightHand;
-    QPushButton *ok;
-    QPushButton *cancel;
-    QPushButton *calibrate;
-    QPushButton *connectBands;
 
     // save as
     OverlayWidget *saveAsWidget;
@@ -115,6 +93,9 @@ private:
     QLineEdit *inputTags;
     QTextEdit *description;
     QString filename;
+
+    // open
+    OverlayWidget *openFromLibWidget;
 
     QPushButton *playPause;
     QLabel *sfi;
@@ -127,6 +108,8 @@ private:
 private slots:
 //    void newFile();
     void openFromComputer();
+    void launchOpenFromLibrary();
+    void closeOpenFromLibrary();
     void save();
     void playbackMode();
     void recordMode();
