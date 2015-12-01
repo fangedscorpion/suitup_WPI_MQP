@@ -443,7 +443,7 @@ void MainWindow::createOpenFromLib() {
     layout->addLayout(btns);
 
     connect(open, SIGNAL(released()), this, SLOT(openFromLibrary()));
-    connect(cancel, SIGNAL(released()), this, SLOT(closeOpenFromLibrary());
+    connect(cancel, SIGNAL(released()), this, SLOT(closeOpenFromLibrary()));
     openFromLibWidget->setLayout(layout);
 }
 

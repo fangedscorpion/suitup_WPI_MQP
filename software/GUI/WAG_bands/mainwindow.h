@@ -110,14 +110,15 @@ private slots:
     void openFromComputer();
     void launchOpenFromLibrary();
     void closeOpenFromLibrary();
+    void openFromLibrary();
     void save();
     void playbackMode();
     void recordMode();
-    void openSettings();
+    void launchSettings();
     void closeSettings();
     void saveSettings();
     void updateSpeedSliderText(QString playbackModeString);
-    void openSaveAs();
+    void launchSaveAs();
     void saveSaveAs();
     void closeSaveAs();
     void saveToComputer();
