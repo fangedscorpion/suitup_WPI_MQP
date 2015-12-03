@@ -8,7 +8,7 @@
 #include <errno.h>
 
 #define MAX_PENDING 5         /* Max outstanding connection requests */
-#define BUF_SIZE 128           /* size of string buffer for recieving  */
+#define BUF_SIZE 10           /* size of string buffer for recieving  */
 
 #define TRUE 1
 #define FALSE 0
@@ -104,7 +104,7 @@ int HandleTCPClient(int clntSocket) {
   // while bytes are being trasmitted, keep sending and receiving data
   while (numBytesRcvd > 0) {
     // send back the message just received
-    reverseString(buffer, numBytesRcvd -1);
+    reverseString(buffer, numBytesRcvd - 1);
     printf("Sending %s\n", buffer);
     ssize_t numBytesSent = send(clntSocket, buffer, numBytesRcvd, 0);
     if (numBytesSent < 0) {
@@ -145,5 +145,6 @@ void reverseString(char* stringToReverse, int stringlength) {
     stringToReverse[i] = stringToReverse[stringlength - i - 1];
     stringToReverse[stringlength - i - 1] = beginChar;    
   }
+
   stringToReverse[stringlength] = '\0';
 }
