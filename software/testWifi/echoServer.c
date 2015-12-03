@@ -8,10 +8,13 @@
 #include <errno.h>
 
 #define MAX_PENDING 5         /* Max outstanding connection requests */
-#define BUF_SIZE 32           /* size of string buffer for recieving  */
+#define BUF_SIZE 128           /* size of string buffer for recieving  */
+
+#define TRUE 1
+#define FALSE 0
 
 void DieWithError(char *errorMessage);/* error handling function */
-void HandleTCPClient(int clntSocket); /* TCP client handling function */
+int HandleTCPClient(int clntSocket); /* TCP client handling function */
 void reverseString(char* stringToReverse, int stringlength);
 
 int main(int argc, char *argv[]) {
@@ -21,6 +24,7 @@ int main(int argc, char *argv[]) {
   struct sockaddr_in echoClntAddr;    /* client address */
   unsigned short echoServPort;        /* server port */
   unsigned int clntLen;               /* length of client address data structure */
+  int keepGoing = TRUE;
 
   /* Test for correct number of arguments */
   if (argc != 2) {
@@ -51,21 +55,25 @@ int main(int argc, char *argv[]) {
     DieWithError("setting socket option failed");
   }
 
-  /* Markt the socket so it will listen for incoming connections */
-  if (listen(servSock, MAX_PENDING) < 0) {
-    DieWithError("listen() failed");
-  }
+  while(keepGoing) {
 
-  /* set the size of the in-out parameter */
-  clntLen = sizeof(echoClntAddr);
-  /* wait for client to connect*/
-  if ((clntSock = accept(servSock, (struct sockaddr*) &echoClntAddr, &clntLen)) < 0) {
-    DieWithError("accept() failed");
+    /* Markt the socket so it will listen for incoming connections */
+    if (listen(servSock, MAX_PENDING) < 0) {
+      DieWithError("listen() failed");
+    }
+
+    /* set the size of the in-out parameter */
+    clntLen = sizeof(echoClntAddr);
+    /* wait for client to connect*/
+    if ((clntSock = accept(servSock, (struct sockaddr*) &echoClntAddr, &clntLen)) < 0) {
+      DieWithError("accept() failed");
+    }
+    /* indicate the the server has connected  */
+    printf("Handling client %s\n", inet_ntoa(echoClntAddr.sin_addr));
+    /* call function to recieve and send back a string from the client */
+
+    keepGoing = HandleTCPClient(clntSock);
   }
-  /* indicate the the server has connected  */
-  printf("Handling client %s\n", inet_ntoa(echoClntAddr.sin_addr));
-  /* call function to recieve and send back a string from the client */
-  HandleTCPClient(clntSock);
 
 }
 
@@ -81,13 +89,17 @@ void DieWithError(char *errorString) {
  * clntSocket - socket descriptor for connection between client and server
  * get string from client and sent it back
  */
-void HandleTCPClient(int clntSocket) {
+int HandleTCPClient(int clntSocket) {
+  int noDoneMSG = TRUE;
   char buffer[BUF_SIZE];
   // receive the data from the client */
   ssize_t numBytesRcvd = recv(clntSocket, buffer, BUF_SIZE, 0);
   printf("Received %s\n", buffer);
   if (numBytesRcvd < 0) {
     DieWithError("recv() failed");
+  }
+  if (strncmp(buffer, "DONE\n", 6) == 0) {
+    noDoneMSG = FALSE;
   }
   // while bytes are being trasmitted, keep sending and receiving data
   while (numBytesRcvd > 0) {
@@ -101,16 +113,27 @@ void HandleTCPClient(int clntSocket) {
     else if (numBytesSent != numBytesRcvd) {
       DieWithError("send() sent unexpected number of bytes");
     }
+
+    if (!noDoneMSG) {
+      printf("Received done\n");
+      break;
+    }
+
     // receive more data
     numBytesRcvd = recv(clntSocket, buffer, BUF_SIZE, 0);
     if (numBytesRcvd < 0) {
       DieWithError("recv() failed");
     }
+    buffer[numBytesRcvd] = '\0';
     printf("Received %s\n", buffer);
+    if (strncmp(buffer, "DONE\n", 6) == 0) {
+      noDoneMSG = FALSE;
+    }
   
   }
   // close the socket
   close(clntSocket);
+  return noDoneMSG;
 }
 
 void reverseString(char* stringToReverse, int stringlength) {
@@ -122,4 +145,5 @@ void reverseString(char* stringToReverse, int stringlength) {
     stringToReverse[i] = stringToReverse[stringlength - i - 1];
     stringToReverse[stringlength - i - 1] = beginChar;    
   }
+  stringToReverse[stringlength] = '\0';
 }
