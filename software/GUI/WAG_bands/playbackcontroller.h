@@ -27,11 +27,14 @@ public slots: // some of these might be better as normal functions
     void speedChanged(int sliderValue);
     void positionMet();
 
+    void computeTimeInFile(int frameNum);
+
 signals:
     void frameChanged(int newFrame);
     void startPlayback();
     void stopPlayback();
     void endOfTimeRange();
+    void timeChanged(int millis);
 
 private:
     bool playing;

@@ -158,6 +158,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     connect(speedSlider, SIGNAL(sliderMoved(int)), playbackControls, SLOT(speedChanged(int)));
     connect(playOnSuit, SIGNAL(toggled(bool)), playbackControls, SLOT(toggleSuitActive(bool)));
     connect(seconds, SIGNAL(valueChanged(double)), playbackControls, SLOT(modifyHoldTime(double)));
+    connect(playbackControls, SIGNAL(timeChanged(int)), this, SLOT(displayNewTime(int)));
 
     return playbackOptions;
 }
@@ -331,4 +332,15 @@ void TabContent::updateWithNewFilename(QString f) {
     static_cast<QGroupBox*>(viewerStack->widget(PLAYBACK))->setTitle("Playing: " + f);
     static_cast<QGroupBox*>(viewerStack->widget(EDIT))->setTitle("Editing: " + f);
     static_cast<QGroupBox*>(viewerStack->widget(RECORD))->setTitle("Recording: " + f);
+}
+
+void TabContent::displayNewTime(int newMillis) {
+    int numSeconds = newMillis/1000;
+    int numMinutes = numSeconds/60;
+    numSeconds = numSeconds - numMinutes*60;
+    // set label
+    QString minNum = QString("%1").arg(numMinutes, 2, 10, QChar('0'));
+    QString secNum = QString("%1").arg(numSeconds, 2, 10, QChar('0'));
+    handle1Time->setText(minNum + ":" + secNum);
+
 }

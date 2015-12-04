@@ -28,6 +28,7 @@ PlaybackController::PlaybackController()
     stepThroughTolerance = DEFAULT_TOLERANCE; // how are we expressing this
     lastFrameNum = 1000;
     connect(this, SIGNAL(endOfTimeRange()), this, SLOT(togglePlay()));
+    connect(this, SIGNAL(frameChanged(int)), this, SLOT(computeTimeInFile(int)));
 }
 
 void PlaybackController::togglePlay() {
@@ -167,4 +168,9 @@ Motion PlaybackController::loadMotionFrom(QString fileLocation) {
 
 bool playMotion(Motion motionToPlay) { // play from currentFrame to end
     return true;
+}
+
+void PlaybackController::computeTimeInFile(int frameNum) {
+    int millis = MILLISECONDS_PER_FRAME*frameNum;
+    emit timeChanged(millis);
 }

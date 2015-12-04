@@ -75,4 +75,5 @@ public slots:
     void updateSpeedSliderText(QString playbackModeString);
     void applicationResized();
     void handleRecordingButton();
+    void displayNewTime(int newMillis);
 };
