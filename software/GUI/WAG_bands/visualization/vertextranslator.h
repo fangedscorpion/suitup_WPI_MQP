@@ -1,5 +1,5 @@
-#ifndef RECTANGULARPRISM_H
-#define RECTANGULARPRISM_H
+#ifndef VERTEXTRANSLATOR_H
+#define VERTEXTRANSLATOR_H
 
 
 #include <qopengl.h>
@@ -7,9 +7,9 @@
 #include <QVector3D>
 
 
-class RectangularPrism {
+class VertexTranslator {
 public:
-    RectangularPrism();
+    VertexTranslator();
     const GLfloat *constData() const { return m_data.constData(); }
     int count() const { return m_count; }
     int vertexCount() const { return m_count / 6; }
@@ -28,6 +28,6 @@ private:
     int m_count;
 };
 
-#endif // RECTANGULARPRISM_H
+#endif // VERTEXTRANSLATOR_H
 
 
