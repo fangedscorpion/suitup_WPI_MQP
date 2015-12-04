@@ -18,10 +18,10 @@
 PlaybackController::PlaybackController()
 {
     playing = false;
-    stepThrough = true;
+    stepThrough = false;
     frameRate = 1;
     voiceControl = false;
-    suitActive = true;
+    suitActive = false;
     currentFrame = 0;
     timeToHoldFrameMillis = HOLD_POSE_DEFAULT_MILLIS;
     stepThroughInterval = STEP_THROUGH_INTERVAL_DEFAULT;
@@ -46,18 +46,8 @@ void PlaybackController::togglePlay() {
     }
 }
 
-void PlaybackController::setStepThroughMode(QString desiredPlaybackMode) {
-    if (desiredPlaybackMode == "Step through mode") {
-        stepThrough = true;
-        qDebug("stepThroughMode");
-    }
-    else if (desiredPlaybackMode == "Timed mode") {
-        stepThrough = false;
-        qDebug("Timed mode");
-    }
-    else {
-        qDebug("Neither option matched, please examine strings to match");
-    }
+void PlaybackController::setStepThroughMode(bool steppingThrough) {
+    stepThrough = steppingThrough;
 }
 
 void PlaybackController::changeFrameRate(float newFrameRate) {
@@ -121,29 +111,39 @@ void PlaybackController::speedChanged(int sliderPosition) {
 }
 
 void PlaybackController::startPlaying() {
-    if (stepThrough && !suitActive) {
-        qDebug("Step through suit off");
-    }
-    else {
+    if (stepThrough) {
+        if (suitActive) {
+
+        } else {
+            qDebug("starting timer");
+            int tempFrameRate = MILLISECONDS_PER_FRAME*stepThroughInterval;
+            timerId = startTimer(tempFrameRate);
+        }
+    } else {
         timerId = startTimer(MILLISECONDS_PER_FRAME/frameRate);
     }
     emit startPlayback();
 }
 
 void PlaybackController::timerEvent(QTimerEvent *event) {
-    currentFrame += 1;
-    qDebug()<<"Current frame: "<<currentFrame<<", event: "<<event;
-    if (currentFrame < lastFrameNum) {
-        emit frameChanged(currentFrame);
-    }
-    else {
-        emit endOfTimeRange();
+    if (stepThrough) {
+        emit positionMet();
+    } else {
+        currentFrame += 1;
+        qDebug()<<"Current frame: "<<currentFrame<<", event: "<<event;
+        if (currentFrame < lastFrameNum) {
+            emit frameChanged(currentFrame);
+        }
+        else {
+            emit endOfTimeRange();
+        }
     }
 }
 
 void PlaybackController::positionMet() {
     currentFrame += stepThroughInterval;
     if (currentFrame < lastFrameNum) {
+        qDebug()<<"Frame: "<<currentFrame;
         emit frameChanged(currentFrame);
     }
     else {
@@ -152,8 +152,12 @@ void PlaybackController::positionMet() {
 }
 
 void PlaybackController::stopPlaying() {
-    if (stepThrough && !suitActive) {
+    if (stepThrough) {
+        if (suitActive) {
 
+        } else {
+            killTimer(timerId);
+        }
     }
     else {
         killTimer(timerId);

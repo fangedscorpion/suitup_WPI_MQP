@@ -85,7 +85,7 @@ QWidget* TabContent::createModeRadios() {
 // Playback motion options and controller
 QWidget* TabContent::createPlaybackOptionsAndControls() {
     // Playback options
-    QGroupBox *playbackOptions = new QGroupBox("Playback Options");
+    playbackOptions = new QGroupBox("Playback Options");
     playbackOptions->setStyleSheet(titleStyleSheet);
     playbackOptions->setFont(titleFont);
     QVBoxLayout *playbackLayout = new QVBoxLayout;
@@ -109,7 +109,6 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     sfi->setAlignment(Qt::AlignCenter);
     speedSliderLayout->addWidget(sfi);
     speedSlider = new QSlider(Qt::Horizontal);
-    speedSlider->setValue(speedSlider->maximum()/2);
     speedSliderLayout->addWidget(speedSlider);
     QHBoxLayout *speeds = new QHBoxLayout;
     minSpeed = new QLabel("8 fpm");
@@ -152,7 +151,8 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     playbackOptions->setLayout(playbackLayout);
     playbackOptions->setVisible(false);
     //playbackControls
-    connect(stepThrough, SIGNAL(currentIndexChanged(QString)), playbackControls, SLOT(setStepThroughMode(QString)));
+    //connect(stepThrough, SIGNAL(currentIndexChanged(QString)), playbackControls, SLOT(setStepThroughMode(QString)));
+    connect(this, SIGNAL(stepThroughChanged(bool)), playbackControls, SLOT(setStepThroughMode(bool)));
     connect(stepThrough, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateSpeedSliderText(QString)));
     connect(toleranceSlider, SIGNAL(sliderMoved(int)), playbackControls, SLOT(updateStepThroughTolerance(int)));
     connect(speedSlider, SIGNAL(sliderMoved(int)), playbackControls, SLOT(speedChanged(int)));
@@ -160,6 +160,9 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     connect(seconds, SIGNAL(valueChanged(double)), playbackControls, SLOT(modifyHoldTime(double)));
     connect(playbackControls, SIGNAL(timeChanged(int)), this, SLOT(displayNewTime(int)));
     connect(playbackControls, SIGNAL(playbackStateChanged(bool)), this, SLOT(playbackToggled(bool)));
+
+    initializePlaybackSettings();
+
 
     return playbackOptions;
 }
@@ -211,7 +214,7 @@ QWidget* TabContent::createViewer(ACTION_TYPE t) {
     playIcon = QIcon(QPixmap(":/icons/play.png"));
     pauseIcon = QIcon(QPixmap(":/icons/pause.png"));
     recordIcon = QIcon(QPixmap(":/icons/record.png"));
-    handle1Time = new QLabel("00:00");
+    handle1Time = new QLabel("00:00.00");
     handle2Time = new QLabel("00:10");
     playPause->setIcon(playIcon);
     playPause->setIconSize(QSize(15,15));
@@ -231,22 +234,32 @@ QWidget* TabContent::createViewer(ACTION_TYPE t) {
 // updates the playback mode's speed slider labels
 void TabContent::updateSpeedSliderText(QString playbackModeString) {
     if (playbackModeString == "Step through mode") {
+        switchStepThroughMode(true);
+        emit stepThroughChanged(true);
+    }
+    else if (playbackModeString == "Timed mode") {
+        switchStepThroughMode(false);
+        emit stepThroughChanged(false);
+    }
+    else {
+        qDebug("Neither option matched, please examine strings to match");
+    }
+}
+
+void TabContent::switchStepThroughMode(bool steppingThrough) {
+    if (steppingThrough) {
         qDebug("stepThroughMode");
         sfi->setText("Frame Interval");
         // this is motions to hold per second of recording
         minSpeed->setText("8 fpm"); // I feel like we should have something more descriptive than this, but 4x didn't really make sense
         midSpeed->setText("2 fpm");
         maxSpeed->setText("1/2 fpm");
-    }
-    else if (playbackModeString == "Timed mode") {
+    } else {
         qDebug("Timed mode");
         sfi->setText("Playback Speed");
         minSpeed->setText("1/4 x");
         midSpeed->setText("1x");
         maxSpeed->setText("4x");
-    }
-    else {
-        qDebug("Neither option matched, please examine strings to match");
     }
 }
 
@@ -337,20 +350,34 @@ void TabContent::updateWithNewFilename(QString f) {
 
 void TabContent::displayNewTime(int newMillis) {
     int numSeconds = newMillis/1000;
+    int hundredths = (newMillis - numSeconds*1000)/10;
     int numMinutes = numSeconds/60;
     numSeconds = numSeconds - numMinutes*60;
     // set label
     QString minNum = QString("%1").arg(numMinutes, 2, 10, QChar('0'));
     QString secNum = QString("%1").arg(numSeconds, 2, 10, QChar('0'));
-    handle1Time->setText(minNum + ":" + secNum);
+    QString hundNum = QString("%1").arg(hundredths, 2, 10, QChar('0'));
+    handle1Time->setText(minNum + ":" + secNum + "." + hundNum);
 
 }
 
 void TabContent::playbackToggled(bool playing) {
+    lockOnPlayback(playing);
     if (playing) {
         playPause->setIcon(pauseIcon);
     }
     else {
         playPause->setIcon(playIcon);
     }
+}
+
+void TabContent::initializePlaybackSettings() {
+    stepThrough->setCurrentIndex(1);
+    switchStepThroughMode(false);
+    speedSlider->setValue(speedSlider->maximum()/2);
+}
+
+void TabContent::lockOnPlayback(bool playing) {
+    modeRadiosGroup->setEnabled(!playing);
+    playbackOptions->setEnabled(!playing);
 }
