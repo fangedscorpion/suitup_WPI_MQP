@@ -26,7 +26,6 @@ public slots: // some of these might be better as normal functions
     void updateStepThroughTolerance(int sliderValue);
     void speedChanged(int sliderValue);
     void positionMet();
-
     void computeTimeInFile(int frameNum);
 
 signals:
@@ -35,6 +34,7 @@ signals:
     void stopPlayback();
     void endOfTimeRange();
     void timeChanged(int millis);
+    void playbackStateChanged(bool playing);
 
 private:
     bool playing;

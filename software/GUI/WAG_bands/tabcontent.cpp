@@ -159,6 +159,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     connect(playOnSuit, SIGNAL(toggled(bool)), playbackControls, SLOT(toggleSuitActive(bool)));
     connect(seconds, SIGNAL(valueChanged(double)), playbackControls, SLOT(modifyHoldTime(double)));
     connect(playbackControls, SIGNAL(timeChanged(int)), this, SLOT(displayNewTime(int)));
+    connect(playbackControls, SIGNAL(playbackStateChanged(bool)), this, SLOT(playbackToggled(bool)));
 
     return playbackOptions;
 }
@@ -343,4 +344,13 @@ void TabContent::displayNewTime(int newMillis) {
     QString secNum = QString("%1").arg(numSeconds, 2, 10, QChar('0'));
     handle1Time->setText(minNum + ":" + secNum);
 
+}
+
+void TabContent::playbackToggled(bool playing) {
+    if (playing) {
+        playPause->setIcon(pauseIcon);
+    }
+    else {
+        playPause->setIcon(playIcon);
+    }
 }

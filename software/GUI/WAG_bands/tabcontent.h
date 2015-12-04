@@ -76,4 +76,5 @@ public slots:
     void applicationResized();
     void handleRecordingButton();
     void displayNewTime(int newMillis);
+    void playbackToggled(bool playing);
 };

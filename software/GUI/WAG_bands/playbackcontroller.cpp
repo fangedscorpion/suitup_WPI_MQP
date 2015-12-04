@@ -42,6 +42,7 @@ void PlaybackController::togglePlay() {
         else {
             stopPlaying();
         }
+        emit playbackStateChanged(playing);
     }
 }
 
