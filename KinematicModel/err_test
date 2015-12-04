@@ -1,4 +1,0 @@
-q = Quaternion([1,0,0],60*pi/180).unit;
-q_err = Quaternion([1,0,0],pi/180).unit;
-q_goal = q_err*q;
-
