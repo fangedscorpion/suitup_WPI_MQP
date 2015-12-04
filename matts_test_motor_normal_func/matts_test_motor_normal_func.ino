@@ -11,9 +11,8 @@ int tot = 0;
 void loop() {
   
  for(int i = 0; i < 6; i++){
-  int writeval = random(0,255);
-  Serial.println("P"+String(i)+" " + writeval);
+  int writeval = random(0,256);
   analogWrite(pins[i], writeval);
-  delay(50);
  }
+ delay(1000);
 }
