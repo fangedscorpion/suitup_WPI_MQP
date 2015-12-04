@@ -93,6 +93,7 @@ private:
     VertexTranslator m_rectPrism; // rectangular prism object
     QOpenGLVertexArrayObject m_vao; //
     QOpenGLBuffer m_rectPrismVbo;
+    QOpenGLBuffer indexBuf;
     QOpenGLShaderProgram *m_program;
     int m_projMatrixLoc;
     int m_mvMatrixLoc;
