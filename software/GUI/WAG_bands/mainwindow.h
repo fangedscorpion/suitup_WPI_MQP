@@ -18,12 +18,16 @@
 #include <QRadioButton>
 #include <QFileDialog>
 #include <QTextEdit>
+#include <QGroupBox>
+#include <QStyle>
+#include <QTabWidget>
+#include <glwidget.h>
 #include "superslider.h"
 #include "overlay.h"
 #include "overlaywidget.h"
 #include "playbackcontroller.h"
 
-class GLWidget;
+enum ACTION_TYPE { EDIT, PLAYBACK, RECORD };
 
 namespace Ui {
 class MainWindow;
@@ -40,7 +44,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    void createActions(QMenuBar *menu);
+    void createMenuActions(QMenuBar *menu);
     void resizeEvent(QResizeEvent* r);
     void createSettings();
     void createPlaybackOptionsAndControls();
@@ -48,33 +52,22 @@ private:
     void createViewer();
     void createSaveAs();
     void createOpenFromLib();
+    QWidget* createWelcomeWindow();
+    void createNewFile();
+    void addTab(ACTION_TYPE t, QString filename);
 
-    GLWidget *glWidget;
-
-    QStackedWidget *playbackEditOptions;
-
-    // playback recording options
-    QCheckBox *playOnSuit;
-    QComboBox *stepThrough;
-    QSlider *speedSlider;
-    QSpinBox *seconds;
-    QSlider *toleranceSlider;
-
-    // viewer window
-    QVBoxLayout *viewerPane;
-    OverlayWidget *settingsWidget;
     Overlay *overlay;
-    QWidget *mainWidget;
-    QLabel *currentLoadedFilename;
-    GLWidget *viewer;
-    SuperSlider *videoSlider;
-    QIcon playIcon;
-    QIcon pauseIcon;
-    QIcon recordIcon;
-    QLabel *handle1Time;
-    QLabel *handle2Time;
+    OverlayWidget *settingsWidget;
+    QWidget *applicationWidget;
+    QTabWidget *tabs;
 
-    // settings
+    // fonts & styles
+    QFont titleFont;
+    QString titleStyleSheet;
+    // menubar
+    QAction *saveAct;
+    QAction *saveAsAct;
+    // settings overlay
     QGraphicsView *view;
     QCheckBox *voiceControl;
     QCheckBox *leftShoulder;
@@ -85,46 +78,44 @@ private:
     QCheckBox *rightUpperArm;
     QCheckBox *rightLowerArm;
     QCheckBox *rightHand;
-
-    // save as
+    // save as overlay
     OverlayWidget *saveAsWidget;
-    QLineEdit *saveAsFilename;
-    QLabel *tags;
-    QLineEdit *inputTags;
-    QTextEdit *description;
-    QString filename;
-
-    // open
+    QLineEdit *saveAsFilenameTextEdit;
+    QLabel *saveAsTagsLabel;
+    QLineEdit *saveAsTagsTextEdit;
+    QTextEdit *saveAsDescription;
+    // open from library overlay
     OverlayWidget *openFromLibWidget;
-
-    QPushButton *playPause;
-    QLabel *sfi;
-    QLabel *minSpeed;
-    QLabel *midSpeed;
-    QLabel *maxSpeed;
-    PlaybackController *playbackControls;
+    // create new file
+    OverlayWidget *newFileWidget;
+    QLineEdit *newFilenameTextEdit;
+    QTextEdit *newFileDescription;
+    QLineEdit *newFileTagsTextEdit;
+    QLabel *newFileTagsLabel;
 
 
 private slots:
-//    void newFile();
-    void openFromComputer();
+    // open
+    void launchOpenFromComputer();
     void launchOpenFromLibrary();
     void closeOpenFromLibrary();
     void openFromLibrary();
-    void save();
-    void playbackMode();
-    void recordMode();
+    // settings
     void launchSettings();
     void closeSettings();
     void saveSettings();
-    void updateSpeedSliderText(QString playbackModeString);
+    // save/saveAs
+    void save();
     void launchSaveAs();
     void saveSaveAs();
     void closeSaveAs();
-    void saveToComputer();
+    void launchSaveToComputer();
     void addTag();
+    // new file
+    void saveNewFile();
+    void closeNewFile();
+    void launchNewFile();
 
-//    void help();
 signals:
     void resizedWindow();
 };

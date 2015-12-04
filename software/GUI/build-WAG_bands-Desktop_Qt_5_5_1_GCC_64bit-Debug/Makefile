@@ -62,7 +62,8 @@ SOURCES       = ../WAG_bands/main.cpp \
 		../WAG_bands/playbackcontroller.cpp \
 		../WAG_bands/motion.cpp \
 		../WAG_bands/visualization.cpp \
-		../WAG_bands/positionsnapshot.cpp qrc_icons.cpp \
+		../WAG_bands/positionsnapshot.cpp \
+		../WAG_bands/tabcontent.cpp qrc_icons.cpp \
 		moc_mainwindow.cpp \
 		moc_superslider.cpp \
 		moc_glwidget.cpp \
@@ -71,7 +72,8 @@ SOURCES       = ../WAG_bands/main.cpp \
 		moc_playbackcontroller.cpp \
 		moc_overlay.cpp \
 		moc_overlaywidget.cpp \
-		moc_customshadoweffect.cpp
+		moc_customshadoweffect.cpp \
+		moc_tabcontent.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
 		superslider.o \
@@ -87,6 +89,7 @@ OBJECTS       = main.o \
 		motion.o \
 		visualization.o \
 		positionsnapshot.o \
+		tabcontent.o \
 		qrc_icons.o \
 		moc_mainwindow.o \
 		moc_superslider.o \
@@ -96,7 +99,8 @@ OBJECTS       = main.o \
 		moc_playbackcontroller.o \
 		moc_overlay.o \
 		moc_overlaywidget.o \
-		moc_customshadoweffect.o
+		moc_customshadoweffect.o \
+		moc_tabcontent.o
 DIST          = /home/samee/Qt/5.5/gcc_64/mkspecs/features/spec_pre.prf \
 		/home/samee/Qt/5.5/gcc_64/mkspecs/common/unix.conf \
 		/home/samee/Qt/5.5/gcc_64/mkspecs/common/linux.conf \
@@ -244,7 +248,8 @@ DIST          = /home/samee/Qt/5.5/gcc_64/mkspecs/features/spec_pre.prf \
 		../WAG_bands/positionsnapshot.h \
 		../WAG_bands/overlay.h \
 		../WAG_bands/overlaywidget.h \
-		../WAG_bands/customshadoweffect.h ../WAG_bands/main.cpp \
+		../WAG_bands/customshadoweffect.h \
+		../WAG_bands/tabcontent.h ../WAG_bands/main.cpp \
 		../WAG_bands/mainwindow.cpp \
 		../WAG_bands/superslider.cpp \
 		../WAG_bands/overlay.cpp \
@@ -258,7 +263,8 @@ DIST          = /home/samee/Qt/5.5/gcc_64/mkspecs/features/spec_pre.prf \
 		../WAG_bands/playbackcontroller.cpp \
 		../WAG_bands/motion.cpp \
 		../WAG_bands/visualization.cpp \
-		../WAG_bands/positionsnapshot.cpp
+		../WAG_bands/positionsnapshot.cpp \
+		../WAG_bands/tabcontent.cpp
 QMAKE_TARGET  = WAG_bands
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = WAG_bands
@@ -585,8 +591,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../WAG_bands/icons.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents ../WAG_bands/mainwindow.h ../WAG_bands/superslider.h ../WAG_bands/glwidget.h ../WAG_bands/rectangularprism.h ../WAG_bands/glcamera.h ../WAG_bands/networkmonitor.h ../WAG_bands/bluetoothmanager.h ../WAG_bands/playbackcontroller.h ../WAG_bands/motion.h ../WAG_bands/visualization.h ../WAG_bands/positionsnapshot.h ../WAG_bands/overlay.h ../WAG_bands/overlaywidget.h ../WAG_bands/customshadoweffect.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../WAG_bands/main.cpp ../WAG_bands/mainwindow.cpp ../WAG_bands/superslider.cpp ../WAG_bands/overlay.cpp ../WAG_bands/overlaywidget.cpp ../WAG_bands/customshadoweffect.cpp ../WAG_bands/glwidget.cpp ../WAG_bands/rectangularprism.cpp ../WAG_bands/glcamera.cpp ../WAG_bands/networkmonitor.cpp ../WAG_bands/bluetoothmanager.cpp ../WAG_bands/playbackcontroller.cpp ../WAG_bands/motion.cpp ../WAG_bands/visualization.cpp ../WAG_bands/positionsnapshot.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../WAG_bands/mainwindow.h ../WAG_bands/superslider.h ../WAG_bands/glwidget.h ../WAG_bands/rectangularprism.h ../WAG_bands/glcamera.h ../WAG_bands/networkmonitor.h ../WAG_bands/bluetoothmanager.h ../WAG_bands/playbackcontroller.h ../WAG_bands/motion.h ../WAG_bands/visualization.h ../WAG_bands/positionsnapshot.h ../WAG_bands/overlay.h ../WAG_bands/overlaywidget.h ../WAG_bands/customshadoweffect.h ../WAG_bands/tabcontent.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../WAG_bands/main.cpp ../WAG_bands/mainwindow.cpp ../WAG_bands/superslider.cpp ../WAG_bands/overlay.cpp ../WAG_bands/overlaywidget.cpp ../WAG_bands/customshadoweffect.cpp ../WAG_bands/glwidget.cpp ../WAG_bands/rectangularprism.cpp ../WAG_bands/glcamera.cpp ../WAG_bands/networkmonitor.cpp ../WAG_bands/bluetoothmanager.cpp ../WAG_bands/playbackcontroller.cpp ../WAG_bands/motion.cpp ../WAG_bands/visualization.cpp ../WAG_bands/positionsnapshot.cpp ../WAG_bands/tabcontent.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -618,9 +624,9 @@ qrc_icons.cpp: ../WAG_bands/icons.qrc \
 		../WAG_bands/icons/pause.png
 	/home/samee/Qt/5.5/gcc_64/bin/rcc -name icons ../WAG_bands/icons.qrc -o qrc_icons.cpp
 
-compiler_moc_header_make_all: moc_mainwindow.cpp moc_superslider.cpp moc_glwidget.cpp moc_networkmonitor.cpp moc_bluetoothmanager.cpp moc_playbackcontroller.cpp moc_overlay.cpp moc_overlaywidget.cpp moc_customshadoweffect.cpp
+compiler_moc_header_make_all: moc_mainwindow.cpp moc_superslider.cpp moc_glwidget.cpp moc_networkmonitor.cpp moc_bluetoothmanager.cpp moc_playbackcontroller.cpp moc_overlay.cpp moc_overlaywidget.cpp moc_customshadoweffect.cpp moc_tabcontent.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainwindow.cpp moc_superslider.cpp moc_glwidget.cpp moc_networkmonitor.cpp moc_bluetoothmanager.cpp moc_playbackcontroller.cpp moc_overlay.cpp moc_overlaywidget.cpp moc_customshadoweffect.cpp
+	-$(DEL_FILE) moc_mainwindow.cpp moc_superslider.cpp moc_glwidget.cpp moc_networkmonitor.cpp moc_bluetoothmanager.cpp moc_playbackcontroller.cpp moc_overlay.cpp moc_overlaywidget.cpp moc_customshadoweffect.cpp moc_tabcontent.cpp
 moc_mainwindow.cpp: /home/samee/Qt/5.5/gcc_64/include/QtWidgets/QMainWindow \
 		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qmainwindow.h \
 		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qwidget.h \
@@ -794,6 +800,10 @@ moc_mainwindow.cpp: /home/samee/Qt/5.5/gcc_64/include/QtWidgets/QMainWindow \
 		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QTextEdit \
 		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qtextedit.h \
 		/home/samee/Qt/5.5/gcc_64/include/QtGui/qtextdocument.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QGroupBox \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QStyle \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QTabWidget \
 		../WAG_bands/superslider.h \
 		../WAG_bands/overlay.h \
 		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QLayout \
@@ -1679,6 +1689,202 @@ moc_customshadoweffect.cpp: /home/samee/Qt/5.5/gcc_64/include/QtWidgets/QGraphic
 		../WAG_bands/customshadoweffect.h
 	/home/samee/Qt/5.5/gcc_64/bin/moc $(DEFINES) -I/home/samee/Qt/5.5/gcc_64/mkspecs/linux-g++ -I/home/samee/MQP/suitup_WPI_MQP/software/GUI/WAG_bands -I/home/samee/Qt/5.5/gcc_64/include -I/home/samee/Qt/5.5/gcc_64/include/QtWidgets -I/home/samee/Qt/5.5/gcc_64/include/QtGui -I/home/samee/Qt/5.5/gcc_64/include/QtBluetooth -I/home/samee/Qt/5.5/gcc_64/include/QtCore -I. ../WAG_bands/customshadoweffect.h -o moc_customshadoweffect.cpp
 
+moc_tabcontent.cpp: /home/samee/Qt/5.5/gcc_64/include/QtWidgets/QWidget \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qwidget.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qwindowdefs.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qglobal.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qconfig.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qfeatures.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qsystemdetection.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qprocessordetection.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qcompilerdetection.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qtypeinfo.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qtypetraits.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qsysinfo.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qlogging.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qflags.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qbasicatomic.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qgenericatomic.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_gcc.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_msvc.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_armv7.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_armv6.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_armv5.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_ia64.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_mips.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_x86.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_unix.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qglobalstatic.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qmutex.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qnumeric.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qobjectdefs.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qnamespace.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qobject.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qstring.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qchar.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qbytearray.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qrefcount.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qarraydata.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qstringbuilder.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qlist.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qalgorithms.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qiterator.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qbytearraylist.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qstringlist.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qregexp.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qstringmatcher.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qcoreevent.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qscopedpointer.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qmetatype.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qvarlengtharray.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qcontainerfwd.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qisenum.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qobject_impl.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qmargins.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qpaintdevice.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qrect.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qsize.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qpoint.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qpalette.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qcolor.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qrgb.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qbrush.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qpair.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qvector.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qmatrix.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qpolygon.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qregion.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qdatastream.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qiodevice.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qline.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qtransform.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qpainterpath.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qimage.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qpixelformat.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qpixmap.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qsharedpointer.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qshareddata.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qhash.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qfont.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qfontmetrics.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qfontinfo.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qcursor.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qkeysequence.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qevent.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qvariant.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qmap.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qdebug.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qtextstream.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qlocale.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qset.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qcontiguouscache.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qurl.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qurlquery.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qfile.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qfiledevice.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qvector2d.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qtouchdevice.h \
+		../WAG_bands/mainwindow.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QMainWindow \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qmainwindow.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qtabwidget.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qicon.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QLabel \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qlabel.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qframe.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QVBoxLayout \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qboxlayout.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qlayout.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qgridlayout.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QPushButton \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qpushbutton.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QMenuBar \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qmenubar.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qmenu.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qaction.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qactiongroup.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QAction \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QOpenGLWidget \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qopenglwidget.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/QSurfaceFormat \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qsurfaceformat.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qopengl.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qt_windows.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qopengles2ext.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qopenglext.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QCheckBox \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qcheckbox.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QComboBox \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qcombobox.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qstyleoption.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qvalidator.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qregularexpression.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qslider.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qabstractslider.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qstyle.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qtabbar.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qrubberband.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qabstractitemmodel.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QSpinBox \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qspinbox.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/QPainter \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qpainter.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qtextoption.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qpen.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QStackedWidget \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qstackedwidget.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QGraphicsView \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qgraphicsview.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qscrollarea.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qgraphicsscene.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QLineEdit \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qlineedit.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qtextcursor.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qtextformat.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QRadioButton \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qradiobutton.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QFileDialog \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qfiledialog.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qdir.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qfileinfo.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qdialog.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QTextEdit \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qtextedit.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qtextdocument.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QGroupBox \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QStyle \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QTabWidget \
+		../WAG_bands/superslider.h \
+		../WAG_bands/overlay.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QLayout \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/QPalette \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/QPoint \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QStyleOption \
+		../WAG_bands/overlaywidget.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QGraphicsDropShadowEffect \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qgraphicseffect.h \
+		../WAG_bands/customshadoweffect.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QGraphicsEffect \
+		../WAG_bands/playbackcontroller.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/QObject \
+		../WAG_bands/motion.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/QString \
+		../WAG_bands/tabcontent.h
+	/home/samee/Qt/5.5/gcc_64/bin/moc $(DEFINES) -I/home/samee/Qt/5.5/gcc_64/mkspecs/linux-g++ -I/home/samee/MQP/suitup_WPI_MQP/software/GUI/WAG_bands -I/home/samee/Qt/5.5/gcc_64/include -I/home/samee/Qt/5.5/gcc_64/include/QtWidgets -I/home/samee/Qt/5.5/gcc_64/include/QtGui -I/home/samee/Qt/5.5/gcc_64/include/QtBluetooth -I/home/samee/Qt/5.5/gcc_64/include/QtCore -I. ../WAG_bands/tabcontent.h -o moc_tabcontent.cpp
+
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
 compiler_uic_make_all:
@@ -1867,6 +2073,10 @@ main.o: ../WAG_bands/main.cpp ../WAG_bands/mainwindow.h \
 		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QTextEdit \
 		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qtextedit.h \
 		/home/samee/Qt/5.5/gcc_64/include/QtGui/qtextdocument.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QGroupBox \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QStyle \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QTabWidget \
 		../WAG_bands/superslider.h \
 		../WAG_bands/overlay.h \
 		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QLayout \
@@ -2065,6 +2275,10 @@ mainwindow.o: ../WAG_bands/mainwindow.cpp ../WAG_bands/mainwindow.h \
 		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QTextEdit \
 		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qtextedit.h \
 		/home/samee/Qt/5.5/gcc_64/include/QtGui/qtextdocument.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QGroupBox \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QStyle \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QTabWidget \
 		../WAG_bands/superslider.h \
 		../WAG_bands/overlay.h \
 		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QLayout \
@@ -2129,7 +2343,8 @@ mainwindow.o: ../WAG_bands/mainwindow.cpp ../WAG_bands/mainwindow.h \
 		/home/samee/Qt/5.5/gcc_64/include/QtBluetooth/qbluetoothlocaldevice.h \
 		/home/samee/Qt/5.5/gcc_64/include/QtCore/QList \
 		/home/samee/Qt/5.5/gcc_64/include/QtBluetooth/QBluetoothHostInfo \
-		/home/samee/Qt/5.5/gcc_64/include/QtBluetooth/qbluetoothhostinfo.h
+		/home/samee/Qt/5.5/gcc_64/include/QtBluetooth/qbluetoothhostinfo.h \
+		../WAG_bands/tabcontent.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../WAG_bands/mainwindow.cpp
 
 superslider.o: ../WAG_bands/superslider.cpp ../WAG_bands/superslider.h \
@@ -3365,6 +3580,202 @@ visualization.o: ../WAG_bands/visualization.cpp ../WAG_bands/visualization.h \
 positionsnapshot.o: ../WAG_bands/positionsnapshot.cpp ../WAG_bands/positionsnapshot.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o positionsnapshot.o ../WAG_bands/positionsnapshot.cpp
 
+tabcontent.o: ../WAG_bands/tabcontent.cpp ../WAG_bands/tabcontent.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QWidget \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qwidget.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qwindowdefs.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qglobal.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qconfig.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qfeatures.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qsystemdetection.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qprocessordetection.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qcompilerdetection.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qtypeinfo.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qtypetraits.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qsysinfo.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qlogging.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qflags.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qbasicatomic.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qgenericatomic.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_gcc.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_msvc.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_armv7.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_armv6.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_armv5.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_ia64.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_mips.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_x86.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qatomic_unix.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qglobalstatic.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qmutex.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qnumeric.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qobjectdefs.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qnamespace.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qobject.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qstring.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qchar.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qbytearray.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qrefcount.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qarraydata.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qstringbuilder.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qlist.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qalgorithms.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qiterator.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qbytearraylist.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qstringlist.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qregexp.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qstringmatcher.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qcoreevent.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qscopedpointer.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qmetatype.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qvarlengtharray.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qcontainerfwd.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qisenum.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qobject_impl.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qmargins.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qpaintdevice.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qrect.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qsize.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qpoint.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qpalette.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qcolor.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qrgb.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qbrush.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qpair.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qvector.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qmatrix.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qpolygon.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qregion.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qdatastream.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qiodevice.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qline.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qtransform.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qpainterpath.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qimage.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qpixelformat.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qpixmap.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qsharedpointer.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qshareddata.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qhash.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qfont.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qfontmetrics.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qfontinfo.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qcursor.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qkeysequence.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qevent.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qvariant.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qmap.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qdebug.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qtextstream.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qlocale.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qset.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qcontiguouscache.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qurl.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qurlquery.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qfile.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qfiledevice.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qvector2d.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qtouchdevice.h \
+		../WAG_bands/mainwindow.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QMainWindow \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qmainwindow.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qtabwidget.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qicon.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QLabel \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qlabel.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qframe.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QVBoxLayout \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qboxlayout.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qlayout.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qgridlayout.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QPushButton \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qpushbutton.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qabstractbutton.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QMenuBar \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qmenubar.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qmenu.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qaction.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qactiongroup.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QAction \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QOpenGLWidget \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qopenglwidget.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/QSurfaceFormat \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qsurfaceformat.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qopengl.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qt_windows.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qopengles2ext.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qopenglext.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QCheckBox \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qcheckbox.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QComboBox \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qcombobox.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qstyleoption.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qvalidator.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qregularexpression.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qslider.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qabstractslider.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qstyle.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qtabbar.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qrubberband.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qabstractitemmodel.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QSpinBox \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qspinbox.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/QPainter \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qpainter.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qtextoption.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qpen.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QStackedWidget \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qstackedwidget.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QGraphicsView \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qgraphicsview.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qscrollarea.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qgraphicsscene.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QLineEdit \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qlineedit.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qtextcursor.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qtextformat.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QRadioButton \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qradiobutton.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QFileDialog \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qfiledialog.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qdir.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/qfileinfo.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qdialog.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QTextEdit \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qtextedit.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/qtextdocument.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QGroupBox \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qgroupbox.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QStyle \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QTabWidget \
+		../WAG_bands/superslider.h \
+		../WAG_bands/overlay.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QLayout \
+		/home/samee/Qt/5.5/gcc_64/include/QtGui/QPalette \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/QPoint \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QStyleOption \
+		../WAG_bands/overlaywidget.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QGraphicsDropShadowEffect \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/qgraphicseffect.h \
+		../WAG_bands/customshadoweffect.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtWidgets/QGraphicsEffect \
+		../WAG_bands/playbackcontroller.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/QObject \
+		../WAG_bands/motion.h \
+		/home/samee/Qt/5.5/gcc_64/include/QtCore/QString
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tabcontent.o ../WAG_bands/tabcontent.cpp
+
 qrc_icons.o: qrc_icons.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_icons.o qrc_icons.cpp
 
@@ -3394,6 +3805,9 @@ moc_overlaywidget.o: moc_overlaywidget.cpp
 
 moc_customshadoweffect.o: moc_customshadoweffect.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_customshadoweffect.o moc_customshadoweffect.cpp
+
+moc_tabcontent.o: moc_tabcontent.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_tabcontent.o moc_tabcontent.cpp
 
 ####### Install
 

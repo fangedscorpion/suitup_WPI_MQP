@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     playbackcontroller.cpp \
     motion.cpp \
     visualization.cpp \
-    positionsnapshot.cpp
+    positionsnapshot.cpp \
+    tabcontent.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
@@ -41,7 +42,8 @@ HEADERS  += mainwindow.h \
     positionsnapshot.h \
     overlay.h \
     overlaywidget.h \
-    customshadoweffect.h
+    customshadoweffect.h \
+    tabcontent.h
 
 FORMS    +=
 

@@ -85,7 +85,7 @@ void SuperSlider::alt_setValue(int value)
   alt_handle->setValue(value);
 }
 
-void SuperSlider::mousePressEvent(QMouseEvent *mouseEvent)
+void SuperSlider::mousePressEvent(QMouseEvent *)
 {
     qGuiApp->installEventFilter(this);
 }
@@ -150,7 +150,7 @@ bool SuperSlider::eventFilter(QObject* obj, QEvent* event)
   return false;
 }
 
-void SuperSliderHandle::mousePressEvent(QMouseEvent *mouseEvent)
+void SuperSliderHandle::mousePressEvent(QMouseEvent *)
 {
   qGuiApp->installEventFilter(filter);
   parent->clearFocus();
