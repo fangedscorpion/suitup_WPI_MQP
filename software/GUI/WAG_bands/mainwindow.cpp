@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "superslider.h"
-#include "glwidget.h"
+#include "visualization/glwidget.h"
 #include "playbackcontroller.h"
 
 MainWindow::MainWindow(QWidget *parent) :
