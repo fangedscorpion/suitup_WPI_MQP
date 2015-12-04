@@ -21,7 +21,7 @@
 #include <QGroupBox>
 #include <QStyle>
 #include <QTabWidget>
-#include <glwidget.h>
+#include <visualization/glwidget.h>
 #include "superslider.h"
 #include "overlay.h"
 #include "overlaywidget.h"

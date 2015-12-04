@@ -27,7 +27,7 @@ SOURCES += main.cpp\
     visualization/glcamera.cpp \
     visualization/glwidget.cpp \
     visualization/visualization.cpp \
-    visualization/vertextranslator.cpp
+    visualization/vertextranslator.cpp\
     tabcontent.cpp
 
 HEADERS  += mainwindow.h \
@@ -44,7 +44,7 @@ HEADERS  += mainwindow.h \
     visualization/glcamera.h \
     visualization/glwidget.h \
     visualization/visualization.h \
-    visualization/vertextranslator.h
+    visualization/vertextranslator.h \
     tabcontent.h
 
 FORMS    +=
