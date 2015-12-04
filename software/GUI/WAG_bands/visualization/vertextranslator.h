@@ -13,6 +13,8 @@ public:
     const GLfloat *constData() const { return m_data.constData(); }
     int count() const { return m_count; }
     int vertexCount() const { return m_count / 6; }
+    int getPointCount() const { return pointCount; }
+    const GLuint *getIndices() const { return vertexIndices.constData(); }
 
 private:
     void quad(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4);
@@ -26,6 +28,8 @@ private:
 
     QVector<GLfloat> m_data;
     int m_count;
+    QVector<GLuint> vertexIndices;
+    int pointCount;
 };
 
 #endif // VERTEXTRANSLATOR_H

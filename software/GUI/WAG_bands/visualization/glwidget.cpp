@@ -52,7 +52,8 @@ GLWidget::GLWidget(QWidget *parent)
       m_xRot(0),
       m_yRot(0),
       m_zRot(0),
-      m_program(0)
+      m_program(0),
+     indexBuf(QOpenGLBuffer::IndexBuffer)
 {
     m_core = QCoreApplication::arguments().contains(QStringLiteral("--coreprofile"));
     // --transparent causes the clear color to be transparent. Therefore, on systems that
@@ -61,8 +62,9 @@ GLWidget::GLWidget(QWidget *parent)
     if (m_transparent)
         setAttribute(Qt::WA_TranslucentBackground);
 
+    //indexBuf = QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 
-    blueMan = new BluetoothManager();
+    //blueMan = new BluetoothManager();
 }
 
 GLWidget::~GLWidget()
@@ -128,6 +130,7 @@ void GLWidget::setZRotation(int angle)
 void GLWidget::cleanup()
 {
     makeCurrent();
+    indexBuf.destroy();
     m_rectPrismVbo.destroy();
     delete m_program;
     m_program = 0;
@@ -199,7 +202,6 @@ void GLWidget::initializeGL()
     // the signal will be followed by an invocation of initializeGL() where we
     // can recreate all resources.
     connect(context(), &QOpenGLContext::aboutToBeDestroyed, this, &GLWidget::cleanup);
-    lastZoomedTo = 2;
     initializeOpenGLFunctions();
     glClearColor(0, 0, 0, m_transparent ? 0 : 1);
 
@@ -227,6 +229,11 @@ void GLWidget::initializeGL()
     m_rectPrismVbo.create();
     m_rectPrismVbo.bind();
     m_rectPrismVbo.allocate(m_rectPrism.constData(), m_rectPrism.count() * sizeof(GLfloat));
+
+    indexBuf.create();
+    indexBuf.bind();
+    indexBuf.allocate(m_rectPrism.getIndices(), m_rectPrism.getPointCount()*sizeof(GLuint));
+
 
     // Store the vertex attribute bindings for the program.
     setupVertexAttribs();
@@ -271,7 +278,9 @@ void GLWidget::paintGL()
     m_program->setUniformValue(m_normalMatrixLoc, normalMatrix);
     m_program->setUniformValue(m_lightPosLoc, m_camera.getCurrentPosition());
 
-    glDrawArrays(GL_TRIANGLES, 0, m_rectPrism.vertexCount());
+    //glDrawArrays(GL_TRIANGLES, 0, m_rectPrism.vertexCount());
+    //indexBuf.bind();
+    glDrawElements(GL_TRIANGLES, m_rectPrism.getPointCount(), GL_UNSIGNED_INT, 0);
 
     m_program->release();
 }
@@ -289,11 +298,11 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     //m_camera.zoomToDepth(lastZoomedTo);
     if (event->buttons() & Qt::LeftButton) {
         qDebug("Discovering");
-        blueMan->startDiscovery();
+        //blueMan->startDiscovery();
     }
     else if (event->buttons() & Qt::RightButton) {
         qDebug("Try to connect");
-        blueMan->connectToSelectedDevice();
+        //blueMan->connectToSelectedDevice();
         //blueMan->tryToPairWithSelectedDevice();
     }
     if (toggle) {

@@ -1,10 +1,13 @@
 #include "vertextranslator.h"
 #include <qmath.h>
+#include <QDebug>
 
 VertexTranslator::VertexTranslator()
     : m_count(0)
 {
     m_data.resize(2500 * 6);
+
+    pointCount = 0;
 
 
     //drawTriangle(QVector3D(0, 0, 0), QVector3D(0.1, 0, 0), QVector3D(0.05, 0.05, 0));
@@ -80,6 +83,11 @@ void VertexTranslator::add(const QVector3D &v, const QVector3D &n)
     *p++ = n.y();
     *p++ = n.z();
     m_count += 6;
+
+    vertexIndices.append(pointCount);
+    pointCount++;
+    qDebug()<<"Appending index "<<(pointCount - 1)<<" to indices";
+    qDebug()<<"Indices now "<<vertexIndices;
 }
 
 void VertexTranslator::drawTriangle(QVector3D corner1, QVector3D corner2, QVector3D corner3) {
@@ -112,6 +120,7 @@ void VertexTranslator::drawRectangularPrism(GLfloat width, GLfloat height, GLflo
     drawRectangle(vertices[0], vertices[3], vertices[7], vertices[4]);
     // draw back face
     drawRectangle(vertices[2], vertices[1], vertices[5], vertices[6]);
+
 }
 
 // draws a rectangle
@@ -120,4 +129,5 @@ void VertexTranslator::drawRectangle(QVector3D llcorner, QVector3D lrcorner, QVe
     drawTriangle(llcorner, trcorner, tlcorner);
     drawTriangle(llcorner, lrcorner, trcorner);
 }
+
 
