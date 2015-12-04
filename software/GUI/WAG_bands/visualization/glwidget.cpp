@@ -129,6 +129,7 @@ void GLWidget::cleanup()
 {
     makeCurrent();
     m_rectPrismVbo.destroy();
+    indexBuf.destroy();
     delete m_program;
     m_program = 0;
     doneCurrent();
@@ -199,7 +200,6 @@ void GLWidget::initializeGL()
     // the signal will be followed by an invocation of initializeGL() where we
     // can recreate all resources.
     connect(context(), &QOpenGLContext::aboutToBeDestroyed, this, &GLWidget::cleanup);
-    lastZoomedTo = 2;
     initializeOpenGLFunctions();
     glClearColor(0, 0, 0, m_transparent ? 0 : 1);
 
@@ -228,12 +228,14 @@ void GLWidget::initializeGL()
     m_rectPrismVbo.bind();
     m_rectPrismVbo.allocate(m_rectPrism.constData(), m_rectPrism.count() * sizeof(GLfloat));
 
+    indexBuf.create();
+    indexBuf.bind();
+    indexBuf.allocate(m_rectPrism.getIndices(), m_rectPrism.getPointCount()*sizeof(GLuint));
+
     // Store the vertex attribute bindings for the program.
     setupVertexAttribs();
 
-    // Our camera never changes in this example.
-    //m_camera.setToIdentity();
-    //m_camera.translate(0, 0, -3);
+    m_camera.setToIdentity();
 
     // Light position is fixed.
     m_program->setUniformValue(m_lightPosLoc, QVector3D(0, 0, -5));
@@ -271,7 +273,9 @@ void GLWidget::paintGL()
     m_program->setUniformValue(m_normalMatrixLoc, normalMatrix);
     m_program->setUniformValue(m_lightPosLoc, m_camera.getCurrentPosition());
 
-    glDrawArrays(GL_TRIANGLES, 0, m_rectPrism.vertexCount());
+   // glDrawElements(GL_TRANGLES, )
+
+    glDrawElements(GL_TRIANGLES, m_rectPrism.getPointCount(), GL_UNSIGNED_INT, 0);
 
     m_program->release();
 }
@@ -289,11 +293,11 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     //m_camera.zoomToDepth(lastZoomedTo);
     if (event->buttons() & Qt::LeftButton) {
         qDebug("Discovering");
-        blueMan->startDiscovery();
+       // blueMan->startDiscovery();
     }
     else if (event->buttons() & Qt::RightButton) {
         qDebug("Try to connect");
-        blueMan->connectToSelectedDevice();
+       // blueMan->connectToSelectedDevice();
         //blueMan->tryToPairWithSelectedDevice();
     }
     if (toggle) {
