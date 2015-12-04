@@ -7,7 +7,7 @@
 /*
 *  Super sick nasty awesome double handled slider!
 *
-*	@author Steve
+*	primary author Steve (from stackoverflow)
 */
 class SuperSliderHandle;
 class SuperSliderTimeBar;

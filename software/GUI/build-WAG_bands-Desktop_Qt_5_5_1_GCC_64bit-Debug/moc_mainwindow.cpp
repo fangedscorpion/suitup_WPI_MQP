@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[17];
-    char stringdata0[209];
+    QByteArrayData data[19];
+    char stringdata0[258];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -32,28 +32,31 @@ static const qt_meta_stringdata_MainWindow_t qt_meta_stringdata_MainWindow = {
 QT_MOC_LITERAL(0, 0, 10), // "MainWindow"
 QT_MOC_LITERAL(1, 11, 13), // "resizedWindow"
 QT_MOC_LITERAL(2, 25, 0), // ""
-QT_MOC_LITERAL(3, 26, 16), // "openFromComputer"
-QT_MOC_LITERAL(4, 43, 4), // "save"
-QT_MOC_LITERAL(5, 48, 12), // "playbackMode"
-QT_MOC_LITERAL(6, 61, 10), // "recordMode"
-QT_MOC_LITERAL(7, 72, 12), // "openSettings"
-QT_MOC_LITERAL(8, 85, 13), // "closeSettings"
-QT_MOC_LITERAL(9, 99, 12), // "saveSettings"
-QT_MOC_LITERAL(10, 112, 21), // "updateSpeedSliderText"
-QT_MOC_LITERAL(11, 134, 18), // "playbackModeString"
-QT_MOC_LITERAL(12, 153, 10), // "openSaveAs"
-QT_MOC_LITERAL(13, 164, 10), // "saveSaveAs"
-QT_MOC_LITERAL(14, 175, 11), // "closeSaveAs"
-QT_MOC_LITERAL(15, 187, 14), // "saveToComputer"
-QT_MOC_LITERAL(16, 202, 6) // "addTag"
+QT_MOC_LITERAL(3, 26, 22), // "launchOpenFromComputer"
+QT_MOC_LITERAL(4, 49, 21), // "launchOpenFromLibrary"
+QT_MOC_LITERAL(5, 71, 20), // "closeOpenFromLibrary"
+QT_MOC_LITERAL(6, 92, 15), // "openFromLibrary"
+QT_MOC_LITERAL(7, 108, 14), // "launchSettings"
+QT_MOC_LITERAL(8, 123, 13), // "closeSettings"
+QT_MOC_LITERAL(9, 137, 12), // "saveSettings"
+QT_MOC_LITERAL(10, 150, 4), // "save"
+QT_MOC_LITERAL(11, 155, 12), // "launchSaveAs"
+QT_MOC_LITERAL(12, 168, 10), // "saveSaveAs"
+QT_MOC_LITERAL(13, 179, 11), // "closeSaveAs"
+QT_MOC_LITERAL(14, 191, 20), // "launchSaveToComputer"
+QT_MOC_LITERAL(15, 212, 6), // "addTag"
+QT_MOC_LITERAL(16, 219, 11), // "saveNewFile"
+QT_MOC_LITERAL(17, 231, 12), // "closeNewFile"
+QT_MOC_LITERAL(18, 244, 13) // "launchNewFile"
 
     },
-    "MainWindow\0resizedWindow\0\0openFromComputer\0"
-    "save\0playbackMode\0recordMode\0openSettings\0"
-    "closeSettings\0saveSettings\0"
-    "updateSpeedSliderText\0playbackModeString\0"
-    "openSaveAs\0saveSaveAs\0closeSaveAs\0"
-    "saveToComputer\0addTag"
+    "MainWindow\0resizedWindow\0\0"
+    "launchOpenFromComputer\0launchOpenFromLibrary\0"
+    "closeOpenFromLibrary\0openFromLibrary\0"
+    "launchSettings\0closeSettings\0saveSettings\0"
+    "save\0launchSaveAs\0saveSaveAs\0closeSaveAs\0"
+    "launchSaveToComputer\0addTag\0saveNewFile\0"
+    "closeNewFile\0launchNewFile"
 };
 #undef QT_MOC_LITERAL
 
@@ -63,7 +66,7 @@ static const uint qt_meta_data_MainWindow[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      14,   14, // methods
+      17,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -71,22 +74,25 @@ static const uint qt_meta_data_MainWindow[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   84,    2, 0x06 /* Public */,
+       1,    0,   99,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       3,    0,   85,    2, 0x08 /* Private */,
-       4,    0,   86,    2, 0x08 /* Private */,
-       5,    0,   87,    2, 0x08 /* Private */,
-       6,    0,   88,    2, 0x08 /* Private */,
-       7,    0,   89,    2, 0x08 /* Private */,
-       8,    0,   90,    2, 0x08 /* Private */,
-       9,    0,   91,    2, 0x08 /* Private */,
-      10,    1,   92,    2, 0x08 /* Private */,
-      12,    0,   95,    2, 0x08 /* Private */,
-      13,    0,   96,    2, 0x08 /* Private */,
-      14,    0,   97,    2, 0x08 /* Private */,
-      15,    0,   98,    2, 0x08 /* Private */,
-      16,    0,   99,    2, 0x08 /* Private */,
+       3,    0,  100,    2, 0x08 /* Private */,
+       4,    0,  101,    2, 0x08 /* Private */,
+       5,    0,  102,    2, 0x08 /* Private */,
+       6,    0,  103,    2, 0x08 /* Private */,
+       7,    0,  104,    2, 0x08 /* Private */,
+       8,    0,  105,    2, 0x08 /* Private */,
+       9,    0,  106,    2, 0x08 /* Private */,
+      10,    0,  107,    2, 0x08 /* Private */,
+      11,    0,  108,    2, 0x08 /* Private */,
+      12,    0,  109,    2, 0x08 /* Private */,
+      13,    0,  110,    2, 0x08 /* Private */,
+      14,    0,  111,    2, 0x08 /* Private */,
+      15,    0,  112,    2, 0x08 /* Private */,
+      16,    0,  113,    2, 0x08 /* Private */,
+      17,    0,  114,    2, 0x08 /* Private */,
+      18,    0,  115,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void,
@@ -99,7 +105,10 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString,   11,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -116,19 +125,22 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->resizedWindow(); break;
-        case 1: _t->openFromComputer(); break;
-        case 2: _t->save(); break;
-        case 3: _t->playbackMode(); break;
-        case 4: _t->recordMode(); break;
-        case 5: _t->openSettings(); break;
+        case 1: _t->launchOpenFromComputer(); break;
+        case 2: _t->launchOpenFromLibrary(); break;
+        case 3: _t->closeOpenFromLibrary(); break;
+        case 4: _t->openFromLibrary(); break;
+        case 5: _t->launchSettings(); break;
         case 6: _t->closeSettings(); break;
         case 7: _t->saveSettings(); break;
-        case 8: _t->updateSpeedSliderText((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 9: _t->openSaveAs(); break;
+        case 8: _t->save(); break;
+        case 9: _t->launchSaveAs(); break;
         case 10: _t->saveSaveAs(); break;
         case 11: _t->closeSaveAs(); break;
-        case 12: _t->saveToComputer(); break;
+        case 12: _t->launchSaveToComputer(); break;
         case 13: _t->addTag(); break;
+        case 14: _t->saveNewFile(); break;
+        case 15: _t->closeNewFile(); break;
+        case 16: _t->launchNewFile(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -141,6 +153,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
             }
         }
     }
+    Q_UNUSED(_a);
 }
 
 const QMetaObject MainWindow::staticMetaObject = {
@@ -168,13 +181,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 14)
+        if (_id < 17)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 14;
+        _id -= 17;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 14)
+        if (_id < 17)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 14;
+        _id -= 17;
     }
     return _id;
 }

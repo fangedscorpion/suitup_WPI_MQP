@@ -1,12 +1,18 @@
 #include "Band.h"
 #include <stdio.h>
+#include <stdexcept>
 // ArmBand class should ONLY be extended into either:
 // LEFT_UPPER_ARM
 // RIGHT_UPPER_ARM
 // LEFT_LOWER_ARM or
 // RIGHT_LOWER_ARM
 
-ArmBand::ArmBand(BandType b) : Band(b) {}
+ArmBand::ArmBand(BandType b) : Band(b) {
+	if (b != LEFT_LOWER_ARM && b != LEFT_UPPER_ARM &&
+		b != RIGHT_LOWER_ARM && b != RIGHT_UPPER_ARM) {
+		throw std::invalid_argument("Created ArmBand with bad BandType");
+	}
+}
 
 bool ArmBand::moveTo(Pose* x) const {
 	if (!isActive())
@@ -16,7 +22,8 @@ bool ArmBand::moveTo(Pose* x) const {
 	return true;
 }
 
-Pose ArmBand::getPosition() const {
+Pose ArmBand::getPose() const {
 	// query for IMU position
 	// parse value into Quaternion
+	return Pose();
 }

@@ -1,4 +1,5 @@
 obj/*
+test_obj/*
 *.x
 
 **.pro.user
