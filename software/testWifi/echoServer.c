@@ -146,5 +146,5 @@ void reverseString(char* stringToReverse, int stringlength) {
     stringToReverse[stringlength - i - 1] = beginChar;    
   }
 
-  stringToReverse[stringlength] = '\0';
+  stringToReverse[stringlength] = '!';
 }
