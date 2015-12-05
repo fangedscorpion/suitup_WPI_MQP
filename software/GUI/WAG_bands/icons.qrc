@@ -5,5 +5,10 @@
         <file>icons/record.png</file>
 	<file>icons/handle.png</file>
 	<file>icons/timePoint.png</file>
+	<file>icons/crop.png</file>
+	<file>icons/undo.png</file>
+	<file>icons/split.png</file>
+	<file>icons/edit.png</file>
+	<file>icons/stop.png</file>
     </qresource>
 </RCC>

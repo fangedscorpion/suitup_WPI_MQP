@@ -5,6 +5,7 @@ TabContent::TabContent(QString filename, ACTION_TYPE t) {
     playbackControls = new PlaybackController;
     titleFont = QFont( "Arial", 15, QFont::Bold);
     titleStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-top: 0.5em; subcontrol-origin: margin; left: 10px; padding: 25px 3px 0 3px;}";
+    createIcons();
 
     optionsStack = new QStackedWidget;
     optionsStack->addWidget(createEditOptionsAndControls());
@@ -42,6 +43,17 @@ TabContent::TabContent(QString filename, ACTION_TYPE t) {
 }
 
 TabContent::~TabContent() {}
+
+void TabContent::createIcons() {
+    playIcon = QIcon(QPixmap(":/icons/play.png"));
+    pauseIcon = QIcon(QPixmap(":/icons/pause.png"));
+    recordIcon = QIcon(QPixmap(":/icons/record.png"));
+    cropIcon = QIcon(QPixmap(":/icons/crop.png"));
+    splitIcon = QIcon(QPixmap(":/icons/split.png"));
+    undoIcon = QIcon(QPixmap(":/icons/undo.png"));
+    editIcon = QIcon(QPixmap(":/icons/edit.png"));
+    stopIcon = QIcon(QPixmap(":/icons/stop.png"));
+}
 
 void TabContent::showPlaybackMode() {
     connect(playPause, SIGNAL(released()), playbackControls, SLOT (togglePlay()));
@@ -169,10 +181,18 @@ QWidget* TabContent::createEditOptionsAndControls() {
     editOptions->setStyleSheet(titleStyleSheet);
     editOptions->setFont(titleFont);
     editOptions->setAlignment(Qt::AlignRight);
-    QPushButton *undoBtn = new QPushButton("Undo");
-    QPushButton *cropBtn = new QPushButton("Crop");
-    QPushButton *splitBtn = new QPushButton("Split");
+    QPushButton *undoBtn = new QPushButton;
+    undoBtn->setIcon(undoIcon);
+    undoBtn->setText("Undo");
+    QPushButton *cropBtn = new QPushButton;
+    cropBtn->setIcon(cropIcon);
+    cropBtn->setText("Crop");
+    QPushButton *splitBtn = new QPushButton;
+    splitBtn->setIcon(splitIcon);
+    splitBtn->setText("Split");
     QPushButton *rerecord = new QPushButton("Restart Recording");
+    rerecord->setIcon(recordIcon);
+    rerecord->setIconSize(QSize(10,10));
     QVBoxLayout *recordPlaybackLayout = new QVBoxLayout;
     QVBoxLayout *buttons = new QVBoxLayout;
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -206,9 +226,6 @@ QWidget* TabContent::createViewer(ACTION_TYPE t) {
     QHBoxLayout *controls = new QHBoxLayout;
     playPause = new QPushButton;
     videoSlider = new SuperSlider;
-    playIcon = QIcon(QPixmap(":/icons/play.png"));
-    pauseIcon = QIcon(QPixmap(":/icons/pause.png"));
-    recordIcon = QIcon(QPixmap(":/icons/record.png"));
     handle1Time = new QLabel("00:00");
     handle2Time = new QLabel("00:10");
     playPause->setIcon(playIcon);
@@ -257,10 +274,14 @@ void TabContent::handleRecordingButton() {
     if (recordButton->text() == QString("Start Recording")) {
         recordMessage->setText("Recording...");
         recordButton->setText("Stop Recording");
+        recordButton->setIcon(stopIcon);
+        recordButton->setIconSize(QSize(10,10));
         edit->setEnabled(false);
     } else {
         recordMessage->setText("Stopped Recording");
         recordButton->setText("Start Recording");
+        recordButton->setIcon(recordIcon);
+        recordButton->setIconSize(QSize(10,10));
         edit->setEnabled(true);
     }
     // TODO: make text red and big
@@ -275,8 +296,11 @@ QWidget* TabContent::createRecordOptionsAndController() {
     recordMessage = new QLabel();
     recordButton = new QPushButton;
     recordButton->setText("Start Recording");
+    recordButton->setIcon(recordIcon);
+    recordButton->setIconSize(QSize(10,10));
     edit = new QPushButton;
     edit->setText("Edit Recording");
+    edit->setIcon(editIcon);
     QVBoxLayout *buttons = new QVBoxLayout;
     buttons->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     buttons->addWidget(recordMessage);

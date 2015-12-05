@@ -22,6 +22,7 @@ private:
     QWidget* createRecordOptionsAndController();
     QWidget* createViewer(ACTION_TYPE t);
     QWidget* createFileInfoGroup();
+    void createIcons();
     QStackedWidget *optionsStack;
 
     // fonts & styles
@@ -60,6 +61,13 @@ private:
     QLabel *recordMessage;
     QPushButton *recordButton;
     QPushButton *edit;
+    QIcon stopIcon;
+
+    // edit
+    QIcon cropIcon;
+    QIcon splitIcon;
+    QIcon undoIcon;
+    QIcon editIcon;
 
     QPushButton *playPause;
     QLabel *sfi;

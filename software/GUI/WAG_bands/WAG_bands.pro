@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     motion.cpp \
     visualization.cpp \
     positionsnapshot.cpp \
-    tabcontent.cpp
+    tabcontent.cpp \
+    wagfile.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
@@ -43,7 +44,8 @@ HEADERS  += mainwindow.h \
     overlay.h \
     overlaywidget.h \
     customshadoweffect.h \
-    tabcontent.h
+    tabcontent.h \
+    wagfile.h
 
 FORMS    +=
 
