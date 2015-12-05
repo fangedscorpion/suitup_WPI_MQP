@@ -43,6 +43,7 @@ private:
     QSlider *speedSlider;
     QSpinBox *seconds;
     QSlider *toleranceSlider;
+    QGroupBox *playbackOptions;
 
     // viewer
     QStackedWidget *viewerStack;
@@ -76,6 +77,12 @@ private:
     QLabel *maxSpeed;
     PlaybackController *playbackControls;
 
+
+    void lockOnPlayback(bool playing);
+    void switchStepThroughMode(bool steppingThrough);
+    void initializePlaybackSettings();
+
+
 public slots:
     void showPlaybackMode();
     void showEditMode();
@@ -83,4 +90,9 @@ public slots:
     void updateSpeedSliderText(QString playbackModeString);
     void applicationResized();
     void handleRecordingButton();
+    void displayNewTime(int newMillis);
+    void playbackToggled(bool playing);
+
+signals:
+    void stepThroughChanged(bool steppingThrough);
 };

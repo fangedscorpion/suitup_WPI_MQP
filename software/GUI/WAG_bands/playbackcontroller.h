@@ -18,7 +18,7 @@ protected:
 public slots: // some of these might be better as normal functions
     // but for now, I'm making them slots so they can be called asynchronously
     void togglePlay();
-    void setStepThroughMode(QString desiredModeString);
+    void setStepThroughMode(bool steppingThrough);
     void toggleVoiceControl();
     void toggleSuitActive(bool active);
     void moveFramePointer(int newFrame);
@@ -26,12 +26,15 @@ public slots: // some of these might be better as normal functions
     void updateStepThroughTolerance(int sliderValue);
     void speedChanged(int sliderValue);
     void positionMet();
+    void computeTimeInFile(int frameNum);
 
 signals:
     void frameChanged(int newFrame);
     void startPlayback();
     void stopPlayback();
     void endOfTimeRange();
+    void timeChanged(int millis);
+    void playbackStateChanged(bool playing);
 
 private:
     bool playing;

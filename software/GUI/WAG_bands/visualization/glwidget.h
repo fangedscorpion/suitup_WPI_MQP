@@ -46,7 +46,7 @@
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
 #include <QMatrix4x4>
-#include "rectangularprism.h"
+#include "vertextranslator.h"
 #include "glcamera.h"
 #include "bluetoothmanager.h"
 
@@ -90,9 +90,10 @@ private:
     int m_yRot;
     int m_zRot;
     QPoint m_lastPos;
-    RectangularPrism m_rectPrism; // rectangular prism object
+    VertexTranslator m_rectPrism; // rectangular prism object
     QOpenGLVertexArrayObject m_vao; //
     QOpenGLBuffer m_rectPrismVbo;
+    QOpenGLBuffer indexBuf;
     QOpenGLShaderProgram *m_program;
     int m_projMatrixLoc;
     int m_mvMatrixLoc;

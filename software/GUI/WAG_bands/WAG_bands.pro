@@ -18,34 +18,36 @@ SOURCES += main.cpp\
     overlay.cpp \
     overlaywidget.cpp \
     customshadoweffect.cpp \
-    glwidget.cpp \
-    rectangularprism.cpp \
-    glcamera.cpp \
     networkmonitor.cpp \
     bluetoothmanager.cpp \
     playbackcontroller.cpp \
     motion.cpp \
-    visualization.cpp \
     positionsnapshot.cpp \
     tabcontent.cpp \
-    wagfile.cpp
+    wagfile.cpp \
+    visualization/suitsimulation.cpp \
+    visualization/glcamera.cpp \
+    visualization/glwidget.cpp \
+    visualization/visualization.cpp \
+    visualization/vertextranslator.cpp\
 
 HEADERS  += mainwindow.h \
     superslider.h \
-    glwidget.h \
-    rectangularprism.h \
-    glcamera.h \
     networkmonitor.h \
     bluetoothmanager.h \
     playbackcontroller.h \
     motion.h \
-    visualization.h \
     positionsnapshot.h \
     overlay.h \
     overlaywidget.h \
     customshadoweffect.h \
     tabcontent.h \
-    wagfile.h
+    wagfile.h \
+    visualization/suitsimulation.h \
+    visualization/glcamera.h \
+    visualization/glwidget.h \
+    visualization/visualization.h \
+    visualization/vertextranslator.h \
 
 FORMS    +=
 

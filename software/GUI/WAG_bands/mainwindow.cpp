@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "superslider.h"
-#include "glwidget.h"
+#include "visualization/glwidget.h"
 #include "playbackcontroller.h"
 #include "tabcontent.h"
 
@@ -120,6 +120,7 @@ void MainWindow::createMenuActions(QMenuBar *menu)
 
 // The first window a user sees on launch.
 QWidget* MainWindow::createWelcomeWindow() {
+//    QHBox
     QLabel *welcome = new QLabel("To start, open an existing file or create a new file from the menu above");
     welcome->setWordWrap(true);
     welcome->setAlignment(Qt::AlignCenter);
