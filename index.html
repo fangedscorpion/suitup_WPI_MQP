@@ -19,7 +19,10 @@
 <script>
   function keydown(e) {
     keyPressed = e.keyCode;
-    if ((keyPressed === 32) || ((keyPressed > 65) && (keyPressed < 77))) {
+    if ((keyPressed === 68) || (keyPressed === 100)) {
+      window.location.href = "http://fangedscorpion.github.io/suitup_WPI_MQP/public/dragonDrop.html"
+    }
+    else if ((keyPressed === 32) || ((keyPressed > 65) && (keyPressed < 77))) {
       window.location.href = "https://www.reddit.com/r/wheredidthesodago/"
     }
   }
