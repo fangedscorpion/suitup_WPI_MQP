@@ -2,7 +2,7 @@ clear all; close all; clc;
 
 %% Video Recording Settings
 % set true to record video
-RECORD_VIDEO = true;
+RECORD_VIDEO = false;
 video_filename = 'polarkernel2.avi';
     
 %% Useful Functions
@@ -39,7 +39,7 @@ err = max_err;
 
 % set true if at least one motor should be at max output at all 
 % times if err >= max_err.
-ALWAYS_MAX_OUTPUT = false;
+ALWAYS_MAX_OUTPUT = true;
 
 %% Plot/Animation
 N = 360;
