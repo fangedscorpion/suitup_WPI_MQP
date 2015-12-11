@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Newsbook</title>
+  <meta charset="utf-8">
+  <!-- Author: Amanda Adkins -->
+  <style>
+    #div1 {
+      width: 30em;
+      height: 30em;
+      padding: 10px;
+      border: 1px solid #aaaaaa;
+      float: right;
+    }
+
+    .drag1 {
+      width: 20em;
+    }
+
+    #dragonDiv {
+      width: 30em;
+      float:left;
+    }
+    .fullWidth {
+      width:100%;
+    }
+  </style>
+  <script src="dragonDrop.js"></script>
+</head>
+
+
+
+
+<body id="content">
+  <div class="fullWidth">
+    <div id="dragonDiv">
+      <img class="drag1" id="drag1" src="http://thumbs.dreamstime.com/x/green-dragon-cartoon-illustration-11670789.jpg" draggable="true" ondragstart="drag(event)">
+    </div>
+    <div id="div1" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+  </div>
+  </div>
+</body>
+
+</html>
