@@ -169,6 +169,8 @@ void serialEvent(Serial port) {
                 q[3] = ((teapotPacket[8] << 8) | teapotPacket[9]) / 16384.0f;
                 for (int i = 0; i < 4; i++) if (q[i] >= 2) q[i] = -4 + q[i];
                 
+                println(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
+                
                 // set our toxilibs quaternion to new data
                 quat.set(q[0], q[1], q[2], q[3]);
                 

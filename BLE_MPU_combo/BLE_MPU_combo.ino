@@ -55,7 +55,7 @@ THE SOFTWARE.
 #endif
 
 #define ADAFRUITBLE_REQ 10
-#define ADAFRUITBLE_RDY 2
+#define ADAFRUITBLE_RDY 3
 #define ADAFRUITBLE_RST 9
 
 // uncomment "OUTPUT_TEAPOT" if you want output that matches the
@@ -112,8 +112,7 @@ void aciCallback(aci_evt_opcode_t event)
       Serial.println(F("Advertising started"));
       break;
     case ACI_EVT_CONNECTED:
-      Serial.println(F("Connected!"));
-      uart.write((uint8_t*)("connected"), 10);
+      //uart.write((uint8_t*)("connected"), 10);
       mpu.resetFIFO();
       break;
     case ACI_EVT_DISCONNECTED:
@@ -131,22 +130,6 @@ void aciCallback(aci_evt_opcode_t event)
 /**************************************************************************/
 void rxCallback(uint8_t *buffer, uint8_t len)
 {
-//  Serial.print(F("Received "));
-//  Serial.print(len);
-//  Serial.print(F(" bytes: "));
-//  for(int i=0; i<len; i++)
-//   Serial.print((char)buffer[i]); 
-//
-//  Serial.print(F(" ["));
-//
-//  for(int i=0; i<len; i++)
-//  {
-//    Serial.print(" 0x"); Serial.print((char)buffer[i], HEX); 
-//  }
-//  Serial.println(F(" ]"));
-
-  /* Echo the same data back! */
-  //uart.write((uint8_t*)("Hello"), 6);
   uart.write(teapotPacket, 14);
 }
 
@@ -197,7 +180,7 @@ void setup(void)
 
         // enable Arduino interrupt detection
         Serial.println(F("Enabling interrupt detection (Arduino external interrupt 0)..."));
-        attachInterrupt(1, dmpDataReady, RISING);
+        attachInterrupt(0, dmpDataReady, RISING);
         mpuIntStatus = mpu.getIntStatus();
 
         // set our DMP Ready flag so the main loop() function knows it's okay to use it
@@ -346,7 +329,7 @@ void loop()
             teapotPacket[7] = fifoBuffer[9];
             teapotPacket[8] = fifoBuffer[12];
             teapotPacket[9] = fifoBuffer[13];
-            Serial.write(teapotPacket, 14);
+            //Serial.write(teapotPacket, 14);
             teapotPacket[11]++; // packetCount, loops at 0xFF on purpose
         #endif
 
