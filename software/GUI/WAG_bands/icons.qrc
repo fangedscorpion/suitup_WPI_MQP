@@ -1,0 +1,9 @@
+<RCC>
+    <qresource>
+        <file>icons/pause.png</file>
+        <file>icons/play.png</file>
+        <file>icons/record.png</file>
+	<file>icons/handle.png</file>
+	<file>icons/timePoint.png</file>
+    </qresource>
+</RCC>
