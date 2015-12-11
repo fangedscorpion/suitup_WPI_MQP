@@ -1,0 +1,33 @@
+
+<!DOCTYPE HTML>
+<html style="height:100%;width=100%">
+
+<script 
+src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
+</script>
+
+<script>
+$(document).ready(function(){
+    $(document).click(function(){
+        $("#mq").toggle();
+        a = document.getElementById("mq").getElementsByTagName("marquee");
+        a[0].start();
+        a[1].start();
+    });
+});
+</script>
+
+
+  <body 
+style="font-size:100px;cursor:wait;height:100%;width:100%;overflow:hidden">
+    <div id="mq" style="width:100%;height:100%;">
+    <marquee direction="down" behavior="alternate" 
+scrollamount=80 
+style="height:100%;width:100%">
+      <marquee behavior="alternate" scrollamount=80>
+        <div>Team Suit Up!</div>
+      </marquee>
+    </marquee>
+    </div>
+  </body>
+</html>
