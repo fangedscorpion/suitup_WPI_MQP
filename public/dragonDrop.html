@@ -8,28 +8,47 @@
   <style>
     #div1 {
       width: 30em;
-      height: 30em;
+      height: 100em;
       padding: 10px;
       border: 1px solid #aaaaaa;
       float: right;
     }
 
     .drag1 {
-      width: 20em;
+      width: 10em;
+    }
+
+    #dragbox {
+        height: 100%;
+        position: absolute;
     }
 
     #dragonDiv {
-      width: 30em;
+      width: 50%;
+      height: 100%;
       float: left;
     }
 
     .fullWidth {
       width: 100%;
     }
+
     * {
       font-family: Arial;
     }
   </style>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
+    < script >
+      $(document).ready(function() {
+        $(document).click(function() {
+          $("#dragonDiv").toggle();
+          a = document.getElementById("dragonDiv").getElementsByTagName("marquee");
+          a[0].start();
+          a[1].start();
+        });
+      });
+  </script>
   <script src="dragonDrop.js"></script>
 </head>
 
@@ -37,12 +56,16 @@
 
 
 <body id="content">
-  <div class="fullWidth">
+  <div id="dragbox" class="fullWidth">
     <div id="dragonDiv">
-      <img class="drag1" id="drag1" src="http://thumbs.dreamstime.com/x/green-dragon-cartoon-illustration-11670789.jpg" draggable="true" ondragstart="drag(event)">
-    </div>
+    <marquee id="marq1" direction="down" behavior="alternate" scrollamount=40 style="height:100%;width:100%">
+      <marquee id="marq2" behavior="alternate" scrollamount=40>
+        <img class="drag1" id="drag1" src="http://thumbs.dreamstime.com/x/green-dragon-cartoon-illustration-11670789.jpg" draggable="true" ondragstart="drag(event)">
+      </marquee>
+    </marquee>
+     </div>
     <div id="div1" ondrop="drop(event)" ondragover="allowDrop(event)">
-    <p>Move dragons here</p>
+      <p>Move dragons here</p>
     </div>
   </div>
 </body>
