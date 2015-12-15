@@ -1,32 +1,33 @@
 <!DOCTYPE HTML>
 <html style="height:100%;width=100%">
+
 <head>
 
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
-</script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
+  </script>
 
-<script>
-  $(document).ready(function() {
-    $(document).click(function() {
-      $("#mq").toggle();
-      a = document.getElementById("mq").getElementsByTagName("marquee");
-      a[0].start();
-      a[1].start();
+  <script>
+    $(document).ready(function() {
+      $(document).click(function() {
+        $("#mq").toggle();
+        a = document.getElementById("mq").getElementsByTagName("marquee");
+        a[0].start();
+        a[1].start();
+        a[2].start();
+      });
     });
-  });
-</script>
-<script>
-  function keydown(e) {
-    keyPressed = e.keyCode;
-    if ((keyPressed === 68) || (keyPressed === 100)) {
-      window.location.href = "http://fangedscorpion.github.io/suitup_WPI_MQP/public/dragonDrop.html"
+  </script>
+  <script>
+    function keydown(e) {
+      keyPressed = e.keyCode;
+      if ((keyPressed === 68) || (keyPressed === 100)) {
+        window.location.href = "http://fangedscorpion.github.io/suitup_WPI_MQP/public/dragonDrop.html"
+      } else if ((keyPressed === 32) || ((keyPressed > 65) && (keyPressed < 77))) {
+        window.location.href = "https://www.reddit.com/r/wheredidthesodago/"
+      }
     }
-    else if ((keyPressed === 32) || ((keyPressed > 65) && (keyPressed < 77))) {
-      window.location.href = "https://www.reddit.com/r/wheredidthesodago/"
-    }
-  }
-</script>
+  </script>
 </head>
 
 
@@ -35,6 +36,9 @@
     <marquee direction="down" behavior="alternate" scrollamount=80 style="height:100%;width:100%">
       <marquee behavior="alternate" scrollamount=80>
         <div>Team Suit Up!</div>
+      </marquee>
+      <marquee behavior="alternate" scrollamount=80>
+        <div style="font-family:'Comic Sans MS', 'Comic Sans', cursive;">WAG</div>
       </marquee>
     </marquee>
   </div>
