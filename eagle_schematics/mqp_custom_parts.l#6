@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="yes"/>
@@ -16,7 +16,7 @@
 <layer number="18" name="Vias" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="yes"/>
 <layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="yes"/>
-<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="21" name="tPlace" color="61" fill="1" visible="yes" active="yes"/>
 <layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="yes"/>
@@ -40,7 +40,7 @@
 <layer number="42" name="bRestrict" color="1" fill="10" visible="yes" active="yes"/>
 <layer number="43" name="vRestrict" color="2" fill="10" visible="yes" active="yes"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
-<layer number="45" name="Holes" color="7" fill="1" visible="no" active="yes"/>
+<layer number="45" name="Holes" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
 <layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
 <layer number="48" name="Document" color="7" fill="1" visible="yes" active="yes"/>
@@ -91,7 +91,50 @@
 <text x="1.143" y="0" size="1.27" layer="27" ratio="10">3</text>
 </package>
 <package name="EASYVR_3_0">
-<rectangle x1="-17.78" y1="-11.43" x2="16.51" y2="11.43" layer="21"/>
+<dimension x1="-12.7" y1="-33.02" x2="12.7" y2="-33.02" x3="0" y3="-40.63999375" textsize="1.27" layer="51"/>
+<dimension x1="20.32" y1="0" x2="20.32" y2="25.4" x3="30.48" y3="12.7" textsize="1.27" layer="51"/>
+<dimension x1="20.32" y1="0" x2="20.32" y2="-25.4" x3="38.1" y3="-12.7" textsize="1.27" layer="51"/>
+<pad name="P$1" x="-11.43" y="25.4" drill="0.8" shape="square"/>
+<pad name="P$2" x="11.43" y="25.4" drill="0.8" shape="square"/>
+<dimension x1="-11.43" y1="29.21" x2="11.43" y2="29.21" x3="0" y3="27.94" textsize="1.27" layer="51"/>
+<pad name="P$3" x="-11.43" y="22.86" drill="0.8" shape="square"/>
+<pad name="P$4" x="-11.43" y="20.32" drill="0.8" shape="square"/>
+<pad name="P$5" x="-11.43" y="17.78" drill="0.8" shape="square"/>
+<pad name="P$6" x="-11.43" y="15.24" drill="0.8" shape="square"/>
+<pad name="P$7" x="-11.43" y="12.7" drill="0.8" shape="square"/>
+<pad name="P$8" x="11.43" y="22.86" drill="0.8" shape="square"/>
+<pad name="P$9" x="11.43" y="20.32" drill="0.8" shape="square"/>
+<pad name="P$10" x="11.43" y="17.78" drill="0.8" shape="square"/>
+<pad name="P$11" x="11.43" y="15.24" drill="0.8" shape="square"/>
+<pad name="P$12" x="11.43" y="12.7" drill="0.8" shape="square"/>
+<pad name="P$14" x="-11.43" y="-7.62" drill="0.8" shape="square"/>
+<pad name="P$15" x="11.43" y="-7.62" drill="0.8" shape="square"/>
+<pad name="P$16" x="-11.43" y="-10.16" drill="0.8" shape="square"/>
+<pad name="P$17" x="-11.43" y="-12.7" drill="0.8" shape="square"/>
+<pad name="P$18" x="-11.43" y="-15.24" drill="0.8" shape="square"/>
+<pad name="P$19" x="-11.43" y="-17.78" drill="0.8" shape="square"/>
+<pad name="P$20" x="-11.43" y="-20.32" drill="0.8" shape="square"/>
+<pad name="P$21" x="-11.43" y="-22.86" drill="0.8" shape="square"/>
+<dimension x1="-15.24" y1="12.7" x2="-15.24" y2="-7.62" x3="-20.32" y3="2.54" textsize="1.27" layer="51"/>
+<pad name="P$22" x="-11.43" y="-25.4" drill="0.8" shape="square"/>
+<pad name="P$13" x="11.43" y="-10.16" drill="0.8" shape="square"/>
+<pad name="P$23" x="11.43" y="-12.7" drill="0.8" shape="square"/>
+<pad name="P$24" x="11.43" y="-15.24" drill="0.8" shape="square"/>
+<pad name="P$25" x="11.43" y="-17.78" drill="0.8" shape="square"/>
+<pad name="P$26" x="11.43" y="-20.32" drill="0.8" shape="square"/>
+<pad name="P$27" x="11.43" y="-22.86" drill="0.8" shape="square"/>
+<pad name="P$28" x="11.43" y="-25.4" drill="0.8" shape="square"/>
+<wire x1="-13.97" y1="27.94" x2="-13.97" y2="-30.48" width="0.127" layer="51"/>
+<wire x1="-13.97" y1="27.94" x2="13.97" y2="27.94" width="0.127" layer="51"/>
+<wire x1="13.97" y1="27.94" x2="13.97" y2="-26.67" width="0.127" layer="51"/>
+<dimension x1="16.51" y1="-25.4" x2="16.51" y2="-29.21" x3="16.51" y3="-27.305" textsize="1.27" layer="51"/>
+<wire x1="-13.97" y1="-30.48" x2="10.16" y2="-30.48" width="0.127" layer="51"/>
+<wire x1="10.16" y1="-30.48" x2="13.97" y2="-26.67" width="0.127" layer="51"/>
+<wire x1="-12.7" y1="26.67" x2="-12.7" y2="-29.21" width="0.127" layer="21"/>
+<wire x1="-12.7" y1="-29.21" x2="10.16" y2="-29.21" width="0.127" layer="21"/>
+<wire x1="10.16" y1="-29.21" x2="12.7" y2="-26.67" width="0.127" layer="21"/>
+<wire x1="12.7" y1="-26.67" x2="12.7" y2="26.67" width="0.127" layer="21"/>
+<wire x1="12.7" y1="26.67" x2="-12.7" y2="26.67" width="0.127" layer="21"/>
 </package>
 </packages>
 <symbols>
@@ -191,7 +234,7 @@
 </device>
 </devices>
 </deviceset>
-<deviceset name="EASYVR3_0">
+<deviceset name="EASYVR_3_0">
 <gates>
 </gates>
 <devices>
