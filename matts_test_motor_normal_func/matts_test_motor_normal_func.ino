@@ -1,4 +1,4 @@
-#define NUM_MOTORS 6
+#define NUM_MOTORS 5
 #define ALWAYS_MAX_OUTPUT true
 #define MAX_ERR 1
 
@@ -6,28 +6,36 @@
  * variables
  */
 // array calculations
-int pins[NUM_MOTORS] = {3,5,6,9,10,11};
-float motorLoc[NUM_MOTORS] = {-PI,-TWO_PI/3,-PI/3,0,PI/3,TWO_PI/3};
-float motorLocAdjTrans[NUM_MOTORS] = {-PI,-TWO_PI/3,-PI/3,0,PI/3,TWO_PI/3};
-float motorLocAdjRot[NUM_MOTORS] = {-PI,-TWO_PI/3,-PI/3,0,PI/3,TWO_PI/3};
-float transKernelOutput[NUM_MOTORS] = {0,0,0,0,0,0};
-float waveKernelOutput[NUM_MOTORS] = {0,0,0,0,0,0};
-int motorSpeeds[NUM_MOTORS] = {0,0,0,0,0,0};
+//int pins[NUM_MOTORS] = {4,5,6,9,10,11}; // ard
+int pins[NUM_MOTORS] = {23,6,5,4,3}; // teensy
+float motorLoc[NUM_MOTORS];
+float motorLocAdjTrans[NUM_MOTORS];
+float motorLocAdjRot[NUM_MOTORS];
+float transKernelOutput[NUM_MOTORS];
+float waveKernelOutput[NUM_MOTORS];
+int motorSpeeds[NUM_MOTORS];
 
 // rotation error signal control
 float waveAngle = 0;
-float stepSize = PI/30;
+float stepSize = PI/80; // PI/30;
 int rotDirec = 0;
 
 // angle simulation variables: these values would be received over wifi. these values could probably be integers.
 float trans_angle = PI/6; // angle along which to translate to correct error
-float err_trans = 0.3; // translation error magnitude: from 0 to 1
-float err_rot = -0.5; // rotation error magnitude: from -1 to 1: sign indicates direction of rotation
+float err_trans = 0; // translation error magnitude: from 0 to 1
+float err_rot = 1; // rotation error magnitude: from -1 to 1: sign indicates direction of rotation
 
 /* 
  * setup
  */
 void setup() {
+  assignZeros(transKernelOutput,NUM_MOTORS);
+  assignZeros(waveKernelOutput,NUM_MOTORS);
+  assignZeros(motorSpeeds,NUM_MOTORS);
+  assignLinear(motorLoc,NUM_MOTORS,-PI,PI);
+  assignLinear(motorLocAdjTrans,NUM_MOTORS,-PI,PI);
+  assignLinear(motorLocAdjRot,NUM_MOTORS,-PI,PI);
+  
   for(int i=0; i<NUM_MOTORS; i++){
     pinMode(pins[i], OUTPUT);  
   }
@@ -186,8 +194,30 @@ void writeMotorSpeeds(int* motorSpeeds, int nAngles){
   }
 }
 
+// assign zeros to array (int)
+void assignZeros(int* arr, int len){
+  for (int i=0; i<len; i++){
+    arr[i] = 0;
+  }
+}
 
+// assign zeros to array (float)
+void assignZeros(float* arr, int len){
+  for (int i=0; i<len; i++){
+    arr[i] = 0;
+  }
+}
 
+// linearly space values in given array
+// example: assignLinear(arr,5,0,1): {0,.2,.4,.6,.8}
+void assignLinear(float* arr, int len, float start, float finish){
+  float stp = (finish - start)/len;
+  float val = start;
+  for (int i=0; i<len; i++){
+    arr[i] = val;
+    val = val + stp;
+  }
+}
 
 
 
