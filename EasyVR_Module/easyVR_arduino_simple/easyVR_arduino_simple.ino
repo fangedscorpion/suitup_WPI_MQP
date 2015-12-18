@@ -30,17 +30,25 @@
   If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 */
 
+#include <SoftwareSerial.h>
+
 // Adopted from the above place by Chas Frick for Wearable Haptic Controller MQP
 // Team Suit Up!
 // Modified December 2015
 
-#define EASYVR_SERIAL Serial3;
+SoftwareSerial mySerial(10,11); //RX, TX
+
+#define EASYVR_SERIAL mySerial
 #define DEBUG_SERIAL Serial
 #include "EasyVR.h"
 
+#define OUTPUT_INTERRUPT_PIN 7 //Interrupt to Teensy
+#define HW_JUMPER_FOR_SERIAL_OUTPUT 6 //Stops the Arduino from printing anything but the essential serial messages for teensy testing
+boolean PRINT_FLUFF_FOR_TESTING = true;
+
 int8_t bits = 4;
 int8_t set = 0;
-int8_t group = 0;
+int8_t group = 1;// STOP and RUN in this group
 uint32_t mask = 0;
 uint8_t train = 0;
 uint8_t grammars = 0;
@@ -55,25 +63,39 @@ EasyVR easyvr(EASYVR_SERIAL);
 void setup() {
     // setup EasyVR serial port (high speed)
     EASYVR_SERIAL.begin(9600);
-    DEBUG_SERIAL.begin(9600);
-
+    DEBUG_SERIAL.begin(115200);
+    
+    //pinMode(HW_JUMPER_FOR_SERIAL_OUTPUT, INPUT);
+    PRINT_FLUFF_FOR_TESTING = false;
+    //PRINT_FLUFF_FOR_TESTING = digitalRead(HW_JUMPER_FOR_SERIAL_OUTPUT); //Read jumper
+    
     // initialize EasyVR  
   while (!easyvr.detect())
   {
-    DEBUG_SERIAL.println(F("EasyVR not detected!"));
+    if(PRINT_FLUFF_FOR_TESTING){
+      DEBUG_SERIAL.println(F("EasyVR not detected!"));
+    }
     delay(1000);
   }
 
   easyvr.setPinOutput(EasyVR::IO1, LOW);
-  DEBUG_SERIAL.print(F("EasyVR detected, version "));
-  DEBUG_SERIAL.println(easyvr.getID());
+  easyvr.setKnob(EasyVR::STRICT); // Set the EasyVR to have the strictest interpretation of the words
+  if(PRINT_FLUFF_FOR_TESTING){
+    DEBUG_SERIAL.print(F("EasyVR detected, version "));
+    DEBUG_SERIAL.println(easyvr.getID());
+  }
   easyvr.setTimeout(5);
+  
   lang = EasyVR::ENGLISH;
   easyvr.setLanguage(lang);
+
+  pinMode(OUTPUT_INTERRUPT_PIN, OUTPUT);
 }
 
 bool checkMonitorInput() //From TestEasyVR code. Stripped down quite a bit
 {
+  //PRINT_FLUFF_FOR_TESTING = digitalRead(HW_JUMPER_FOR_SERIAL_OUTPUT); //Read jumper
+  
   if (DEBUG_SERIAL.available() <= 0)
     return false;
 
@@ -84,7 +106,9 @@ bool checkMonitorInput() //From TestEasyVR code. Stripped down quite a bit
     // any character received will exit sleep
     isSleeping = false;
     easyvr.stop();
-    DEBUG_SERIAL.println(F("Forced wake-up!"));
+    if(PRINT_FLUFF_FOR_TESTING){
+      DEBUG_SERIAL.println(F("Forced wake-up!"));
+    }
     return true;
   }
   
@@ -100,8 +124,10 @@ bool checkMonitorInput() //From TestEasyVR code. Stripped down quite a bit
       else
         break;
     }
-    DEBUG_SERIAL.print(F("Mic distance "));
-    DEBUG_SERIAL.println(num);
+    if(PRINT_FLUFF_FOR_TESTING){
+      DEBUG_SERIAL.print(F("Mic distance "));
+      DEBUG_SERIAL.println(num);
+    }
     easyvr.stop();
     easyvr.setMicDistance(num);
   }
@@ -117,8 +143,10 @@ bool checkMonitorInput() //From TestEasyVR code. Stripped down quite a bit
       if (rx == 'l')
         mode = EasyVR::WAKE_ON_LOUDSOUND;
     }
-    DEBUG_SERIAL.print(F("Sleep mode "));
-    DEBUG_SERIAL.println(mode);
+    if(PRINT_FLUFF_FOR_TESTING){
+      DEBUG_SERIAL.print(F("Sleep mode "));
+      DEBUG_SERIAL.println(mode);
+    }
     easyvr.stop();
     easyvr.setPinOutput(EasyVR::IO1, LOW); // LED off
     isSleeping = easyvr.sleep(mode);
@@ -175,10 +203,15 @@ const char* ws3[] =
 const char** ws[] = { ws0, ws1, ws2, ws3 };
 
 void loop() {
-  
- DEBUG_SERIAL.println(F("Starting to wait for word: robot"));
+ 
+ //PRINT_FLUFF_FOR_TESTING = digitalRead(HW_JUMPER_FOR_SERIAL_OUTPUT); //Read jumper
+ 
+ if(PRINT_FLUFF_FOR_TESTING){ 
+  DEBUG_SERIAL.println(F("Starting to wait for word: "));
+ }
+ 
  easyvr.setPinOutput(EasyVR::IO1, HIGH); // LED on (listening)
- easyvr.recognizeWord(0); //Robot is in zero group --> the module will be busy until it finds the command
+ easyvr.recognizeWord(group); //STOP and RUN is in first group --> the module will be busy until it finds the command
  while(!easyvr.hasFinished()){
   //DEBUG_SERIAL.println(F("Waiting for recog"));
   checkMonitorInput();
@@ -192,14 +225,41 @@ void loop() {
   idx = easyvr.getWord();
   if (idx >= 0)
   {
-    DEBUG_SERIAL.print(F("Word: "));
-    DEBUG_SERIAL.print(easyvr.getWord());
-    DEBUG_SERIAL.print(F(" = "));
+    if(PRINT_FLUFF_FOR_TESTING){
+      DEBUG_SERIAL.print(F("Word: "));
+      DEBUG_SERIAL.print(easyvr.getWord());
+    }
+
+    //////////////////////////////////
+    // Communication with the Arduino
+    // The Arduino hears the word and prints the letter to serial 
+    // Then tells the Teensy to check for serial
+    if(easyvr.getWord() == 6){ // STOP
+      DEBUG_SERIAL.print(F("S")); //Put stop onto output
+      digitalWrite(OUTPUT_INTERRUPT_PIN, HIGH);
+      delay(1);
+      digitalWrite(OUTPUT_INTERRUPT_PIN, LOW);
+    }
+    if(easyvr.getWord() == 3){ //RUN
+      DEBUG_SERIAL.print(F("R")); //Put run onto output serial
+      digitalWrite(OUTPUT_INTERRUPT_PIN, HIGH);
+      delay(1);
+      digitalWrite(OUTPUT_INTERRUPT_PIN, LOW);
+    }
+
+    if(PRINT_FLUFF_FOR_TESTING){
+      DEBUG_SERIAL.print(F(" = "));
+    }
+    
     if (useCommands)
-      DEBUG_SERIAL.println(ws[group][idx]);
+       if(PRINT_FLUFF_FOR_TESTING){
+          DEBUG_SERIAL.println(ws[group][idx]);
+       }
     // --- optional: builtin words can be retrieved from the module
     else if (set < 4)
-      DEBUG_SERIAL.println(ws[set][idx]);
+      if(PRINT_FLUFF_FOR_TESTING){
+          DEBUG_SERIAL.println(ws[set][idx]);
+      }
     // ---
     else
     {
@@ -211,10 +271,15 @@ void loop() {
             break;
         }
       if (idx < 0)
-        DEBUG_SERIAL.println(name);
+          if(PRINT_FLUFF_FOR_TESTING){
+              DEBUG_SERIAL.println(name);
+          }
       else
-        DEBUG_SERIAL.println();
-    }
+           if(PRINT_FLUFF_FOR_TESTING){
+              DEBUG_SERIAL.println();
+           }
+     }
+    
     // ok, let's try another set
     if (set < 4)
     {
@@ -235,15 +300,20 @@ void loop() {
     idx = easyvr.getCommand();
     if (idx >= 0)
     {
-      DEBUG_SERIAL.print(F("Command: "));
-      DEBUG_SERIAL.print(easyvr.getCommand());
+      if(PRINT_FLUFF_FOR_TESTING){
+        DEBUG_SERIAL.print(F("Command: "));
+        DEBUG_SERIAL.print(easyvr.getCommand());
+      }
       if (easyvr.dumpCommand(group, idx, name, train))
       {
-        DEBUG_SERIAL.print(F(" = "));
-        DEBUG_SERIAL.println(name);
+        if(PRINT_FLUFF_FOR_TESTING){
+          DEBUG_SERIAL.print(F(" = "));
+          DEBUG_SERIAL.println(name);
       }
       else
-        DEBUG_SERIAL.println();
+        if(PRINT_FLUFF_FOR_TESTING){
+          DEBUG_SERIAL.println();
+        }
       // ok, let's try another group
       do
       {
@@ -257,14 +327,18 @@ void loop() {
     else // errors or timeout
     {
       if (easyvr.isTimeout())
-        DEBUG_SERIAL.println(F("Timed out, try again..."));
+        if(PRINT_FLUFF_FOR_TESTING){
+          DEBUG_SERIAL.println(F("Timed out, try again..."));
+        }
       int16_t err = easyvr.getError();
       if (err >= 0)
       {
-        DEBUG_SERIAL.print(F("Error 0x"));
-        DEBUG_SERIAL.println(err, HEX);
+        if(PRINT_FLUFF_FOR_TESTING){
+          DEBUG_SERIAL.print(F("Error 0x"));
+          DEBUG_SERIAL.println(err, HEX);
+        }
       }
     }
   }
-
+  }
 }
