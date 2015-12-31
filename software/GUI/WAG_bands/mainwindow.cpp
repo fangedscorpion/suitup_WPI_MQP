@@ -120,14 +120,40 @@ void MainWindow::createMenuActions(QMenuBar *menu)
 
 // The first window a user sees on launch.
 QWidget* MainWindow::createWelcomeWindow() {
-//    QHBox
-    QLabel *welcome = new QLabel("To start, open an existing file or create a new file from the menu above");
-    welcome->setWordWrap(true);
-    welcome->setAlignment(Qt::AlignCenter);
-    welcome->setMargin(10);
-    saveAct->setEnabled(false);
-    saveAsAct->setEnabled(false);
-    return welcome;
+    QWidget *w = new QWidget;
+    QHBoxLayout *l = new QHBoxLayout;
+    QPushButton *trainerBtn = new QPushButton("I'm a Trainer");
+    QPushButton *traineeBtn = new QPushButton("I'm a Trainee");
+    QLabel *trainerLbl = new QLabel("A trainer can create and save motions");
+    QLabel *traineeLbl = new QLabel("A trainee can playback motions");
+//    QLabel *welcome = new QLabel("To start, open an existing file or create a new file from the menu above");
+//    welcome->setWordWrap(true);
+//    welcome->setAlignment(Qt::AlignCenter);
+//    welcome->setMargin(10);
+//    saveAct->setEnabled(false);
+//    saveAsAct->setEnabled(false);
+//    return welcome;
+    trainerLbl->setWordWrap(true);
+    traineeLbl->setWordWrap(true);
+    trainerLbl->setAlignment(Qt::AlignCenter);
+    traineeLbl->setAlignment(Qt::AlignCenter);
+    QVBoxLayout *v1 = new QVBoxLayout;
+    v1->addWidget(trainerBtn);
+    v1->addWidget(trainerLbl);
+    v1->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+
+    QVBoxLayout *v2 = new QVBoxLayout;
+    v2->addWidget(traineeBtn);
+    v2->addWidget(traineeLbl);
+    v2->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+
+    l->addLayout(v1);
+    l->addLayout(v2);
+    w->setLayout(l);
+
+    connect(trainerBtn, SIGNAL(released()), this, SLOT(trainer()));
+    connect(traineeBtn, SIGNAL(released()), this, SLOT(trainee()));
+    return w;
 }
 
 // settings overlay
@@ -378,7 +404,7 @@ void MainWindow::createOpenFromLib() {
 }
 
 void MainWindow::addTab(ACTION_TYPE t, QString filename) {
-    TabContent *tab = new TabContent(filename, t);
+    TabContent *tab = new TabContent(this, filename, t);
     connect(this, SIGNAL(resizedWindow()), tab, SLOT(applicationResized()));
     tabs->addTab(tab, tab->getFilename());
     tabs->setCurrentIndex(tabs->indexOf(tab));
@@ -417,6 +443,17 @@ void MainWindow::addTag() {
     saveAsTagsTextEdit->clear();
 }
 
+void MainWindow::trainer() {
+    type = TRAINER;
+    addTab(RECORD, "untitled.wagz");
+}
+
+void MainWindow::trainee() {
+    // TODO: this should allow for either local or lib
+    type = TRAINEE;
+    launchOpenFromLibrary();
+}
+
 // opens the dialog box to find a local file
 void MainWindow::launchOpenFromComputer() {
     // File browser
@@ -433,6 +470,7 @@ void MainWindow::openFromLibrary() {
     // TODO: open file somehow...
     saveAct->setEnabled(true);
     saveAsAct->setEnabled(true);
+    addTab(PLAYBACK, "filename.wagz");
     closeOpenFromLibrary();
 }
 

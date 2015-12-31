@@ -28,6 +28,7 @@
 #include "playbackcontroller.h"
 
 enum ACTION_TYPE { EDIT, PLAYBACK, RECORD };
+enum USER_TYPE { TRAINER, TRAINEE };
 
 namespace Ui {
 class MainWindow;
@@ -41,9 +42,11 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    USER_TYPE getUserType() { return type;}
 
 private:
     Ui::MainWindow *ui;
+    USER_TYPE type;
     void createMenuActions(QMenuBar *menu);
     void resizeEvent(QResizeEvent* r);
     void createSettings();
@@ -115,6 +118,9 @@ private slots:
     void saveNewFile();
     void closeNewFile();
     void launchNewFile();
+    // on launch
+    void trainer();
+    void trainee();
 
 signals:
     void resizedWindow();

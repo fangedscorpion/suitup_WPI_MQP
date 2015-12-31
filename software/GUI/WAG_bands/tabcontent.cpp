@@ -1,6 +1,6 @@
 #include "tabcontent.h"
 
-TabContent::TabContent(QString filename, ACTION_TYPE t) {
+TabContent::TabContent(MainWindow *in_parent, QString filename, ACTION_TYPE t) : parent(in_parent){
     filenameString = filename;
     playbackControls = new PlaybackController;
     titleFont = QFont( "Arial", 15, QFont::Bold);
@@ -20,21 +20,24 @@ TabContent::TabContent(QString filename, ACTION_TYPE t) {
     // contains both options and viewer
     QHBoxLayout *splitPanes = new QHBoxLayout;
     QVBoxLayout *vl = new QVBoxLayout;
-    vl->addWidget(createModeRadios());
-    vl->addWidget(optionsStack);
-    switch (t) {
-    case EDIT:
-        showEditMode();
-        break;
-    case PLAYBACK:
+
+//    if (parent->getUserType() == TRAINER) {
+//        vl->addWidget(createModeRadios());
+//        switch (t) {
+//        case EDIT:
+//            showEditMode();
+//            break;
+//        case PLAYBACK:
+//            showPlaybackMode();
+//            break;
+//        default: // includes record
+//            showRecordMode();
+//            break;
+//        }
+//    } else {
         showPlaybackMode();
-        // TODO: if you are the author, allow this
-        editRadio->setEnabled(false);
-        break;
-    default: // includes record
-        showRecordMode();
-        break;
-    }
+//    }
+    vl->addWidget(optionsStack);
 
     splitPanes->addLayout(vl, 1);
     splitPanes->addWidget(viewerStack, 2);
@@ -84,13 +87,16 @@ QWidget* TabContent::createModeRadios() {
     modeRadiosGroup->setFont(titleFont);
     playbackRadio = new QRadioButton("Playback Motion");
     editRadio = new QRadioButton("Edit Motion");
+    recordRadio = new QRadioButton("Record Motion");
     QVBoxLayout *vl = new QVBoxLayout;
     vl->addWidget(playbackRadio);
     vl->addWidget(editRadio);
+    vl->addWidget(recordRadio);
     modeRadiosGroup->setLayout(vl);
 
     connect(playbackRadio, SIGNAL(released()), this, SLOT(showPlaybackMode()));
     connect(editRadio, SIGNAL(released()), this, SLOT(showEditMode()));
+    connect(recordRadio, SIGNAL(released()), this, SLOT(showRecordMode()));
     return modeRadiosGroup;
 }
 
@@ -175,11 +181,11 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
 
     initializePlaybackSettings();
 
-
     return playbackOptions;
 }
 
 // Edit Recording options and controller
+// TODO: add edit file name and description in here
 QWidget* TabContent::createEditOptionsAndControls() {
     // Edit recording options
     QGroupBox *editOptions = new QGroupBox("Editing Options");
@@ -195,21 +201,15 @@ QWidget* TabContent::createEditOptionsAndControls() {
     QPushButton *splitBtn = new QPushButton;
     splitBtn->setIcon(splitIcon);
     splitBtn->setText("Split");
-    QPushButton *rerecord = new QPushButton("Restart Recording");
-    rerecord->setIcon(recordIcon);
-    rerecord->setIconSize(QSize(10,10));
     QVBoxLayout *recordPlaybackLayout = new QVBoxLayout;
     QVBoxLayout *buttons = new QVBoxLayout;
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     buttons->addWidget(undoBtn);
     buttons->addWidget(cropBtn);
     buttons->addWidget(splitBtn);
-    buttons->addWidget(rerecord);
     recordPlaybackLayout->addLayout(buttons, 1);
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     editOptions->setLayout(recordPlaybackLayout);
-
-    connect(rerecord, SIGNAL(released()), this, SLOT(showRecordMode()));
 
     return editOptions;
 }

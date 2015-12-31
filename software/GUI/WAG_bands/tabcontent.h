@@ -9,13 +9,14 @@ class TabContent : public QWidget
     Q_OBJECT
 
 public:
-    TabContent(QString filename, ACTION_TYPE t);
+    TabContent(MainWindow* parent, QString filename, ACTION_TYPE t);
     ~TabContent();
 
     QString getFilename() { return filenameString;}
     void updateWithNewFilename(QString f);
 
 private:
+    MainWindow* parent;
     QWidget* createModeRadios();
     QWidget* createPlaybackOptionsAndControls();
     QWidget* createEditOptionsAndControls();
@@ -35,6 +36,7 @@ private:
     QGroupBox *modeRadiosGroup;
     QRadioButton *playbackRadio;
     QRadioButton *editRadio;
+    QRadioButton *recordRadio;
 
     // playback recording options
 
