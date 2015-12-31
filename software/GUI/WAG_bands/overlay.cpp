@@ -19,6 +19,6 @@ void Overlay::paintEvent(QPaintEvent *)
  style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
-void Overlay::makeTransparent() {
+void Overlay::makeSemiTransparent() {
     this->setStyleSheet("background-color: rgba(255, 255, 255, 190);");
 }

@@ -3,6 +3,7 @@
 #include "visualization/glwidget.h"
 #include "playbackcontroller.h"
 #include "tabcontent.h"
+#include "smartpushbutton.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
@@ -12,13 +13,25 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget(applicationWidget);
     QVBoxLayout *applicationLayout = new QVBoxLayout;
     applicationWidget->setLayout(applicationLayout);
-    // the window opens onto the settings page
+
     setWindowTitle(tr("WAG bands"));
     setMinimumSize(750, 500);
     setMaximumSize(1000, 600);
 
     titleFont = QFont( "Arial", 15, QFont::Bold);
     titleStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-top: 0.5em; subcontrol-origin: margin; left: 10px; padding: 25px 3px 0 3px;}";
+
+    // users
+    USER u("Trainer", "A trainer can create and save motions for others to use");
+    u.addAction(EDIT);
+    u.addAction(RECORD);
+    u.addAction(PLAYBACK);
+
+    USER u2("Trainee", "A trainee can playback motions");
+    u2.addAction(PLAYBACK);
+    std::vector<USER> users;
+    users.push_back(u);
+    users.push_back(u2);
 
     // menubar
     QMenuBar *menu = new QMenuBar;
@@ -34,12 +47,12 @@ MainWindow::MainWindow(QWidget *parent) :
     // tabs
     tabs = new QTabWidget;
     tabs->setTabsClosable(true);
-    tabs->addTab(createWelcomeWindow(), "Getting Started");
+    tabs->addTab(createWelcomeWindow(users), "User selection");
     tabs->clearFocus();
 
-    // Fade out the main Window
     overlay = new Overlay(this);
-    overlay->makeTransparent();
+    overlay->makeSemiTransparent();
+    overlay->hide();
     createSettings();
     createSaveAs();
     createOpenFromLib();
@@ -119,40 +132,25 @@ void MainWindow::createMenuActions(QMenuBar *menu)
 }
 
 // The first window a user sees on launch.
-QWidget* MainWindow::createWelcomeWindow() {
+QWidget* MainWindow::createWelcomeWindow(std::vector<USER> u) {
     QWidget *w = new QWidget;
     QHBoxLayout *l = new QHBoxLayout;
-    QPushButton *trainerBtn = new QPushButton("I'm a Trainer");
-    QPushButton *traineeBtn = new QPushButton("I'm a Trainee");
-    QLabel *trainerLbl = new QLabel("A trainer can create and save motions");
-    QLabel *traineeLbl = new QLabel("A trainee can playback motions");
-//    QLabel *welcome = new QLabel("To start, open an existing file or create a new file from the menu above");
-//    welcome->setWordWrap(true);
-//    welcome->setAlignment(Qt::AlignCenter);
-//    welcome->setMargin(10);
-//    saveAct->setEnabled(false);
-//    saveAsAct->setEnabled(false);
-//    return welcome;
-    trainerLbl->setWordWrap(true);
-    traineeLbl->setWordWrap(true);
-    trainerLbl->setAlignment(Qt::AlignCenter);
-    traineeLbl->setAlignment(Qt::AlignCenter);
-    QVBoxLayout *v1 = new QVBoxLayout;
-    v1->addWidget(trainerBtn);
-    v1->addWidget(trainerLbl);
-    v1->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-    QVBoxLayout *v2 = new QVBoxLayout;
-    v2->addWidget(traineeBtn);
-    v2->addWidget(traineeLbl);
-    v2->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    int i;
+    for(i=0; i < u.size(); i++) {
+        smartPushButton *btn = new smartPushButton(u[i].getName(), u[i]);
+        QLabel *lbl = new QLabel(u[i].getDescription());
+        lbl->setWordWrap(true);
+        lbl->setAlignment(Qt::AlignCenter);
+        QVBoxLayout *v = new QVBoxLayout;
+        v->addWidget(btn);
+        v->addWidget(lbl);
+        v->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+        l->addLayout(v);
+        w->setLayout(l);
+        connect(btn, SIGNAL(released(USER)), this, SLOT(launchUserOptions(USER)));
+    }
 
-    l->addLayout(v1);
-    l->addLayout(v2);
-    w->setLayout(l);
-
-    connect(trainerBtn, SIGNAL(released()), this, SLOT(trainer()));
-    connect(traineeBtn, SIGNAL(released()), this, SLOT(trainee()));
     return w;
 }
 
@@ -164,6 +162,7 @@ QWidget* MainWindow::createWelcomeWindow() {
 void MainWindow::createSettings() {
     // Settings widget
     settingsWidget = new OverlayWidget(this);
+    settingsWidget->hide();
     QVBoxLayout *settingsLayout = new QVBoxLayout;
     QLabel *lbl = new QLabel("Settings");
     lbl->setFont(titleFont);
@@ -411,6 +410,10 @@ void MainWindow::addTab(ACTION_TYPE t, QString filename) {
     tabs->clearFocus();
 }
 
+void MainWindow::launchUserOptions(USER u) {
+    qDebug() << "User " << u.getName();
+}
+
 // save the motion file!
 void MainWindow::save() {
     /*
@@ -441,17 +444,6 @@ void MainWindow::launchSaveToComputer() {
 void MainWindow::addTag() {
     saveAsTagsLabel->setText(saveAsTagsTextEdit->text() + "; " + saveAsTagsLabel->text());
     saveAsTagsTextEdit->clear();
-}
-
-void MainWindow::trainer() {
-    type = TRAINER;
-    addTab(RECORD, "untitled.wagz");
-}
-
-void MainWindow::trainee() {
-    // TODO: this should allow for either local or lib
-    type = TRAINEE;
-    launchOpenFromLibrary();
 }
 
 // opens the dialog box to find a local file
@@ -485,8 +477,6 @@ void MainWindow::closeOpenFromLibrary() {
     overlay->hide();
     openFromLibWidget->hide();
 }
-
-
 
 // event for when the main window is resized
 void MainWindow::resizeEvent(QResizeEvent* r) {

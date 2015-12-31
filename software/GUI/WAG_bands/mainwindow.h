@@ -26,9 +26,36 @@
 #include "overlay.h"
 #include "overlaywidget.h"
 #include "playbackcontroller.h"
+#include <set>
 
 enum ACTION_TYPE { EDIT, PLAYBACK, RECORD };
 enum USER_TYPE { TRAINER, TRAINEE };
+struct USER {
+    USER(){}
+    USER(std::string in_name, std::string in_desc) {
+        name = in_name;
+        description = in_desc;
+    }
+    const char* getName() {return name.c_str();}
+    void addAction(ACTION_TYPE a) {actions.insert(a);}
+    bool hasAction(ACTION_TYPE a) {return actions.find(a) != actions.end();}
+    std::set<ACTION_TYPE> getActions() {return actions;}
+    const char* getDescription() {return description.c_str();}
+
+//    USER& operator=(USER& other) {
+//        if (this != &other) {
+//            name = other.getName();
+//            actions = other.getActions();
+//            description = other.getDescription();
+//        }
+//        return *this;
+//    }
+
+private:
+        std::string name;
+        std::set<ACTION_TYPE> actions;
+        std::string description;
+};
 
 namespace Ui {
 class MainWindow;
@@ -55,7 +82,7 @@ private:
     void createViewer();
     void createSaveAs();
     void createOpenFromLib();
-    QWidget* createWelcomeWindow();
+    QWidget* createWelcomeWindow(std::vector<USER> u);
     void createNewFile();
     void addTab(ACTION_TYPE t, QString filename);
 
@@ -119,8 +146,7 @@ private slots:
     void closeNewFile();
     void launchNewFile();
     // on launch
-    void trainer();
-    void trainee();
+    void launchUserOptions(USER);
 
 signals:
     void resizedWindow();

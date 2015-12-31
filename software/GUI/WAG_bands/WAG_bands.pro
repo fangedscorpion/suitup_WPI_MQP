@@ -30,6 +30,7 @@ SOURCES += main.cpp\
     visualization/glwidget.cpp \
     visualization/visualization.cpp \
     visualization/vertextranslator.cpp\
+    smartpushbutton.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
@@ -48,6 +49,7 @@ HEADERS  += mainwindow.h \
     visualization/glwidget.h \
     visualization/visualization.h \
     visualization/vertextranslator.h \
+    smartpushbutton.h
 
 FORMS    +=
 

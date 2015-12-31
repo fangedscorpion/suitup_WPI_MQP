@@ -15,7 +15,7 @@ public:
     Overlay(QWidget *parent);
     ~Overlay();
     void paintEvent(QPaintEvent *);
-    void makeTransparent();
+    void makeSemiTransparent();
 
 private:
 
