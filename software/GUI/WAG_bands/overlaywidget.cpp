@@ -1,6 +1,17 @@
 #include "overlaywidget.h"
+#include <QFont>
 
-OverlayWidget::OverlayWidget(QWidget *parent) : Overlay(parent){
+OverlayWidget::OverlayWidget(QWidget *parent, std::string title) : Overlay(parent){
+
+    // title and layout
+    QFont titleFont = QFont( "Arial", 15, QFont::Bold);
+    QVBoxLayout *layout = new QVBoxLayout;
+    QLabel *lbl = new QLabel(title.c_str());
+    lbl->setFont(titleFont);
+    lbl->setAlignment(Qt::AlignCenter);
+    layout->addWidget(lbl);
+    layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    this->setLayout(layout);
 
     // drop shadow
     CustomShadowEffect *bodyShadow = new CustomShadowEffect();
@@ -13,12 +24,17 @@ OverlayWidget::OverlayWidget(QWidget *parent) : Overlay(parent){
     this->setAutoFillBackground(true);
     this->setPalette(Pal);
     this->resize(parentWidget()->width()-100, parentWidget()->height()-60);
-}
 
+    this->hide();
+}
 
 OverlayWidget::~OverlayWidget(){}
 
 void OverlayWidget::resizeWindow() {
     this->resize(parentWidget()->width()-100, this->height());
     Overlay::resizeWindow();
+}
+
+QVBoxLayout* OverlayWidget::getLayout() {
+    return static_cast<QVBoxLayout*>(this->layout());
 }

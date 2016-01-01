@@ -1,6 +1,6 @@
 #include "tabcontent.h"
 
-TabContent::TabContent(MainWindow *in_parent, QString filename, ACTION_TYPE t) : parent(in_parent){
+TabContent::TabContent(MainWindow *in_parent, QString filename, USER u) : parent(in_parent){
     filenameString = filename;
     playbackControls = new PlaybackController;
     titleFont = QFont( "Arial", 15, QFont::Bold);
@@ -8,35 +8,24 @@ TabContent::TabContent(MainWindow *in_parent, QString filename, ACTION_TYPE t) :
     createIcons();
 
     optionsStack = new QStackedWidget;
-    optionsStack->addWidget(createEditOptionsAndControls());
-    optionsStack->addWidget(createPlaybackOptionsAndControls());
-    optionsStack->addWidget(createRecordOptionsAndController());
-
     viewerStack = new QStackedWidget;
-    viewerStack->addWidget(createViewer(EDIT));
-    viewerStack->addWidget(createViewer(PLAYBACK));
-    viewerStack->addWidget(createFileInfoGroup());
+    if (u.hasAction(RECORD)) {
+        optionsStack->addWidget(createRecordOptionsAndController());
+        viewerStack->addWidget(createFileInfoGroup());
+    }
+    if (u.hasAction(EDIT)) {
+        optionsStack->addWidget(createEditOptionsAndControls());
+        viewerStack->addWidget(createViewer(EDIT));
+    }
+    if (u.hasAction(PLAYBACK)) {
+        optionsStack->addWidget(createPlaybackOptionsAndControls());
+        viewerStack->addWidget(createViewer(PLAYBACK));
+    }
 
     // contains both options and viewer
     QHBoxLayout *splitPanes = new QHBoxLayout;
     QVBoxLayout *vl = new QVBoxLayout;
 
-//    if (parent->getUserType() == TRAINER) {
-//        vl->addWidget(createModeRadios());
-//        switch (t) {
-//        case EDIT:
-//            showEditMode();
-//            break;
-//        case PLAYBACK:
-//            showPlaybackMode();
-//            break;
-//        default: // includes record
-//            showRecordMode();
-//            break;
-//        }
-//    } else {
-        showPlaybackMode();
-//    }
     vl->addWidget(optionsStack);
 
     splitPanes->addLayout(vl, 1);

@@ -9,7 +9,7 @@ class TabContent : public QWidget
     Q_OBJECT
 
 public:
-    TabContent(MainWindow* parent, QString filename, ACTION_TYPE t);
+    TabContent(MainWindow* parent, QString filename, USER u);
     ~TabContent();
 
     QString getFilename() { return filenameString;}

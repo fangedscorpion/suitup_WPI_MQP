@@ -1,5 +1,4 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QMainWindow>
 #include <QLabel>
@@ -26,36 +25,8 @@
 #include "overlay.h"
 #include "overlaywidget.h"
 #include "playbackcontroller.h"
+#include "smartpushbutton.h"
 #include <set>
-
-enum ACTION_TYPE { EDIT, PLAYBACK, RECORD };
-enum USER_TYPE { TRAINER, TRAINEE };
-struct USER {
-    USER(){}
-    USER(std::string in_name, std::string in_desc) {
-        name = in_name;
-        description = in_desc;
-    }
-    const char* getName() {return name.c_str();}
-    void addAction(ACTION_TYPE a) {actions.insert(a);}
-    bool hasAction(ACTION_TYPE a) {return actions.find(a) != actions.end();}
-    std::set<ACTION_TYPE> getActions() {return actions;}
-    const char* getDescription() {return description.c_str();}
-
-//    USER& operator=(USER& other) {
-//        if (this != &other) {
-//            name = other.getName();
-//            actions = other.getActions();
-//            description = other.getDescription();
-//        }
-//        return *this;
-//    }
-
-private:
-        std::string name;
-        std::set<ACTION_TYPE> actions;
-        std::string description;
-};
 
 namespace Ui {
 class MainWindow;
@@ -69,22 +40,19 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    USER_TYPE getUserType() { return type;}
-
 private:
     Ui::MainWindow *ui;
-    USER_TYPE type;
-    void createMenuActions(QMenuBar *menu);
+    void createMenuButtons();
     void resizeEvent(QResizeEvent* r);
     void createSettings();
     void createPlaybackOptionsAndControls();
     void createEditRecordingOptionsAndControls();
     void createViewer();
-    void createSaveAs();
-    void createOpenFromLib();
-    QWidget* createWelcomeWindow(std::vector<USER> u);
-    void createNewFile();
-    void addTab(ACTION_TYPE t, QString filename);
+//    void createSaveAs();
+    void createOpenFromLib(USER u);
+    QWidget* createUserSelectionWindow(std::vector<USER> u);
+    void createNewFile(USER u);
+    void addTab(USER u, QString filename);
 
     Overlay *overlay;
     OverlayWidget *settingsWidget;
@@ -95,8 +63,12 @@ private:
     QFont titleFont;
     QString titleStyleSheet;
     // menubar
-    QAction *saveAct;
-    QAction *saveAsAct;
+    smartPushButton *newBtn;
+    smartPushButton *openBtn;
+    smartPushButton *settingsBtn;
+    smartPushButton *helpBtn;
+    smartPushButton *saveBtn;
+    QWidget *menu;
     // settings overlay
     QGraphicsView *view;
     QCheckBox *voiceControl;
@@ -122,34 +94,32 @@ private:
     QTextEdit *newFileDescription;
     QLineEdit *newFileTagsTextEdit;
     QLabel *newFileTagsLabel;
+    // user options
+    OverlayWidget *userOptionsWidget;
 
 
 private slots:
     // open
-    void launchOpenFromComputer();
-    void launchOpenFromLibrary();
+    void launchOpenFromComputer(USER u);
+    void launchOpenFromLibrary(USER u);
     void closeOpenFromLibrary();
-    void openFromLibrary();
+    void openFromLibrary(USER u);
     // settings
     void launchSettings();
     void closeSettings();
     void saveSettings();
     // save/saveAs
     void save();
-    void launchSaveAs();
-    void saveSaveAs();
-    void closeSaveAs();
-    void launchSaveToComputer();
     void addTag();
     // new file
-    void saveNewFile();
+    void saveNewFile(USER u);
     void closeNewFile();
-    void launchNewFile();
+    void launchNewFile(USER u);
     // on launch
     void launchUserOptions(USER);
+    void closeUserOptions();
+    void handleUserOptions(USER);
 
 signals:
     void resizedWindow();
 };
-
-#endif // MAINWINDOW_H

@@ -2,7 +2,7 @@
 #include "superslider.h"
 #include "visualization/glwidget.h"
 #include "playbackcontroller.h"
-#include "tabcontent.h"
+
 #include "smartpushbutton.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -22,10 +22,9 @@ MainWindow::MainWindow(QWidget *parent) :
     titleStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-top: 0.5em; subcontrol-origin: margin; left: 10px; padding: 25px 3px 0 3px;}";
 
     // users
-    USER u("Trainer", "A trainer can create and save motions for others to use");
+    USER u("Trainer", "A trainer can record and save motions for others to use");
     u.addAction(EDIT);
     u.addAction(RECORD);
-    u.addAction(PLAYBACK);
 
     USER u2("Trainee", "A trainee can playback motions");
     u2.addAction(PLAYBACK);
@@ -34,9 +33,10 @@ MainWindow::MainWindow(QWidget *parent) :
     users.push_back(u2);
 
     // menubar
-    QMenuBar *menu = new QMenuBar;
-    menu->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    createMenuActions(menu);
+    menu = new QWidget;
+    createMenuButtons();
+
+
     // line under menubar
     QFrame *line = new QFrame();
     line->setObjectName(QString::fromUtf8("line"));
@@ -47,22 +47,17 @@ MainWindow::MainWindow(QWidget *parent) :
     // tabs
     tabs = new QTabWidget;
     tabs->setTabsClosable(true);
-    tabs->addTab(createWelcomeWindow(users), "User selection");
+    tabs->addTab(createUserSelectionWindow(users), "User selection");
     tabs->clearFocus();
 
     overlay = new Overlay(this);
     overlay->makeSemiTransparent();
     overlay->hide();
     createSettings();
-    createSaveAs();
-    createOpenFromLib();
-    createNewFile();
+//    createSaveAs();
 
     // connections for window resizing
     connect(this, SIGNAL(resizedWindow()), settingsWidget, SLOT(resizeWindow()));
-    connect(this, SIGNAL(resizedWindow()), saveAsWidget, SLOT(resizeWindow()));
-    connect(this, SIGNAL(resizedWindow()), openFromLibWidget, SLOT(resizeWindow()));
-    connect(this, SIGNAL(resizedWindow()), newFileWidget, SLOT(resizeWindow()));
     connect(this, SIGNAL(resizedWindow()), overlay, SLOT(resizeWindow()));
 
     applicationLayout->setMargin(5);
@@ -75,67 +70,32 @@ MainWindow::~MainWindow() {}
 
 // Menubar actions
 // TODO: finish actions
-void MainWindow::createMenuActions(QMenuBar *menu)
+void MainWindow::createMenuButtons()
 {
-    QAction *newAct = new QAction(tr("New"), this);
-    newAct->setShortcuts(QKeySequence::New);
-    newAct->setStatusTip(tr("Create a new file"));
-    connect(newAct, SIGNAL(triggered()), this, SLOT(launchNewFile()));
-
-    QAction *openFromCompAct = new QAction(tr("Open from computer"), this);
-    openFromCompAct->setStatusTip(tr("Open an existing file from your computer"));
-    connect(openFromCompAct, SIGNAL(triggered()), this, SLOT(launchOpenFromComputer()));
-
-    QAction *openFromLibAct = new QAction(tr("Open from motion library"), this);
-    openFromLibAct->setShortcuts(QKeySequence::Open);
-    openFromLibAct->setStatusTip(tr("Open an existing file from the library"));
-    connect(openFromLibAct, SIGNAL(triggered()), this, SLOT(launchOpenFromLibrary()));
-
-    saveAct = new QAction(tr("Save"), this);
-    saveAct->setShortcuts(QKeySequence::Save);
-    saveAct->setStatusTip(tr("Save the current file"));
-    connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
-
-    saveAsAct = new QAction(tr("Save As"), this);
-    saveAsAct->setShortcuts(QKeySequence::SaveAs);
-    saveAsAct->setStatusTip(tr("Save the current file to a new name"));
-    connect(saveAsAct, SIGNAL(triggered()), this, SLOT(launchSaveAs()));
-
-    QAction *exitAct = new QAction(tr("Exit"), this);
-    exitAct->setShortcuts(QKeySequence::Quit);
-    exitAct->setStatusTip(tr("Exit the program"));
-//    connect(exitAct, SIGNAL(triggered()), this, SLOT(exit()));
-
-    QAction *settingsAct = new QAction(tr("Settings"), this);
-    settingsAct->setStatusTip(tr("Open settings window"));
-    connect(settingsAct, SIGNAL(triggered()), this, SLOT(launchSettings()));
-
-    QAction *helpAct = new QAction(tr("Help"), this);
-    helpAct->setStatusTip(tr("Help!"));
+    newBtn = new smartPushButton("Record New Motion");
+    newBtn->hide();
+    openBtn = new smartPushButton("Load Motion");
+    openBtn->hide();
+    saveBtn = new smartPushButton("Save Motion");
+    saveBtn->hide();
+    settingsBtn = new smartPushButton("Settings");
+    connect(settingsBtn, SIGNAL(released()), this, SLOT(launchSettings()));
+    helpBtn = new smartPushButton("Help");
 //    connect(helpAct, SIGNAL(triggered()), this, SLOT(help()));
 
-    QMenu *fileMenu = menu->addMenu(tr("File"));
-    fileMenu->addAction(newAct);
-    QMenu *open = new QMenu("Open");
-    open->addAction(openFromCompAct);
-    open->addAction(openFromLibAct);
-    fileMenu->addMenu(open);
-    fileMenu->addAction(saveAct);
-    fileMenu->addAction(saveAsAct);
-    fileMenu->addSeparator();
-    fileMenu->addAction(settingsAct);
-    fileMenu->addSeparator();
-    fileMenu->addAction(exitAct);
-
-    QMenu *helpMenu = menu->addMenu(tr("Help"));
-    helpMenu->addAction(helpAct);
+    QHBoxLayout* menuLayout = new QHBoxLayout;
+    menuLayout->addWidget(newBtn);
+    menuLayout->addWidget(saveBtn);
+    menuLayout->addWidget(openBtn);
+    menuLayout->addWidget(settingsBtn);
+    menuLayout->addWidget(helpBtn);
+    menu->setLayout(menuLayout);
 }
 
 // The first window a user sees on launch.
-QWidget* MainWindow::createWelcomeWindow(std::vector<USER> u) {
+QWidget* MainWindow::createUserSelectionWindow(std::vector<USER> u) {
     QWidget *w = new QWidget;
     QHBoxLayout *l = new QHBoxLayout;
-
     int i;
     for(i=0; i < u.size(); i++) {
         smartPushButton *btn = new smartPushButton(u[i].getName(), u[i]);
@@ -150,7 +110,6 @@ QWidget* MainWindow::createWelcomeWindow(std::vector<USER> u) {
         w->setLayout(l);
         connect(btn, SIGNAL(released(USER)), this, SLOT(launchUserOptions(USER)));
     }
-
     return w;
 }
 
@@ -161,15 +120,9 @@ QWidget* MainWindow::createWelcomeWindow(std::vector<USER> u) {
 // TODO: add pop up if they did not calibrate or connect bands
 void MainWindow::createSettings() {
     // Settings widget
-    settingsWidget = new OverlayWidget(this);
-    settingsWidget->hide();
-    QVBoxLayout *settingsLayout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("Settings");
-    lbl->setFont(titleFont);
-    lbl->setAlignment(Qt::AlignCenter);
-    lbl->setMinimumHeight(50);
-    settingsLayout->addWidget(lbl);
-    settingsLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    settingsWidget = new OverlayWidget(this, "Settings");
+    QVBoxLayout *settingsLayout = settingsWidget->getLayout();
+
     QHBoxLayout *h = new QHBoxLayout;
     QVBoxLayout *o = new QVBoxLayout;
 
@@ -235,94 +188,76 @@ void MainWindow::createSettings() {
     connect(ok, SIGNAL(released()), this, SLOT(saveSettings()));
     connect(cancel, SIGNAL(released()), this, SLOT(closeSettings()));
     // TODO: connect calibrate and connectBands
-    settingsWidget->setLayout(settingsLayout);
 }
-
 
 // Save As overlay
 // TODO: add * to required fields, and check them.
-void MainWindow::createSaveAs() {
-    //Save As menu
-    saveAsWidget = new OverlayWidget(this);
-    saveAsWidget->hide();
+//void MainWindow::createSaveAs() {
+//    //Save As menu
+//    saveAsWidget = new OverlayWidget(this, "Save As");
+//    QVBoxLayout *saveAsLayout = saveAsWidget->getLayout();
 
-    QVBoxLayout *saveAsLayout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("Save As");
-    lbl->setFont(titleFont);
-    lbl->setAlignment(Qt::AlignCenter);
-    lbl->setMinimumHeight(50);
-    saveAsLayout->addWidget(lbl);
-    saveAsLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+//    // Filename: textbox
+//    QHBoxLayout *f = new QHBoxLayout;
+//    QLabel *l1 = new QLabel("Name: ");
+//    l1->setMinimumWidth(100);
+//    f->addWidget(l1, -1);
+//    saveAsFilenameTextEdit = new QLineEdit;
+//    f->addWidget(saveAsFilenameTextEdit);
 
-    // Filename: textbox
-    QHBoxLayout *f = new QHBoxLayout;
-    QLabel *l1 = new QLabel("Name: ");
-    l1->setMinimumWidth(100);
-    f->addWidget(l1, -1);
-    saveAsFilenameTextEdit = new QLineEdit;
-    f->addWidget(saveAsFilenameTextEdit);
+//    // description
+//    QHBoxLayout *d = new QHBoxLayout;
+//    QLabel *l2 = new QLabel("Description: ");
+//    l2->setMinimumWidth(100);
+//    d->addWidget(l2, -1);
+//    saveAsDescription = new QTextEdit;
+//    saveAsDescription->setMinimumHeight(150);
+//    d->addWidget(saveAsDescription);
 
-    // description
-    QHBoxLayout *d = new QHBoxLayout;
-    QLabel *l2 = new QLabel("Description: ");
-    l2->setMinimumWidth(100);
-    d->addWidget(l2, -1);
-    saveAsDescription = new QTextEdit;
-    saveAsDescription->setMinimumHeight(150);
-    d->addWidget(saveAsDescription);
+//    // tags input
+//    QHBoxLayout *t = new QHBoxLayout;
+//    QLabel *l3 = new QLabel("Tags: ");
+//    l3->setMinimumWidth(100);
+//    t->addWidget(l3, -1);
+//    saveAsTagsTextEdit = new QLineEdit;
+//    t->addWidget(saveAsTagsTextEdit);
+//    QPushButton *add = new QPushButton("Add");
+//    t->addWidget(add);
+//    // tags list
+//    QHBoxLayout *t2 = new QHBoxLayout;
+//    QLabel *l4 = new QLabel;
+//    l4->setMinimumWidth(100);
+//    t2->addWidget(l4, -1);
+//    saveAsTagsLabel = new QLabel;
+//    t2->addWidget(saveAsTagsLabel);
 
-    // tags input
-    QHBoxLayout *t = new QHBoxLayout;
-    QLabel *l3 = new QLabel("Tags: ");
-    l3->setMinimumWidth(100);
-    t->addWidget(l3, -1);
-    saveAsTagsTextEdit = new QLineEdit;
-    t->addWidget(saveAsTagsTextEdit);
-    QPushButton *add = new QPushButton("Add");
-    t->addWidget(add);
-    // tags list
-    QHBoxLayout *t2 = new QHBoxLayout;
-    QLabel *l4 = new QLabel;
-    l4->setMinimumWidth(100);
-    t2->addWidget(l4, -1);
-    saveAsTagsLabel = new QLabel;
-    t2->addWidget(saveAsTagsLabel);
+//    // buttons
+//    QHBoxLayout *b = new QHBoxLayout;
+//    QPushButton *saveLocally = new QPushButton("Save to computer");
+//    QPushButton *saveToLibrary = new QPushButton("Save to library");
+//    QPushButton *cancel = new QPushButton("Cancel");
+//    b->addWidget(cancel);
+//    b->addWidget(saveLocally);
+//    b->addWidget(saveToLibrary);
 
-    // buttons
-    QHBoxLayout *b = new QHBoxLayout;
-    QPushButton *saveLocally = new QPushButton("Save to computer");
-    QPushButton *saveToLibrary = new QPushButton("Save to library");
-    QPushButton *cancel = new QPushButton("Cancel");
-    b->addWidget(cancel);
-    b->addWidget(saveLocally);
-    b->addWidget(saveToLibrary);
+//    connect(add, SIGNAL(released()), this, SLOT(addTag()));
+//    connect(saveLocally, SIGNAL(released()), this, SLOT(launchSaveToComputer()));
+//    connect(cancel, SIGNAL(released()), this, SLOT(closeSaveAs()));
+//    connect(saveToLibrary, SIGNAL(released()), this, SLOT(save()));
 
-    connect(add, SIGNAL(released()), this, SLOT(addTag()));
-    connect(saveLocally, SIGNAL(released()), this, SLOT(launchSaveToComputer()));
-    connect(cancel, SIGNAL(released()), this, SLOT(closeSaveAs()));
-    connect(saveToLibrary, SIGNAL(released()), this, SLOT(save()));
-
-    saveAsLayout->addLayout(f);
-    saveAsLayout->addLayout(d);
-    saveAsLayout->addLayout(t);
-    saveAsLayout->addLayout(t2);
-    saveAsLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
-    saveAsLayout->addLayout(b);
-    saveAsWidget->setLayout(saveAsLayout);
-}
+//    saveAsLayout->addLayout(f);
+//    saveAsLayout->addLayout(d);
+//    saveAsLayout->addLayout(t);
+//    saveAsLayout->addLayout(t2);
+//    saveAsLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+//    saveAsLayout->addLayout(b);
+//}
 
 
 // create new file overlay
-void MainWindow::createNewFile() {
-    newFileWidget = new OverlayWidget(this);
-    newFileWidget->hide();
-
-    QVBoxLayout *layout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("Create new file");
-    lbl->setFont(titleFont);
-    lbl->setAlignment(Qt::AlignCenter);
-    layout->addWidget(lbl);
-    layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+void MainWindow::createNewFile(USER u) {
+    newFileWidget = new OverlayWidget(this, "Create New File");
+    QVBoxLayout *layout = newFileWidget->getLayout();
 
     // Filename: textbox
     QHBoxLayout *f = new QHBoxLayout;
@@ -359,7 +294,7 @@ void MainWindow::createNewFile() {
     t2->addWidget(newFileTagsLabel);
 
     QHBoxLayout *btns = new QHBoxLayout;
-    QPushButton *create = new QPushButton("Create");
+    smartPushButton *create = new smartPushButton("Create", u);
     QPushButton *cancel = new QPushButton("Cancel");
     btns->addWidget(cancel);
     btns->addWidget(create);
@@ -371,174 +306,33 @@ void MainWindow::createNewFile() {
 
     layout->addLayout(btns);
 
-    connect(create, SIGNAL(released()), this, SLOT(saveNewFile()));
+    // only connect handleUserOptions when the user selection window is visible to user
+    if (userOptionsWidget->isVisible())
+        connect(create, SIGNAL(released(USER)), this, SLOT(handleUserOptions(USER)));
+    connect(create, SIGNAL(released(USER)), this, SLOT(saveNewFile(USER)));
     connect(cancel, SIGNAL(released()), this, SLOT(closeNewFile()));
     connect(add, SIGNAL(released()), this, SLOT(addTag()));
-    newFileWidget->setLayout(layout);
+    connect(this, SIGNAL(resizedWindow()), newFileWidget, SLOT(resizeWindow()));
+    emit this->resizedWindow();
 }
 
-
 // Open from library overlay
-void MainWindow::createOpenFromLib() {
-    openFromLibWidget = new OverlayWidget(this);
-    openFromLibWidget->hide();
-
-    QVBoxLayout *layout = new QVBoxLayout;
-    QLabel *lbl = new QLabel("Open from library");
-    lbl->setFont(titleFont);
-    lbl->setAlignment(Qt::AlignCenter);
-    layout->addWidget(lbl);
-    layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+void MainWindow::createOpenFromLib(USER u) {
+    openFromLibWidget = new OverlayWidget(this, "Open From Library");
+    QVBoxLayout *layout = openFromLibWidget->getLayout();
 
     QHBoxLayout *btns = new QHBoxLayout;
-    QPushButton *open = new QPushButton("Open");
+    smartPushButton *open = new smartPushButton("Open", u);
     QPushButton *cancel = new QPushButton("Cancel");
     btns->addWidget(cancel);
     btns->addWidget(open);
     layout->addLayout(btns);
 
-    connect(open, SIGNAL(released()), this, SLOT(openFromLibrary()));
+    // only connect handleUserOptions when the user selection window is visible to user
+    if (userOptionsWidget->isVisible())
+        connect(open, SIGNAL(released(USER)), this, SLOT(handleUserOptions(USER)));
+    connect(open, SIGNAL(released(USER)), this, SLOT(openFromLibrary(USER)));
     connect(cancel, SIGNAL(released()), this, SLOT(closeOpenFromLibrary()));
-    openFromLibWidget->setLayout(layout);
-}
-
-void MainWindow::addTab(ACTION_TYPE t, QString filename) {
-    TabContent *tab = new TabContent(this, filename, t);
-    connect(this, SIGNAL(resizedWindow()), tab, SLOT(applicationResized()));
-    tabs->addTab(tab, tab->getFilename());
-    tabs->setCurrentIndex(tabs->indexOf(tab));
-    tabs->clearFocus();
-}
-
-void MainWindow::launchUserOptions(USER u) {
-    qDebug() << "User " << u.getName();
-}
-
-// save the motion file!
-void MainWindow::save() {
-    /*
-     * QFileDialog
-    QFile f( filename );
-    f.open( QIODevice::WriteOnly );
-    // store data in f
-    f.close();
-*/
-    closeSaveAs();
-    // TODO: Save da file!
-}
-
-// File > saveAs > Save to computer. opens a dialog box
-void MainWindow::launchSaveToComputer() {
-    // TODO: add filter for .wagz
-    QString f = QFileDialog::getSaveFileName(this, "Save File", "/" + saveAsFilenameTextEdit->text()+ ".wagz");
-    if (!f.trimmed().isEmpty()) { // user clicked "save"
-        static_cast<TabContent*>(tabs->widget(tabs->currentIndex()))->updateWithNewFilename(f.trimmed());
-        tabs->setTabText(tabs->currentIndex(), f);
-        closeSaveAs();
-    }
-    // TODO: Actually save...
-}
-
-// in saveAs window, adds a tag to the tags list
-// TODO: hitting enter key should trigger the Add button
-void MainWindow::addTag() {
-    saveAsTagsLabel->setText(saveAsTagsTextEdit->text() + "; " + saveAsTagsLabel->text());
-    saveAsTagsTextEdit->clear();
-}
-
-// opens the dialog box to find a local file
-void MainWindow::launchOpenFromComputer() {
-    // File browser
-    QString f = QFileDialog::getOpenFileName(this, "Open File", "/");
-    if (!f.trimmed().isEmpty()) { // user clicked "open"
-        saveAct->setEnabled(true);
-        saveAsAct->setEnabled(true);
-        addTab(PLAYBACK, f.trimmed());
-    }
-}
-
-// opens the user determined file
-void MainWindow::openFromLibrary() {
-    // TODO: open file somehow...
-    saveAct->setEnabled(true);
-    saveAsAct->setEnabled(true);
-    addTab(PLAYBACK, "filename.wagz");
-    closeOpenFromLibrary();
-}
-
-// launches the open from library overlay
-void MainWindow::launchOpenFromLibrary() {
-    overlay->show();
-    openFromLibWidget->show();
-}
-
-// closes the open from library overlay
-void MainWindow::closeOpenFromLibrary() {
-    overlay->hide();
-    openFromLibWidget->hide();
-}
-
-// event for when the main window is resized
-void MainWindow::resizeEvent(QResizeEvent* r) {
-    QMainWindow::resizeEvent(r);
-    // resize the overlay to cover the whole window
-    overlay->resize(this->width(), this->height());
-    emit resizedWindow();
-}
-
-// opens the settings window
-void MainWindow::launchSettings(){
-    overlay->show();
-    settingsWidget->show();
-    //TODO: set focus on the "OK button"
-}
-
-// closes the settings window
-void MainWindow::closeSettings() {
-    overlay->hide();
-    settingsWidget->hide();
-    // TODO: show message box if user has not calibrated the suit yet
-}
-
-// saves the new user settings
-void MainWindow::saveSettings() {
-    // TODO: save user settings here...
-    closeSettings();
-}
-
-// opens the Save As window
-void MainWindow::launchSaveAs() {
-    overlay->show();
-    saveAsWidget->show();
-    //TODO: set focus on the "Save to library" button
-}
-
-// save a new file
-void MainWindow::saveSaveAs() {
-    // TODO: save the file and settings
-    closeSaveAs();
-}
-
-// closes the Save As window
-void MainWindow::closeSaveAs() {
-    overlay->hide();
-    saveAsWidget->hide();
-}
-
-void MainWindow::launchNewFile() {
-    overlay->show();
-    newFileWidget->show();
-    newFileWidget->raise();
-}
-
-void MainWindow::saveNewFile() {
-    saveAct->setEnabled(true);
-    saveAsAct->setEnabled(true);
-    addTab(RECORD, newFilenameTextEdit->text() + ".wagz");
-    closeNewFile();
-}
-
-void MainWindow::closeNewFile() {
-    overlay->hide();
-    newFileWidget->hide();
+    connect(this, SIGNAL(resizedWindow()), openFromLibWidget, SLOT(resizeWindow()));
+    emit this->resizedWindow();
 }
