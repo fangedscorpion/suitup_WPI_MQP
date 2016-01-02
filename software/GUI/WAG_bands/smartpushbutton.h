@@ -3,7 +3,6 @@
 #include <QPushButton>
 #include "user.h"
 
-//struct USER;
 /*
  * This button has an associated USER to make the button more dynamic
  */
@@ -22,5 +21,5 @@ signals:
     void released(USER);
 
 private slots:
-    void catchReleased();
+    void releaseUser();
 };

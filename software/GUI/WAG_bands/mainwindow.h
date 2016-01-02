@@ -52,7 +52,7 @@ private:
     void createOpenFromLib(USER u);
     QWidget* createUserSelectionWindow(std::vector<USER> u);
     void createNewFile(USER u);
-    void addTab(USER u, QString filename);
+    void addTab(USER u, QString filename, ACTION_TYPE a);
 
     Overlay *overlay;
     OverlayWidget *settingsWidget;

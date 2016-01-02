@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "superslider.h"
+#include "tabcontent.h"
 #include "visualization/glwidget.h"
 #include "playbackcontroller.h"
 
@@ -67,6 +68,14 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 MainWindow::~MainWindow() {}
+
+void MainWindow::addTab(USER u, QString filename, ACTION_TYPE a) {
+    TabContent *tab = new TabContent(this, filename, u, a);
+    connect(this, SIGNAL(resizedWindow()), tab, SLOT(applicationResized()));
+    tabs->addTab(tab, tab->getFilename());
+    tabs->setCurrentIndex(tabs->indexOf(tab));
+    tabs->clearFocus();
+}
 
 // Menubar actions
 // TODO: finish actions

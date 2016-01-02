@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     visualization/visualization.cpp \
     visualization/vertextranslator.cpp\
     smartpushbutton.cpp \
-    mainwindowslots.cpp
+    mainwindowslots.cpp \
+    smartradiobutton.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
@@ -51,7 +52,8 @@ HEADERS  += mainwindow.h \
     visualization/visualization.h \
     visualization/vertextranslator.h \
     smartpushbutton.h \
-    user.h
+    user.h \
+    smartradiobutton.h
 
 FORMS    +=
 

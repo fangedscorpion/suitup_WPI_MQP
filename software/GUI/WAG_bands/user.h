@@ -1,7 +1,7 @@
 #pragma once
 #include <set>
 
-enum ACTION_TYPE { EDIT, PLAYBACK, RECORD };
+enum ACTION_TYPE { RECORD, EDIT, PLAYBACK };
 
 struct USER {
 private:

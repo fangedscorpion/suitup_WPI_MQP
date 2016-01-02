@@ -1,6 +1,7 @@
 #pragma once
 #include <QWidget>
 #include "mainwindow.h"
+#include "smartradiobutton.h"
 
 class GLWidget;
 
@@ -9,7 +10,7 @@ class TabContent : public QWidget
     Q_OBJECT
 
 public:
-    TabContent(MainWindow* parent, QString filename, USER u);
+    TabContent(MainWindow* parent, QString filename, USER u, ACTION_TYPE initiallyShow);
     ~TabContent();
 
     QString getFilename() { return filenameString;}
@@ -17,7 +18,8 @@ public:
 
 private:
     MainWindow* parent;
-    QWidget* createModeRadios();
+    USER user;
+    QWidget* createModeRadios(USER u);
     QWidget* createPlaybackOptionsAndControls();
     QWidget* createEditOptionsAndControls();
     QWidget* createRecordOptionsAndController();
@@ -34,9 +36,9 @@ private:
 
     // mode radio buttons
     QGroupBox *modeRadiosGroup;
-    QRadioButton *playbackRadio;
-    QRadioButton *editRadio;
-    QRadioButton *recordRadio;
+    smartRadioButton *playbackRadio;
+    smartRadioButton *editRadio;
+    smartRadioButton *recordRadio;
 
     // playback recording options
 
@@ -86,9 +88,7 @@ private:
 
 
 public slots:
-    void showPlaybackMode();
-    void showEditMode();
-    void showRecordMode();
+    void show(ACTION_TYPE a);
     void updateSpeedSliderText(QString playbackModeString);
     void applicationResized();
     void handleRecordingButton();

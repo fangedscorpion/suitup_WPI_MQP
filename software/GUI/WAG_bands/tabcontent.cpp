@@ -1,7 +1,8 @@
 #include "tabcontent.h"
 
-TabContent::TabContent(MainWindow *in_parent, QString filename, USER u) : parent(in_parent){
+TabContent::TabContent(MainWindow *in_parent, QString filename, USER u, ACTION_TYPE initiallyShow) : parent(in_parent){
     filenameString = filename;
+    user = u;
     playbackControls = new PlaybackController;
     titleFont = QFont( "Arial", 15, QFont::Bold);
     titleStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-top: 0.5em; subcontrol-origin: margin; left: 10px; padding: 25px 3px 0 3px;}";
@@ -27,6 +28,8 @@ TabContent::TabContent(MainWindow *in_parent, QString filename, USER u) : parent
     QVBoxLayout *vl = new QVBoxLayout;
 
     vl->addWidget(optionsStack);
+    vl->addWidget(createModeRadios(u));
+    this->show(initiallyShow);
 
     splitPanes->addLayout(vl, 1);
     splitPanes->addWidget(viewerStack, 2);
@@ -47,45 +50,80 @@ void TabContent::createIcons() {
     stopIcon = QIcon(QPixmap(":/icons/stop.png"));
 }
 
-void TabContent::showPlaybackMode() {
-    connect(playPause, SIGNAL(released()), playbackControls, SLOT (togglePlay()));
-    optionsStack->setCurrentIndex(PLAYBACK);
-    viewerStack->setCurrentIndex(PLAYBACK);
-    playbackRadio->setChecked(true);
-    modeRadiosGroup->setVisible(true);
-}
+void TabContent::show(ACTION_TYPE a) {
+    // if the user has the action a
+    if (user.hasAction(a)) {
+        optionsStack->setCurrentIndex(a);
+        viewerStack->setCurrentIndex(a);
+    // EDIT is used when opening a file, so if the user doesn't have edit ability, check playback
+    } else if (a == EDIT && user.hasAction(PLAYBACK)) {
+        optionsStack->setCurrentIndex(PLAYBACK);
+        viewerStack->setCurrentIndex(PLAYBACK);
+    // otherwise show any one of the available actions.
+    } else {
+        std::set<ACTION_TYPE>::iterator it=user.getActions().begin();
+        if (it != user.getActions().end())
+            show(*it);
+        // else ERROR
+        // TODO: throw exception here
+        return;
+    }
 
-void TabContent::showEditMode() {
-    disconnect(playPause, SIGNAL(released()), playbackControls, 0);
-    optionsStack->setCurrentIndex(EDIT);
-    viewerStack->setCurrentIndex(EDIT);
-    modeRadiosGroup->setVisible(true);
-    editRadio->setChecked(true);
-}
-
-void TabContent::showRecordMode() {
-    optionsStack->setCurrentIndex(RECORD);
-    viewerStack->setCurrentIndex(RECORD);
-    modeRadiosGroup->setVisible(false);
+    if (a == RECORD && user.hasAction(RECORD)) {
+        recordRadio->setChecked(true);
+    } else if (a == EDIT && user.hasAction(EDIT)) {
+        disconnect(playPause, SIGNAL(released()), playbackControls, 0);
+        editRadio->setChecked(true);
+    } else if ((a == PLAYBACK || a == EDIT) && user.hasAction(PLAYBACK)) {
+        connect(playPause, SIGNAL(released()), playbackControls, SLOT (togglePlay()));
+        playbackRadio->setChecked(true);
+    } else {
+        std::set<ACTION_TYPE>::iterator it=user.getActions().begin();
+        if (it != user.getActions().end())
+            show(*it);
+        // else ERROR
+        // TODO: throw exception here
+        return;
+    }
 }
 
 // The groupbox of Mode radio buttons
-QWidget* TabContent::createModeRadios() {
+QWidget* TabContent::createModeRadios(USER u) {
     modeRadiosGroup = new QGroupBox("Modes");
     modeRadiosGroup->setStyleSheet(titleStyleSheet);
     modeRadiosGroup->setFont(titleFont);
-    playbackRadio = new QRadioButton("Playback Motion");
-    editRadio = new QRadioButton("Edit Motion");
-    recordRadio = new QRadioButton("Record Motion");
     QVBoxLayout *vl = new QVBoxLayout;
-    vl->addWidget(playbackRadio);
-    vl->addWidget(editRadio);
-    vl->addWidget(recordRadio);
-    modeRadiosGroup->setLayout(vl);
+    recordRadio = new smartRadioButton("Record Motion", RECORD);
+    editRadio = new smartRadioButton("Edit Motion", EDIT);
+    playbackRadio = new smartRadioButton("Playback Motion", PLAYBACK);
 
-    connect(playbackRadio, SIGNAL(released()), this, SLOT(showPlaybackMode()));
-    connect(editRadio, SIGNAL(released()), this, SLOT(showEditMode()));
-    connect(recordRadio, SIGNAL(released()), this, SLOT(showRecordMode()));
+    // if there is only 1 action this user can perform, don't show any modes
+    int count = 0;
+    if (u.hasAction(RECORD))
+        count++;
+    if (u.hasAction(EDIT))
+        count++;
+    if (u.hasAction(PLAYBACK))
+        count++;
+
+    if (count == 1) {
+        modeRadiosGroup->hide();
+        return modeRadiosGroup;
+    }
+
+    if (u.hasAction(RECORD)) {
+        vl->addWidget(recordRadio);
+        connect(recordRadio, SIGNAL(released(ACTION_TYPE)), this, SLOT(show(ACTION_TYPE)));
+    }
+    if (u.hasAction(EDIT)) {
+        vl->addWidget(editRadio);
+        connect(editRadio, SIGNAL(released(ACTION_TYPE)), this, SLOT(show(ACTION_TYPE)));
+    }
+    if (u.hasAction(PLAYBACK)) {
+        vl->addWidget(playbackRadio);
+        connect(playbackRadio, SIGNAL(released(ACTION_TYPE)), this, SLOT(show(ACTION_TYPE)));
+    }
+    modeRadiosGroup->setLayout(vl);
     return modeRadiosGroup;
 }
 

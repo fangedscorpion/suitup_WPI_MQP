@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "tabcontent.h"
 #include "smartpushbutton.h"
 #include <sstream>
 
@@ -9,14 +8,6 @@ void MainWindow::resizeEvent(QResizeEvent* r) {
     // resize the overlay to cover the whole window
     overlay->resize(this->width(), this->height());
     emit resizedWindow();
-}
-
-void MainWindow::addTab(USER u, QString filename) {
-    TabContent *tab = new TabContent(this, filename, u);
-    connect(this, SIGNAL(resizedWindow()), tab, SLOT(applicationResized()));
-    tabs->addTab(tab, tab->getFilename());
-    tabs->setCurrentIndex(tabs->indexOf(tab));
-    tabs->clearFocus();
 }
 
 void MainWindow::launchUserOptions(USER u) {
@@ -77,7 +68,7 @@ void MainWindow::handleUserOptions(USER u) {
     if (u.hasAction(EDIT) || u.hasAction(PLAYBACK)) {
         openBtn->setUser(u);
         openBtn->show();
-        connect(openBtn, SIGNAL(release(USER)), this, SLOT(launchOpenFromComputer(USER)));
+        connect(openBtn, SIGNAL(released(USER)), this, SLOT(launchOpenFromComputer(USER)));
     }
     // only set once even if u has both RECORD and EDIT
     if (u.hasAction(RECORD) || u.hasAction(EDIT)) {
@@ -115,14 +106,14 @@ void MainWindow::launchOpenFromComputer(USER u) {
     // File browser
     QString f = QFileDialog::getOpenFileName(this, "Open File", "/");
     if (!f.trimmed().isEmpty()) { // user clicked "open"
-        addTab(u, f.trimmed());
+        addTab(u, f.trimmed(), EDIT);
     }
 }
 
 // opens the user determined file
 void MainWindow::openFromLibrary(USER u) {
     // TODO: open file somehow...
-    addTab(u, "filename.wagz");
+    addTab(u, "filename.wagz", EDIT);
     closeOpenFromLibrary();
 }
 
@@ -167,7 +158,7 @@ void MainWindow::launchNewFile(USER u) {
 }
 
 void MainWindow::saveNewFile(USER u) {
-    addTab(u, newFilenameTextEdit->text() + ".wagz");
+    addTab(u, newFilenameTextEdit->text() + ".wagz", RECORD);
     closeNewFile();
 }
 
