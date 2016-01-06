@@ -223,6 +223,10 @@ QWidget* TabContent::createViewer(ACTION_TYPE t) {
     controls->addWidget(videoSlider);
     controls->addWidget(handle2Time);
 
+    connect(videoSlider, SIGNAL(alt_valueChanged(int)), this, SLOT(sliderValueChanged(int)));
+
+    connect(videoSlider, SIGNAL(sliderMoved(int)), this, SLOT(sliderValueChanged(int)));
+
     // viewer side of the GUI
     QVBoxLayout *viewerPane = new QVBoxLayout;
     viewerPane->addWidget(viewer,1);
@@ -380,4 +384,8 @@ void TabContent::initializePlaybackSettings() {
 void TabContent::lockOnPlayback(bool playing) {
     modeRadiosGroup->setEnabled(!playing);
     playbackOptions->setEnabled(!playing);
+}
+
+void TabContent::sliderValueChanged(int newVal) {
+    qDebug()<<"Value is : "<<newVal;
 }

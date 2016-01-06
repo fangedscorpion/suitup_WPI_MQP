@@ -84,6 +84,7 @@ public slots:
     void handleRecordingButton();
     void displayNewTime(int newMillis);
     void playbackToggled(bool playing);
+    void sliderValueChanged(int newVal);
 
 signals:
     void stepThroughChanged(bool steppingThrough);
