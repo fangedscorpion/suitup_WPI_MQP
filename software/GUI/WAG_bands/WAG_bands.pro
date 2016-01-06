@@ -23,12 +23,16 @@ SOURCES += main.cpp\
     playbackcontroller.cpp \
     motion.cpp \
     positionsnapshot.cpp \
+    tabcontent.cpp \
+    wagfile.cpp \
     visualization/suitsimulation.cpp \
     visualization/glcamera.cpp \
     visualization/glwidget.cpp \
     visualization/visualization.cpp \
     visualization/vertextranslator.cpp\
-    tabcontent.cpp
+    smartpushbutton.cpp \
+    mainwindowslots.cpp \
+    smartradiobutton.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
@@ -40,12 +44,16 @@ HEADERS  += mainwindow.h \
     overlay.h \
     overlaywidget.h \
     customshadoweffect.h \
+    tabcontent.h \
+    wagfile.h \
     visualization/suitsimulation.h \
     visualization/glcamera.h \
     visualization/glwidget.h \
     visualization/visualization.h \
     visualization/vertextranslator.h \
-    tabcontent.h
+    smartpushbutton.h \
+    user.h \
+    smartradiobutton.h
 
 FORMS    +=
 

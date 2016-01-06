@@ -1,5 +1,4 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QMainWindow>
 #include <QLabel>
@@ -26,8 +25,8 @@
 #include "overlay.h"
 #include "overlaywidget.h"
 #include "playbackcontroller.h"
-
-enum ACTION_TYPE { EDIT, PLAYBACK, RECORD };
+#include "smartpushbutton.h"
+#include <set>
 
 namespace Ui {
 class MainWindow;
@@ -41,20 +40,19 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-
 private:
     Ui::MainWindow *ui;
-    void createMenuActions(QMenuBar *menu);
+    void createMenuButtons();
     void resizeEvent(QResizeEvent* r);
     void createSettings();
     void createPlaybackOptionsAndControls();
     void createEditRecordingOptionsAndControls();
     void createViewer();
-    void createSaveAs();
-    void createOpenFromLib();
-    QWidget* createWelcomeWindow();
-    void createNewFile();
-    void addTab(ACTION_TYPE t, QString filename);
+//    void createSaveAs();
+    void createOpenFromLib(USER u);
+    QWidget* createUserSelectionWindow(std::vector<USER> u);
+    void createNewFile(USER u);
+    void addTab(USER u, QString filename, ACTION_TYPE a);
 
     Overlay *overlay;
     OverlayWidget *settingsWidget;
@@ -65,8 +63,12 @@ private:
     QFont titleFont;
     QString titleStyleSheet;
     // menubar
-    QAction *saveAct;
-    QAction *saveAsAct;
+    smartPushButton *newBtn;
+    smartPushButton *openBtn;
+    smartPushButton *settingsBtn;
+    smartPushButton *helpBtn;
+    smartPushButton *saveBtn;
+    QWidget *menu;
     // settings overlay
     QGraphicsView *view;
     QCheckBox *voiceControl;
@@ -92,32 +94,32 @@ private:
     QTextEdit *newFileDescription;
     QLineEdit *newFileTagsTextEdit;
     QLabel *newFileTagsLabel;
+    // user options
+    OverlayWidget *userOptionsWidget;
 
 
 private slots:
     // open
-    void launchOpenFromComputer();
-    void launchOpenFromLibrary();
+    void launchOpenFromComputer(USER u);
+    void launchOpenFromLibrary(USER u);
     void closeOpenFromLibrary();
-    void openFromLibrary();
+    void openFromLibrary(USER u);
     // settings
     void launchSettings();
     void closeSettings();
     void saveSettings();
     // save/saveAs
     void save();
-    void launchSaveAs();
-    void saveSaveAs();
-    void closeSaveAs();
-    void launchSaveToComputer();
     void addTag();
     // new file
-    void saveNewFile();
+    void saveNewFile(USER u);
     void closeNewFile();
-    void launchNewFile();
+    void launchNewFile(USER u);
+    // on launch
+    void launchUserOptions(USER);
+    void closeUserOptions();
+    void handleUserOptions(USER);
 
 signals:
     void resizedWindow();
 };
-
-#endif // MAINWINDOW_H
