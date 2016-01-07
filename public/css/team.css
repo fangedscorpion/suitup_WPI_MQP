@@ -1,0 +1,7 @@
+.advisorsList li a {
+  color: inherit;
+}
+
+.advisorsList li a:hover {
+  color:default;
+}
