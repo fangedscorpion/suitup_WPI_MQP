@@ -5,3 +5,13 @@
 .advisorsList li a:hover {
   color:default;
 }
+
+#teamPic {
+  width:100%;
+}
+
+#picContainer {
+  max-width: 40em;
+  float: right;
+  width:100%;
+}
