@@ -42,26 +42,18 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    void createMenuButtons();
     void resizeEvent(QResizeEvent* r);
-    void createSettings();
-    void createPlaybackOptionsAndControls();
-    void createEditRecordingOptionsAndControls();
-    void createViewer();
-//    void createSaveAs();
-    void createOpenFromLib(USER u);
-    QWidget* createUserSelectionWindow(std::vector<USER> u);
-    void createNewFile(USER u);
     void addTab(USER u, QString filename, ACTION_TYPE a);
 
-    Overlay *overlay;
-    OverlayWidget *settingsWidget;
     QWidget *applicationWidget;
     QTabWidget *tabs;
+    Overlay *overlay;
 
     // fonts & styles
     QFont titleFont;
     QString titleStyleSheet;
+    QString textInputStyleWhite;
+    QString textInputStyleRed;
     // menubar
     smartPushButton *newBtn;
     smartPushButton *openBtn;
@@ -69,6 +61,7 @@ private:
     smartPushButton *helpBtn;
     smartPushButton *saveBtn;
     QWidget *menu;
+    void createMenuButtons();
     // settings overlay
     QGraphicsView *view;
     QCheckBox *voiceControl;
@@ -80,6 +73,8 @@ private:
     QCheckBox *rightUpperArm;
     QCheckBox *rightLowerArm;
     QCheckBox *rightHand;
+    OverlayWidget *settingsWidget;
+    void createSettings();
     // save as overlay
     OverlayWidget *saveAsWidget;
     QLineEdit *saveAsFilenameTextEdit;
@@ -88,15 +83,19 @@ private:
     QTextEdit *saveAsDescription;
     // open from library overlay
     OverlayWidget *openFromLibWidget;
+    void createOpenFromLib(USER u);
     // create new file
     OverlayWidget *newFileWidget;
     QLineEdit *newFilenameTextEdit;
     QTextEdit *newFileDescription;
     QLineEdit *newFileTagsTextEdit;
     QLabel *newFileTagsLabel;
+    QPushButton *addTagBtn;
+    QPushButton *createNewFileBtn;
+    void createNewFile(USER u);
     // user options
     OverlayWidget *userOptionsWidget;
-
+    QWidget* createUserSelectionWindow(std::vector<USER> u);
 
 private slots:
     // open
@@ -115,6 +114,8 @@ private slots:
     void saveNewFile(USER u);
     void closeNewFile();
     void launchNewFile(USER u);
+    void handleNewFileRequiredInput();
+    void handleNewFileRequiredInput(QString);
     // on launch
     void launchUserOptions(USER);
     void closeUserOptions();
