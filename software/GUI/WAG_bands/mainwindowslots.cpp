@@ -10,8 +10,8 @@ void MainWindow::resizeEvent(QResizeEvent* r) {
     emit resizedWindow();
 }
 
+// Launch window with user's options based on which type of user was selected
 void MainWindow::launchUserOptions(USER u) {
-    qDebug() << "User " << u.getName();
     std::stringstream ss;
     ss << u.getName() << " Options";
     userOptionsWidget = new OverlayWidget(this, ss.str());
@@ -53,6 +53,7 @@ void MainWindow::launchUserOptions(USER u) {
     emit this->resizedWindow();
 }
 
+// close window with user options
 void MainWindow::closeUserOptions() {
     overlay->hide();
     delete userOptionsWidget;
@@ -81,7 +82,7 @@ void MainWindow::handleUserOptions(USER u) {
     tabs->removeTab(0);
 }
 
-// save the motion file!
+// save the motion file
 void MainWindow::save() {
     /*
      * QFileDialog
@@ -94,11 +95,13 @@ void MainWindow::save() {
     // TODO: Save da file!
 }
 
-// in saveAs window, adds a tag to the tags list
-// TODO: hitting enter key should trigger the Add button
+// in new file window, adds a tag to the tags list
 void MainWindow::addTag() {
-    saveAsTagsLabel->setText(saveAsTagsTextEdit->text() + "; " + saveAsTagsLabel->text());
-    saveAsTagsTextEdit->clear();
+    if (newFileTagsTextEdit->text().isEmpty())
+        return;
+    newFileTagsLabel->setText(newFileTagsTextEdit->text() + "; " + newFileTagsLabel->text());
+    newFileTagsTextEdit->clear();
+    addTagBtn->setEnabled(false);
 }
 
 // opens the dialog box to find a local file
@@ -151,20 +154,41 @@ void MainWindow::saveSettings() {
     closeSettings();
 }
 
+// launch the new file overlay
 void MainWindow::launchNewFile(USER u) {
     createNewFile(u);
     overlay->show();
     newFileWidget->show();
 }
 
+// creates the new file and opens a tab
 void MainWindow::saveNewFile(USER u) {
     addTab(u, newFilenameTextEdit->text() + ".wagz", RECORD);
     closeNewFile();
 }
 
+// close the new file overlay
 void MainWindow::closeNewFile() {
     if (!userOptionsWidget->isVisible())
         overlay->hide();
     delete newFileWidget;
 }
+void MainWindow::handleNewFileRequiredInput(QString) {
+    handleNewFileRequiredInput();
+}
 
+void MainWindow::handleNewFileRequiredInput() {
+    // sets the border color of filename textbox depending on if it has text or not
+    (newFilenameTextEdit->text().isEmpty() ?
+                newFilenameTextEdit->setStyleSheet(textInputStyleRed) :
+                newFilenameTextEdit->setStyleSheet(textInputStyleWhite));
+    // sets the border color of description textbox depending on if it has text or not
+    (newFileDescription->toPlainText().isEmpty() ?
+                newFileDescription->setStyleSheet(textInputStyleRed) :
+                newFileDescription->setStyleSheet(textInputStyleWhite));
+    // makes the add tags button only enabled when there is text in the tags box
+    addTagBtn->setEnabled(!newFileTagsTextEdit->text().isEmpty());
+    // enables the create button if the description AND filename text boxes are filled
+    createNewFileBtn->setEnabled(!newFileDescription->toPlainText().isEmpty() &&
+                                 !newFilenameTextEdit->text().isEmpty());
+}

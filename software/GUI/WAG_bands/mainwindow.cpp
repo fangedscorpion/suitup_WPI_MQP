@@ -21,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     titleFont = QFont( "Arial", 15, QFont::Bold);
     titleStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-top: 0.5em; subcontrol-origin: margin; left: 10px; padding: 25px 3px 0 3px;}";
+    textInputStyleRed = "QLineEdit {border: 1px solid red; background: white;} QTextEdit {border: 1px solid red; background: white;}";
+    textInputStyleWhite = "QLineEdit {background: white;} QTextEdit {background: white;}";
 
     // users
     USER u("Trainer", "A trainer can record and save motions for others to use");
@@ -106,7 +108,7 @@ QWidget* MainWindow::createUserSelectionWindow(std::vector<USER> u) {
     QWidget *w = new QWidget;
     QHBoxLayout *l = new QHBoxLayout;
     int i;
-    for(i=0; i < u.size(); i++) {
+    for(i=0; i < (int)u.size(); i++) {
         smartPushButton *btn = new smartPushButton(u[i].getName(), u[i]);
         QLabel *lbl = new QLabel(u[i].getDescription());
         lbl->setWordWrap(true);
@@ -199,116 +201,62 @@ void MainWindow::createSettings() {
     // TODO: connect calibrate and connectBands
 }
 
-// Save As overlay
-// TODO: add * to required fields, and check them.
-//void MainWindow::createSaveAs() {
-//    //Save As menu
-//    saveAsWidget = new OverlayWidget(this, "Save As");
-//    QVBoxLayout *saveAsLayout = saveAsWidget->getLayout();
-
-//    // Filename: textbox
-//    QHBoxLayout *f = new QHBoxLayout;
-//    QLabel *l1 = new QLabel("Name: ");
-//    l1->setMinimumWidth(100);
-//    f->addWidget(l1, -1);
-//    saveAsFilenameTextEdit = new QLineEdit;
-//    f->addWidget(saveAsFilenameTextEdit);
-
-//    // description
-//    QHBoxLayout *d = new QHBoxLayout;
-//    QLabel *l2 = new QLabel("Description: ");
-//    l2->setMinimumWidth(100);
-//    d->addWidget(l2, -1);
-//    saveAsDescription = new QTextEdit;
-//    saveAsDescription->setMinimumHeight(150);
-//    d->addWidget(saveAsDescription);
-
-//    // tags input
-//    QHBoxLayout *t = new QHBoxLayout;
-//    QLabel *l3 = new QLabel("Tags: ");
-//    l3->setMinimumWidth(100);
-//    t->addWidget(l3, -1);
-//    saveAsTagsTextEdit = new QLineEdit;
-//    t->addWidget(saveAsTagsTextEdit);
-//    QPushButton *add = new QPushButton("Add");
-//    t->addWidget(add);
-//    // tags list
-//    QHBoxLayout *t2 = new QHBoxLayout;
-//    QLabel *l4 = new QLabel;
-//    l4->setMinimumWidth(100);
-//    t2->addWidget(l4, -1);
-//    saveAsTagsLabel = new QLabel;
-//    t2->addWidget(saveAsTagsLabel);
-
-//    // buttons
-//    QHBoxLayout *b = new QHBoxLayout;
-//    QPushButton *saveLocally = new QPushButton("Save to computer");
-//    QPushButton *saveToLibrary = new QPushButton("Save to library");
-//    QPushButton *cancel = new QPushButton("Cancel");
-//    b->addWidget(cancel);
-//    b->addWidget(saveLocally);
-//    b->addWidget(saveToLibrary);
-
-//    connect(add, SIGNAL(released()), this, SLOT(addTag()));
-//    connect(saveLocally, SIGNAL(released()), this, SLOT(launchSaveToComputer()));
-//    connect(cancel, SIGNAL(released()), this, SLOT(closeSaveAs()));
-//    connect(saveToLibrary, SIGNAL(released()), this, SLOT(save()));
-
-//    saveAsLayout->addLayout(f);
-//    saveAsLayout->addLayout(d);
-//    saveAsLayout->addLayout(t);
-//    saveAsLayout->addLayout(t2);
-//    saveAsLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
-//    saveAsLayout->addLayout(b);
-//}
-
-
 // create new file overlay
 void MainWindow::createNewFile(USER u) {
-    newFileWidget = new OverlayWidget(this, "Create New File");
+    newFileWidget = new OverlayWidget(this, "New Motion");
     QVBoxLayout *layout = newFileWidget->getLayout();
 
     // Filename: textbox
     QHBoxLayout *f = new QHBoxLayout;
     QLabel *l1 = new QLabel("Name: ");
     l1->setMinimumWidth(100);
+    l1->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     f->addWidget(l1, -1);
     newFilenameTextEdit = new QLineEdit;
+    newFilenameTextEdit->setStyleSheet(textInputStyleRed);
     f->addWidget(newFilenameTextEdit);
 
     // description
     QHBoxLayout *d = new QHBoxLayout;
     QLabel *l2 = new QLabel("Description: ");
+    l2->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     l2->setMinimumWidth(100);
     d->addWidget(l2, -1);
     newFileDescription = new QTextEdit;
+    newFileDescription->setStyleSheet(textInputStyleRed);
     newFileDescription->setMinimumHeight(150);
     d->addWidget(newFileDescription);
 
     // tags input
     QHBoxLayout *t = new QHBoxLayout;
-    QLabel *l3 = new QLabel("Tags: ");
+    QLabel *l3 = new QLabel("Keywords: ");
+    l3->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     l3->setMinimumWidth(100);
     t->addWidget(l3, -1);
     newFileTagsTextEdit = new QLineEdit;
+    newFileTagsTextEdit->setStyleSheet(textInputStyleWhite);
     t->addWidget(newFileTagsTextEdit);
-    QPushButton *add = new QPushButton("Add");
-    t->addWidget(add);
+    addTagBtn = new QPushButton("Add Keyword");
+    addTagBtn->setEnabled(false);
     // tags list
     QHBoxLayout *t2 = new QHBoxLayout;
     QLabel *l4 = new QLabel;
     l4->setMinimumWidth(100);
     t2->addWidget(l4, -1);
+    t2->addWidget(addTagBtn, -1);
     newFileTagsLabel = new QLabel;
-    t2->addWidget(newFileTagsLabel);
+    t2->addWidget(newFileTagsLabel, 1);
 
     QHBoxLayout *btns = new QHBoxLayout;
-    smartPushButton *create = new smartPushButton("Create", u);
+    createNewFileBtn = new smartPushButton("Create", u);
+    createNewFileBtn->setEnabled(false);
     QPushButton *cancel = new QPushButton("Cancel");
     btns->addWidget(cancel);
-    btns->addWidget(create);
+    btns->addWidget(createNewFileBtn);
     layout->addLayout(f);
+    layout->addSpacing(10);
     layout->addLayout(d);
+    layout->addSpacing(10);
     layout->addLayout(t);
     layout->addLayout(t2);
     layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -317,17 +265,21 @@ void MainWindow::createNewFile(USER u) {
 
     // only connect handleUserOptions when the user selection window is visible to user
     if (userOptionsWidget->isVisible())
-        connect(create, SIGNAL(released(USER)), this, SLOT(handleUserOptions(USER)));
-    connect(create, SIGNAL(released(USER)), this, SLOT(saveNewFile(USER)));
+        connect(createNewFileBtn, SIGNAL(released(USER)), this, SLOT(handleUserOptions(USER)));
+    connect(createNewFileBtn, SIGNAL(released(USER)), this, SLOT(saveNewFile(USER)));
     connect(cancel, SIGNAL(released()), this, SLOT(closeNewFile()));
-    connect(add, SIGNAL(released()), this, SLOT(addTag()));
+    connect(addTagBtn, SIGNAL(released()), this, SLOT(addTag()));
+    connect(newFileTagsTextEdit, SIGNAL(returnPressed()), this, SLOT(addTag()));
+    connect(newFilenameTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewFileRequiredInput(QString)));
+    connect(newFileDescription, SIGNAL(textChanged()), this, SLOT(handleNewFileRequiredInput()));
+    connect(newFileTagsTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewFileRequiredInput(QString)));
     connect(this, SIGNAL(resizedWindow()), newFileWidget, SLOT(resizeWindow()));
     emit this->resizedWindow();
 }
 
 // Open from library overlay
 void MainWindow::createOpenFromLib(USER u) {
-    openFromLibWidget = new OverlayWidget(this, "Open From Library");
+    openFromLibWidget = new OverlayWidget(this, "Open Motion From Library");
     QVBoxLayout *layout = openFromLibWidget->getLayout();
 
     QHBoxLayout *btns = new QHBoxLayout;
