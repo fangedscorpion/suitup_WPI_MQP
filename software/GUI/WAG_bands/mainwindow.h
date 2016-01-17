@@ -28,6 +28,8 @@
 #include "smartpushbutton.h"
 #include <set>
 
+#include "wifimanager.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -96,6 +98,8 @@ private:
     // user options
     OverlayWidget *userOptionsWidget;
     QWidget* createUserSelectionWindow(std::vector<USER> u);
+    // move to wherever we initialize the suit object
+    WifiManager *wifiMan;
 
 private slots:
     // open

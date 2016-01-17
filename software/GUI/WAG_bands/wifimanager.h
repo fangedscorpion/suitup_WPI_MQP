@@ -10,6 +10,8 @@
 #define LEFT_UPPER_ARM_PORT 13491
 #define LEFT_FOREARM_PORT 13291
 
+#define SERVER_PORT 14273
+
 #include <QObject>
 #include <QtNetwork>
 #include "band/absband.h"
@@ -18,8 +20,11 @@ class WifiManager:public QObject
 {
     Q_OBJECT
 public:
+    // consider having wifimanager take in the suit object here
     WifiManager();
     void startListening();
+    void sendToBand(BandType destBand, QByteArray data);
+    void sendToBand(BandType destBand, char * bandData);
 private:
     QTcpServer *serv;
     QHash<BandType, QTcpSocket*> socketMap;

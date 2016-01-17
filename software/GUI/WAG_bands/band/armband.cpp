@@ -19,13 +19,13 @@ bool ArmBand::moveTo(AbsPose* x) const {
     if (!isActive())
         return true;
 
-    printf("%f \n", static_cast<Quaternion*>(x)->x * static_cast<Quaternion*>(getCalibrationPose())->x);
+    //printf("%f \n", static_cast<Quaternion*>(x)->x * static_cast<Quaternion*>(getCalibrationPose())->x);
     return true;
 }
 
 AbsPose ArmBand::getPose() const {
     // query for IMU position
     // parse value into Quaternion
-    return Pose();
+    return AbsPose();
 }
 

@@ -2,6 +2,7 @@
 #include "abspose.h"
 #include <stdio.h>
 #include <stdexcept>
+#include <QQuaternion>
 // ShoulderBand class should ONLY be extended into either:
 // RIGHT_SHOULDER
 // LEFT_SHOULDER
@@ -16,7 +17,7 @@ bool ShoulderBand::moveTo(AbsPose* x) const {
     if (!isActive())
         return true;
 
-    printf("%f \n", static_cast<QQuaternion*>(x)->x);
+    //qDebug()<<(static_cast<QQuaternion*>(x)->x)<<"\n";
     return true;
 }
 
