@@ -58,38 +58,133 @@ void WifiManager::connectToNewDevice() {
         qDebug()<<"BandType is "<<connectingBandType;
         socketMap[connectingBandType] = socket;
 
+        connect(socket, SIGNAL(readyRead()), this, SLOT(checkForData()));
+
         // TODO connect readyRead to slot
     } else {
         // error!
     }
 }
 
+void WifiManager::checkForData() {
+    qDebug("checking for data");
+    QList<BandType> possibleBands;
+
+    // have to figure out way to make sure all bands required bands connect
+    possibleBands = socketMap.keys();
+
+    QList<BandType> bandsWithData;
+    qDebug("HERE7890");
+
+    // check which bands have data
+    for (int i = 0; i < possibleBands.size(); i++) {
+        qDebug("In loop");
+        qDebug()<<"Checking band at "<<i;
+        qDebug()<<"Band number is "<<possibleBands[i];
+        if (socketMap[possibleBands[i]]->bytesAvailable() != 0) {
+            qDebug("FoundData");
+            bandsWithData<<possibleBands[i];
+        }
+        qDebug()<<"HERE"<<i;
+    }
+
+    qDebug("HERE");
+
+    for (int i = 0; i < bandsWithData.size(); i++) {
+        routeToBandObject(bandsWithData[i]);
+    }
+
+    qDebug("HERE6789");
+}
+
 void WifiManager::sendToBand(BandType destBand, QByteArray bandData) {
     // write to socket
-    QTcpSocket *bandSocket = socketMap[destBand];
+    if (socketMap.contains(destBand)) {
+        qDebug("Sending");
+        QTcpSocket *bandSocket = socketMap[destBand];
 
+        qDebug("Socket retrieved");
+        if (bandSocket->bytesAvailable() != 0) {
+            // read data from bandSocket
+            qDebug("Bytes available before send");
+            routeToBandObject(destBand);
+        }
 
-    if (bandSocket->bytesAvailable() != 0) {
-        // read data from bandSocket
-        // TODO
+        qDebug("writing data");
+
+        if (bandSocket->write(bandData) < bandData.length()) {
+          qDebug("ERROR SENDING");
+        }
+    } else {
+        qDebug()<<"Band "<<destBand<<" is not connected ";
     }
 
-    if (bandSocket->write(bandData) < bandData.length()) {
-        qDebug("ERROR SENDING");
-    }
 }
 
 void WifiManager::sendToBand(BandType destBand, char * bandData) {
-    // write to socket
-    QTcpSocket *bandSocket = socketMap[destBand];
+    if (socketMap.contains(destBand)) {
+        // write to socket
+        QTcpSocket *bandSocket = socketMap[destBand];
 
 
-    if (bandSocket->bytesAvailable() != 0) {
-        // read data from bandSocket
-        // TODO
+        if (bandSocket->bytesAvailable() != 0) {
+            // if there is data to be read, route it ot the band object to be interpreted
+            routeToBandObject(destBand);
+        }
+
+        if (bandSocket->write(bandData, strlen(bandData)) < strlen(bandData)) {
+            qDebug("ERROR SENDING");
+        }
+    } else {
+        qDebug()<<"Band "<<destBand<<" is not connected ";
+    }
+}
+
+// do not call unless data is available
+void WifiManager::routeToBandObject(BandType bandWithData) {
+    QTcpSocket *bandSocket = socketMap[bandWithData];
+    qDebug()<<"Bytes available: "<<bandSocket->bytesAvailable();
+
+    // read all data from the socket
+    QByteArray readData = bandSocket->readAll();
+
+    if (readData.length() == 0) {
+        // Error probably occured
+    } else {
+        qDebug()<<"READ " <<readData<<" from band number " <<bandWithData;
+
+        // consider timestamping (get current time and pass with data)
+
+        // actually send data to software band (need suit class here)
+        sendToBand(bandWithData, reverseByteArray(trimNewLineAtEnd(readData)));
+    }
+}
+
+QByteArray WifiManager::trimNewLineAtEnd(QByteArray trimFrom) {
+    bool keepTrimming = true;
+    while (keepTrimming) {
+        if (trimFrom[trimFrom.length() - 1] == '\n') {
+            trimFrom.remove(trimFrom.length() - 1, 1);
+        }
+        // uncomment if we should also remove trailing spaces
+        //else if (trimFrom[trimFrom.length() - 1] == ' '){
+        //    trimFrom.remove(trimFrom.length() - 1, 1);
+        //}
+        else  {
+            keepTrimming = false;
+        }
     }
 
-    if (bandSocket->write(bandData, strlen(bandData)) < strlen(bandData)) {
-        qDebug("ERROR SENDING");
+    return trimFrom;
+}
+
+QByteArray WifiManager::reverseByteArray(QByteArray reverseThis) {
+    qDebug()<<"Reversing "<<reverseThis;
+    for (int i = 0; i < reverseThis.length()/2; i++) {
+        char tmp = reverseThis[i];
+        reverseThis[i] = reverseThis[reverseThis.length() - 1 -i];
+        reverseThis[reverseThis.length() - 1 -i] = tmp;
     }
+    qDebug()<<"Reversed: "<<reverseThis;
+
 }

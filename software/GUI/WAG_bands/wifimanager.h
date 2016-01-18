@@ -25,11 +25,16 @@ public:
     void startListening();
     void sendToBand(BandType destBand, QByteArray data);
     void sendToBand(BandType destBand, char * bandData);
+
 private:
     QTcpServer *serv;
     QHash<BandType, QTcpSocket*> socketMap;
+    void routeToBandObject(BandType bandWithData);
+    QByteArray trimNewLineAtEnd(QByteArray trimFrom);
+    QByteArray reverseByteArray(QByteArray reverseThis);
 private slots:
     void connectToNewDevice();
+    void checkForData();
 };
 
 #endif // WIFIMANAGER_H
