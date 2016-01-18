@@ -2,14 +2,6 @@
 #include "smartpushbutton.h"
 #include <sstream>
 
-// event for when the main window is resized
-void MainWindow::resizeEvent(QResizeEvent* r) {
-    QMainWindow::resizeEvent(r);
-    // resize the overlay to cover the whole window
-    overlay->resize(this->width(), this->height());
-    emit resizedWindow();
-}
-
 // Launch window with user's options based on which type of user was selected
 void MainWindow::launchUserOptions(USER u) {
     std::stringstream ss;
@@ -69,7 +61,8 @@ void MainWindow::handleUserOptions(USER u) {
     if (u.hasAction(EDIT) || u.hasAction(PLAYBACK)) {
         openBtn->setUser(u);
         openBtn->show();
-        connect(openBtn, SIGNAL(released(USER)), this, SLOT(launchOpenFromComputer(USER)));
+        createOpen(u);
+        connect(openBtn, SIGNAL(released()), this, SLOT(launchOpen()));
     }
     // only set once even if u has both RECORD and EDIT
     if (u.hasAction(RECORD) || u.hasAction(EDIT)) {
@@ -108,16 +101,22 @@ void MainWindow::addTag() {
 void MainWindow::launchOpenFromComputer(USER u) {
     // File browser
     QString f = QFileDialog::getOpenFileName(this, "Open File", "/");
+    // open f and get metadata
     if (!f.trimmed().isEmpty()) { // user clicked "open"
-        addTab(u, f.trimmed(), EDIT);
-    }
+        WAGFile* w = new WAGFile(f.trimmed(), QString("desc"), QString("author"), QVector<QString>());
+        addTab(u, w, EDIT);
+        closeOpen();
+    }    
 }
 
 // opens the user determined file
 void MainWindow::openFromLibrary(USER u) {
     // TODO: open file somehow...
-    addTab(u, "filename.wagz", EDIT);
+    // based on file, open and get metadata
+    WAGFile* w = new WAGFile(QString("filename"), QString("desc"), QString("author"), QVector<QString>());
+    addTab(u, w, EDIT);
     closeOpenFromLibrary();
+    closeOpen();
 }
 
 // closes the open from library overlay
@@ -163,7 +162,8 @@ void MainWindow::launchNewFile(USER u) {
 
 // creates the new file and opens a tab
 void MainWindow::saveNewFile(USER u) {
-    addTab(u, newFilenameTextEdit->text() + ".wagz", RECORD);
+    WAGFile* w = new WAGFile(newFilenameTextEdit->text(), newFileDescription->toPlainText(), QString("author"), newFileTagsLabel->text().split("; ").toVector());
+    addTab(u, w, RECORD);
     closeNewFile();
 }
 
@@ -191,4 +191,15 @@ void MainWindow::handleNewFileRequiredInput() {
     // enables the create button if the description AND filename text boxes are filled
     createNewFileBtn->setEnabled(!newFileDescription->toPlainText().isEmpty() &&
                                  !newFilenameTextEdit->text().isEmpty());
+}
+
+void MainWindow::launchOpen() {
+    overlay->show();
+    openWidget->show();
+    openWidget->raise();
+}
+
+void MainWindow::closeOpen() {
+    overlay->hide();
+    openWidget->hide();
 }

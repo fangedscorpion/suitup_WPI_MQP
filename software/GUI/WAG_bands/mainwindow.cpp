@@ -16,13 +16,14 @@ MainWindow::MainWindow(QWidget *parent) :
     applicationWidget->setLayout(applicationLayout);
 
     setWindowTitle(tr("WAG bands"));
-    setMinimumSize(750, 500);
-    setMaximumSize(1000, 600);
+    setMinimumSize(1000, 550);
+    setMaximumSize(1000, 550);
 
     titleFont = QFont( "Arial", 15, QFont::Bold);
     titleStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-top: 0.5em; subcontrol-origin: margin; left: 10px; padding: 25px 3px 0 3px;}";
     textInputStyleRed = "QLineEdit {border: 1px solid red; background: white;} QTextEdit {border: 1px solid red; background: white;}";
     textInputStyleWhite = "QLineEdit {background: white;} QTextEdit {background: white;}";
+    buttonHeight = 35;
 
     // users
     USER u("Trainer", "A trainer can record and save motions for others to use");
@@ -38,7 +39,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // menubar
     menu = new QWidget;
     createMenuButtons();
-
 
     // line under menubar
     QFrame *line = new QFrame();
@@ -71,8 +71,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow() {}
 
-void MainWindow::addTab(USER u, QString filename, ACTION_TYPE a) {
-    TabContent *tab = new TabContent(this, filename, u, a);
+void MainWindow::addTab(USER u, WAGFile* w, ACTION_TYPE a) {
+    TabContent *tab = new TabContent(this, w, u, a);
     connect(this, SIGNAL(resizedWindow()), tab, SLOT(applicationResized()));
     tabs->addTab(tab, tab->getFilename());
     tabs->setCurrentIndex(tabs->indexOf(tab));
@@ -187,9 +187,13 @@ void MainWindow::createSettings() {
     // Buttons on bottom of settings
     QHBoxLayout *settingsButtons = new QHBoxLayout;
     QPushButton *calibrate = new QPushButton("Calibrate");
+    calibrate->setMinimumHeight(buttonHeight);
     QPushButton *connectBands = new QPushButton("Connect Bands");
+    connectBands->setMinimumHeight(buttonHeight);
     QPushButton *ok = new QPushButton("OK");
+    ok->setMinimumHeight(buttonHeight);
     QPushButton *cancel = new QPushButton("Cancel");
+    cancel->setMinimumHeight(buttonHeight);
     settingsButtons->addWidget(calibrate);
     settingsButtons->addWidget(connectBands);
     settingsButtons->addWidget(cancel);
@@ -238,6 +242,7 @@ void MainWindow::createNewFile(USER u) {
     t->addWidget(newFileTagsTextEdit);
     addTagBtn = new QPushButton("Add Keyword");
     addTagBtn->setEnabled(false);
+    addTagBtn->setMinimumHeight(buttonHeight);
     // tags list
     QHBoxLayout *t2 = new QHBoxLayout;
     QLabel *l4 = new QLabel;
@@ -251,6 +256,7 @@ void MainWindow::createNewFile(USER u) {
     createNewFileBtn = new smartPushButton("Create", u);
     createNewFileBtn->setEnabled(false);
     QPushButton *cancel = new QPushButton("Cancel");
+    cancel->setMinimumHeight(buttonHeight);
     btns->addWidget(cancel);
     btns->addWidget(createNewFileBtn);
     layout->addLayout(f);
@@ -277,6 +283,27 @@ void MainWindow::createNewFile(USER u) {
     emit this->resizedWindow();
 }
 
+void MainWindow::createOpen(USER u) {
+    openWidget = new OverlayWidget(this, "Open Motion");
+    QVBoxLayout *layout = openWidget->getLayout();
+    smartPushButton *openLib = new smartPushButton("Open Motion From Library", u);
+    smartPushButton *openComp = new smartPushButton("Open Motion From Computer", u);
+    QPushButton *cancel = new QPushButton("Cancel");
+    cancel->setMinimumHeight(buttonHeight);
+
+    layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    layout->addWidget(openLib);
+    layout->addWidget(openComp);
+    layout->addWidget(cancel);
+    layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+
+    connect(openLib, SIGNAL(released(USER)), this, SLOT(launchOpenFromLibrary(USER)));
+    connect(openComp, SIGNAL(released(USER)), this, SLOT(launchOpenFromComputer(USER)));
+    connect(cancel, SIGNAL(released()), this, SLOT(closeOpen()));
+    connect(this, SIGNAL(resizedWindow()), openWidget, SLOT(resizeWindow()));
+    emit this->resizedWindow();
+}
+
 // Open from library overlay
 void MainWindow::createOpenFromLib(USER u) {
     openFromLibWidget = new OverlayWidget(this, "Open Motion From Library");
@@ -285,6 +312,7 @@ void MainWindow::createOpenFromLib(USER u) {
     QHBoxLayout *btns = new QHBoxLayout;
     smartPushButton *open = new smartPushButton("Open", u);
     QPushButton *cancel = new QPushButton("Cancel");
+    cancel->setMinimumHeight(buttonHeight);
     btns->addWidget(cancel);
     btns->addWidget(open);
     layout->addLayout(btns);
@@ -296,4 +324,12 @@ void MainWindow::createOpenFromLib(USER u) {
     connect(cancel, SIGNAL(released()), this, SLOT(closeOpenFromLibrary()));
     connect(this, SIGNAL(resizedWindow()), openFromLibWidget, SLOT(resizeWindow()));
     emit this->resizedWindow();
+}
+
+// event for when the main window is resized
+void MainWindow::resizeEvent(QResizeEvent* r) {
+    QMainWindow::resizeEvent(r);
+    // resize the overlay to cover the whole window
+    overlay->resize(this->width(), this->height());
+    emit resizedWindow();
 }

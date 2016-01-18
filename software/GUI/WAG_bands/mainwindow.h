@@ -26,6 +26,7 @@
 #include "overlaywidget.h"
 #include "playbackcontroller.h"
 #include "smartpushbutton.h"
+#include "wagfile.h"
 #include <set>
 
 namespace Ui {
@@ -43,7 +44,7 @@ public:
 private:
     Ui::MainWindow *ui;
     void resizeEvent(QResizeEvent* r);
-    void addTab(USER u, QString filename, ACTION_TYPE a);
+    void addTab(USER u, WAGFile *w, ACTION_TYPE a);
 
     QWidget *applicationWidget;
     QTabWidget *tabs;
@@ -54,6 +55,7 @@ private:
     QString titleStyleSheet;
     QString textInputStyleWhite;
     QString textInputStyleRed;
+    int buttonHeight;
     // menubar
     smartPushButton *newBtn;
     smartPushButton *openBtn;
@@ -81,9 +83,11 @@ private:
     QLabel *saveAsTagsLabel;
     QLineEdit *saveAsTagsTextEdit;
     QTextEdit *saveAsDescription;
-    // open from library overlay
+    // open
     OverlayWidget *openFromLibWidget;
+    OverlayWidget *openWidget;
     void createOpenFromLib(USER u);
+    void createOpen(USER u);
     // create new file
     OverlayWidget *newFileWidget;
     QLineEdit *newFilenameTextEdit;
@@ -101,7 +105,9 @@ private slots:
     // open
     void launchOpenFromComputer(USER u);
     void launchOpenFromLibrary(USER u);
+    void launchOpen();
     void closeOpenFromLibrary();
+    void closeOpen();
     void openFromLibrary(USER u);
     // settings
     void launchSettings();

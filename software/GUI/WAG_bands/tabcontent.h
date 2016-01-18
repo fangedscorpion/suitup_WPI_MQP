@@ -10,11 +10,11 @@ class TabContent : public QWidget
     Q_OBJECT
 
 public:
-    TabContent(MainWindow* parent, QString filename, USER u, ACTION_TYPE initiallyShow);
+    TabContent(MainWindow* parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow);
     ~TabContent();
 
-    QString getFilename() { return filenameString;}
-    void updateWithNewFilename(QString f);
+    QString getFilename() { return motion->getName();}
+//    void updateWithNewFilename(QString f);
 
 protected:
     void timerEvent(QTimerEvent *event);
@@ -22,14 +22,18 @@ protected:
 private:
     MainWindow* parent;
     USER user;
+    WAGFile* motion;
     QStackedWidget *optionsStack;
-    QString filenameString;
     void createIcons();
+    void resizeEvent(QResizeEvent* r);
+    Overlay* overlay;
 
     // fonts & styles
     QFont titleFont;
     QString groupboxStyleSheet;
-
+    QString textInputStyleWhite;
+    QString textInputStyleRed;
+    int buttonHeight;
     // mode radio buttons
     QGroupBox *modeRadiosGroup;
     smartRadioButton *playbackRadio;
@@ -94,6 +98,11 @@ private:
     QIcon undoIcon;
     QIcon editIcon;
     QWidget* createEditOptionsAndControls();
+    // file info
+    OverlayWidget *fileInfoWidget;
+    void createFileInfoWindow();
+    QPushButton* addTagBtn;
+    QLabel* newFileTagsLabel;
 
 public slots:
     void show(ACTION_TYPE a);
@@ -103,8 +112,12 @@ public slots:
     void handleRecordingWindowButtons();
     void displayNewTime(int newMillis);
     void playbackToggled(bool playing);
+    void launchFileInfo();
+    void closeFileInfo();
+    void saveFileInfo();
 
 signals:
     void stepThroughChanged(bool steppingThrough);
     void countDownChanged(double d);
+    void resizedWindow();
 };

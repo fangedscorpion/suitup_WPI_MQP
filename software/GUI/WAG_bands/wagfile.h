@@ -2,25 +2,28 @@
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
-//#include <boost/filesystem/path.hpp>
+#include <boost/filesystem.hpp>
 #include <string>
+#include <QString>
+#include <QVector>
 
 class WAGFile {
 public:
-    WAGFile(std::string filename, std::string description, std::string author,
-            std::vector<std::string> in_tags);
-    std::string getName() {return name;}
-    std::string getDescription() {return description;}
-    std::string getAuthor() {return author;}
-    std::vector<std::string> getTags() {return tags;}
-    void updateFilename(std::string newName) { name = newName;}
+
+    WAGFile(QString filename, QString description, QString author,
+            QVector<QString> in_tags);
+    QString getName() {return name;}
+    QString getDescription() {return description;}
+    QString getAuthor() {return author;}
+    QVector<QString> getTags() {return tags;}
+    void updateFilename(QString newName) { name = newName;}
 
 private:
     // the path to the file location
 //    boost::filesystem::path path;
     // the file's actual name x.wagz
-    std::string name;
-    std::string description;
-    std::string author;
-    std::vector<std::string> tags;
+    QString name;
+    QString description;
+    QString author;
+    QVector<QString> tags;
 };
