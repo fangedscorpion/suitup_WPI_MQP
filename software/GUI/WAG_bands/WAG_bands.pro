@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui bluetooth
+QT       += core gui bluetooth network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -18,8 +18,6 @@ SOURCES += main.cpp\
     overlay.cpp \
     overlaywidget.cpp \
     customshadoweffect.cpp \
-    networkmonitor.cpp \
-    bluetoothmanager.cpp \
     playbackcontroller.cpp \
     motion.cpp \
     positionsnapshot.cpp \
@@ -32,12 +30,19 @@ SOURCES += main.cpp\
     visualization/vertextranslator.cpp\
     smartpushbutton.cpp \
     mainwindowslots.cpp \
-    smartradiobutton.cpp
+    smartradiobutton.cpp \
+    band/absband.cpp \
+    band/abspose.cpp \
+    band/shoulderband.cpp \
+    band/chestband.cpp \
+    band/armband.cpp \
+    band/suit.cpp \
+    communications/wifimanager.cpp \
+    communications/bluetoothmanager.cpp \
+    communications/networkmonitor.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
-    networkmonitor.h \
-    bluetoothmanager.h \
     playbackcontroller.h \
     motion.h \
     positionsnapshot.h \
@@ -53,7 +58,13 @@ HEADERS  += mainwindow.h \
     visualization/vertextranslator.h \
     smartpushbutton.h \
     user.h \
-    smartradiobutton.h
+    smartradiobutton.h \
+    band/absband.h \
+    band/abspose.h \
+    band/suit.h \
+    communications/wifimanager.h \
+    communications/networkmonitor.h \
+    communications/bluetoothmanager.h
 
 FORMS    +=
 

@@ -115,6 +115,7 @@ public slots:
     void handleRecordingWindowButtons();
     void displayNewTime(int newMillis);
     void playbackToggled(bool playing);
+    void sliderValueChanged(int newVal);
     void launchFileInfo();
     void closeFileInfo();
     void saveFileInfo();

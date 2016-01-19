@@ -45,7 +45,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <QDebug>
-#include "bluetoothmanager.h"
 
 GLWidget::GLWidget(QWidget *parent)
     : QOpenGLWidget(parent),
