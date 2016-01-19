@@ -14,7 +14,6 @@ public:
     ~TabContent();
 
     QString getFilename() { return motion->getName();}
-//    void updateWithNewFilename(QString f);
 
 protected:
     void timerEvent(QTimerEvent *event);
@@ -27,6 +26,7 @@ private:
     void createIcons();
     void resizeEvent(QResizeEvent* r);
     Overlay* overlay;
+    void updateMotion(WAGFile* file);
 
     // fonts & styles
     QFont titleFont;
@@ -60,7 +60,6 @@ private:
     void initializePlaybackSettings();
     // viewer
     QStackedWidget *viewerStack;
-    QGroupBox *viewerGroup;
     QLabel *currentLoadedFilename;
     GLWidget *viewer;
     SuperSlider *videoSlider;
@@ -103,6 +102,10 @@ private:
     void createFileInfoWindow();
     QPushButton* addTagBtn;
     QLabel* newFileTagsLabel;
+    QLineEdit* infoFilenameTextEdit;
+    QTextEdit* infoFileDescription;
+    QLineEdit* infoFileTagsTextEdit;
+    QLabel* infoFileTagsLabel;
 
 public slots:
     void show(ACTION_TYPE a);

@@ -278,14 +278,15 @@ QWidget* TabContent::createEditOptionsAndControls() {
 
 // OpenGL Motion Viewer window with video slider
 QWidget* TabContent::createViewer(ACTION_TYPE t) {
+    QGroupBox* v;
     if (t == EDIT) {
-        viewerGroup = new QGroupBox("Editing: " + motion->getName());
+        v = new QGroupBox("Editing: " + motion->getName());
     } else {
-        viewerGroup = new QGroupBox("Playing: " + motion->getName());
+        v= new QGroupBox("Playing: " + motion->getName());
     }
 
-    viewerGroup->setStyleSheet(groupboxStyleSheet);
-    viewerGroup->setFont(titleFont);
+    v->setStyleSheet(groupboxStyleSheet);
+    v->setFont(titleFont);
 
     // viewer window
     viewer = new GLWidget;
@@ -294,7 +295,7 @@ QWidget* TabContent::createViewer(ACTION_TYPE t) {
     playPause = new QPushButton;
     videoSlider = new SuperSlider;
     handle1Time = new QLabel("00:00.00");
-    handle2Time = new QLabel("00:10");
+    handle2Time = new QLabel("00:10.00");
     playPause->setIcon(playIcon);
     playPause->setIconSize(QSize(15,15));
     controls->addWidget(playPause);
@@ -306,8 +307,8 @@ QWidget* TabContent::createViewer(ACTION_TYPE t) {
     QVBoxLayout *viewerPane = new QVBoxLayout;
     viewerPane->addWidget(viewer,1);
     viewerPane->addLayout(controls);
-    viewerGroup->setLayout(viewerPane);
-    return viewerGroup;
+    v->setLayout(viewerPane);
+    return v;
 }
 
 // updates the playback mode's speed slider labels
@@ -454,9 +455,9 @@ void TabContent::createFileInfoWindow() {
     l1->setMinimumWidth(100);
     l1->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     f->addWidget(l1, -1);
-    QLineEdit* newFilenameTextEdit = new QLineEdit;
-    newFilenameTextEdit->setStyleSheet(textInputStyleRed);
-    f->addWidget(newFilenameTextEdit);
+    infoFilenameTextEdit = new QLineEdit;
+    infoFilenameTextEdit->setStyleSheet(textInputStyleWhite);
+    f->addWidget(infoFilenameTextEdit);
 
     // description
     QHBoxLayout *d = new QHBoxLayout;
@@ -464,10 +465,10 @@ void TabContent::createFileInfoWindow() {
     l2->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     l2->setMinimumWidth(100);
     d->addWidget(l2, -1);
-    QTextEdit* newFileDescription = new QTextEdit;
-    newFileDescription->setStyleSheet(textInputStyleRed);
-    newFileDescription->setMinimumHeight(150);
-    d->addWidget(newFileDescription);
+    infoFileDescription = new QTextEdit;
+    infoFileDescription->setStyleSheet(textInputStyleWhite);
+    infoFileDescription->setMinimumHeight(150);
+    d->addWidget(infoFileDescription);
 
     // tags input
     QHBoxLayout *t = new QHBoxLayout;
@@ -475,9 +476,9 @@ void TabContent::createFileInfoWindow() {
     l3->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     l3->setMinimumWidth(100);
     t->addWidget(l3, -1);
-    QLineEdit* newFileTagsTextEdit = new QLineEdit;
-    newFileTagsTextEdit->setStyleSheet(textInputStyleWhite);
-    t->addWidget(newFileTagsTextEdit);
+    infoFileTagsTextEdit = new QLineEdit;
+    infoFileTagsTextEdit->setStyleSheet(textInputStyleWhite);
+    t->addWidget(infoFileTagsTextEdit);
     addTagBtn = new QPushButton("Add Keyword");
     addTagBtn->setEnabled(false);
     addTagBtn->setMinimumHeight(buttonHeight);
@@ -487,8 +488,8 @@ void TabContent::createFileInfoWindow() {
     l4->setMinimumWidth(100);
     t2->addWidget(l4, -1);
     t2->addWidget(addTagBtn, -1);
-    newFileTagsLabel = new QLabel;
-    t2->addWidget(newFileTagsLabel, 1);
+    infoFileTagsLabel = new QLabel();
+    t2->addWidget(infoFileTagsLabel, 1);
 
     QHBoxLayout *btns = new QHBoxLayout;
     smartPushButton* saveFileBtn = new smartPushButton("Save");
@@ -506,13 +507,13 @@ void TabContent::createFileInfoWindow() {
     layout->addLayout(btns);
 
     // only connect handleUserOptions when the user selection window is visible to user
-    connect(saveFileBtn, SIGNAL(released(USER)), this, SLOT(saveFileInfo(USER)));
+    connect(saveFileBtn, SIGNAL(released()), this, SLOT(saveFileInfo()));
     connect(cancel, SIGNAL(released()), this, SLOT(closeFileInfo()));
     connect(addTagBtn, SIGNAL(released()), this, SLOT(addTag()));
-    connect(newFileTagsTextEdit, SIGNAL(returnPressed()), this, SLOT(addTag()));
-    connect(newFilenameTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewFileRequiredInput(QString)));
-    connect(newFileDescription, SIGNAL(textChanged()), this, SLOT(handleNewFileRequiredInput()));
-    connect(newFileTagsTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewFileRequiredInput(QString)));
+    connect(infoFileTagsTextEdit, SIGNAL(returnPressed()), this, SLOT(addTag()));
+//    connect(infoFilenameTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewFileRequiredInput(QString)));
+//    connect(infoFileDescription, SIGNAL(textChanged()), this, SLOT(handleNewFileRequiredInput()));
+//    connect(infoFileTagsTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewFileRequiredInput(QString)));
     connect(this, SIGNAL(resizedWindow()), fileInfoWidget, SLOT(resizeWindow()));
     emit this->resizedWindow();
 }
@@ -521,9 +522,17 @@ void TabContent::launchFileInfo() {
     overlay->show();
     fileInfoWidget->show();
     fileInfoWidget->raise();
+
+    infoFilenameTextEdit->setText(motion->getName());
+    infoFileDescription->setText(motion->getDescription());
+//    infoFileTagsLabel->setText(motion->getTagsString());
+
 }
 
 void TabContent::saveFileInfo() {
+    WAGFile* w = new WAGFile(infoFilenameTextEdit->text(), infoFileDescription->toPlainText(),
+                             motion->getAuthor(), infoFileTagsLabel->text().split("; ").toVector());
+    updateMotion(w);
     closeFileInfo();
 }
 
@@ -628,13 +637,15 @@ void TabContent::handleRecordTimeCounter() {
     msecs++;
 }
 
-
-//void TabContent::updateWithNewFilename(QString f) {
-//    filenameString = f;
-//    static_cast<QGroupBox*>(viewerStack->widget(PLAYBACK))->setTitle("Playing: " + f);
-//    static_cast<QGroupBox*>(viewerStack->widget(EDIT))->setTitle("Editing: " + f);
-//    static_cast<QGroupBox*>(viewerStack->widget(RECORD))->setTitle("Recording: " + f);
-//}
+void TabContent::updateMotion(WAGFile* file) {
+    motion = file;
+    if (user.hasAction(PLAYBACK))
+        static_cast<QGroupBox*>(viewerStack->widget(PLAYBACK))->setTitle(QString("Playing: ") + motion->getName());
+    if (user.hasAction(EDIT))
+        static_cast<QGroupBox*>(viewerStack->widget(EDIT))->setTitle(QString("Editing: ") + motion->getName());
+    if (user.hasAction(RECORD))
+        recordGroup->setTitle(QString("Recording: ") + motion->getName());
+}
 
 void TabContent::timerEvent(QTimerEvent *event) {
     if(event->timerId() == countDownTimerID) {
