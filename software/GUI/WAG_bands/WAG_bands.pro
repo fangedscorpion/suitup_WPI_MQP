@@ -72,3 +72,5 @@ RESOURCES += \
     icons.qrc
 
 CONFIG += console
+
+LIBS += -L/usr/lib/ -lboost_filesystem -lboost_system

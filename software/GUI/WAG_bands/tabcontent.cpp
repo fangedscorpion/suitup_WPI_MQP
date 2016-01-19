@@ -2,14 +2,18 @@
 #include <unistd.h>
 #include <QTimerEvent>
 
-TabContent::TabContent(MainWindow *in_parent, QString filename, USER u, ACTION_TYPE initiallyShow) : parent(in_parent){
-    filenameString = filename;
+TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow) : parent(in_parent){
+    motion = in_motion;
     user = u;
     playbackControls = new PlaybackController;
     titleFont = QFont( "Arial", 15, QFont::Bold);
-    // "left: 50px; top: 20px; subcontrol-origin: margin; "
     groupboxStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-left: 0.25em; margin-right: 0.25em; margin-top: 0.5em; padding: 35px 3px 0 3px;} QGroupBox::title{subcontrol-position: top center; subcontrol-origin: margin;}";
+    textInputStyleRed = "QLineEdit {border: 1px solid red; background: white;} QTextEdit {border: 1px solid red; background: white;}";
+    textInputStyleWhite = "QLineEdit {background: white;} QTextEdit {background: white;}";
+    buttonHeight = 35;
+
     createIcons();
+    createFileInfoWindow();
 
     optionsStack = new QStackedWidget;
     viewerStack = new QStackedWidget;
@@ -38,6 +42,10 @@ TabContent::TabContent(MainWindow *in_parent, QString filename, USER u, ACTION_T
     splitPanes->addWidget(viewerStack, 2);
 
     this->setLayout(splitPanes);
+    overlay = new Overlay(this);
+    overlay->makeSemiTransparent();
+    overlay->hide();
+    connect(this, SIGNAL(resizedWindow()), overlay, SLOT(resizeWindow()));
 }
 
 TabContent::~TabContent() {}
@@ -51,6 +59,14 @@ void TabContent::createIcons() {
     undoIcon = QIcon(QPixmap(":/icons/undo.png"));
     editIcon = QIcon(QPixmap(":/icons/edit.png"));
     stopIcon = QIcon(QPixmap(":/icons/stop.png"));
+}
+
+// event for when the main window is resized
+void TabContent::resizeEvent(QResizeEvent* r) {
+    QWidget::resizeEvent(r);
+    // resize the overlay to cover the whole window
+    overlay->resize(this->width(), this->height());
+    emit resizedWindow();
 }
 
 void TabContent::show(ACTION_TYPE a) {
@@ -115,6 +131,7 @@ QWidget* TabContent::createModeRadios(USER u) {
         return modeRadiosGroup;
     }
 
+    vl->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     if (u.hasAction(RECORD)) {
         vl->addWidget(recordRadio);
         connect(recordRadio, SIGNAL(released(ACTION_TYPE)), this, SLOT(show(ACTION_TYPE)));
@@ -127,6 +144,8 @@ QWidget* TabContent::createModeRadios(USER u) {
         vl->addWidget(playbackRadio);
         connect(playbackRadio, SIGNAL(released(ACTION_TYPE)), this, SLOT(show(ACTION_TYPE)));
     }
+    vl->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+
     modeRadiosGroup->setLayout(vl);
     return modeRadiosGroup;
 }
@@ -224,24 +243,35 @@ QWidget* TabContent::createEditOptionsAndControls() {
     QPushButton *undoBtn = new QPushButton;
     undoBtn->setIcon(undoIcon);
     undoBtn->setIconSize(QSize(51,25));
+    undoBtn->setMinimumHeight(buttonHeight);
     undoBtn->setText("Undo");
     QPushButton *cropBtn = new QPushButton;
     cropBtn->setIcon(cropIcon);
     cropBtn->setIconSize(QSize(49,25));
+    cropBtn->setMinimumHeight(buttonHeight);
     cropBtn->setText("Crop");
     QPushButton *splitBtn = new QPushButton;
     splitBtn->setIcon(splitIcon);
     splitBtn->setIconSize(QSize(62,25));
+    splitBtn->setMinimumHeight(buttonHeight);
     splitBtn->setText("Split");
+    QPushButton *fileInfoBtn = new QPushButton;
+//    fileInfoBtn->setIcon(splitIcon);
+//    fileInfoBtn->setIconSize(QSize(62,25));
+    fileInfoBtn->setMinimumHeight(buttonHeight);
+    fileInfoBtn->setText("Edit Motion Information");
     QVBoxLayout *recordPlaybackLayout = new QVBoxLayout;
     QVBoxLayout *buttons = new QVBoxLayout;
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     buttons->addWidget(undoBtn);
     buttons->addWidget(cropBtn);
     buttons->addWidget(splitBtn);
+    buttons->addWidget(fileInfoBtn);
     recordPlaybackLayout->addLayout(buttons, 1);
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     editOptions->setLayout(recordPlaybackLayout);
+
+    connect(fileInfoBtn, SIGNAL(released()), this, SLOT(launchFileInfo()));
 
     return editOptions;
 }
@@ -249,9 +279,9 @@ QWidget* TabContent::createEditOptionsAndControls() {
 // OpenGL Motion Viewer window with video slider
 QWidget* TabContent::createViewer(ACTION_TYPE t) {
     if (t == EDIT) {
-        viewerGroup = new QGroupBox("Editing: " + filenameString);
+        viewerGroup = new QGroupBox("Editing: " + motion->getName());
     } else {
-        viewerGroup = new QGroupBox("Playing: " + filenameString);
+        viewerGroup = new QGroupBox("Playing: " + motion->getName());
     }
 
     viewerGroup->setStyleSheet(groupboxStyleSheet);
@@ -355,7 +385,7 @@ QWidget* TabContent::createRecordOptionsAndController() {
 }
 
 QWidget* TabContent::createRecordingWindow() {
-    recordGroup = new QGroupBox("Recording: " + filenameString);
+    recordGroup = new QGroupBox("Recording: " + motion->getName());
     recordGroup->setStyleSheet(groupboxStyleSheet);
     recordGroup->setFont(titleFont);
     // viewer window
@@ -388,13 +418,13 @@ QWidget* TabContent::createRecordingWindow() {
     h->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     resetButton = new QPushButton("Reset");
-    resetButton->setMinimumHeight(35);
+    resetButton->setMinimumHeight(buttonHeight);
     resetButton->setEnabled(false);
 //    resetButton->setIcon(undoIcon);
 //    resetButton->setIconSize(QSize(35,15));
 
     recordButton = new QPushButton;
-    recordButton->setMinimumHeight(35);
+    recordButton->setMinimumHeight(buttonHeight);
     recordButton->setText("Start Recording");
     recordButton->setIcon(recordIcon);
     recordButton->setIconSize(QSize(35,15));
@@ -415,6 +445,95 @@ QWidget* TabContent::createRecordingWindow() {
     connect(recordButton, SIGNAL(released()), this, SLOT(handleRecordingWindowButtons()));
     connect(resetButton, SIGNAL(released()), this, SLOT(handleRecordingWindowButtons()));
     return recordGroup;
+}
+
+void TabContent::createFileInfoWindow() {
+
+    fileInfoWidget = new OverlayWidget(this, "Edit Motion Information");
+    QVBoxLayout *layout = fileInfoWidget->getLayout();
+
+    // Filename: textbox
+    QHBoxLayout *f = new QHBoxLayout;
+    QLabel *l1 = new QLabel("Name: ");
+    l1->setMinimumWidth(100);
+    l1->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    f->addWidget(l1, -1);
+    QLineEdit* newFilenameTextEdit = new QLineEdit;
+    newFilenameTextEdit->setStyleSheet(textInputStyleRed);
+    f->addWidget(newFilenameTextEdit);
+
+    // description
+    QHBoxLayout *d = new QHBoxLayout;
+    QLabel *l2 = new QLabel("Description: ");
+    l2->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    l2->setMinimumWidth(100);
+    d->addWidget(l2, -1);
+    QTextEdit* newFileDescription = new QTextEdit;
+    newFileDescription->setStyleSheet(textInputStyleRed);
+    newFileDescription->setMinimumHeight(150);
+    d->addWidget(newFileDescription);
+
+    // tags input
+    QHBoxLayout *t = new QHBoxLayout;
+    QLabel *l3 = new QLabel("Keywords: ");
+    l3->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    l3->setMinimumWidth(100);
+    t->addWidget(l3, -1);
+    QLineEdit* newFileTagsTextEdit = new QLineEdit;
+    newFileTagsTextEdit->setStyleSheet(textInputStyleWhite);
+    t->addWidget(newFileTagsTextEdit);
+    addTagBtn = new QPushButton("Add Keyword");
+    addTagBtn->setEnabled(false);
+    addTagBtn->setMinimumHeight(buttonHeight);
+    // tags list
+    QHBoxLayout *t2 = new QHBoxLayout;
+    QLabel *l4 = new QLabel;
+    l4->setMinimumWidth(100);
+    t2->addWidget(l4, -1);
+    t2->addWidget(addTagBtn, -1);
+    newFileTagsLabel = new QLabel;
+    t2->addWidget(newFileTagsLabel, 1);
+
+    QHBoxLayout *btns = new QHBoxLayout;
+    smartPushButton* saveFileBtn = new smartPushButton("Save");
+    QPushButton *cancel = new QPushButton("Cancel");
+    cancel->setMinimumHeight(buttonHeight);
+    btns->addWidget(cancel);
+    btns->addWidget(saveFileBtn);
+    layout->addLayout(f);
+    layout->addSpacing(10);
+    layout->addLayout(d);
+    layout->addSpacing(10);
+    layout->addLayout(t);
+    layout->addLayout(t2);
+    layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    layout->addLayout(btns);
+
+    // only connect handleUserOptions when the user selection window is visible to user
+    connect(saveFileBtn, SIGNAL(released(USER)), this, SLOT(saveFileInfo(USER)));
+    connect(cancel, SIGNAL(released()), this, SLOT(closeFileInfo()));
+    connect(addTagBtn, SIGNAL(released()), this, SLOT(addTag()));
+    connect(newFileTagsTextEdit, SIGNAL(returnPressed()), this, SLOT(addTag()));
+    connect(newFilenameTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewFileRequiredInput(QString)));
+    connect(newFileDescription, SIGNAL(textChanged()), this, SLOT(handleNewFileRequiredInput()));
+    connect(newFileTagsTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewFileRequiredInput(QString)));
+    connect(this, SIGNAL(resizedWindow()), fileInfoWidget, SLOT(resizeWindow()));
+    emit this->resizedWindow();
+}
+
+void TabContent::launchFileInfo() {
+    overlay->show();
+    fileInfoWidget->show();
+    fileInfoWidget->raise();
+}
+
+void TabContent::saveFileInfo() {
+    closeFileInfo();
+}
+
+void TabContent::closeFileInfo() {
+    overlay->hide();
+    fileInfoWidget->hide();
 }
 
 // sets the count down label to the given number of seconds
@@ -514,12 +633,12 @@ void TabContent::handleRecordTimeCounter() {
 }
 
 
-void TabContent::updateWithNewFilename(QString f) {
-    filenameString = f;
-    static_cast<QGroupBox*>(viewerStack->widget(PLAYBACK))->setTitle("Playing: " + f);
-    static_cast<QGroupBox*>(viewerStack->widget(EDIT))->setTitle("Editing: " + f);
-    static_cast<QGroupBox*>(viewerStack->widget(RECORD))->setTitle("Recording: " + f);
-}
+//void TabContent::updateWithNewFilename(QString f) {
+//    filenameString = f;
+//    static_cast<QGroupBox*>(viewerStack->widget(PLAYBACK))->setTitle("Playing: " + f);
+//    static_cast<QGroupBox*>(viewerStack->widget(EDIT))->setTitle("Editing: " + f);
+//    static_cast<QGroupBox*>(viewerStack->widget(RECORD))->setTitle("Recording: " + f);
+//}
 
 void TabContent::timerEvent(QTimerEvent *event) {
     if(event->timerId() == countDownTimerID) {
