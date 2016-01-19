@@ -48,7 +48,7 @@
 #include <QMatrix4x4>
 #include "vertextranslator.h"
 #include "glcamera.h"
-#include "bluetoothmanager.h"
+#include "communications/bluetoothmanager.h"
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 

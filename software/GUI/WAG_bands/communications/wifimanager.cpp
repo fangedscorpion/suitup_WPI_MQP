@@ -124,6 +124,8 @@ void WifiManager::sendToBand(BandType destBand, QByteArray bandData) {
 void WifiManager::sendToBand(BandType destBand, char * bandData) {
     if (socketMap.contains(destBand)) {
         // write to socket
+
+        qDebug()<<"Data "<<bandData;
         QTcpSocket *bandSocket = socketMap[destBand];
 
 
@@ -155,8 +157,15 @@ void WifiManager::routeToBandObject(BandType bandWithData) {
 
         // consider timestamping (get current time and pass with data)
 
+        emit dataAvailable(bandWithData, readData, QTime::currentTime());
+
+
         // actually send data to software band (need suit class here)
-        sendToBand(bandWithData, reverseByteArray(trimNewLineAtEnd(readData)));
+        QByteArray returnData = trimNewLineAtEnd(readData);
+        qDebug()<<returnData;
+        returnData = reverseByteArray(returnData);
+        qDebug()<<returnData;
+        sendToBand(bandWithData, returnData);
     }
 }
 
@@ -174,7 +183,7 @@ QByteArray WifiManager::trimNewLineAtEnd(QByteArray trimFrom) {
             keepTrimming = false;
         }
     }
-
+    qDebug()<<trimFrom;
     return trimFrom;
 }
 
@@ -186,5 +195,5 @@ QByteArray WifiManager::reverseByteArray(QByteArray reverseThis) {
         reverseThis[reverseThis.length() - 1 -i] = tmp;
     }
     qDebug()<<"Reversed: "<<reverseThis;
-
+    return reverseThis;
 }

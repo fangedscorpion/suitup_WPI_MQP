@@ -18,8 +18,6 @@ SOURCES += main.cpp\
     overlay.cpp \
     overlaywidget.cpp \
     customshadoweffect.cpp \
-    networkmonitor.cpp \
-    bluetoothmanager.cpp \
     playbackcontroller.cpp \
     motion.cpp \
     positionsnapshot.cpp \
@@ -33,17 +31,18 @@ SOURCES += main.cpp\
     smartpushbutton.cpp \
     mainwindowslots.cpp \
     smartradiobutton.cpp \
-    wifimanager.cpp \
     band/absband.cpp \
     band/abspose.cpp \
     band/shoulderband.cpp \
     band/chestband.cpp \
-    band/armband.cpp
+    band/armband.cpp \
+    band/suit.cpp \
+    communications/wifimanager.cpp \
+    communications/bluetoothmanager.cpp \
+    communications/networkmonitor.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
-    networkmonitor.h \
-    bluetoothmanager.h \
     playbackcontroller.h \
     motion.h \
     positionsnapshot.h \
@@ -60,9 +59,12 @@ HEADERS  += mainwindow.h \
     smartpushbutton.h \
     user.h \
     smartradiobutton.h \
-    wifimanager.h \
     band/absband.h \
-    band/abspose.h
+    band/abspose.h \
+    band/suit.h \
+    communications/wifimanager.h \
+    communications/networkmonitor.h \
+    communications/bluetoothmanager.h
 
 FORMS    +=
 

@@ -26,6 +26,9 @@ public:
     void sendToBand(BandType destBand, QByteArray data);
     void sendToBand(BandType destBand, char * bandData);
 
+signals:
+    void dataAvailable(BandType recvdFrom, QByteArray dataRecvd, QTime timestamp);
+
 private:
     QTcpServer *serv;
     QHash<BandType, QTcpSocket*> socketMap;
