@@ -39,7 +39,8 @@ SOURCES += main.cpp\
     band/suit.cpp \
     communications/wifimanager.cpp \
     communications/bluetoothmanager.cpp \
-    communications/networkmonitor.cpp
+    communications/networkmonitor.cpp \
+    editingcontroller.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
@@ -64,7 +65,8 @@ HEADERS  += mainwindow.h \
     band/suit.h \
     communications/wifimanager.h \
     communications/networkmonitor.h \
-    communications/bluetoothmanager.h
+    communications/bluetoothmanager.h \
+    editingcontroller.h
 
 FORMS    +=
 
