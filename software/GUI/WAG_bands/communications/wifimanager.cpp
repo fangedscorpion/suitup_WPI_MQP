@@ -3,12 +3,19 @@
 
 WifiManager::WifiManager():QObject()
 {
-    serv = new QTcpServer(this);
+    serv = new QTcpServer(this); // TODO: convert to multi-client system
     connect(serv, SIGNAL(newConnection()), this, SLOT(connectToNewDevice()));
+    // get my IP
+    // generate band IPs based off this
 }
 
-void WifiManager::startListening()
+void WifiManager::initiateConnection()
 {
+    // TODO: initiate connection with bands (bands are server)
+    // get list of enabled bands
+    // make list of IPs based on enabled bands
+    // generate sockets for connecting
+    // add to socket map
     serv->listen(QHostAddress::Any, SERVER_PORT);
 }
 
@@ -66,6 +73,7 @@ void WifiManager::connectToNewDevice() {
     }
 }
 
+// should stay same after convert computer to client
 void WifiManager::checkForData() {
     qDebug("checking for data");
     QList<BandType> possibleBands;
@@ -97,6 +105,7 @@ void WifiManager::checkForData() {
     qDebug("HERE6789");
 }
 
+// should stay same after convert to client
 void WifiManager::sendToBand(BandType destBand, QByteArray bandData) {
     // write to socket
     if (socketMap.contains(destBand)) {

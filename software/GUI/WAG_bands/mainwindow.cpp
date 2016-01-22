@@ -69,7 +69,7 @@ MainWindow::MainWindow(QWidget *parent) :
     applicationLayout->addWidget(tabs, 1);
     wifiMan = new WifiManager();
     fullSuit = new Suit(wifiMan);
-    wifiMan->startListening();
+    wifiMan->initiateConnection();
 }
 
 MainWindow::~MainWindow() {}

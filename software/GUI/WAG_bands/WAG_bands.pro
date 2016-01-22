@@ -40,7 +40,9 @@ SOURCES += main.cpp\
     communications/wifimanager.cpp \
     communications/bluetoothmanager.cpp \
     communications/networkmonitor.cpp \
-    editingcontroller.cpp
+    editingcontroller.cpp \
+    abshapticgenerator.cpp \
+    communications/messageinterpreter.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
@@ -66,7 +68,9 @@ HEADERS  += mainwindow.h \
     communications/wifimanager.h \
     communications/networkmonitor.h \
     communications/bluetoothmanager.h \
-    editingcontroller.h
+    editingcontroller.h \
+    abshapticgenerator.h \
+    communications/messageinterpreter.h
 
 FORMS    +=
 
@@ -76,3 +80,6 @@ RESOURCES += \
 CONFIG += console
 
 LIBS += -L/usr/lib/ -lboost_filesystem -lboost_system
+
+DISTFILES += \
+    README.txt

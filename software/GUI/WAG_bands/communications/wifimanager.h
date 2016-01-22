@@ -10,6 +10,15 @@
 #define LEFT_UPPER_ARM_PORT 13491
 #define LEFT_FOREARM_PORT 13291
 
+#define CHEST_IP_END 200
+#define RIGHT_SHOULDER_IP_END 205
+#define RIGHT_UPPER_ARM_IP_END 207
+#define RIGHT_FOREARM_IP_END 209
+#define LEFT_SHOULDER_IP_END 222
+#define LEFT_UPPER_ARM_IP_END 224
+#define LEFT_FOREARM_IP_END 226
+
+
 #define SERVER_PORT 14273
 
 #include <QObject>
@@ -22,7 +31,7 @@ class WifiManager:public QObject
 public:
     // consider having wifimanager take in the suit object here
     WifiManager();
-    void startListening();
+    void initiateConnection();
     void sendToBand(BandType destBand, QByteArray data);
     void sendToBand(BandType destBand, char * bandData);
 
