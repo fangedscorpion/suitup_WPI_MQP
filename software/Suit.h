@@ -10,8 +10,10 @@ public:
 	// PositionSnapshot takeSnapshot( )
 	// void calibrate( )
 	// map<enum, BandCalibration> getCalibrationData( )
+	Band* getRefBand() const {return refBand;}; 
 
 private:
 	std::map<BandType, Band*> bands;
+	Band* refBand;
 };
 
