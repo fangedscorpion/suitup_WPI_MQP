@@ -5,8 +5,17 @@ WifiManager::WifiManager():QObject()
 {
     serv = new QTcpServer(this); // TODO: convert to multi-client system
     connect(serv, SIGNAL(newConnection()), this, SLOT(connectToNewDevice()));
+
+    connectedMapper = new QSignalMapper(this);
+
+    errorMapper = new QSignalMapper(this);
+
+    recvdMapper = new QSignalMapper(this);
+
     // get my IP
     // generate band IPs based off this
+    ipMap[CHEST] = "127.0.0.1";
+    portMap[CHEST] = CHEST_BAND_PORT;
 }
 
 void WifiManager::initiateConnection()
@@ -16,7 +25,52 @@ void WifiManager::initiateConnection()
     // make list of IPs based on enabled bands
     // generate sockets for connecting
     // add to socket map
-    serv->listen(QHostAddress::Any, SERVER_PORT);
+    //serv->listen(QHostAddress::Any, SERVER_PORT);
+
+    // get list of objects that should be socketified
+    // for loop here TODO
+    qDebug("Initiating conection");
+    startSingleConnection(CHEST);
+
+
+}
+
+void WifiManager::startSingleConnection(BandType bandToConnect) {
+    QString ipAddr = ipMap[bandToConnect];
+    quint16 portNum = portMap[bandToConnect];
+
+    // TODO: make sure portnum and ip addr actually exist
+    QTcpSocket *newSocket = new QTcpSocket();
+
+    connectedMapper->setMapping(newSocket, bandToConnect);
+    errorMapper->setMapping(newSocket, bandToConnect);
+    recvdMapper->setMapping(newSocket, bandToConnect);
+
+    socketMap[bandToConnect] = newSocket;
+
+    connect(newSocket, SIGNAL(connected()), connectedMapper, SLOT(map()));
+    //connect(newSocket, SIGNAL(error()), errorMapper, SLOT(map()));
+    connect(newSocket, SIGNAL(readyRead()), recvdMapper, SLOT(map()));
+
+    connect(connectedMapper, SIGNAL(mapped(int)), this, SLOT(socketConnected(int)));
+
+    connect(errorMapper, SIGNAL(mapped(int)), this, SLOT(socketError(int)));
+
+    connect(recvdMapper, SIGNAL(mapped(int)), this, SLOT(checkForData(int)));
+
+    newSocket->connectToHost(ipAddr, portNum);
+}
+
+void WifiManager::socketConnected(int connectedBand) {
+    BandType bandEnum = (BandType) connectedBand;
+    qDebug("Socket conencted");
+
+}
+
+void WifiManager::socketError(int bandWithError) {
+
+    BandType bandEnum = (BandType) bandWithError;
+    qDebug("Socket error");
 }
 
 
@@ -74,8 +128,9 @@ void WifiManager::connectToNewDevice() {
 }
 
 // should stay same after convert computer to client
-void WifiManager::checkForData() {
-    qDebug("checking for data");
+void WifiManager::checkForData(int checkBand) {
+    BandType bandWithData= (BandType) checkBand;
+    /* qDebug("checking for data");
     QList<BandType> possibleBands;
 
     // have to figure out way to make sure all bands required bands connect
@@ -96,11 +151,11 @@ void WifiManager::checkForData() {
         qDebug()<<"HERE"<<i;
     }
 
-    qDebug("HERE");
+    qDebug("HERE"); */
 
-    for (int i = 0; i < bandsWithData.size(); i++) {
-        routeToBandObject(bandsWithData[i]);
-    }
+
+    routeToBandObject(bandWithData);
+
 
     qDebug("HERE6789");
 }
@@ -122,7 +177,7 @@ void WifiManager::sendToBand(BandType destBand, QByteArray bandData) {
         qDebug("writing data");
 
         if (bandSocket->write(bandData) < bandData.length()) {
-          qDebug("ERROR SENDING");
+            qDebug("ERROR SENDING");
         }
     } else {
         qDebug()<<"Band "<<destBand<<" is not connected ";

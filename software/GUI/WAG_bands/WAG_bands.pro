@@ -41,7 +41,6 @@ SOURCES += main.cpp\
     communications/bluetoothmanager.cpp \
     communications/networkmonitor.cpp \
     editingcontroller.cpp \
-    abshapticgenerator.cpp \
     communications/messageinterpreter.cpp
 
 HEADERS  += mainwindow.h \
@@ -69,7 +68,6 @@ HEADERS  += mainwindow.h \
     communications/networkmonitor.h \
     communications/bluetoothmanager.h \
     editingcontroller.h \
-    abshapticgenerator.h \
     communications/messageinterpreter.h
 
 FORMS    +=

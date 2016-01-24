@@ -24,6 +24,7 @@
 #include <QObject>
 #include <QtNetwork>
 #include "band/absband.h"
+#include <QSignalMapper>
 
 class WifiManager:public QObject
 {
@@ -44,9 +45,18 @@ private:
     void routeToBandObject(BandType bandWithData);
     QByteArray trimNewLineAtEnd(QByteArray trimFrom);
     QByteArray reverseByteArray(QByteArray reverseThis);
+    void startSingleConnection(BandType bandToConnect);
+    QSignalMapper *connectedMapper;
+    QSignalMapper *errorMapper;
+    QSignalMapper *recvdMapper;
+    QHash<BandType, QString> ipMap;
+    QHash<BandType, quint16> portMap;
+
 private slots:
     void connectToNewDevice();
-    void checkForData();
+    void checkForData(int);
+    void socketConnected(int);
+    void socketError(int);
 };
 
 #endif // WIFIMANAGER_H
