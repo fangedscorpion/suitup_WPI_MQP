@@ -47,7 +47,6 @@ private:
     QByteArray reverseByteArray(QByteArray reverseThis);
     void startSingleConnection(BandType bandToConnect);
     QSignalMapper *connectedMapper;
-    QSignalMapper *errorMapper;
     QSignalMapper *recvdMapper;
     QHash<BandType, QString> ipMap;
     QHash<BandType, quint16> portMap;
