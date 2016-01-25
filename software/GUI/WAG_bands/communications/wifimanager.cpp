@@ -148,7 +148,7 @@ void WifiManager::socketError(int bandWithError) {
 // should stay same after convert computer to client
 void WifiManager::checkForData(int checkBand) {
     BandType bandWithData= (BandType) checkBand;
-    if (socketMap[bandWithData]->bytesAvailable >= 0) {
+    if (socketMap[bandWithData]->bytesAvailable() >= 0) {
 
         routeToBandObject(bandWithData);
     } else {

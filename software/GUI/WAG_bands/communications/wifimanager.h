@@ -52,7 +52,7 @@ private:
     QHash<BandType, quint16> portMap;
 
 private slots:
-    void connectToNewDevice();
+   // void connectToNewDevice();
     void checkForData(int);
     void socketConnected(int);
     void socketError(int);
