@@ -8756,8 +8756,6 @@ Wearable Haptic MQP
 <pinref part="C1" gate="G$1" pin="2"/>
 <wire x1="187.96" y1="119.38" x2="193.04" y2="119.38" width="0.1524" layer="91"/>
 <junction x="193.04" y="119.38"/>
-<wire x1="187.96" y1="116.84" x2="187.96" y2="119.38" width="0.1524" layer="91"/>
-<junction x="187.96" y="119.38"/>
 </segment>
 <segment>
 <pinref part="C2" gate="G$1" pin="2"/>
