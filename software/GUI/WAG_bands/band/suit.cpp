@@ -24,14 +24,16 @@ Suit::Suit(WifiManager *comms):QObject() {
         throw std::logic_error(str);
     }
 
-    bands[RIGHT_SHOULDER]->setDependentBand(bands[CHEST]);
-    bands[LEFT_SHOULDER]->setDependentBand(bands[CHEST]);
-    bands[LEFT_UPPER_ARM]->setDependentBand(bands[LEFT_SHOULDER]);
-    bands[RIGHT_UPPER_ARM]->setDependentBand(bands[RIGHT_SHOULDER]);
-    bands[LEFT_LOWER_ARM]->setDependentBand(bands[LEFT_UPPER_ARM]);
-    bands[RIGHT_LOWER_ARM]->setDependentBand(bands[RIGHT_UPPER_ARM]);
-    /* bands[LEFT_HAND]->setDependentBand(bands[LEFT_LOWER_ARM]);
-    bands[RIGHT_HAND]->setDependentBand(bands[RIGHT_LOWER_ARM]); */
+    refBand = bands[CHEST];
+
+    bands[CHEST]->addDependentBand(bands[RIGHT_SHOULDER]);
+    bands[CHEST]->addDependentBand(bands[LEFT_SHOULDER]);
+    bands[LEFT_SHOULDER]->addDependentBand(bands[LEFT_UPPER_ARM]);
+    bands[RIGHT_SHOULDER]->addDependentBand(bands[RIGHT_UPPER_ARM]);
+    bands[LEFT_UPPER_ARM]->addDependentBand(bands[LEFT_LOWER_ARM]);
+    bands[RIGHT_UPPER_ARM]->addDependentBand(bands[RIGHT_LOWER_ARM]);
+    /*bands[LEFT_LOWER_ARM]->addDependentBand(bands[LEFT_HAND]);
+    bands[RIGHT_LOWER_ARM]->addDependentBand(bands[RIGHT_HAND]);*/
 
     connect(comms, SIGNAL(dataAvailable(BandType,QByteArray,QTime)), this, SLOT(getRecvdData(BandType,QByteArray,QTime)));
 
