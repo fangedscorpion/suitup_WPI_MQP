@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "../Pose.h"
 #pragma once
 
@@ -9,15 +11,16 @@ class Band {
 private:
 	BandType type;
 	bool active;
-	// the band that this relies on. ie) lower arm relies on upper arm.
-	Band *dependentBand;
+	// the bands that rely on this band. ie) lower arm relies on upper arm.
+	std::vector<Band*> dependentBands;
 	// This is used to zero this band around the calibration pose
 	Pose* calibrationPose;
 
 public:
 	Band(BandType bt);
-	void setDependentBand(Band *band) {dependentBand = band; }
-	Band* getDependentBand() const {return dependentBand; }
+	void addDependentBand(Band *band) {dependentBands.push_back(band); }
+	Band* getDependentBand(int index) const {return dependentBands[index]; }
+	int numDependentBands() {return dependentBands.size();}
 	void setCalibrationPose(Pose* p) {calibrationPose = p; }
 	Pose* getCalibrationPose() const {return calibrationPose; }
 	BandType getType() const {return type;}

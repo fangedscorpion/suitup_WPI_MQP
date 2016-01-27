@@ -1,6 +1,8 @@
 #ifndef ABSBAND_H
 #define ABSBAND_H
 
+#include <vector>
+
 #include "abspose.h"
 
 
@@ -12,8 +14,9 @@ class AbsBand
 {
 public:
     AbsBand(BandType);
-    void setDependentBand(AbsBand *band) {dependentBand = band; }
-    AbsBand* getDependentBand() const {return dependentBand; }
+    void addDependentBand(AbsBand *band) {dependentBands.push_back(band); }
+    AbsBand* getDependentBand(int index) const {return dependentBands[index]; }
+    int numDependentBands() {return dependentBands.size();}
     void setCalibrationPose(AbsPose* p) {calibrationPose = p; }
     AbsPose* getCalibrationPose() const {return calibrationPose; }
     BandType getType() const {return type;}
@@ -25,8 +28,8 @@ public:
 private:
     BandType type;
     bool active;
-    // the band that this relies on. ie) lower arm relies on upper arm.
-    AbsBand *dependentBand;
+    // the bands that rely on this band. ie) lower arm relies on upper arm.
+    std::vector<AbsBand*> dependentBands;
     // This is used to zero this band around the calibration pose
     AbsPose* calibrationPose;
 };

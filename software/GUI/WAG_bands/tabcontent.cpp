@@ -5,7 +5,8 @@
 TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow) : parent(in_parent){
     motion = in_motion;
     user = u;
-    playbackControls = new PlaybackController;
+    playbackControls = new PlaybackController();
+    editingControls = new EditingController();
     titleFont = QFont( "Arial", 15, QFont::Bold);
     groupboxStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-left: 0.25em; margin-right: 0.25em; margin-top: 0.5em; padding: 35px 3px 0 3px;} QGroupBox::title{subcontrol-position: top center; subcontrol-origin: margin;}";
     textInputStyleRed = "QLineEdit {border: 1px solid red; background: white;} QTextEdit {border: 1px solid red; background: white;}";
@@ -93,9 +94,25 @@ void TabContent::show(ACTION_TYPE a) {
         recordRadio->setChecked(true);
     } else if (a == EDIT && user.hasAction(EDIT)) {
         disconnect(playPause, SIGNAL(released()), playbackControls, 0);
+        disconnect(videoSlider, SIGNAL(alt_valueChanged(int)), playbackControls, 0);
+        disconnect(videoSlider, SIGNAL(valueChanged(int)), playbackControls, 0);
+
+
+        connect(playPause, SIGNAL(released()), editingControls, SLOT (togglePlay()));
+        connect(videoSlider, SIGNAL(alt_valueChanged(int)), editingControls, SLOT(beginningSliderChanged(int)));
+        connect(videoSlider, SIGNAL(valueChanged(int)), editingControls, SLOT(endSliderChanged(int)));
+
+
         editRadio->setChecked(true);
     } else if ((a == PLAYBACK || a == EDIT) && user.hasAction(PLAYBACK)) {
+        disconnect(playPause, SIGNAL(released()), editingControls, 0);
+        disconnect(videoSlider, SIGNAL(alt_valueChanged(int)), editingControls, 0);
+        disconnect(videoSlider, SIGNAL(valueChanged(int)), editingControls, 0);
+
         connect(playPause, SIGNAL(released()), playbackControls, SLOT (togglePlay()));
+        connect(videoSlider, SIGNAL(alt_valueChanged(int)), playbackControls, SLOT(beginningSliderChanged(int)));
+        connect(videoSlider, SIGNAL(valueChanged(int)), playbackControls, SLOT(endSliderChanged(int)));
+
         playbackRadio->setChecked(true);
     } else {
         std::set<ACTION_TYPE>::iterator it=user.getActions().begin();
@@ -275,6 +292,8 @@ QWidget* TabContent::createEditOptionsAndControls() {
 
     connect(fileInfoBtn, SIGNAL(released()), this, SLOT(launchFileInfo()));
 
+    connect(editingControls, SIGNAL(editingPlayStateChanged(bool)), this, SLOT(editPlayToggled(bool)));
+
     return editOptions;
 }
 
@@ -305,9 +324,7 @@ QWidget* TabContent::createViewer(ACTION_TYPE t) {
     controls->addWidget(videoSlider);
     controls->addWidget(handle2Time);
 
-    connect(videoSlider, SIGNAL(alt_valueChanged(int)), this, SLOT(sliderValueChanged(int)));
 
-    connect(videoSlider, SIGNAL(sliderMoved(int)), this, SLOT(sliderValueChanged(int)));
 
     // viewer side of the GUI
     QVBoxLayout *viewerPane = new QVBoxLayout;
@@ -678,6 +695,16 @@ void TabContent::displayNewTime(int newMillis) {
 
 void TabContent::playbackToggled(bool playing) {
     lockOnPlayback(playing);
+    if (playing) {
+        playPause->setIcon(pauseIcon);
+    }
+    else {
+        playPause->setIcon(playIcon);
+    }
+}
+
+void TabContent::editPlayToggled(bool playing) {
+    qDebug("HERE");
     if (playing) {
         playPause->setIcon(pauseIcon);
     }

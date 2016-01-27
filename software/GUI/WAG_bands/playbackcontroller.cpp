@@ -179,3 +179,11 @@ void PlaybackController::computeTimeInFile(int frameNum) {
     int millis = MILLISECONDS_PER_FRAME*frameNum;
     emit timeChanged(millis);
 }
+
+void PlaybackController::beginningSliderChanged(int sliderVal) {
+    qDebug()<<"playback mode, beginning slider val: "<<sliderVal;
+}
+
+void PlaybackController::endSliderChanged(int sliderVal) {
+    qDebug()<<"playback mode, end slider val: "<<sliderVal;
+}

@@ -2,6 +2,7 @@
 #include <QWidget>
 #include "mainwindow.h"
 #include "smartradiobutton.h"
+#include "editingcontroller.h"
 
 class GLWidget;
 
@@ -57,6 +58,7 @@ private:
     QLabel *midSpeed;
     QLabel *maxSpeed;
     PlaybackController *playbackControls;
+    EditingController *editingControls;
     QWidget* createPlaybackOptionsAndControls();
     void lockOnPlayback(bool playing);
     void switchStepThroughMode(bool steppingThrough);
@@ -119,6 +121,8 @@ public slots:
     void handleRecordingWindowButtons();
     void displayNewTime(int newMillis);
     void playbackToggled(bool playing);
+    void editPlayToggled(bool playing);
+
     void sliderValueChanged(int newVal);
     void launchFileInfo();
     void closeFileInfo();

@@ -4,5 +4,5 @@
 Band::Band(BandType bt) {
 	type = bt;
 	active = true;
-	dependentBand = NULL;
+	// dependentBand = NULL;
 }

@@ -4,5 +4,4 @@
 AbsBand::AbsBand(BandType bt) {
     type = bt;
     active = true;
-    dependentBand = NULL;
 }

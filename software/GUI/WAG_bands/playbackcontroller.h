@@ -27,6 +27,9 @@ public slots: // some of these might be better as normal functions
     void speedChanged(int sliderValue);
     void positionMet();
     void computeTimeInFile(int frameNum);
+    void beginningSliderChanged(int);
+    void endSliderChanged(int);
+
 
 signals:
     void frameChanged(int newFrame);
