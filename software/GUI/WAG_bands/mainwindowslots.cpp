@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "smartpushbutton.h"
+#include "tabcontent.h"
 #include <sstream>
 
 // Launch window with user's options based on which type of user was selected
@@ -14,7 +15,7 @@ void MainWindow::launchUserOptions(USER u) {
     layout->addWidget(lbl);
     if (u.hasAction(RECORD)) {
         smartPushButton* newMotion = new smartPushButton("Record a new motion", u);
-        connect(newMotion, SIGNAL(released(USER)), this, SLOT(launchNewFile(USER))); // finish this
+        connect(newMotion, SIGNAL(released(USER)), this, SLOT(launchNewMotion(USER))); // finish this
         layout->addWidget(newMotion);
     }
     // if a user can only edit (can't playback other user's motions
@@ -34,7 +35,7 @@ void MainWindow::launchUserOptions(USER u) {
         layout->addWidget(openFromLib);
         layout->addWidget(openFromComp);
     }
-    smartPushButton* back = new smartPushButton("Back", u);
+    smartPushButton* back = new smartPushButton("Cancel", u);
     layout->addWidget(back);
     layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     connect(back, SIGNAL(released()), this, SLOT(closeUserOptions()));
@@ -56,7 +57,7 @@ void MainWindow::handleUserOptions(USER u) {
     if (u.hasAction(RECORD)) {
         newBtn->setUser(u);
         newBtn->show();
-        connect(newBtn, SIGNAL(released(USER)), this, SLOT(launchNewFile(USER)));
+        connect(newBtn, SIGNAL(released(USER)), this, SLOT(launchNewMotion(USER)));
     }
     if (u.hasAction(EDIT) || u.hasAction(PLAYBACK)) {
         openBtn->setUser(u);
@@ -90,10 +91,10 @@ void MainWindow::save() {
 
 // in new file window, adds a tag to the tags list
 void MainWindow::addTag() {
-    if (newFileTagsTextEdit->text().isEmpty())
+    if (newMotionTagsTextEdit->text().isEmpty())
         return;
-    newFileTagsLabel->setText(newFileTagsTextEdit->text() + "; " + newFileTagsLabel->text());
-    newFileTagsTextEdit->clear();
+    newMotionTagsLabel->setText(newMotionTagsTextEdit->text() + "; " + newMotionTagsLabel->text());
+    newMotionTagsTextEdit->clear();
     addTagBtn->setEnabled(false);
 }
 
@@ -137,7 +138,8 @@ void MainWindow::launchOpenFromLibrary(USER u) {
 void MainWindow::launchSettings(){
     overlay->show();
     settingsWidget->show();
-    //TODO: set focus on the "OK button"
+    // setup the widget
+    connectBands->setFocus();
 }
 
 // closes the settings window
@@ -151,46 +153,49 @@ void MainWindow::closeSettings() {
 void MainWindow::saveSettings() {
     // TODO: save user settings here...
     closeSettings();
+
 }
 
 // launch the new file overlay
-void MainWindow::launchNewFile(USER u) {
-    createNewFile(u);
+void MainWindow::launchNewMotion(USER u) {
+    createNewMotion(u);
+    newMotionNameTextEdit->setFocus();
+    newMotionNameTextEdit->setCursorPosition(0);
     overlay->show();
-    newFileWidget->show();
+    newMotionWidget->show();
 }
 
 // creates the new file and opens a tab
-void MainWindow::saveNewFile(USER u) {
-    WAGFile* w = new WAGFile(newFilenameTextEdit->text(), newFileDescription->toPlainText(), QString("author"), newFileTagsLabel->text().split("; ").toVector());
+void MainWindow::saveNewMotion(USER u) {
+    WAGFile* w = new WAGFile(newMotionNameTextEdit->text(), newMotionDescription->toPlainText(), QString("author"), newMotionTagsLabel->text().split("; ").toVector());
     addTab(u, w, RECORD);
-    closeNewFile();
+    closeNewMotion();
 }
 
 // close the new file overlay
-void MainWindow::closeNewFile() {
+void MainWindow::closeNewMotion() {
     if (!userOptionsWidget->isVisible())
         overlay->hide();
-    delete newFileWidget;
+    delete newMotionWidget;
 }
-void MainWindow::handleNewFileRequiredInput(QString) {
-    handleNewFileRequiredInput();
+void MainWindow::handleNewMotionRequiredInput(QString) {
+    handleNewMotionRequiredInput();
 }
 
-void MainWindow::handleNewFileRequiredInput() {
+void MainWindow::handleNewMotionRequiredInput() {
     // sets the border color of filename textbox depending on if it has text or not
-    (newFilenameTextEdit->text().isEmpty() ?
-                newFilenameTextEdit->setStyleSheet(textInputStyleRed) :
-                newFilenameTextEdit->setStyleSheet(textInputStyleWhite));
+    (newMotionNameTextEdit->text().isEmpty() ?
+                newMotionNameTextEdit->setStyleSheet(textInputStyleRed) :
+                newMotionNameTextEdit->setStyleSheet(textInputStyleWhite));
     // sets the border color of description textbox depending on if it has text or not
-    (newFileDescription->toPlainText().isEmpty() ?
-                newFileDescription->setStyleSheet(textInputStyleRed) :
-                newFileDescription->setStyleSheet(textInputStyleWhite));
+    (newMotionDescription->toPlainText().isEmpty() ?
+                newMotionDescription->setStyleSheet(textInputStyleRed) :
+                newMotionDescription->setStyleSheet(textInputStyleWhite));
     // makes the add tags button only enabled when there is text in the tags box
-    addTagBtn->setEnabled(!newFileTagsTextEdit->text().isEmpty());
+    addTagBtn->setEnabled(!newMotionTagsTextEdit->text().isEmpty());
     // enables the create button if the description AND filename text boxes are filled
-    createNewFileBtn->setEnabled(!newFileDescription->toPlainText().isEmpty() &&
-                                 !newFilenameTextEdit->text().isEmpty());
+    createNewMotionBtn->setEnabled(!newMotionDescription->toPlainText().isEmpty() &&
+                                 !newMotionNameTextEdit->text().isEmpty());
 }
 
 void MainWindow::launchOpen() {
@@ -202,4 +207,13 @@ void MainWindow::launchOpen() {
 void MainWindow::closeOpen() {
     overlay->hide();
     openWidget->hide();
+}
+
+void MainWindow::setTabContentVoiceControl(bool b) {
+    TabContent *tmp=dynamic_cast<TabContent*>(tabs->widget(0));
+    if(tmp!=NULL)
+        ((TabContent*)tabs->widget(0))->setVoiceControl(b);
+    for(int i=1; i <tabs->count(); i++) {
+        ((TabContent*)tabs->widget(i))->setVoiceControl(b);
+    }
 }

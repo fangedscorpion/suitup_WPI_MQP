@@ -26,6 +26,8 @@ OverlayWidget::OverlayWidget(QWidget *parent, std::string title) : Overlay(paren
     this->resize(parentWidget()->width()-100, parentWidget()->height()-60);
 
     this->hide();
+    this->resize(parentWidget()->width()-100, this->height());
+    Overlay::resizeWindow();
 }
 
 OverlayWidget::~OverlayWidget(){}

@@ -49,7 +49,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // tabs
     tabs = new QTabWidget;
-    tabs->setTabsClosable(true);
     tabs->addTab(createUserSelectionWindow(users), "User selection");
     tabs->clearFocus();
 
@@ -57,10 +56,9 @@ MainWindow::MainWindow(QWidget *parent) :
     overlay->makeSemiTransparent();
     overlay->hide();
     createSettings();
-//    createSaveAs();
 
     // connections for window resizing
-    connect(this, SIGNAL(resizedWindow()), settingsWidget, SLOT(resizeWindow()));
+//    connect(this, SIGNAL(resizedWindow()), settingsWidget, SLOT(resizeWindow()));
     connect(this, SIGNAL(resizedWindow()), overlay, SLOT(resizeWindow()));
 
     applicationLayout->setMargin(5);
@@ -121,9 +119,9 @@ QWidget* MainWindow::createUserSelectionWindow(std::vector<USER> u) {
         v->addWidget(lbl);
         v->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
         l->addLayout(v);
-        w->setLayout(l);
         connect(btn, SIGNAL(released(USER)), this, SLOT(launchUserOptions(USER)));
     }
+    w->setLayout(l);
     return w;
 }
 
@@ -169,49 +167,44 @@ void MainWindow::createSettings() {
     leftUpperArm->setChecked(true);
     leftLowerArm = new QCheckBox("Left Lower Arm");
     leftLowerArm->setChecked(true);
-    leftHand = new QCheckBox("Left Hand");
-    leftHand->setChecked(true);
     rightShoulder = new QCheckBox("Right Shoulder");
     rightShoulder->setChecked(true);
     rightUpperArm = new QCheckBox("Right Upper Arm");
     rightUpperArm->setChecked(true);
     rightLowerArm = new QCheckBox("Right Lower Arm");
     rightLowerArm->setChecked(true);
-    rightHand = new QCheckBox("Right Hand");
-    rightHand->setChecked(true);
     left->addWidget(leftShoulder);
     left->addWidget(leftUpperArm);
     left->addWidget(leftLowerArm);
-    left->addWidget(leftHand);
     right->addWidget(rightShoulder);
     right->addWidget(rightUpperArm);
     right->addWidget(rightLowerArm);
-    right->addWidget(rightHand);
     // Buttons on bottom of settings
     QHBoxLayout *settingsButtons = new QHBoxLayout;
     QPushButton *calibrate = new QPushButton("Calibrate");
     calibrate->setMinimumHeight(buttonHeight);
-    QPushButton *connectBands = new QPushButton("Connect Bands");
+    connectBands = new QPushButton("Connect Bands");
     connectBands->setMinimumHeight(buttonHeight);
     QPushButton *ok = new QPushButton("OK");
     ok->setMinimumHeight(buttonHeight);
     QPushButton *cancel = new QPushButton("Cancel");
     cancel->setMinimumHeight(buttonHeight);
-    settingsButtons->addWidget(calibrate);
     settingsButtons->addWidget(connectBands);
+    settingsButtons->addWidget(calibrate);
     settingsButtons->addWidget(cancel);
     settingsButtons->addWidget(ok);
     settingsLayout->addLayout(settingsButtons);
 
     connect(ok, SIGNAL(released()), this, SLOT(saveSettings()));
     connect(cancel, SIGNAL(released()), this, SLOT(closeSettings()));
+    connect(voiceControl, SIGNAL(clicked(bool)), this, SLOT(setTabContentVoiceControl(bool)));
     // TODO: connect calibrate and connectBands
 }
 
 // create new file overlay
-void MainWindow::createNewFile(USER u) {
-    newFileWidget = new OverlayWidget(this, "New Motion");
-    QVBoxLayout *layout = newFileWidget->getLayout();
+void MainWindow::createNewMotion(USER u) {
+    newMotionWidget = new OverlayWidget(this, "New Motion");
+    QVBoxLayout *layout = newMotionWidget->getLayout();
 
     // Filename: textbox
     QHBoxLayout *f = new QHBoxLayout;
@@ -219,9 +212,9 @@ void MainWindow::createNewFile(USER u) {
     l1->setMinimumWidth(100);
     l1->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     f->addWidget(l1, -1);
-    newFilenameTextEdit = new QLineEdit;
-    newFilenameTextEdit->setStyleSheet(textInputStyleRed);
-    f->addWidget(newFilenameTextEdit);
+    newMotionNameTextEdit = new QLineEdit;
+    newMotionNameTextEdit->setStyleSheet(textInputStyleRed);
+    f->addWidget(newMotionNameTextEdit);
 
     // description
     QHBoxLayout *d = new QHBoxLayout;
@@ -229,10 +222,11 @@ void MainWindow::createNewFile(USER u) {
     l2->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     l2->setMinimumWidth(100);
     d->addWidget(l2, -1);
-    newFileDescription = new QTextEdit;
-    newFileDescription->setStyleSheet(textInputStyleRed);
-    newFileDescription->setMinimumHeight(150);
-    d->addWidget(newFileDescription);
+    newMotionDescription = new QTextEdit;
+    newMotionDescription->setStyleSheet(textInputStyleRed);
+    newMotionDescription->setMinimumHeight(150);
+    newMotionDescription->setTabChangesFocus(true);
+    d->addWidget(newMotionDescription);
 
     // tags input
     QHBoxLayout *t = new QHBoxLayout;
@@ -240,9 +234,9 @@ void MainWindow::createNewFile(USER u) {
     l3->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     l3->setMinimumWidth(100);
     t->addWidget(l3, -1);
-    newFileTagsTextEdit = new QLineEdit;
-    newFileTagsTextEdit->setStyleSheet(textInputStyleWhite);
-    t->addWidget(newFileTagsTextEdit);
+    newMotionTagsTextEdit = new QLineEdit;
+    newMotionTagsTextEdit->setStyleSheet(textInputStyleWhite);
+    t->addWidget(newMotionTagsTextEdit);
     addTagBtn = new QPushButton("Add Keyword");
     addTagBtn->setEnabled(false);
     addTagBtn->setMinimumHeight(buttonHeight);
@@ -252,16 +246,16 @@ void MainWindow::createNewFile(USER u) {
     l4->setMinimumWidth(100);
     t2->addWidget(l4, -1);
     t2->addWidget(addTagBtn, -1);
-    newFileTagsLabel = new QLabel;
-    t2->addWidget(newFileTagsLabel, 1);
+    newMotionTagsLabel = new QLabel;
+    t2->addWidget(newMotionTagsLabel, 1);
 
     QHBoxLayout *btns = new QHBoxLayout;
-    createNewFileBtn = new smartPushButton("Create", u);
-    createNewFileBtn->setEnabled(false);
+    createNewMotionBtn = new smartPushButton("Create", u);
+    createNewMotionBtn->setEnabled(false);
     QPushButton *cancel = new QPushButton("Cancel");
     cancel->setMinimumHeight(buttonHeight);
     btns->addWidget(cancel);
-    btns->addWidget(createNewFileBtn);
+    btns->addWidget(createNewMotionBtn);
     layout->addLayout(f);
     layout->addSpacing(10);
     layout->addLayout(d);
@@ -274,23 +268,23 @@ void MainWindow::createNewFile(USER u) {
 
     // only connect handleUserOptions when the user selection window is visible to user
     if (userOptionsWidget->isVisible())
-        connect(createNewFileBtn, SIGNAL(released(USER)), this, SLOT(handleUserOptions(USER)));
-    connect(createNewFileBtn, SIGNAL(released(USER)), this, SLOT(saveNewFile(USER)));
-    connect(cancel, SIGNAL(released()), this, SLOT(closeNewFile()));
+        connect(createNewMotionBtn, SIGNAL(released(USER)), this, SLOT(handleUserOptions(USER)));
+    connect(createNewMotionBtn, SIGNAL(released(USER)), this, SLOT(saveNewMotion(USER)));
+    connect(cancel, SIGNAL(released()), this, SLOT(closeNewMotion()));
     connect(addTagBtn, SIGNAL(released()), this, SLOT(addTag()));
-    connect(newFileTagsTextEdit, SIGNAL(returnPressed()), this, SLOT(addTag()));
-    connect(newFilenameTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewFileRequiredInput(QString)));
-    connect(newFileDescription, SIGNAL(textChanged()), this, SLOT(handleNewFileRequiredInput()));
-    connect(newFileTagsTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewFileRequiredInput(QString)));
-    connect(this, SIGNAL(resizedWindow()), newFileWidget, SLOT(resizeWindow()));
+    connect(newMotionTagsTextEdit, SIGNAL(returnPressed()), this, SLOT(addTag()));
+    connect(newMotionNameTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewMotionRequiredInput(QString)));
+    connect(newMotionDescription, SIGNAL(textChanged()), this, SLOT(handleNewMotionRequiredInput()));
+    connect(newMotionTagsTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewMotionRequiredInput(QString)));
+    connect(this, SIGNAL(resizedWindow()), newMotionWidget, SLOT(resizeWindow()));
     emit this->resizedWindow();
 }
 
 void MainWindow::createOpen(USER u) {
-    openWidget = new OverlayWidget(this, "Open Motion");
+    openWidget = new OverlayWidget(this, "Load Motion");
     QVBoxLayout *layout = openWidget->getLayout();
-    smartPushButton *openLib = new smartPushButton("Open Motion From Library", u);
-    smartPushButton *openComp = new smartPushButton("Open Motion From Computer", u);
+    smartPushButton *openLib = new smartPushButton("Load Motion From Library", u);
+    smartPushButton *openComp = new smartPushButton("Load Motion From Computer", u);
     QPushButton *cancel = new QPushButton("Cancel");
     cancel->setMinimumHeight(buttonHeight);
 
@@ -309,11 +303,11 @@ void MainWindow::createOpen(USER u) {
 
 // Open from library overlay
 void MainWindow::createOpenFromLib(USER u) {
-    openFromLibWidget = new OverlayWidget(this, "Open Motion From Library");
+    openFromLibWidget = new OverlayWidget(this, "Load Motion From Library");
     QVBoxLayout *layout = openFromLibWidget->getLayout();
 
     QHBoxLayout *btns = new QHBoxLayout;
-    smartPushButton *open = new smartPushButton("Open", u);
+    smartPushButton *open = new smartPushButton("Load", u);
     QPushButton *cancel = new QPushButton("Cancel");
     cancel->setMinimumHeight(buttonHeight);
     btns->addWidget(cancel);

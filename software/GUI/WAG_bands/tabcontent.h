@@ -11,9 +11,12 @@ class TabContent : public QWidget
 
 public:
     TabContent(MainWindow* parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow);
+    TabContent(MainWindow* parent, std::vector<USER> users);
     ~TabContent();
 
     QString getFilename() { return motion->getName();}
+    bool isVoiceControlOn() { return voiceControl->isChecked(); }
+    void setVoiceControl(bool b) { voiceControl->setChecked(b); }
 
 protected:
     void timerEvent(QTimerEvent *event);

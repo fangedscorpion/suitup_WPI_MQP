@@ -44,10 +44,14 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    bool isVoiceControlOn() { return voiceControl->isChecked(); }
+
+
 private:
     Ui::MainWindow *ui;
     void resizeEvent(QResizeEvent* r);
     void addTab(USER u, WAGFile *w, ACTION_TYPE a);
+    QWidget *getCurrentTabcontent() { return tabs->currentWidget(); }
 
     QWidget *applicationWidget;
     QTabWidget *tabs;
@@ -73,11 +77,10 @@ private:
     QCheckBox *leftShoulder;
     QCheckBox *leftUpperArm;
     QCheckBox *leftLowerArm;
-    QCheckBox *leftHand;
     QCheckBox *rightShoulder;
     QCheckBox *rightUpperArm;
     QCheckBox *rightLowerArm;
-    QCheckBox *rightHand;
+    QPushButton *connectBands;
     OverlayWidget *settingsWidget;
     void createSettings();
     // save as overlay
@@ -92,14 +95,14 @@ private:
     void createOpenFromLib(USER u);
     void createOpen(USER u);
     // create new file
-    OverlayWidget *newFileWidget;
-    QLineEdit *newFilenameTextEdit;
-    QTextEdit *newFileDescription;
-    QLineEdit *newFileTagsTextEdit;
-    QLabel *newFileTagsLabel;
+    OverlayWidget *newMotionWidget;
+    QLineEdit *newMotionNameTextEdit;
+    QTextEdit *newMotionDescription;
+    QLineEdit *newMotionTagsTextEdit;
+    QLabel *newMotionTagsLabel;
     QPushButton *addTagBtn;
-    QPushButton *createNewFileBtn;
-    void createNewFile(USER u);
+    QPushButton *createNewMotionBtn;
+    void createNewMotion(USER u);
     // user options
     OverlayWidget *userOptionsWidget;
     QWidget* createUserSelectionWindow(std::vector<USER> u);
@@ -123,15 +126,18 @@ private slots:
     void save();
     void addTag();
     // new file
-    void saveNewFile(USER u);
-    void closeNewFile();
-    void launchNewFile(USER u);
-    void handleNewFileRequiredInput();
-    void handleNewFileRequiredInput(QString);
+    void saveNewMotion(USER u);
+    void closeNewMotion();
+    void launchNewMotion(USER u);
+    void handleNewMotionRequiredInput();
+    void handleNewMotionRequiredInput(QString);
     // on launch
     void launchUserOptions(USER);
     void closeUserOptions();
     void handleUserOptions(USER);
+    // misc
+    void setTabContentVoiceControl(bool b);
+    void setVoiceControl(bool b) { voiceControl->setChecked(b); }
 
 signals:
     void resizedWindow();

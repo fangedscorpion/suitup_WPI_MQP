@@ -245,6 +245,7 @@ QWidget* TabContent::createEditOptionsAndControls() {
     undoBtn->setIconSize(QSize(51,25));
     undoBtn->setMinimumHeight(buttonHeight);
     undoBtn->setText("Undo");
+    undoBtn->setEnabled(false);
     QPushButton *cropBtn = new QPushButton;
     cropBtn->setIcon(cropIcon);
     cropBtn->setIconSize(QSize(49,25));
@@ -341,7 +342,7 @@ void TabContent::switchStepThroughMode(bool steppingThrough) {
     } else {
         qDebug("Timed mode");
         sfi->setText("Playback Speed");
-        minSpeed->setText("1/4 x");
+        minSpeed->setText("1/4x");
         midSpeed->setText("1x");
         maxSpeed->setText("4x");
     }
@@ -372,6 +373,7 @@ QWidget* TabContent::createRecordOptionsAndController() {
     h->addWidget(countDownMessage);
 
     voiceControl = new QCheckBox("Voice Control");
+    voiceControl->setChecked(parent->isVoiceControlOn());
 
     QVBoxLayout *buttons = new QVBoxLayout;
     buttons->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -381,6 +383,7 @@ QWidget* TabContent::createRecordOptionsAndController() {
     recordOptionsGroup->setLayout(buttons);
 
     connect(countDownSpinner, SIGNAL(valueChanged(double)), this, SLOT(setCountDownTimer(double)));
+    connect(voiceControl, SIGNAL(clicked(bool)), parent, SLOT(setVoiceControl(bool)));
 
     return recordOptionsGroup;
 }
@@ -581,10 +584,12 @@ void TabContent::handleRecordingWindowButtons() {
             resetCountDownTimer();
             // automatically reset
             handleRecordingWindowButtons();
+            modeRadiosGroup->setEnabled(true);
             return;
         }
         resetButton->setEnabled(true);
         recordButton->setEnabled(false);
+        modeRadiosGroup->setEnabled(true);
         // stop recording timer
         killTimer(recordTimeTimerID);
         recordTimeTimerID = 0;
@@ -605,7 +610,6 @@ void TabContent::handleRecordingWindowButtons() {
         // enable options and modes
         voiceControl->setEnabled(true);
         countDownSpinner->setEnabled(true);
-        modeRadiosGroup->setEnabled(true);
     }
 }
 

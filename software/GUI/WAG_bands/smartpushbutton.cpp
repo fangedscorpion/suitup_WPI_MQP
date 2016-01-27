@@ -4,10 +4,12 @@ smartPushButton::smartPushButton(const char *name, USER owner) : QPushButton(nam
     user = owner;
     connect(this, SIGNAL(released()), this, SLOT(releaseUser()));
     this->setMinimumHeight(35);
+    this->setAutoDefault(true);
 }
 
 smartPushButton::smartPushButton(const char* name) : QPushButton(name) {
     this->setMinimumHeight(35);
+    this->setAutoDefault(true);
 }
 
 void smartPushButton::setUser(USER u) {
