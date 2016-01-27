@@ -99,6 +99,7 @@ private:
     QIcon splitIcon;
     QIcon undoIcon;
     QIcon editIcon;
+    QIcon resetIcon;
     QWidget* createEditOptionsAndControls();
     // file info
     OverlayWidget *fileInfoWidget;

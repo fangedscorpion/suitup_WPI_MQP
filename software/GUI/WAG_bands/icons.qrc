@@ -10,5 +10,6 @@
 	<file>icons/split.png</file>
 	<file>icons/edit.png</file>
 	<file>icons/stop.png</file>
+	<file>icons/reset.png</file>
     </qresource>
 </RCC>

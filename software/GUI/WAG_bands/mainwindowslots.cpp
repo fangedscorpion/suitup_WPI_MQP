@@ -74,6 +74,7 @@ void MainWindow::handleUserOptions(USER u) {
     userOptionsWidget->hide();
     overlay->hide();
     tabs->removeTab(0);
+    tabs->setTabsClosable(true);
 }
 
 // save the motion file

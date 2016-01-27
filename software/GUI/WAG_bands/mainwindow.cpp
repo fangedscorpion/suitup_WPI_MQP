@@ -51,6 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
     tabs = new QTabWidget;
     tabs->addTab(createUserSelectionWindow(users), "User selection");
     tabs->clearFocus();
+    connect(tabs, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
     overlay = new Overlay(this);
     overlay->makeSemiTransparent();
@@ -58,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
     createSettings();
 
     // connections for window resizing
-//    connect(this, SIGNAL(resizedWindow()), settingsWidget, SLOT(resizeWindow()));
+    connect(this, SIGNAL(resizedWindow()), settingsWidget, SLOT(resizeWindow()));
     connect(this, SIGNAL(resizedWindow()), overlay, SLOT(resizeWindow()));
 
     applicationLayout->setMargin(5);

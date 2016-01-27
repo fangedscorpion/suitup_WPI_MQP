@@ -59,6 +59,7 @@ void TabContent::createIcons() {
     undoIcon = QIcon(QPixmap(":/icons/undo.png"));
     editIcon = QIcon(QPixmap(":/icons/edit.png"));
     stopIcon = QIcon(QPixmap(":/icons/stop.png"));
+    resetIcon = QIcon(QPixmap(":/icons/reset.png"));
 }
 
 // event for when the main window is resized
@@ -257,8 +258,8 @@ QWidget* TabContent::createEditOptionsAndControls() {
     splitBtn->setMinimumHeight(buttonHeight);
     splitBtn->setText("Split");
     QPushButton *fileInfoBtn = new QPushButton;
-//    fileInfoBtn->setIcon(splitIcon);
-//    fileInfoBtn->setIconSize(QSize(62,25));
+    fileInfoBtn->setIcon(editIcon);
+    fileInfoBtn->setIconSize(QSize(62,25));
     fileInfoBtn->setMinimumHeight(buttonHeight);
     fileInfoBtn->setText("Edit Motion Information");
     QVBoxLayout *recordPlaybackLayout = new QVBoxLayout;
@@ -424,8 +425,8 @@ QWidget* TabContent::createRecordingWindow() {
     resetButton = new QPushButton("Reset");
     resetButton->setMinimumHeight(buttonHeight);
     resetButton->setEnabled(false);
-//    resetButton->setIcon(undoIcon);
-//    resetButton->setIconSize(QSize(35,15));
+    resetButton->setIcon(resetIcon);
+    resetButton->setIconSize(QSize(35,30));
 
     recordButton = new QPushButton;
     recordButton->setMinimumHeight(buttonHeight);

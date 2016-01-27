@@ -138,6 +138,7 @@ private slots:
     // misc
     void setTabContentVoiceControl(bool b);
     void setVoiceControl(bool b) { voiceControl->setChecked(b); }
+    void closeTab(int i) { tabs->removeTab(i); } // TODO: check for unsaved stuff
 
 signals:
     void resizedWindow();
