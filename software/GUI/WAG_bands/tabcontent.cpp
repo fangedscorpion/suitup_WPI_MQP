@@ -14,7 +14,7 @@ TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION
     buttonHeight = 35;
 
     createIcons();
-    createFileInfoWindow();
+    createMotionInfoWindow();
 
     optionsStack = new QStackedWidget;
     viewerStack = new QStackedWidget;
@@ -274,23 +274,23 @@ QWidget* TabContent::createEditOptionsAndControls() {
     splitBtn->setIconSize(QSize(62,25));
     splitBtn->setMinimumHeight(buttonHeight);
     splitBtn->setText("Split");
-    QPushButton *fileInfoBtn = new QPushButton;
-    fileInfoBtn->setIcon(editIcon);
-    fileInfoBtn->setIconSize(QSize(62,25));
-    fileInfoBtn->setMinimumHeight(buttonHeight);
-    fileInfoBtn->setText("Edit Motion Information");
+    QPushButton *MotionInfoBtn = new QPushButton;
+    MotionInfoBtn->setIcon(editIcon);
+    MotionInfoBtn->setIconSize(QSize(62,25));
+    MotionInfoBtn->setMinimumHeight(buttonHeight);
+    MotionInfoBtn->setText("Edit Motion Information");
     QVBoxLayout *recordPlaybackLayout = new QVBoxLayout;
     QVBoxLayout *buttons = new QVBoxLayout;
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     buttons->addWidget(undoBtn);
     buttons->addWidget(cropBtn);
     buttons->addWidget(splitBtn);
-    buttons->addWidget(fileInfoBtn);
+    buttons->addWidget(MotionInfoBtn);
     recordPlaybackLayout->addLayout(buttons, 1);
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     editOptions->setLayout(recordPlaybackLayout);
 
-    connect(fileInfoBtn, SIGNAL(released()), this, SLOT(launchFileInfo()));
+    connect(MotionInfoBtn, SIGNAL(released()), this, SLOT(launchMotionInfo()));
 
     connect(editingControls, SIGNAL(editingPlayStateChanged(bool)), this, SLOT(editPlayToggled(bool)));
 
@@ -469,10 +469,10 @@ QWidget* TabContent::createRecordingWindow() {
     return recordGroup;
 }
 
-void TabContent::createFileInfoWindow() {
+void TabContent::createMotionInfoWindow() {
 
-    fileInfoWidget = new OverlayWidget(this, "Edit Motion Information");
-    QVBoxLayout *layout = fileInfoWidget->getLayout();
+    motionInfoWidget = new OverlayWidget(this, "Edit Motion Information");
+    QVBoxLayout *layout = motionInfoWidget->getLayout();
 
     // Filename: textbox
     QHBoxLayout *f = new QHBoxLayout;
@@ -480,9 +480,9 @@ void TabContent::createFileInfoWindow() {
     l1->setMinimumWidth(100);
     l1->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     f->addWidget(l1, -1);
-    infoFilenameTextEdit = new QLineEdit;
-    infoFilenameTextEdit->setStyleSheet(textInputStyleWhite);
-    f->addWidget(infoFilenameTextEdit);
+    infoMotionNameTextEdit = new QLineEdit;
+    infoMotionNameTextEdit->setStyleSheet(textInputStyleWhite);
+    f->addWidget(infoMotionNameTextEdit);
 
     // description
     QHBoxLayout *d = new QHBoxLayout;
@@ -490,10 +490,10 @@ void TabContent::createFileInfoWindow() {
     l2->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     l2->setMinimumWidth(100);
     d->addWidget(l2, -1);
-    infoFileDescription = new QTextEdit;
-    infoFileDescription->setStyleSheet(textInputStyleWhite);
-    infoFileDescription->setMinimumHeight(150);
-    d->addWidget(infoFileDescription);
+    infoMotionDescription = new QTextEdit;
+    infoMotionDescription->setStyleSheet(textInputStyleWhite);
+    infoMotionDescription->setMinimumHeight(150);
+    d->addWidget(infoMotionDescription);
 
     // tags input
     QHBoxLayout *t = new QHBoxLayout;
@@ -501,9 +501,9 @@ void TabContent::createFileInfoWindow() {
     l3->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     l3->setMinimumWidth(100);
     t->addWidget(l3, -1);
-    infoFileTagsTextEdit = new QLineEdit;
-    infoFileTagsTextEdit->setStyleSheet(textInputStyleWhite);
-    t->addWidget(infoFileTagsTextEdit);
+    infoMotionTagsTextEdit = new QLineEdit;
+    infoMotionTagsTextEdit->setStyleSheet(textInputStyleWhite);
+    t->addWidget(infoMotionTagsTextEdit);
     addTagBtn = new QPushButton("Add Keyword");
     addTagBtn->setEnabled(false);
     addTagBtn->setMinimumHeight(buttonHeight);
@@ -513,15 +513,15 @@ void TabContent::createFileInfoWindow() {
     l4->setMinimumWidth(100);
     t2->addWidget(l4, -1);
     t2->addWidget(addTagBtn, -1);
-    infoFileTagsLabel = new QLabel();
-    t2->addWidget(infoFileTagsLabel, 1);
+    infoMotionTagsLabel = new QLabel();
+    t2->addWidget(infoMotionTagsLabel, 1);
 
     QHBoxLayout *btns = new QHBoxLayout;
-    smartPushButton* saveFileBtn = new smartPushButton("Save");
+    saveMotionInfoBtn = new smartPushButton("Save");
     QPushButton *cancel = new QPushButton("Cancel");
     cancel->setMinimumHeight(buttonHeight);
     btns->addWidget(cancel);
-    btns->addWidget(saveFileBtn);
+    btns->addWidget(saveMotionInfoBtn);
     layout->addLayout(f);
     layout->addSpacing(10);
     layout->addLayout(d);
@@ -532,38 +532,40 @@ void TabContent::createFileInfoWindow() {
     layout->addLayout(btns);
 
     // only connect handleUserOptions when the user selection window is visible to user
-    connect(saveFileBtn, SIGNAL(released()), this, SLOT(saveFileInfo()));
-    connect(cancel, SIGNAL(released()), this, SLOT(closeFileInfo()));
+    connect(saveMotionInfoBtn, SIGNAL(released()), this, SLOT(saveMotionInfo()));
+    connect(cancel, SIGNAL(released()), this, SLOT(closeMotionInfo()));
     connect(addTagBtn, SIGNAL(released()), this, SLOT(addTag()));
-    connect(infoFileTagsTextEdit, SIGNAL(returnPressed()), this, SLOT(addTag()));
-//    connect(infoFilenameTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewFileRequiredInput(QString)));
-//    connect(infoFileDescription, SIGNAL(textChanged()), this, SLOT(handleNewFileRequiredInput()));
-//    connect(infoFileTagsTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewFileRequiredInput(QString)));
-    connect(this, SIGNAL(resizedWindow()), fileInfoWidget, SLOT(resizeWindow()));
+    connect(infoMotionTagsTextEdit, SIGNAL(returnPressed()), this, SLOT(addTag()));
+    connect(infoMotionNameTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewMotionRequiredInput(QString)));
+    connect(infoMotionDescription, SIGNAL(textChanged()), this, SLOT(handleNewMotionRequiredInput()));
+    connect(infoMotionTagsTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewMotionRequiredInput(QString)));
+    connect(this, SIGNAL(resizedWindow()), motionInfoWidget, SLOT(resizeWindow()));
     emit this->resizedWindow();
 }
 
-void TabContent::launchFileInfo() {
+void TabContent::launchMotionInfo() {
     overlay->show();
-    fileInfoWidget->show();
-    fileInfoWidget->raise();
+    motionInfoWidget->show();
+    motionInfoWidget->raise();
 
-    infoFilenameTextEdit->setText(motion->getName());
-    infoFileDescription->setText(motion->getDescription());
-//    infoFileTagsLabel->setText(motion->getTagsString());
+    infoMotionNameTextEdit->setText(motion->getName().mid(0, motion->getName().length()-5));
+    infoMotionNameTextEdit->selectAll();
+    infoMotionNameTextEdit->setFocus();
+    infoMotionDescription->setText(motion->getDescription());
+//    infoMotionTagsLabel->setText(motion->getTagsString());
 
 }
 
-void TabContent::saveFileInfo() {
-    WAGFile* w = new WAGFile(infoFilenameTextEdit->text(), infoFileDescription->toPlainText(),
-                             motion->getAuthor(), infoFileTagsLabel->text().split("; ").toVector());
+void TabContent::saveMotionInfo() {
+    WAGFile* w = new WAGFile(infoMotionNameTextEdit->text(), infoMotionDescription->toPlainText(),
+                             motion->getAuthor(), infoMotionTagsLabel->text().split("; ").toVector());
     updateMotion(w);
-    closeFileInfo();
+    closeMotionInfo();
 }
 
-void TabContent::closeFileInfo() {
+void TabContent::closeMotionInfo() {
     overlay->hide();
-    fileInfoWidget->hide();
+    motionInfoWidget->hide();
 }
 
 // sets the count down label to the given number of seconds
@@ -726,4 +728,24 @@ void TabContent::lockOnPlayback(bool playing) {
 
 void TabContent::sliderValueChanged(int newVal) {
     qDebug()<<"Value is : "<<newVal;
+}
+
+void TabContent::handleNewMotionRequiredInput(QString) {
+    handleNewMotionRequiredInput();
+}
+
+void TabContent::handleNewMotionRequiredInput() {
+    // sets the border color of filename textbox depending on if it has text or not
+    (infoMotionNameTextEdit->text().isEmpty() ?
+                infoMotionNameTextEdit->setStyleSheet(textInputStyleRed) :
+                infoMotionNameTextEdit->setStyleSheet(textInputStyleWhite));
+    // sets the border color of description textbox depending on if it has text or not
+    (infoMotionDescription->toPlainText().isEmpty() ?
+                infoMotionDescription->setStyleSheet(textInputStyleRed) :
+                infoMotionDescription->setStyleSheet(textInputStyleWhite));
+    // makes the add tags button only enabled when there is text in the tags box
+    addTagBtn->setEnabled(!infoMotionTagsTextEdit->text().isEmpty());
+    // enables the create button if the description AND filename text boxes are filled
+    saveMotionInfoBtn->setEnabled(!infoMotionDescription->toPlainText().isEmpty() &&
+                                 !infoMotionNameTextEdit->text().isEmpty());
 }

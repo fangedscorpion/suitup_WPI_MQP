@@ -12,7 +12,6 @@ class TabContent : public QWidget
 
 public:
     TabContent(MainWindow* parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow);
-    TabContent(MainWindow* parent, std::vector<USER> users);
     ~TabContent();
 
     QString getFilename() { return motion->getName();}
@@ -104,14 +103,15 @@ private:
     QIcon resetIcon;
     QWidget* createEditOptionsAndControls();
     // file info
-    OverlayWidget *fileInfoWidget;
-    void createFileInfoWindow();
+    OverlayWidget *motionInfoWidget;
+    void createMotionInfoWindow();
     QPushButton* addTagBtn;
+    smartPushButton* saveMotionInfoBtn;
     QLabel* newFileTagsLabel;
-    QLineEdit* infoFilenameTextEdit;
-    QTextEdit* infoFileDescription;
-    QLineEdit* infoFileTagsTextEdit;
-    QLabel* infoFileTagsLabel;
+    QLineEdit* infoMotionNameTextEdit;
+    QTextEdit* infoMotionDescription;
+    QLineEdit* infoMotionTagsTextEdit;
+    QLabel* infoMotionTagsLabel;
 
 public slots:
     void show(ACTION_TYPE a);
@@ -124,9 +124,12 @@ public slots:
     void editPlayToggled(bool playing);
 
     void sliderValueChanged(int newVal);
-    void launchFileInfo();
-    void closeFileInfo();
-    void saveFileInfo();
+    void launchMotionInfo();
+    void closeMotionInfo();
+    void saveMotionInfo();
+    // validate input
+    void handleNewMotionRequiredInput();
+    void handleNewMotionRequiredInput(QString);
 
 signals:
     void stepThroughChanged(bool steppingThrough);
