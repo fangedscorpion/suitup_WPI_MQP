@@ -4,7 +4,7 @@
 WifiManager::WifiManager():QObject()
 {
     connectedMapper = new QSignalMapper(this);
-
+    disconnectedMapper = new QSignalMapper(this);
     recvdMapper = new QSignalMapper(this);
 
     QList<QHostAddress> addrlist = QNetworkInterface::allAddresses();
@@ -34,23 +34,23 @@ WifiManager::WifiManager():QObject()
     ipMap[RIGHT_LOWER_ARM] = ipString.replace(lastPd+1, 3, QString::number(RIGHT_FOREARM_IP_END));
     ipMap[LEFT_LOWER_ARM] = ipString.replace(lastPd+1, 3, QString::number(LEFT_FOREARM_IP_END));
 
-    ipMap[CHEST] = "127.0.0.1";// for testing purposes only, remove later
+    //ipMap[CHEST] = "127.0.0.1";// for testing purposes only, remove later
+    // TODO
 
 }
 
-void WifiManager::initiateConnection()
+void WifiManager::initiateConnection(QList<BandType> bandsToConnect)
 {
-    // TODO: initiate connection with bands (bands are server)
-    // get list of enabled bands
-    // make list of IPs based on enabled bands
-    // generate sockets for connecting
-    // add to socket map
-    //serv->listen(QHostAddress::Any, SERVER_PORT);
 
-    // get list of objects that should be socketified
-    // for loop here TODO
+    // Don't know if we want to do this
+    closeAllConnections();
+
     qDebug("Initiating conection");
-    startSingleConnection(CHEST);
+
+    // need to check for duplicates (don't know why there would be)
+    for (int i = 0; i < bandsToConnect.length(); i++) {
+        startSingleConnection(bandsToConnect[i]);
+    }
 
 
 }
@@ -64,15 +64,17 @@ void WifiManager::startSingleConnection(BandType bandToConnect) {
 
     connectedMapper->setMapping(newSocket, bandToConnect);
     recvdMapper->setMapping(newSocket, bandToConnect);
+    disconnectedMapper->setMapping(newSocket, bandToConnect);
 
     socketMap[bandToConnect] = newSocket;
 
     connect(newSocket, SIGNAL(connected()), connectedMapper, SLOT(map()));
     //connect(newSocket, SIGNAL(error()), errorMapper, SLOT(map()));
     connect(newSocket, SIGNAL(readyRead()), recvdMapper, SLOT(map()));
+    connect(newSocket, SIGNAL(disconnected()), disconnectedMapper, SLOT(map()));
 
     connect(connectedMapper, SIGNAL(mapped(int)), this, SLOT(socketConnected(int)));
-
+    connect(disconnectedMapper, SIGNAL(mapped(int)), this ,SLOT(socketDisconnected()));
 
     connect(recvdMapper, SIGNAL(mapped(int)), this, SLOT(checkForData(int)));
 
@@ -83,12 +85,19 @@ void WifiManager::socketConnected(int connectedBand) {
     BandType bandEnum = (BandType) connectedBand;
     qDebug("Socket conencted");
 
+    emit connectionStatusChanged(bandEnum, CONNECTED);
+
 }
 
 void WifiManager::socketError(int bandWithError) {
 
     BandType bandEnum = (BandType) bandWithError;
     qDebug("Socket error");
+}
+
+void WifiManager::socketDisconnected(int disconnectedBand) {
+    BandType bandEnum = (BandType) disconnectedBand;
+    emit connectionStatusChanged(bandEnum, DISCONNECTED);
 }
 
 
@@ -258,3 +267,14 @@ QByteArray WifiManager::reverseByteArray(QByteArray reverseThis) {
     qDebug()<<"Reversed: "<<reverseThis;
     return reverseThis;
 }
+
+void WifiManager::closeAllConnections() {
+    QList<QTcpSocket *> openConnections = socketMap.values();
+
+    for (int i = 0; i < openConnections.length(); i++) {
+        openConnections[i]->disconnectFromHost();
+
+    }
+}
+
+

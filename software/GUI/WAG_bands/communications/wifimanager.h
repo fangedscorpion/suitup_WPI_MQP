@@ -26,18 +26,22 @@
 #include "band/absband.h"
 #include <QSignalMapper>
 
+enum ConnectionStatus {CONNECTED, DISCONNECTED};
+
 class WifiManager:public QObject
 {
     Q_OBJECT
 public:
     // consider having wifimanager take in the suit object here
     WifiManager();
-    void initiateConnection();
+    void initiateConnection(QList<BandType> bandsToConnect);
     void sendToBand(BandType destBand, QByteArray data);
     void sendToBand(BandType destBand, char * bandData);
+    void closeAllConnections();
 
 signals:
     void dataAvailable(BandType recvdFrom, QByteArray dataRecvd, QTime timestamp);
+    void connectionStatusChanged(BandType affectedBand, ConnectionStatus status);
 
 private:
     QTcpServer *serv;
@@ -48,6 +52,7 @@ private:
     void startSingleConnection(BandType bandToConnect);
     QSignalMapper *connectedMapper;
     QSignalMapper *recvdMapper;
+    QSignalMapper *disconnectedMapper;
     QHash<BandType, QString> ipMap;
     QHash<BandType, quint16> portMap;
 
@@ -55,6 +60,8 @@ private slots:
    // void connectToNewDevice();
     void checkForData(int);
     void socketConnected(int);
+
+    void socketDisconnected(int);
     void socketError(int);
 };
 
