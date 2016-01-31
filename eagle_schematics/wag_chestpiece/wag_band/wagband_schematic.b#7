@@ -167,6 +167,11 @@ Team Suit Up!</text>
 <wire x1="50.165" y1="13.97" x2="50.165" y2="15.24" width="0.254" layer="21"/>
 <wire x1="48.895" y1="13.97" x2="48.895" y2="15.24" width="0.254" layer="21"/>
 <text x="44.45" y="7.62" size="0.8128" layer="21">Record. Play. Learn.</text>
+<text x="11.43" y="11.43" size="0.8128" layer="21">BAT</text>
+<text x="6.35" y="8.89" size="0.8128" layer="21">CHGR</text>
+<text x="41.91" y="59.69" size="0.8128" layer="21" rot="R90">LOW_BAT</text>
+<text x="59.69" y="64.77" size="0.8128" layer="21">PWR</text>
+<text x="48.26" y="31.75" size="0.8128" layer="21">EasyVR3.0</text>
 </plain>
 <libraries>
 <library name="adafruit">
