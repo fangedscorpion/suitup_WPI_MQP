@@ -93,7 +93,7 @@ private:
     OverlayWidget *openFromLibWidget;
     OverlayWidget *openWidget;
     void createOpenFromLib(USER u);
-    void createOpen(USER u);
+    void createOpen(USER u) ;
     // create new file
     OverlayWidget *newMotionWidget;
     QLineEdit *newMotionNameTextEdit;
@@ -139,6 +139,8 @@ private slots:
     void setTabContentVoiceControl(bool b);
     void setVoiceControl(bool b) { voiceControl->setChecked(b); }
     void closeTab(int i) { tabs->removeTab(i); } // TODO: check for unsaved stuff
+    void connectCheckedBands();
+    void indicateConnectionStatusChange(BandType changedBand, ConnectionStatus updatedStatus);
 
 signals:
     void resizedWindow();

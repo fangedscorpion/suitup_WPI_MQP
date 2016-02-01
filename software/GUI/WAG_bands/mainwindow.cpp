@@ -3,6 +3,7 @@
 #include "tabcontent.h"
 #include "visualization/glwidget.h"
 #include "playbackcontroller.h"
+#include "band/absband.h"
 
 #include "smartpushbutton.h"
 
@@ -68,7 +69,7 @@ MainWindow::MainWindow(QWidget *parent) :
     applicationLayout->addWidget(tabs, 1);
     wifiMan = new WifiManager();
     fullSuit = new Suit(wifiMan);
-    wifiMan->initiateConnection();
+    connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(indicateConnectionStatusChange(BandType, ConnectionStatus)));
 }
 
 MainWindow::~MainWindow() {}
@@ -199,6 +200,7 @@ void MainWindow::createSettings() {
     connect(ok, SIGNAL(released()), this, SLOT(saveSettings()));
     connect(cancel, SIGNAL(released()), this, SLOT(closeSettings()));
     connect(voiceControl, SIGNAL(clicked(bool)), this, SLOT(setTabContentVoiceControl(bool)));
+    connect(connectBands, SIGNAL(released()), this, SLOT(connectCheckedBands()));
     // TODO: connect calibrate and connectBands
 }
 
@@ -330,4 +332,43 @@ void MainWindow::resizeEvent(QResizeEvent* r) {
     // resize the overlay to cover the whole window
     overlay->resize(this->width(), this->height());
     emit resizedWindow();
+}
+
+void MainWindow::connectCheckedBands() {
+    // get checked bands
+    //    call functio nin wifiman
+
+    QList<BandType> connectBands = QList<BandType>();
+
+    connectBands<<CHEST;
+
+    if (leftShoulder->isChecked()) {
+        connectBands<<LEFT_SHOULDER;
+    }
+    if (leftUpperArm->isChecked()) {
+        connectBands<<LEFT_UPPER_ARM;
+    }
+    if (leftLowerArm->isChecked()) {
+        connectBands<<LEFT_LOWER_ARM;
+    }
+    if (rightShoulder->isChecked()) {
+        connectBands<<RIGHT_SHOULDER;
+    }
+    if (rightUpperArm->isChecked()) {
+        connectBands<<RIGHT_UPPER_ARM;
+    }
+    if (rightLowerArm->isChecked()) {
+        connectBands<<RIGHT_LOWER_ARM;
+    }
+
+    qDebug()<<connectBands.count();
+
+    wifiMan->initiateConnection(connectBands);
+
+
+}
+
+// Samee, connection status changes indicated here, (CONNECTED/DISCONNECTED)
+void MainWindow::indicateConnectionStatusChange(BandType changedBand, ConnectionStatus updatedStatus) {
+    qDebug()<<"Band "<<changedBand<<" switched conenection status to " <<updatedStatus;
 }

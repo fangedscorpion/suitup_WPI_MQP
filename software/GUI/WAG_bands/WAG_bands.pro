@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     communications/bluetoothmanager.cpp \
     communications/networkmonitor.cpp \
     editingcontroller.cpp \
-    communications/messageinterpreter.cpp
+    communications/messageinterpreter.cpp \
+    recordingcontroller.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
@@ -68,7 +69,8 @@ HEADERS  += mainwindow.h \
     communications/networkmonitor.h \
     communications/bluetoothmanager.h \
     editingcontroller.h \
-    communications/messageinterpreter.h
+    communications/messageinterpreter.h \
+    recordingcontroller.h
 
 FORMS    +=
 
