@@ -46,9 +46,9 @@ SuperSlider::SuperSlider(QWidget *parent)
   alt_handle->setValue(0);
 
   //set up timebar slider thing
-//  time_bar = new SuperSliderTimeBar(this);
-//  addAction(new QWidgetAction(time_bar));
-//  time_bar->move(this->pos().x()+30, this->pos().y());
+  time_bar = new SuperSliderTimeBar(this);
+  addAction(new QWidgetAction(time_bar));
+  time_bar->move(this->pos().x()+30, this->pos().y());
 }
 
 SuperSliderHandle::SuperSliderHandle(SuperSlider *_parent)
