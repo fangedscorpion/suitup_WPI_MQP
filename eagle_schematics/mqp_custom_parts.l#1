@@ -331,6 +331,27 @@
 <wire x1="2.54" y1="-8.89" x2="2.54" y2="8.89" width="0.127" layer="21"/>
 <hole x="-1.6002" y="7.8994" drill="1.5"/>
 </package>
+<package name="ESP01">
+<description>ESP8266 Module 01</description>
+<pad name="GND" x="-3.825" y="-5.6375" drill="1.1" shape="square" rot="R270"/>
+<pad name="RX" x="3.795" y="-5.6375" drill="1.1" shape="octagon" rot="R270"/>
+<pad name="GPIO2" x="-1.285" y="-5.6375" drill="1.1" shape="octagon" rot="R270"/>
+<pad name="GPIO0" x="1.255" y="-5.6375" drill="1.1" shape="octagon" rot="R270"/>
+<pad name="RST" x="1.255" y="-8.1775" drill="1.1" shape="octagon" rot="R270"/>
+<pad name="CH_PD" x="-1.285" y="-8.1775" drill="1.1" shape="octagon" rot="R270"/>
+<pad name="TX" x="-3.825" y="-8.1775" drill="1.1" shape="octagon" rot="R270"/>
+<pad name="VCC" x="3.795" y="-8.1775" drill="1.1" shape="square" rot="R270"/>
+<wire x1="-7" y1="15" x2="-7" y2="7.38" width="0.127" layer="21"/>
+<wire x1="-7" y1="7.38" x2="-7" y2="-9.765" width="0.127" layer="21"/>
+<wire x1="-7" y1="-9.765" x2="7.2875" y2="-9.765" width="0.127" layer="21"/>
+<wire x1="7.2875" y1="-9.765" x2="7.2875" y2="7.38" width="0.127" layer="21"/>
+<wire x1="7.2875" y1="7.38" x2="7.2875" y2="15" width="0.127" layer="21"/>
+<wire x1="7.2875" y1="15" x2="-7" y2="15" width="0.127" layer="21"/>
+<wire x1="-7" y1="7.38" x2="7.2875" y2="7.38" width="0.127" layer="21"/>
+<text x="-5.095" y="9.92" size="2.1844" layer="21">ESP-01</text>
+<text x="-7" y="16" size="1.27" layer="25">&gt;Name</text>
+<text x="-7" y="-11" size="1.27" layer="27">&gt;Value</text>
+</package>
 </packages>
 <symbols>
 <symbol name="MOSFET-N-ENH-BDIODE">
@@ -510,6 +531,23 @@
 <wire x1="-2.54" y1="0" x2="0" y2="0" width="0.254" layer="94"/>
 <wire x1="5.08" y1="0" x2="2.54" y2="2.54" width="0.254" layer="94"/>
 </symbol>
+<symbol name="ESP01">
+<description>ESP8266 Wifi module 01</description>
+<wire x1="-12.7" y1="10.16" x2="-12.7" y2="-2.54" width="0.254" layer="94"/>
+<wire x1="-12.7" y1="-2.54" x2="10.16" y2="-2.54" width="0.254" layer="94"/>
+<wire x1="10.16" y1="-2.54" x2="10.16" y2="10.16" width="0.254" layer="94"/>
+<wire x1="10.16" y1="10.16" x2="-12.7" y2="10.16" width="0.254" layer="94"/>
+<pin name="GND" x="-17.78" y="7.62" visible="pin" length="middle"/>
+<pin name="GPIO2" x="-17.78" y="5.08" visible="pin" length="middle"/>
+<pin name="GPIO0" x="-17.78" y="2.54" visible="pin" length="middle"/>
+<pin name="RXD" x="-17.78" y="0" visible="pin" length="middle"/>
+<pin name="TXD" x="15.24" y="7.62" visible="pin" length="middle" rot="R180"/>
+<pin name="CH_PD" x="15.24" y="5.08" visible="pin" length="middle" rot="R180"/>
+<pin name="RST" x="15.24" y="2.54" visible="pin" length="middle" rot="R180"/>
+<pin name="VCC" x="15.24" y="0" visible="pin" length="middle" rot="R180"/>
+<text x="-12.7" y="10.16" size="1.778" layer="95">&gt;Name</text>
+<text x="-12.7" y="-5.08" size="1.778" layer="95">&gt;Value</text>
+</symbol>
 </symbols>
 <devicesets>
 <deviceset name="2N700*" prefix="Q" uservalue="yes">
@@ -650,6 +688,29 @@
 <connect gate="G$1" pin="P$1" pad="P$1"/>
 <connect gate="G$1" pin="P$2" pad="P$2"/>
 <connect gate="G$1" pin="P$3" pad="P$3"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="ESP01">
+<description>ESP8266 Wifi module 01</description>
+<gates>
+<gate name="G$1" symbol="ESP01" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="ESP01">
+<connects>
+<connect gate="G$1" pin="CH_PD" pad="CH_PD"/>
+<connect gate="G$1" pin="GND" pad="GND"/>
+<connect gate="G$1" pin="GPIO0" pad="GPIO0"/>
+<connect gate="G$1" pin="GPIO2" pad="GPIO2"/>
+<connect gate="G$1" pin="RST" pad="RST"/>
+<connect gate="G$1" pin="RXD" pad="RX"/>
+<connect gate="G$1" pin="TXD" pad="TX"/>
+<connect gate="G$1" pin="VCC" pad="VCC"/>
 </connects>
 <technologies>
 <technology name=""/>

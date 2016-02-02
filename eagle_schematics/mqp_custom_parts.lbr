@@ -156,8 +156,8 @@
 <smd name="3" x="0.0254" y="1.0668" dx="0.762" dy="0.762" layer="1"/>
 <smd name="1" x="-0.9792" y="-1.1014" dx="0.762" dy="0.762" layer="1"/>
 <smd name="2" x="0.9398" y="-1.1014" dx="0.762" dy="0.762" layer="1"/>
-<text x="2.032" y="-0.508" size="1.016" layer="21" ratio="12">&gt;NAME</text>
-<text x="2.032" y="-2.413" size="1.016" layer="21" ratio="12">&gt;VALUE</text>
+<text x="2.032" y="-0.508" size="1.016" layer="25" ratio="12">&gt;NAME</text>
+<text x="2.032" y="-2.413" size="1.016" layer="27" ratio="12">&gt;VALUE</text>
 </package>
 <package name="EASYVR_3_0">
 <dimension x1="-12.7" y1="-33.02" x2="12.7" y2="-33.02" x3="0" y3="-40.63999375" textsize="1.27" layer="51"/>

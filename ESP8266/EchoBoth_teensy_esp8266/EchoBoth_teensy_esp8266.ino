@@ -7,7 +7,7 @@
 */
 
 // set this to the hardware serial port you wish to use
-#define HWSERIAL Serial1
+#define HWSERIAL Serial3
 
 void setup() {
 	Serial.begin(115200);

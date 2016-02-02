@@ -12327,7 +12327,11 @@ Source: AVX .. aphvc.pdf</description>
 <variantdefs>
 </variantdefs>
 <classes>
-<class number="0" name="default" width="0" drill="0">
+<class number="0" name="default" width="0.4064" drill="0">
+</class>
+<class number="1" name="ground" width="0.6096" drill="0">
+</class>
+<class number="2" name="Vcc" width="0.6096" drill="0">
 </class>
 </classes>
 <parts>
@@ -12435,7 +12439,7 @@ Chestpiece Schematic</text>
 <busses>
 </busses>
 <nets>
-<net name="GND" class="0">
+<net name="GND" class="1">
 <segment>
 <pinref part="GND3" gate="1" pin="GND"/>
 <pinref part="U2" gate="A" pin="ADJ/GND"/>
@@ -12534,7 +12538,7 @@ Chestpiece Schematic</text>
 <pinref part="U$4" gate="G$1" pin="RXD"/>
 </segment>
 </net>
-<net name="VCC" class="0">
+<net name="VCC" class="2">
 <segment>
 <pinref part="U2" gate="A" pin="INPUT"/>
 <pinref part="C1" gate="G$1" pin="1"/>
@@ -12860,7 +12864,7 @@ Chestpiece Schematic</text>
 <junction x="15.24" y="55.88"/>
 </segment>
 </net>
-<net name="N$23" class="0">
+<net name="N$23" class="2">
 <segment>
 <pinref part="BAT" gate="G$1" pin="2"/>
 <pinref part="U$5" gate="G$1" pin="P$2"/>
@@ -12868,7 +12872,7 @@ Chestpiece Schematic</text>
 <wire x1="213.36" y1="165.1" x2="213.36" y2="167.64" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$25" class="0">
+<net name="N$25" class="2">
 <segment>
 <pinref part="CHGR" gate="G$1" pin="2"/>
 <pinref part="U$5" gate="G$1" pin="P$3"/>

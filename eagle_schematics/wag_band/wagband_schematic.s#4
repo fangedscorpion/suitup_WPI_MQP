@@ -1109,6 +1109,21 @@ JST PH 2-pin thru-home side entry</description>
 <pad name="P$2" x="2.54" y="-5.08" drill="0.8" shape="square"/>
 <pad name="P$3" x="0" y="5.08" drill="0.8" shape="square"/>
 </package>
+<package name="SPDT">
+<pad name="P$2" x="0" y="0" drill="2"/>
+<pad name="P$1" x="0" y="-4.699" drill="2"/>
+<pad name="P$3" x="0" y="4.699" drill="2"/>
+<wire x1="-2.54" y1="-8.89" x2="2.54" y2="-8.89" width="0.127" layer="21"/>
+<wire x1="2.54" y1="8.89" x2="-2.54" y2="8.89" width="0.127" layer="21"/>
+<text x="3.81" y="-2.54" size="1.27" layer="25" rot="R270">&gt;Name</text>
+<text x="3.81" y="7.62" size="1.27" layer="27" rot="R270">&gt;Value</text>
+<hole x="1.6002" y="7.8994" drill="1.6"/>
+<hole x="-1.6002" y="-7.8994" drill="1.6"/>
+<hole x="1.6002" y="-7.8994" drill="1.6"/>
+<wire x1="-2.54" y1="8.89" x2="-2.54" y2="-8.89" width="0.127" layer="21"/>
+<wire x1="2.54" y1="-8.89" x2="2.54" y2="8.89" width="0.127" layer="21"/>
+<hole x="-1.6002" y="7.8994" drill="1.6"/>
+</package>
 </packages>
 <symbols>
 <symbol name="MPU6050_BREAKOUT">
@@ -1171,6 +1186,26 @@ JST PH 2-pin thru-home side entry</description>
 <wire x1="0" y1="0.762" x2="-0.254" y2="1.016" width="0.254" layer="94"/>
 <wire x1="0" y1="0.762" x2="0.254" y2="1.016" width="0.254" layer="94"/>
 </symbol>
+<symbol name="SPDT_PC">
+<pin name="P$1" x="-7.62" y="2.54" length="middle"/>
+<pin name="P$2" x="12.7" y="0" length="middle" rot="R180"/>
+<pin name="P$3" x="-7.62" y="-2.54" length="middle"/>
+<text x="-3" y="8" size="1.27" layer="95">&gt;Name</text>
+<text x="-3" y="6" size="1.27" layer="96">&gt;Value</text>
+<wire x1="0" y1="2.54" x2="-2.54" y2="2.54" width="0.254" layer="94"/>
+<wire x1="-2.54" y1="2.54" x2="-2.54" y2="5.08" width="0.254" layer="94"/>
+<wire x1="-2.54" y1="2.54" x2="-2.54" y2="0" width="0.254" layer="94"/>
+<wire x1="-2.54" y1="0" x2="-2.54" y2="-2.54" width="0.254" layer="94"/>
+<wire x1="-2.54" y1="-2.54" x2="0" y2="-2.54" width="0.254" layer="94"/>
+<wire x1="7.62" y1="-5.08" x2="-2.54" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="-2.54" y1="-5.08" x2="-2.54" y2="-2.54" width="0.254" layer="94"/>
+<wire x1="-2.54" y1="5.08" x2="7.62" y2="5.08" width="0.254" layer="94"/>
+<wire x1="7.62" y1="5.08" x2="7.62" y2="0" width="0.254" layer="94"/>
+<wire x1="7.62" y1="0" x2="7.62" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="7.62" y1="0" x2="5.08" y2="0" width="0.254" layer="94"/>
+<wire x1="-2.54" y1="0" x2="0" y2="0" width="0.254" layer="94"/>
+<wire x1="5.08" y1="0" x2="2.54" y2="2.54" width="0.254" layer="94"/>
+</symbol>
 </symbols>
 <devicesets>
 <deviceset name="MPU6050_BREAKOUT" prefix="JP" uservalue="yes">
@@ -1230,6 +1265,23 @@ JST PH 2-pin thru-home side entry</description>
 <connect gate="G$1" pin="A" pad="P$1"/>
 <connect gate="G$1" pin="B" pad="P$2"/>
 <connect gate="G$1" pin="C" pad="P$3"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="MS12ASW13">
+<gates>
+<gate name="G$1" symbol="SPDT_PC" x="-2.54" y="0"/>
+</gates>
+<devices>
+<device name="" package="SPDT">
+<connects>
+<connect gate="G$1" pin="P$1" pad="P$1"/>
+<connect gate="G$1" pin="P$2" pad="P$2"/>
+<connect gate="G$1" pin="P$3" pad="P$3"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -8607,6 +8659,9 @@ DIN A4, landscape with location and doc. field</description>
 <part name="U$3" library="mqp_custom_parts" deviceset="CB10LV103M" device=""/>
 <part name="U1" library="Texas Instruments_By_element14_Batch_1" deviceset="LM358DR" device=""/>
 <part name="GND9" library="supply1" deviceset="GND" device=""/>
+<part name="U$4" library="mqp_custom_parts" deviceset="MS12ASW13" device=""/>
+<part name="BATTERY1" library="adafruit" deviceset="JST_2PIN" device="-THM-RA"/>
+<part name="GND10" library="supply1" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -8640,8 +8695,8 @@ Wearable Haptic MQP
 <instance part="P+3" gate="VCC" x="10.16" y="88.9" rot="R90"/>
 <instance part="P+4" gate="VCC" x="78.74" y="104.14" rot="MR0"/>
 <instance part="GND6" gate="1" x="111.76" y="73.66"/>
-<instance part="BATTERY" gate="G$1" x="190.5" y="142.24" rot="R90"/>
-<instance part="GND7" gate="1" x="198.12" y="139.7"/>
+<instance part="BATTERY" gate="G$1" x="182.88" y="142.24" rot="MR90"/>
+<instance part="GND7" gate="1" x="193.04" y="137.16"/>
 <instance part="FRAME1" gate="G$1" x="0" y="0"/>
 <instance part="JP1" gate="A" x="139.7" y="129.54"/>
 <instance part="U$2" gate="G$1" x="93.98" y="88.9" rot="R180"/>
@@ -8658,6 +8713,9 @@ Wearable Haptic MQP
 <instance part="U$3" gate="G$1" x="203.2" y="86.36" rot="R90"/>
 <instance part="U1" gate="A" x="142.24" y="104.14" rot="MR0"/>
 <instance part="GND9" gate="1" x="160.02" y="88.9"/>
+<instance part="U$4" gate="G$1" x="172.72" y="129.54" rot="R90"/>
+<instance part="BATTERY1" gate="G$1" x="160.02" y="142.24" rot="R90"/>
+<instance part="GND10" gate="1" x="157.48" y="132.08"/>
 </instances>
 <busses>
 </busses>
@@ -8698,6 +8756,8 @@ Wearable Haptic MQP
 <pinref part="C1" gate="G$1" pin="2"/>
 <wire x1="187.96" y1="119.38" x2="193.04" y2="119.38" width="0.1524" layer="91"/>
 <junction x="193.04" y="119.38"/>
+<wire x1="187.96" y1="116.84" x2="187.96" y2="119.38" width="0.1524" layer="91"/>
+<junction x="187.96" y="119.38"/>
 </segment>
 <segment>
 <pinref part="C2" gate="G$1" pin="2"/>
@@ -8748,13 +8808,6 @@ Wearable Haptic MQP
 <junction x="17.78" y="109.22"/>
 </segment>
 <segment>
-<pinref part="BATTERY" gate="G$1" pin="2"/>
-<pinref part="GND7" gate="1" pin="GND"/>
-<wire x1="190.5" y1="139.7" x2="198.12" y2="142.24" width="0.1524" layer="91"/>
-<junction x="190.5" y="139.7"/>
-<junction x="198.12" y="142.24"/>
-</segment>
-<segment>
 <pinref part="Q7" gate="G$1" pin="E"/>
 <pinref part="GND8" gate="1" pin="GND"/>
 <wire x1="167.64" y1="68.58" x2="180.34" y2="68.58" width="0.1524" layer="91"/>
@@ -8776,12 +8829,19 @@ Wearable Haptic MQP
 <pinref part="U1" gate="A" pin="GND"/>
 <pinref part="GND9" gate="1" pin="GND"/>
 </segment>
+<segment>
+<pinref part="BATTERY" gate="G$1" pin="1"/>
+<pinref part="GND7" gate="1" pin="GND"/>
+<wire x1="185.42" y1="139.7" x2="193.04" y2="139.7" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="BATTERY1" gate="G$1" pin="1"/>
+<pinref part="GND10" gate="1" pin="GND"/>
+<wire x1="157.48" y1="139.7" x2="157.48" y2="134.62" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="VCC" class="0">
 <segment>
-<pinref part="BATTERY" gate="G$1" pin="1"/>
-<junction x="187.96" y="139.7"/>
-<wire x1="187.96" y1="139.7" x2="195.58" y2="132.08" width="0.1524" layer="91"/>
 <pinref part="U2" gate="A" pin="INPUT"/>
 <wire x1="193.04" y1="132.08" x2="195.58" y2="132.08" width="0.1524" layer="91"/>
 <junction x="193.04" y="132.08"/>
@@ -8794,7 +8854,8 @@ Wearable Haptic MQP
 <wire x1="180.34" y1="101.6" x2="180.34" y2="109.22" width="0.1524" layer="91"/>
 <pinref part="LED1" gate="G$1" pin="A"/>
 <pinref part="R2" gate="G$1" pin="2"/>
-<wire x1="180.34" y1="109.22" x2="180.34" y2="127" width="0.1524" layer="91"/>
+<wire x1="180.34" y1="109.22" x2="180.34" y2="121.92" width="0.1524" layer="91"/>
+<wire x1="180.34" y1="121.92" x2="180.34" y2="127" width="0.1524" layer="91"/>
 <wire x1="167.64" y1="101.6" x2="180.34" y2="101.6" width="0.1524" layer="91"/>
 <wire x1="180.34" y1="101.6" x2="187.96" y2="101.6" width="0.1524" layer="91"/>
 <wire x1="187.96" y1="101.6" x2="203.2" y2="101.6" width="0.1524" layer="91"/>
@@ -8806,6 +8867,9 @@ Wearable Haptic MQP
 <pinref part="U1" gate="A" pin="VCC"/>
 <wire x1="160.02" y1="109.22" x2="180.34" y2="109.22" width="0.1524" layer="91"/>
 <junction x="180.34" y="109.22"/>
+<pinref part="U$4" gate="G$1" pin="P$3"/>
+<wire x1="175.26" y1="121.92" x2="180.34" y2="121.92" width="0.1524" layer="91"/>
+<junction x="180.34" y="121.92"/>
 </segment>
 <segment>
 <pinref part="MOTOR_IN" gate="1" pin="11"/>
@@ -9131,6 +9195,23 @@ Wearable Haptic MQP
 <wire x1="124.46" y1="119.38" x2="124.46" y2="109.22" width="0.1524" layer="91"/>
 </segment>
 </net>
+<net name="N$28" class="0">
+<segment>
+<pinref part="U$4" gate="G$1" pin="P$2"/>
+<wire x1="172.72" y1="142.24" x2="177.8" y2="142.24" width="0.1524" layer="91"/>
+<wire x1="177.8" y1="142.24" x2="177.8" y2="139.7" width="0.1524" layer="91"/>
+<pinref part="BATTERY" gate="G$1" pin="2"/>
+<wire x1="177.8" y1="139.7" x2="182.88" y2="139.7" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$29" class="0">
+<segment>
+<pinref part="U$4" gate="G$1" pin="P$1"/>
+<pinref part="BATTERY1" gate="G$1" pin="2"/>
+<wire x1="170.18" y1="121.92" x2="160.02" y2="121.92" width="0.1524" layer="91"/>
+<wire x1="160.02" y1="121.92" x2="160.02" y2="139.7" width="0.1524" layer="91"/>
+</segment>
+</net>
 </nets>
 </sheet>
 </sheets>
@@ -9140,13 +9221,15 @@ Wearable Haptic MQP
 <approved hash="204,1,17.78,106.68,U$1,AREF,,,,"/>
 <approved hash="204,1,17.78,86.36,U$1,VUSB,,,,"/>
 <approved hash="104,1,17.78,88.9,U$1,VIN,VCC,,,"/>
+<approved hash="202,1,160.02,99.06,U1,2IN+,,,,"/>
+<approved hash="202,1,160.02,96.52,U1,2IN-,,,,"/>
 <approved hash="208,1,187.96,129.54,VCC,sup,,,,"/>
 <approved hash="208,1,134.62,27.94,VCC,sup,,,,"/>
 <approved hash="208,1,12.7,88.9,VCC,sup,,,,"/>
 <approved hash="208,1,233.68,129.54,VCC,out,,,,"/>
 <approved hash="208,1,236.22,139.7,VCC,sup,,,,"/>
 <approved hash="208,1,119.38,139.7,VCC,sup,,,,"/>
-<approved hash="208,1,81.28,111.76,VCC,sup,,,,"/>
+<approved hash="208,1,78.74,101.6,VCC,sup,,,,"/>
 <approved hash="113,1,88.3635,40.64,Q1,,,,,"/>
 <approved hash="113,1,123.924,40.64,Q2,,,,,"/>
 <approved hash="113,1,141.704,40.64,Q3,,,,,"/>
@@ -9154,10 +9237,14 @@ Wearable Haptic MQP
 <approved hash="113,1,106.144,40.64,Q5,,,,,"/>
 <approved hash="113,1,70.5835,40.64,Q6,,,,,"/>
 <approved hash="113,1,106.485,12.6577,MOTOR_IN,,,,,"/>
-<approved hash="113,1,187.829,141.62,BATTERY,,,,,"/>
+<approved hash="113,1,185.551,141.62,BATTERY,,,,,"/>
 <approved hash="113,1,130.071,89.431,FRAME1,,,,,"/>
-<approved hash="113,1,124.697,132.211,JP1,,,,,"/>
+<approved hash="113,1,137.397,132.211,JP1,,,,,"/>
 <approved hash="113,1,244.162,133.35,PWR,,,,,"/>
+<approved hash="113,1,167.962,97.79,LED1,,,,,"/>
+<approved hash="113,1,169.136,73.66,Q7,,,,,"/>
+<approved hash="113,1,189.456,81.28,Q8,,,,,"/>
+<approved hash="113,1,157.349,142.439,BATTERY1,,,,,"/>
 </errors>
 </schematic>
 </drawing>
