@@ -17,8 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
     applicationWidget->setLayout(applicationLayout);
 
     setWindowTitle(tr("WAG bands"));
-    setMinimumSize(1000, 550);
-    setMaximumSize(1000, 550);
+    setMinimumSize(1100, 650);
+    setMaximumSize(1100, 650);
 
     titleFont = QFont( "Arial", 15, QFont::Bold);
     titleStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-top: 0.5em; subcontrol-origin: margin; left: 10px; padding: 25px 3px 0 3px;}";
