@@ -14,10 +14,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    superslider.cpp \
-    overlay.cpp \
-    overlaywidget.cpp \
-    customshadoweffect.cpp \
     playbackcontroller.cpp \
     motion.cpp \
     positionsnapshot.cpp \
@@ -28,9 +24,7 @@ SOURCES += main.cpp\
     visualization/glwidget.cpp \
     visualization/visualization.cpp \
     visualization/vertextranslator.cpp\
-    smartpushbutton.cpp \
     mainwindowslots.cpp \
-    smartradiobutton.cpp \
     band/absband.cpp \
     band/abspose.cpp \
     band/shoulderband.cpp \
@@ -42,16 +36,17 @@ SOURCES += main.cpp\
     communications/networkmonitor.cpp \
     editingcontroller.cpp \
     communications/messageinterpreter.cpp \
-    recordingcontroller.cpp
+    recordingcontroller.cpp \
+    customWidgets/customshadoweffect.cpp \
+    customWidgets/overlay.cpp \
+    customWidgets/overlaywidget.cpp \
+    customWidgets/smartpushbutton.cpp \
+    customWidgets/smartradiobutton.cpp \
+    customWidgets/superslider.cpp
 
 HEADERS  += mainwindow.h \
-    superslider.h \
-    playbackcontroller.h \
     motion.h \
     positionsnapshot.h \
-    overlay.h \
-    overlaywidget.h \
-    customshadoweffect.h \
     tabcontent.h \
     wagfile.h \
     visualization/suitsimulation.h \
@@ -59,9 +54,7 @@ HEADERS  += mainwindow.h \
     visualization/glwidget.h \
     visualization/visualization.h \
     visualization/vertextranslator.h \
-    smartpushbutton.h \
     user.h \
-    smartradiobutton.h \
     band/absband.h \
     band/abspose.h \
     band/suit.h \
@@ -70,7 +63,13 @@ HEADERS  += mainwindow.h \
     communications/bluetoothmanager.h \
     editingcontroller.h \
     communications/messageinterpreter.h \
-    recordingcontroller.h
+    recordingcontroller.h \
+    customWidgets/customshadoweffect.h \
+    customWidgets/overlay.h \
+    customWidgets/overlaywidget.h \
+    customWidgets/smartpushbutton.h \
+    customWidgets/smartradiobutton.h \
+    customWidgets/superslider.h
 
 FORMS    +=
 

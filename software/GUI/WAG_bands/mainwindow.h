@@ -21,11 +21,11 @@
 #include <QStyle>
 #include <QTabWidget>
 #include <visualization/glwidget.h>
-#include "superslider.h"
-#include "overlay.h"
-#include "overlaywidget.h"
+#include "customWidgets/superslider.h"
+#include "customWidgets/overlay.h"
+#include "customWidgets/overlaywidget.h"
 #include "playbackcontroller.h"
-#include "smartpushbutton.h"
+#include "customWidgets/smartpushbutton.h"
 #include "wagfile.h"
 #include <set>
 

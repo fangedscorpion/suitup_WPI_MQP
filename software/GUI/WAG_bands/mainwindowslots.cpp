@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "smartpushbutton.h"
+#include "customWidgets/smartpushbutton.h"
 #include "tabcontent.h"
 #include <sstream>
 

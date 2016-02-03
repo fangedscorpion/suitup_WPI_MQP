@@ -1,7 +1,7 @@
 #pragma once
 #include <QWidget>
 #include "mainwindow.h"
-#include "smartradiobutton.h"
+#include "customWidgets/smartradiobutton.h"
 #include "editingcontroller.h"
 
 class GLWidget;

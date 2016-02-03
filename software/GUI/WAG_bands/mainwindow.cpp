@@ -1,11 +1,11 @@
 #include "mainwindow.h"
-#include "superslider.h"
+#include "customWidgets/superslider.h"
 #include "tabcontent.h"
 #include "visualization/glwidget.h"
 #include "playbackcontroller.h"
 #include "band/absband.h"
 
-#include "smartpushbutton.h"
+#include "customWidgets/smartpushbutton.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     USER u("Trainer", "A trainer can record and save motions for others to use");
     u.addAction(EDIT);
     u.addAction(RECORD);
+    u.addAction(PLAYBACK);
 
     USER u2("Trainee", "A trainee can playback motions");
     u2.addAction(PLAYBACK);
