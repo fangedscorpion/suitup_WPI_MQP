@@ -38,11 +38,9 @@ SOURCES += main.cpp\
     band/armband.cpp \
     band/suit.cpp \
     communications/wifimanager.cpp \
-    communications/bluetoothmanager.cpp \
-    communications/networkmonitor.cpp \
     editingcontroller.cpp \
-    communications/messageinterpreter.cpp \
-    recordingcontroller.cpp
+    recordingcontroller.cpp \
+    communications/bandmessage.cpp
 
 HEADERS  += mainwindow.h \
     superslider.h \
@@ -66,11 +64,9 @@ HEADERS  += mainwindow.h \
     band/abspose.h \
     band/suit.h \
     communications/wifimanager.h \
-    communications/networkmonitor.h \
-    communications/bluetoothmanager.h \
     editingcontroller.h \
-    communications/messageinterpreter.h \
-    recordingcontroller.h
+    recordingcontroller.h \
+    communications/bandmessage.h
 
 FORMS    +=
 

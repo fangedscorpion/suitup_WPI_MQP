@@ -6,6 +6,7 @@
 #include "band/absband.h"
 #include <QObject>
 #include <QHash>
+#include "communications/bandmessage.h"
 
 class Suit:public QObject
 {
@@ -22,9 +23,14 @@ public:
 private:
     QHash<BandType, AbsBand*> bands;
     AbsBand* refBand;
+    WifiManager *wifiMan;
+
+    QByteArray trimNewLineAtEnd(QByteArray trimFrom);
+
+    QByteArray reverseByteArray(QByteArray reverseThis) ;
 
 private slots:
-    void getRecvdData(BandType band, QByteArray data, QTime dataTimestamp);
+    void getRecvdData(BandType band, BandMessage *data, QTime dataTimestamp);
 };
 
 #endif // SUIT_H

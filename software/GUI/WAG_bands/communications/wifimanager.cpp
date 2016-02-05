@@ -34,8 +34,22 @@ WifiManager::WifiManager():QObject()
     ipMap[RIGHT_LOWER_ARM] = ipString.replace(lastPd+1, 3, QString::number(RIGHT_FOREARM_IP_END));
     ipMap[LEFT_LOWER_ARM] = ipString.replace(lastPd+1, 3, QString::number(LEFT_FOREARM_IP_END));
 
-    //ipMap[CHEST] = "127.0.0.1";// for testing purposes only, remove later
+    ipMap[CHEST] = "127.0.0.1";// for testing purposes only, remove later
+    ipMap[RIGHT_SHOULDER] = "127.0.0.1";
+    ipMap[LEFT_SHOULDER] = "127.0.0.1";
+    ipMap[RIGHT_UPPER_ARM] = "127.0.0.1";
+    ipMap[LEFT_UPPER_ARM] = "127.0.0.1";
+    ipMap[RIGHT_LOWER_ARM] = "127.0.0.1";
+    ipMap[LEFT_LOWER_ARM] = "127.0.0.1";
     // TODO
+
+    portMap[CHEST] = CHEST_BAND_PORT;
+    portMap[LEFT_SHOULDER] = LEFT_SHOULDER_PORT;
+    portMap[RIGHT_SHOULDER] = RIGHT_SHOULDER_PORT;
+    portMap[LEFT_UPPER_ARM] = LEFT_UPPER_ARM_PORT;
+    portMap[RIGHT_UPPER_ARM] = RIGHT_UPPER_ARM_PORT;
+    portMap[LEFT_LOWER_ARM] = LEFT_FOREARM_PORT;
+    portMap[RIGHT_LOWER_ARM] = RIGHT_FOREARM_PORT;
 
 }
 
@@ -49,6 +63,8 @@ void WifiManager::initiateConnection(QList<BandType> bandsToConnect)
 
     // need to check for duplicates (don't know why there would be)
     for (int i = 0; i < bandsToConnect.length(); i++) {
+        qDebug()<<"connecting"<<bandsToConnect[i];
+        qDebug()<<CHEST;
         startSingleConnection(bandsToConnect[i]);
     }
 
@@ -57,7 +73,9 @@ void WifiManager::initiateConnection(QList<BandType> bandsToConnect)
 
 void WifiManager::startSingleConnection(BandType bandToConnect) {
     QString ipAddr = ipMap[bandToConnect];
+    qDebug()<<"Connecting to "<<ipAddr;
     quint16 portNum = portMap[bandToConnect];
+    qDebug()<<portNum;
 
     // TODO: make sure portnum and ip addr actually exist
     QTcpSocket *newSocket = new QTcpSocket();
@@ -74,7 +92,7 @@ void WifiManager::startSingleConnection(BandType bandToConnect) {
     connect(newSocket, SIGNAL(disconnected()), disconnectedMapper, SLOT(map()));
 
     connect(connectedMapper, SIGNAL(mapped(int)), this, SLOT(socketConnected(int)));
-    connect(disconnectedMapper, SIGNAL(mapped(int)), this ,SLOT(socketDisconnected()));
+    connect(disconnectedMapper, SIGNAL(mapped(int)), this ,SLOT(socketDisconnected(int)));
 
     connect(recvdMapper, SIGNAL(mapped(int)), this, SLOT(checkForData(int)));
 
@@ -167,7 +185,7 @@ void WifiManager::checkForData(int checkBand) {
 }
 
 // should stay same after convert to client
-void WifiManager::sendToBand(BandType destBand, QByteArray bandData) {
+void WifiManager::sendRawDataToBand(BandType destBand, QByteArray bandData) {
     // write to socket
     if (socketMap.contains(destBand)) {
         qDebug("Sending");
@@ -191,7 +209,7 @@ void WifiManager::sendToBand(BandType destBand, QByteArray bandData) {
 
 }
 
-void WifiManager::sendToBand(BandType destBand, char * bandData) {
+void WifiManager::sendRawDataToBand(BandType destBand, char * bandData) {
     if (socketMap.contains(destBand)) {
         // write to socket
 
@@ -226,16 +244,17 @@ void WifiManager::routeToBandObject(BandType bandWithData) {
         qDebug()<<"READ " <<readData<<" from band number " <<bandWithData;
 
         // consider timestamping (get current time and pass with data)
+        BandMessage *msg = new BandMessage(readData);
 
-        emit dataAvailable(bandWithData, readData, QTime::currentTime());
+        emit dataAvailable(bandWithData, msg, QTime::currentTime());
 
 
         // actually send data to software band (need suit class here)
-        QByteArray returnData = trimNewLineAtEnd(readData);
-        qDebug()<<returnData;
-        returnData = reverseByteArray(returnData);
-        qDebug()<<returnData;
-        sendToBand(bandWithData, returnData);
+        //QByteArray returnData = trimNewLineAtEnd(readData);
+        //qDebug()<<returnData;
+        //returnData = reverseByteArray(returnData);
+        //qDebug()<<returnData;
+        //sendRawDataToBand(bandWithData, returnData);
     }
 }
 
@@ -277,4 +296,14 @@ void WifiManager::closeAllConnections() {
     }
 }
 
+
+
+void WifiManager::sendMessageToBand(BandType destBand, QByteArray msgData, MessageType msgType) {
+    BandMessage *newMsg = new BandMessage(msgType, msgData);
+    sendMessageToBand(destBand, newMsg);
+}
+
+void WifiManager::sendMessageToBand(BandType destBand, BandMessage *fullMsg) {
+    sendRawDataToBand(destBand, fullMsg->getSerializedMessage());
+}
 

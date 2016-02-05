@@ -4,6 +4,8 @@
 
 Suit::Suit(WifiManager *comms):QObject() {
 
+    wifiMan = comms;
+
     try {
         bands[CHEST] = new ChestBand();
         bands[LEFT_SHOULDER] = new ShoulderBand(LEFT_SHOULDER);
@@ -35,16 +37,57 @@ Suit::Suit(WifiManager *comms):QObject() {
     /*bands[LEFT_LOWER_ARM]->addDependentBand(bands[LEFT_HAND]);
     bands[RIGHT_LOWER_ARM]->addDependentBand(bands[RIGHT_HAND]);*/
 
-    connect(comms, SIGNAL(dataAvailable(BandType,QByteArray,QTime)), this, SLOT(getRecvdData(BandType,QByteArray,QTime)));
+    connect(wifiMan, SIGNAL(dataAvailable(BandType,BandMessage*, QTime)), this, SLOT(getRecvdData(BandType,BandMessage*,QTime)));
 
 }
 
 
-void Suit::getRecvdData(BandType band, QByteArray data, QTime dataTimestamp) {
+void Suit::getRecvdData(BandType band, BandMessage *data, QTime dataTimestamp) {
     // process QByteArray here or let individual band do it?
     // pass data to band
     AbsBand *targetBand = getBand(band);
     // send data to target band
+    qDebug()<<band;
+
+    qDebug()<<data->getMessageType();
+    qDebug()<<data->getMessageData();
+
+    QByteArray newData = reverseByteArray(trimNewLineAtEnd(data->getMessageData()));
+    qDebug()<<newData;
+
+    BandMessage *newMsg = new BandMessage(data->getMessageType(), newData);
+
+    wifiMan->sendMessageToBand(band, newMsg);
+
+}
+
+QByteArray Suit::trimNewLineAtEnd(QByteArray trimFrom) {
+    bool keepTrimming = true;
+    while (keepTrimming) {
+        if (trimFrom[trimFrom.length() - 1] == '\n') {
+            trimFrom.remove(trimFrom.length() - 1, 1);
+        }
+        // uncomment if we should also remove trailing spaces
+        //else if (trimFrom[trimFrom.length() - 1] == ' '){
+        //    trimFrom.remove(trimFrom.length() - 1, 1);
+        //}
+        else  {
+            keepTrimming = false;
+        }
+    }
+    qDebug()<<trimFrom;
+    return trimFrom;
+}
+
+QByteArray Suit::reverseByteArray(QByteArray reverseThis) {
+    qDebug()<<"Reversing "<<reverseThis;
+    for (int i = 0; i < reverseThis.length()/2; i++) {
+        char tmp = reverseThis[i];
+        reverseThis[i] = reverseThis[reverseThis.length() - 1 -i];
+        reverseThis[reverseThis.length() - 1 -i] = tmp;
+    }
+    qDebug()<<"Reversed: "<<reverseThis;
+    return reverseThis;
 }
 
 
