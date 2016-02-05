@@ -71,7 +71,7 @@ void setup() {
     //String portName = Serial.list()[0];
     
     // get a specific serial port (use EITHER this OR the first-available code above)
-    String portName = "/dev/ttyUSB0";
+    String portName = "COM12";
     
     // open the serial port
     port = new Serial(this, portName, 115200);

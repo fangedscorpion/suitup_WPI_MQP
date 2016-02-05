@@ -30,22 +30,46 @@
   If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 */
 
-#include <SoftwareSerial.h>
-
 // Adopted from the above place by Chas Frick for Wearable Haptic Controller MQP
 // Team Suit Up!
 // Modified December 2015
 
-SoftwareSerial mySerial(10,11); //RX, TX
 
-#define EASYVR_SERIAL mySerial
-#define DEBUG_SERIAL Serial
+///////////////////////////////////////
+// Communications to EasyVR
 #include "EasyVR.h"
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(4,5); //RX, TX
+#define EASYVR_SERIAL mySerial
+EasyVR easyvr(EASYVR_SERIAL);
 
+///////////////////////////////////////
+// Communications from/To Teensy
+// The interrupt line is pulled high from the teensy if something happens
+// Otherwise the Arduino uses DEBUG_SERIAL to talk to Teensy
+#define DEBUG_SERIAL Serial
+#define ARDUINO_HAS_MAIL_PIN 0 // PIN 2 on the BOARD!
+volatile boolean arduino_has_rxed_mail = false;
 #define OUTPUT_INTERRUPT_PIN 7 //Interrupt to Teensy
 #define HW_JUMPER_FOR_SERIAL_OUTPUT 6 //Stops the Arduino from printing anything but the essential serial messages for teensy testing
+volatile char theMailByte;
+
+//ISR to process incoming data from Teensy
+void checkMail(){
+  bool tmp = easyvr.stop();
+  if(DEBUG_SERIAL.available()){
+    theMailByte = DEBUG_SERIAL.read();
+    DEBUG_SERIAL.flush(); 
+  }
+  arduino_has_rxed_mail = true;
+}
+
+
+// This is used to supress the print outs from the Arduino for testing the EasyVR
 boolean PRINT_FLUFF_FOR_TESTING = true;
 
+////////////////////////////////////////
+//EasyVR settings 
 int8_t bits = 4;
 int8_t set = 0;
 int8_t group = 1;// STOP and RUN in this group
@@ -57,18 +81,31 @@ char name[33];
 bool useCommands = true;
 bool useTokens = false;
 bool isSleeping = false;
-
-EasyVR easyvr(EASYVR_SERIAL);
+////////////////////////////////////////
 
 void setup() {
     // setup EasyVR serial port (high speed)
     EASYVR_SERIAL.begin(9600);
+    
+
+    //Setup interrupt on interrupt pin from Teesny
+    // Set up comms to Teensy
     DEBUG_SERIAL.begin(115200);
-    
+    pinMode(ARDUINO_HAS_MAIL_PIN+2, INPUT);
+    digitalWrite(ARDUINO_HAS_MAIL_PIN+2, HIGH); // Pull up resistors
+    attachInterrupt(ARDUINO_HAS_MAIL_PIN, checkMail, FALLING);
+    pinMode(9, OUTPUT);
+    arduino_has_rxed_mail = false;
+        
     //pinMode(HW_JUMPER_FOR_SERIAL_OUTPUT, INPUT);
+    //PRINT_FLUFF_FOR_TESTING = digitalRead(HW_JUMPER_FOR_SERIAL_OUTPUT); //Read jumper (This was to enable a hardware pin for testing, but not used)
     PRINT_FLUFF_FOR_TESTING = false;
-    //PRINT_FLUFF_FOR_TESTING = digitalRead(HW_JUMPER_FOR_SERIAL_OUTPUT); //Read jumper
     
+    //Setup the interrupt output to the Teensy
+    pinMode(OUTPUT_INTERRUPT_PIN, OUTPUT);
+
+///////////////////////////////////////
+    // All this crap is to setup the EasyVR
     // initialize EasyVR  
   while (!easyvr.detect())
   {
@@ -79,7 +116,7 @@ void setup() {
   }
 
   easyvr.setPinOutput(EasyVR::IO1, LOW);
-  easyvr.setKnob(EasyVR::STRICT); // Set the EasyVR to have the strictest interpretation of the words
+  easyvr.setKnob(EasyVR::STRICT); // Set the EasyVR to have the second strictest interpretation of the words
   if(PRINT_FLUFF_FOR_TESTING){
     DEBUG_SERIAL.print(F("EasyVR detected, version "));
     DEBUG_SERIAL.println(easyvr.getID());
@@ -88,10 +125,10 @@ void setup() {
   
   lang = EasyVR::ENGLISH;
   easyvr.setLanguage(lang);
-
-  pinMode(OUTPUT_INTERRUPT_PIN, OUTPUT);
+/////////////////////////////////////////// 
 }
 
+//////////////////////////////////////////////////////////////////////
 bool checkMonitorInput() //From TestEasyVR code. Stripped down quite a bit
 {
   //PRINT_FLUFF_FOR_TESTING = digitalRead(HW_JUMPER_FOR_SERIAL_OUTPUT); //Read jumper
@@ -162,6 +199,8 @@ bool checkMonitorInput() //From TestEasyVR code. Stripped down quite a bit
   return false;
 }
 
+//////////////////////////////////////////////////////////////////////
+///Word groups
 const char* ws0[] =
 {
   "ROBOT",
@@ -201,22 +240,51 @@ const char* ws3[] =
   "TEN",
 };
 const char** ws[] = { ws0, ws1, ws2, ws3 };
+//////////////////////////////////////////////////////////////////////
 
-void loop() {
- 
- //PRINT_FLUFF_FOR_TESTING = digitalRead(HW_JUMPER_FOR_SERIAL_OUTPUT); //Read jumper
- 
- if(PRINT_FLUFF_FOR_TESTING){ 
+/////
+// Function to setup voice recognition of a word
+void setupVR(){
+  if(PRINT_FLUFF_FOR_TESTING){ 
   DEBUG_SERIAL.println(F("Starting to wait for word: "));
  }
  
  easyvr.setPinOutput(EasyVR::IO1, HIGH); // LED on (listening)
  easyvr.recognizeWord(group); //STOP and RUN is in first group --> the module will be busy until it finds the command
+}
+
+
+//////////////////////////////////////////////////////////////////////
+//Main loop
+void loop() {
+ 
+ //PRINT_FLUFF_FOR_TESTING = digitalRead(HW_JUMPER_FOR_SERIAL_OUTPUT); //Read jumper --> Not used but could be added
+ 
+ setupVR(); //Start recognition
+ 
  while(!easyvr.hasFinished()){
-  //DEBUG_SERIAL.println(F("Waiting for recog"));
+  
   checkMonitorInput();
+  
+  if(arduino_has_rxed_mail){
+    break;
+  }
+  
   delay(1);
  }
+
+ if(arduino_has_rxed_mail){
+   //Do something useful with this information! This is a placeholder now
+   if(theMailByte == 't'){
+      
+      digitalWrite(9,HIGH);
+      delay(1000);
+      digitalWrite(9,LOW);
+   }
+   DEBUG_SERIAL.print(theMailByte);
+   arduino_has_rxed_mail = false;
+ }
+ else{
 
  easyvr.setPinOutput(EasyVR::IO1, LOW); // LED off
 
@@ -231,7 +299,7 @@ void loop() {
     }
 
     //////////////////////////////////
-    // Communication with the Arduino
+    // Communication with the Teensy
     // The Arduino hears the word and prints the letter to serial 
     // Then tells the Teensy to check for serial
     if(easyvr.getWord() == 6){ // STOP
@@ -246,7 +314,8 @@ void loop() {
       delay(1);
       digitalWrite(OUTPUT_INTERRUPT_PIN, LOW);
     }
-
+    //////////////////////////////////////////////////////////////////////
+    
     if(PRINT_FLUFF_FOR_TESTING){
       DEBUG_SERIAL.print(F(" = "));
     }
@@ -341,4 +410,5 @@ void loop() {
     }
   }
   }
+ }
 }

@@ -51,7 +51,7 @@ THE SOFTWARE.
 // Arduino Wire library is required if I2Cdev I2CDEV_ARDUINO_WIRE implementation
 // is used in I2Cdev.h
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
-    #include "Wire.h"
+    #include <i2c_t3.h>
 #endif
 
 // class default I2C address is 0x68
@@ -162,7 +162,13 @@ void setup() {
     // join I2C bus (I2Cdev library doesn't do this automatically)
     #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
         Wire.begin();
-        TWBR = 24; // 400kHz I2C clock (200kHz if CPU is 8MHz)
+        #ifdef __AVR__
+          TWBR = 24; // 400kHz I2C clock (200kHz if CPU is 8MHz)
+        #endif
+        #ifdef __ARM__ //Had to add this as the Teensy3.2 is ARM based not AVR :( but it compiles now!
+          uint8_t twbrback = TWI_CWGR_CKDIV;
+          TWI_CWGR_CKDIV(twbrback/4); //400 kHz
+        #endif
     #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
         Fastwire::setup(400, true);
     #endif
@@ -196,23 +202,13 @@ void setup() {
     // load and configure the DMP
     Serial.println(F("Initializing DMP..."));
     devStatus = mpu.dmpInitialize();
-
-    // use MPU6050_calibrate to get calibration values specific to each MPU6050 chip
-    // ITG/MPU CALIBRATION (GREEN LIGHT CHIP)
-    mpu.setXAccelOffset(-3301);
-    mpu.setYAccelOffset(-4657);
-    mpu.setZAccelOffset(1548);
-    mpu.setXGyroOffset(-14);
-    mpu.setYGyroOffset(-1);
-    mpu.setZGyroOffset(2);
-
-    // MPU-6050 CALIBRATION (RED LIGHT CHIP)
-//    mpu.setXAccelOffset(-3365);
-//    mpu.setYAccelOffset(-2685);
-//    mpu.setZAccelOffset(1447);
-//    mpu.setXGyroOffset(77);
-//    mpu.setYGyroOffset(35);
-//    mpu.setZGyroOffset(33);
+    
+    mpu.setXAccelOffset(-5363);
+    mpu.setYAccelOffset(-4791);
+    mpu.setZAccelOffset(1338);
+    mpu.setXGyroOffset(-1064);
+    mpu.setYGyroOffset(468);
+    mpu.setZGyroOffset(10);
 
     // make sure it worked (returns 0 if so)
     if (devStatus == 0) {
@@ -222,7 +218,8 @@ void setup() {
 
         // enable Arduino interrupt detection
         Serial.println(F("Enabling interrupt detection (Arduino external interrupt 0)..."));
-        attachInterrupt(1, dmpDataReady, RISING);
+        pinMode(17,INPUT);
+        attachInterrupt(17, dmpDataReady, RISING);
         mpuIntStatus = mpu.getIntStatus();
 
         // set our DMP Ready flag so the main loop() function knows it's okay to use it
@@ -243,6 +240,7 @@ void setup() {
 
     // configure LED for output
     pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, HIGH);
 }
 
 

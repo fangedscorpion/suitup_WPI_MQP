@@ -59,7 +59,8 @@ THE SOFTWARE.
 // Arduino Wire library is required if I2Cdev I2CDEV_ARDUINO_WIRE implementation
 // is used in I2Cdev.h
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
-    #include "Wire.h"
+//    #include "Wire.h"
+    #include <i2c_t3.h>
 #endif
 
 // class default I2C address is 0x68
@@ -74,7 +75,7 @@ int16_t gx, gy, gz;
 
 int16_t adjustCalibration(int16_t agAxis, int16_t delta);
 
-#define LED_PIN 13
+#define LED_PIN 13 //Teensy3.2 using pin 4
 bool blinkState = false;
 #define AX 0
 #define AY 1
@@ -94,7 +95,7 @@ int16_t calFinal[6] = {0,0,0,0,0,0};
 bool calFinalSet[6] = {false,false,false,false,false,false};
 bool allCalFinalSet = false;
 
-//#define PRINT_DEBUG
+#define PRINT_DEBUG
 
 void setup() {
     // join I2C bus (I2Cdev library doesn't do this automatically)
@@ -120,6 +121,7 @@ void setup() {
 
     // configure Arduino LED for
     pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, HIGH);
 
     mpu.setXAccelOffset(0);
     mpu.setYAccelOffset(0);

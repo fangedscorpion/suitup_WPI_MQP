@@ -1,4 +1,4 @@
-#define NUM_MOTORS 5
+#define NUM_MOTORS 6
 #define ALWAYS_MAX_OUTPUT true
 #define MAX_ERR 1
 
@@ -7,7 +7,7 @@
  */
 // array calculations
 //int pins[NUM_MOTORS] = {4,5,6,9,10,11}; // ard
-int pins[NUM_MOTORS] = {23,6,5,4,3}; // teensy
+int pins[NUM_MOTORS] = {3,4,5,6,22,23};//23,6,5,4,3}; // teensy
 float motorLoc[NUM_MOTORS];
 float motorLocAdjTrans[NUM_MOTORS];
 float motorLocAdjRot[NUM_MOTORS];

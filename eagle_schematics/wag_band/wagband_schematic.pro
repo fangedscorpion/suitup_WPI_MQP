@@ -2,24 +2,24 @@ EAGLE AutoRouter Statistics:
 
 Job           : C:/Users/Chas/suitup_WPI_MQP/eagle_schematics/wag_band/wagband_schematic.brd
 
-Start at      : 15:26:11 (12/5/2015)
-End at        : 15:26:19 (12/5/2015)
-Elapsed time  : 00:00:07
+Start at      : 13:19:14 (12/23/2015)
+End at        : 13:23:31 (12/23/2015)
+Elapsed time  : 00:04:13
 
-Signals       :    24   RoutingGrid: 9 mil  Layers: 1
-Connections   :    44   predefined:  0 ( 0 Vias )
+Signals       :    34   RoutingGrid: 25 mil  Layers: 2
+Connections   :    72   predefined:  72 ( 14 Vias )
 
-Router memory :   318620
+Router memory :   60348
 
-Passname          : TopRouter     Route Optimize1 Optimize2 Optimize3 Optimize4
+Passname          :     Route Optimize1 Optimize2 Optimize3 Optimize4
 
-Time per pass     :  00:00:04  00:00:02  00:00:00  00:00:00  00:00:00  00:00:01
-Number of Ripups  :         0       125         0         0         0         0
-max. Level        :         0         3         0         0         0         0
-max. Total        :         0        21         0         0         0         0
+Time per pass     :  00:00:00  00:00:00  00:00:00  00:00:00  00:04:13
+Number of Ripups  :         0         0         0         0         0
+max. Level        :         0         0         0         0         0
+max. Total        :         0         0         0         0         0
 
-Routed            :        17        43        43        43        43        43
-Vias              :         0         0         0         0         0         0
-Resolution        :    38.6 %    97.7 %    97.7 %    97.7 %    97.7 %    97.7 %
+Routed            :         0         0         0         0         0
+Vias              :         0         0         0         0         0
+Resolution        :   100.0 %   100.0 %   100.0 %   100.0 %   100.0 %
 
-Final             : 97.7% finished
+Final             : 100.0% finished
