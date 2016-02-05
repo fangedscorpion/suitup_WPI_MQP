@@ -1,6 +1,7 @@
 #include "absband.h"
 #include <cstddef>
 #include <QTime>
+#include <QDebug>
 
 AbsBand::AbsBand(BandType bt):QObject() {
     type = bt;
@@ -12,6 +13,8 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
     if (newStatus == CONNECTED) {
         // send hi there message
         BandMessage *newMsg = new BandMessage(COMPUTER_INITIATE_CONNECTION, QByteArray());
+        qDebug()<<"SENDING CONNECT MSG";
+        qDebug()<<"BandT type: "<<type;
         emit dataToSend(type, newMsg);
     }
     else {
@@ -26,11 +29,13 @@ void AbsBand::handleMessage(QTime msgTimestamp, BandMessage *recvdMessage) {
         if (!commsSetUp) {
             commsSetUp = true;
         }
+        qDebug("recvd band connecting");
         break;
     case BAND_PING:
         if (pendingBandPing) {
             pendingBandPing = false;
         }
+        qDebug("Recvd band ping");
         break;
     case BAND_POSITION_UPDATE:
         // should probably handle in subclass
@@ -41,5 +46,12 @@ void AbsBand::handleMessage(QTime msgTimestamp, BandMessage *recvdMessage) {
     }
 }
 
-
-
+void AbsBand::sendIfConnected(BandMessage *sendMsg) {
+    if (commsSetUp) {
+        if (sendMsg->getMessageType() == COMPUTER_PING) {
+            pendingBandPing = true;
+            qDebug("Sending band ping");
+        }
+        emit dataToSend(type, sendMsg);
+    }
+}

@@ -48,14 +48,13 @@ private:
     QTcpServer *serv;
     QHash<BandType, QTcpSocket*> socketMap;
     void routeToBandObject(BandType bandWithData);
-    QByteArray trimNewLineAtEnd(QByteArray trimFrom);
-    QByteArray reverseByteArray(QByteArray reverseThis);
     void startSingleConnection(BandType bandToConnect);
     QSignalMapper *connectedMapper;
     QSignalMapper *recvdMapper;
     QSignalMapper *disconnectedMapper;
     QHash<BandType, QString> ipMap;
     QHash<BandType, quint16> portMap;
+
 
 private slots:
    // void connectToNewDevice();

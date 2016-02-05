@@ -28,6 +28,12 @@ private:
     QByteArray trimNewLineAtEnd(QByteArray trimFrom);
 
     QByteArray reverseByteArray(QByteArray reverseThis);
+    bool collectingData;
+    int pingTimerID;
+    void toggleCollecting(bool);
+    void sendToConnectedBands(BandMessage*);
+protected:
+    void timerEvent(QTimerEvent *);
 
 private slots:
     void sendData(BandType destBand, BandMessage* sendMsg);

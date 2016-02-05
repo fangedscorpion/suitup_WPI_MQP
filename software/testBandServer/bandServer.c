@@ -19,8 +19,24 @@
 
 void DieWithError(char *errorMessage);/* error handling function */
 void HandleTCPClient(int clntSocket); /* TCP client handling function */
-void constructMsg(char *sendBuff, char *dataBuf, char msgType);
-void processReply(char *recvdBuffer);
+int constructMsg(char *sendBuff, char *dataBuf, char msgType);
+int processReply(char *recvdBuffer, char* sendBuff);
+
+void reverseString(char *stringToReverse);
+
+typedef enum {
+  COMPUTER_INITIATE_CONNECTION, 
+  BAND_CONNECTING, 
+  COMPUTER_PING, 
+  BAND_PING, 
+  BAND_POSITION_UPDATE, 
+  POSITION_ERROR,
+  START_RECORDING, 
+  STOP_RECORDING, 
+  START_HAPTICS, 
+  STOP_HAPTICS, 
+  VOICE_CONTROL} msgType;
+
 
 int main(int argc, char *argv[]) {
   int servSock;                       /* Socket descriptor for server */
@@ -43,6 +59,8 @@ int main(int argc, char *argv[]) {
   if ((servSock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
     DieWithError("socket() failed");
   }
+  if (setsockopt(servSock, SOL_SOCKET, SO_REUSEADDR, &(int){ 1 }, sizeof(int)) < 0)
+    DieWithError("setsockopt(SO_REUSEADDR) failed");
 
   /* Construct local address structure */
   memset(&echoServerAddr, 0, sizeof(echoServerAddr));    /* Zero out structure */
@@ -89,21 +107,29 @@ void HandleTCPClient(int clntSocket) {
   int msgTypeInt;
   char msgType;
   char tmpBuff[BUF_SIZE];
-  ssize_t numBytesRcvd;
+  int dataLen;
+  //ssize_t numBytesRcvd;
   // receive the data from the client */
-  /* ssize_t numBytesRcvd = recv(clntSocket, buffer, BUF_SIZE, 0);
+  ssize_t numBytesRcvd = recv(clntSocket, buffer, BUF_SIZE, 0);
   if (numBytesRcvd < 0) {
     DieWithError("recv() failed");
-  } */
+  }
+
+  dataLen = processReply(buffer, tmpBuff);
 
   // while bytes are being trasmitted, keep sending and receiving data
   while (TRUE) {
     printf("Input here:");
-    scanf("%d %s", &msgTypeInt, tmpBuff);
-    msgType = (char) msgTypeInt;
-    constructMsg(buffer, tmpBuff, msgType);
+    //scanf("%d %s", &msgTypeInt, tmpBuff);
+    msgType = (char) *(buffer + 1);
+
+
+    //strncpy(tmpBuff, buffer + 2, BUF_SIZE);
+    //reverseString(tmpBuff);
+
+    //constructMsg(buffer, tmpBuff, msgType);
     // send back the message just received 
-    ssize_t numBytesSent = send(clntSocket, buffer, strlen(tmpBuff) + 2, 0);
+    ssize_t numBytesSent = send(clntSocket, tmpBuff, dataLen, 0);
     if (numBytesSent < 0) {
       DieWithError("send() failed");
     }
@@ -113,13 +139,13 @@ void HandleTCPClient(int clntSocket) {
     if (numBytesRcvd < 0) {
       DieWithError("recv() failed");
     }
-    processReply(buffer);
+    processReply(buffer, tmpBuff);
   }
   // close the socket 
   close(clntSocket);
 }
 
-void constructMsg(char *sendBuff, char *dataBuf, char msgType) {
+int constructMsg(char *sendBuff, char *dataBuf, char msgType) {
   int len = strlen(dataBuf);
   sendBuff[0] = (char) (len+2);
   sendBuff[1] = msgType;
@@ -135,11 +161,59 @@ void constructMsg(char *sendBuff, char *dataBuf, char msgType) {
   printf("length: %d\n", ((int) sendBuff[0] - 2));
   printf("msgType: %d\n", (int) sendBuff[1]);
   printf("msg: %s\n\n", sendBuff + 2);
+  return len + 2;
 }
 
-void processReply(char *recvdBuffer) {
+int processReply(char *recvdBuffer, char *sendBuff) {
+  int dataLen;
   printf("Received:\n");
   printf("length: %d\n", ((int) recvdBuffer[0] - 2));
   printf("msgType: %d\n", (int) recvdBuffer[1]);
   printf("msg: %s\n", recvdBuffer + 2);
+
+  printf("initiate connection type: %d\n", (int) COMPUTER_INITIATE_CONNECTION);
+
+  msgType typeOfMsg = (msgType) recvdBuffer[1];
+  printf("typeOfMsg %d\n", (int) typeOfMsg);
+  switch(typeOfMsg) {
+    case COMPUTER_INITIATE_CONNECTION:
+      sendBuff[0] = (char) 2;
+      sendBuff[1] = (char) BAND_CONNECTING;
+      printf("Initiating connection\n");
+      dataLen = 2;
+       break;
+    case COMPUTER_PING:
+      sendBuff[0] = (char) 2;
+      sendBuff[1] = (char) BAND_PING;
+      dataLen = 2;
+      printf("returning ping\n");
+    break;
+    /*case POSITION_ERROR:
+    break;
+    case START_RECORDING:
+    break;
+    case STOP_RECORDING:
+    break;
+    case START_HAPTICS:
+    break;
+    case STOP_HAPTICS:
+    break;
+    */default:
+    printf("Default case\n");
+    reverseString(recvdBuffer + 2);
+    dataLen = constructMsg(sendBuff, recvdBuffer + 2, (char) recvdBuffer[1]);
+    // this shouldn't happen
+    break;
+  }
+  printf("Done with case statement");
+  return dataLen;
+}
+
+void reverseString(char *stringToReverse) {
+  int len = strlen(stringToReverse);
+  for (int i = 0; i < len/2; i++) {
+    char tmpChar = stringToReverse[i];
+    stringToReverse[i] = stringToReverse[len - i - 1];
+    stringToReverse[len - i - 1] = tmpChar;
+  }
 }

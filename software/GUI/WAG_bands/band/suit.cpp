@@ -2,6 +2,8 @@
 #include <QHash>
 #include <stdexcept>
 
+#define PING_INTERVAL 5000
+
 Suit::Suit(WifiManager *comms):QObject() {
 
     wifiMan = comms;
@@ -44,6 +46,9 @@ Suit::Suit(WifiManager *comms):QObject() {
     for (int i = 0; i < allBands.length(); i++) {
         connect(bands[allBands[i]], SIGNAL(dataToSend(BandType,BandMessage*)), this, SLOT(sendData(BandType, BandMessage*)));
     }
+
+    collectingData = true;
+    toggleCollecting(false);
 }
 
 
@@ -55,14 +60,9 @@ void Suit::getRecvdData(BandType band, BandMessage *data, QTime dataTimestamp) {
     qDebug()<<band;
 
     qDebug()<<data->getMessageType();
-    qDebug()<<data->getMessageData();
+    targetBand->handleMessage(dataTimestamp, data);
 
-    QByteArray newData = reverseByteArray(trimNewLineAtEnd(data->getMessageData()));
-    qDebug()<<newData;
-
-    BandMessage *newMsg = new BandMessage(data->getMessageType(), newData);
-
-    wifiMan->sendMessageToBand(band, newMsg);
+    //wifiMan->sendMessageToBand(band, newMsg);
 
 }
 
@@ -109,4 +109,31 @@ void Suit::handleConnectionStatusChange(BandType band, ConnectionStatus newStatu
 }
 void Suit::sendData(BandType destBand, BandMessage* sendMsg) {
     wifiMan->sendMessageToBand(destBand, sendMsg);
+}
+
+void Suit::toggleCollecting(bool shouldCollectData) {
+    if (collectingData != shouldCollectData) {
+        collectingData = shouldCollectData;
+        if (collectingData) {
+            // stop timer
+            killTimer(pingTimerID);
+        } else {
+            // start timer
+            qDebug("Starting timer");
+            pingTimerID = startTimer(PING_INTERVAL);
+        }
+    }
+}
+
+void Suit::timerEvent(QTimerEvent *event) {
+    BandMessage *newMsg = new BandMessage(COMPUTER_PING, QByteArray());
+    qDebug("Timer event");
+    sendToConnectedBands(newMsg);
+}
+
+void Suit::sendToConnectedBands(BandMessage *sendMsg) {
+    QList<BandType> allBands = bands.keys();
+    for (int i = 0; i < allBands.length(); i++) {
+        bands[allBands[i]]->sendIfConnected(sendMsg);
+    }
 }

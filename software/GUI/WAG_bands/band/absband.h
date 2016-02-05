@@ -30,6 +30,7 @@ public:
     bool isActive() const {return active;}
     void handleConnectionStatusChange(ConnectionStatus);
     void handleMessage(QTime, BandMessage *);
+    void sendIfConnected(BandMessage *sendMsg);
 
 private:
     BandType type;
