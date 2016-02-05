@@ -56,22 +56,24 @@ deg1y = Quaternion([0,1,0],pi/180);
 
 degsPerStep = 6;
 
+figure(1);
 for i=1:(360/degsPerStep)
     for i = 1:degsPerStep
-        ktree.rotateAll(deg1z);
+        ktree.sub(1).rotateAll(deg1z);
     end
     
     qs = ktree.getPoints();
     N = numel(qs);
     pts = zeros(3,N);
     for i=1:N
-        pts(:,i) = qs(i).getVec();
+        pts(:,i) = qs(i).v();
     end
 
+    disp(1)
     scatter3(pts(1,:),pts(2,:),pts(3,:))
     xlabel('x')
     ylabel('y')
     zlabel('z')
     axis([-8,8,-8,8,-8,8])
-    pause(0.01)
+    pause(0.05)
 end
