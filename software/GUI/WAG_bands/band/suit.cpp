@@ -38,7 +38,12 @@ Suit::Suit(WifiManager *comms):QObject() {
     bands[RIGHT_LOWER_ARM]->addDependentBand(bands[RIGHT_HAND]);*/
 
     connect(wifiMan, SIGNAL(dataAvailable(BandType,BandMessage*, QTime)), this, SLOT(getRecvdData(BandType,BandMessage*,QTime)));
+    connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(handleConnectionStatusChange(BandType, ConnectionStatus)));
 
+    QList<BandType> allBands = bands.keys();
+    for (int i = 0; i < allBands.length(); i++) {
+        connect(bands[allBands[i]], SIGNAL(dataToSend(BandType,BandMessage*)), this, SLOT(sendData(BandType, BandMessage*)));
+    }
 }
 
 
@@ -99,3 +104,9 @@ AbsBand* Suit::getBand(BandType bt) {
 // void calibrate( )
 // map<enum, BandCalibration> getCalibrationData( )
 
+void Suit::handleConnectionStatusChange(BandType band, ConnectionStatus newStatus) {
+    bands[band]->handleConnectionStatusChange(newStatus);
+}
+void Suit::sendData(BandType destBand, BandMessage* sendMsg) {
+    wifiMan->sendMessageToBand(destBand, sendMsg);
+}

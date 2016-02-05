@@ -5,9 +5,10 @@
 
 // not sure if we need to have 2 different stops, can consolidate if desired
 enum MessageType {COMPUTER_INITIATE_CONNECTION, BAND_CONNECTING, COMPUTER_PING, BAND_PING, BAND_POSITION_UPDATE, POSITION_ERROR,
-                  START_RECORDING, STOP_RECORDING, START_HAPTICS, STOP_HAPTICS};
+                  START_RECORDING, STOP_RECORDING, START_HAPTICS, STOP_HAPTICS, VOICE_CONTROL};
 
 
+enum ConnectionStatus {CONNECTED, DISCONNECTED};
 
 class BandMessage : public QObject
 {

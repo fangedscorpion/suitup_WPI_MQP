@@ -27,10 +27,13 @@ private:
 
     QByteArray trimNewLineAtEnd(QByteArray trimFrom);
 
-    QByteArray reverseByteArray(QByteArray reverseThis) ;
+    QByteArray reverseByteArray(QByteArray reverseThis);
 
 private slots:
+    void sendData(BandType destBand, BandMessage* sendMsg);
     void getRecvdData(BandType band, BandMessage *data, QTime dataTimestamp);
+    void handleConnectionStatusChange(BandType band, ConnectionStatus newStatus);
+
 };
 
 #endif // SUIT_H

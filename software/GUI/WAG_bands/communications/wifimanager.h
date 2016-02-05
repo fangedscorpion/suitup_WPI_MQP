@@ -27,8 +27,6 @@
 #include <QSignalMapper>
 #include "communications/bandmessage.h"
 
-enum ConnectionStatus {CONNECTED, DISCONNECTED};
-
 class WifiManager:public QObject
 {
     Q_OBJECT
