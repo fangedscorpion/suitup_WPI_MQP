@@ -4,7 +4,6 @@
 #include <QDebug>
 
 AbsBand::AbsBand(BandType bt):QObject() {
-    parentBand = new NullBand();
     type = bt;
     active = true;
     commsSetUp = false;
