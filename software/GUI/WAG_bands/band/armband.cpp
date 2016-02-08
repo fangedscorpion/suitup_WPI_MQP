@@ -15,7 +15,7 @@ ArmBand::ArmBand(BandType b) : AbsBand(b) {
     }
 }
 
-bool ArmBand::moveTo(AbsPose* x) const {
+bool ArmBand::moveTo(AbsState* x) const {
     if (!isActive())
         return true;
 
@@ -23,10 +23,10 @@ bool ArmBand::moveTo(AbsPose* x) const {
     return true;
 }
 
-AbsPose ArmBand::getPose() const {
+AbsState *ArmBand::getStateUpdate() const {
     // query for IMU position
     // parse value into Quaternion
-    return AbsPose();
+    return static_cast<QuatState*>(new QQuaternion());
 }
 
 

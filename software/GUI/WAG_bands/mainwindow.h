@@ -21,11 +21,11 @@
 #include <QStyle>
 #include <QTabWidget>
 #include <visualization/glwidget.h>
-#include "superslider.h"
-#include "overlay.h"
-#include "overlaywidget.h"
+#include "customWidgets/superslider.h"
+#include "customWidgets/overlay.h"
+#include "customWidgets/overlaywidget.h"
 #include "playbackcontroller.h"
-#include "smartpushbutton.h"
+#include "customWidgets/smartpushbutton.h"
 #include "wagfile.h"
 #include <set>
 
@@ -43,9 +43,6 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
-    bool isVoiceControlOn() { return voiceControl->isChecked(); }
-
 
 private:
     Ui::MainWindow *ui;
@@ -68,12 +65,10 @@ private:
     smartPushButton *openBtn;
     smartPushButton *settingsBtn;
     smartPushButton *helpBtn;
-    smartPushButton *saveBtn;
     QWidget *menu;
     void createMenuButtons();
     // settings overlay
     QGraphicsView *view;
-    QCheckBox *voiceControl;
     QCheckBox *leftShoulder;
     QCheckBox *leftUpperArm;
     QCheckBox *leftLowerArm;
@@ -93,7 +88,7 @@ private:
     OverlayWidget *openFromLibWidget;
     OverlayWidget *openWidget;
     void createOpenFromLib(USER u);
-    void createOpen(USER u) ;
+    void createOpenMotion(USER u) ;
     // create new file
     OverlayWidget *newMotionWidget;
     QLineEdit *newMotionNameTextEdit;
@@ -122,22 +117,18 @@ private slots:
     void launchSettings();
     void closeSettings();
     void saveSettings();
-    // save/saveAs
-    void save();
-    void addTag();
     // new file
     void saveNewMotion(USER u);
     void closeNewMotion();
     void launchNewMotion(USER u);
     void handleNewMotionRequiredInput();
     void handleNewMotionRequiredInput(QString);
+    void addTag();
     // on launch
     void launchUserOptions(USER);
     void closeUserOptions();
     void handleUserOptions(USER);
     // misc
-    void setTabContentVoiceControl(bool b);
-    void setVoiceControl(bool b) { voiceControl->setChecked(b); }
     void closeTab(int i) { tabs->removeTab(i); } // TODO: check for unsaved stuff
     void connectCheckedBands();
     void indicateConnectionStatusChange(BandType changedBand, ConnectionStatus updatedStatus);

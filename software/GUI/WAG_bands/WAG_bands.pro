@@ -14,10 +14,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    superslider.cpp \
-    overlay.cpp \
-    overlaywidget.cpp \
-    customshadoweffect.cpp \
     playbackcontroller.cpp \
     motion.cpp \
     positionsnapshot.cpp \
@@ -28,9 +24,7 @@ SOURCES += main.cpp\
     visualization/glwidget.cpp \
     visualization/visualization.cpp \
     visualization/vertextranslator.cpp\
-    smartpushbutton.cpp \
     mainwindowslots.cpp \
-    smartradiobutton.cpp \
     band/absband.cpp \
     band/abspose.cpp \
     band/shoulderband.cpp \
@@ -40,16 +34,23 @@ SOURCES += main.cpp\
     communications/wifimanager.cpp \
     editingcontroller.cpp \
     recordingcontroller.cpp \
-    communications/bandmessage.cpp
+    customWidgets/customshadoweffect.cpp \
+    customWidgets/overlay.cpp \
+    customWidgets/overlaywidget.cpp \
+    customWidgets/smartpushbutton.cpp \
+    customWidgets/smartradiobutton.cpp \
+    customWidgets/superslider.cpp \
+    tabcontent-record.cpp \
+    tabcontent-edit.cpp \
+    tabcontent-playback.cpp \
+    communications/bandmessage.cpp \
+    customWidgets/motionviewer.cpp \
+    band/quatpose.cpp \
+    band/nullband.cpp
 
 HEADERS  += mainwindow.h \
-    superslider.h \
-    playbackcontroller.h \
     motion.h \
     positionsnapshot.h \
-    overlay.h \
-    overlaywidget.h \
-    customshadoweffect.h \
     tabcontent.h \
     wagfile.h \
     visualization/suitsimulation.h \
@@ -57,16 +58,23 @@ HEADERS  += mainwindow.h \
     visualization/glwidget.h \
     visualization/visualization.h \
     visualization/vertextranslator.h \
-    smartpushbutton.h \
     user.h \
-    smartradiobutton.h \
     band/absband.h \
     band/abspose.h \
     band/suit.h \
     communications/wifimanager.h \
     editingcontroller.h \
     recordingcontroller.h \
-    communications/bandmessage.h
+    customWidgets/customshadoweffect.h \
+    customWidgets/overlay.h \
+    customWidgets/overlaywidget.h \
+    customWidgets/smartpushbutton.h \
+    customWidgets/smartradiobutton.h \
+    customWidgets/superslider.h \
+    playbackcontroller.h \
+    communications/bandmessage.h \
+    customWidgets/motionviewer.h \
+    band/absstate.h
 
 FORMS    +=
 

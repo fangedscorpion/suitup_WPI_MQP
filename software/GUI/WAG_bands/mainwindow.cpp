@@ -1,11 +1,11 @@
 #include "mainwindow.h"
-#include "superslider.h"
+#include "customWidgets/superslider.h"
 #include "tabcontent.h"
 #include "visualization/glwidget.h"
 #include "playbackcontroller.h"
 #include "band/absband.h"
 
-#include "smartpushbutton.h"
+#include "customWidgets/smartpushbutton.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
@@ -17,8 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
     applicationWidget->setLayout(applicationLayout);
 
     setWindowTitle(tr("WAG bands"));
-    setMinimumSize(1000, 550);
-    setMaximumSize(1000, 550);
+    setMinimumSize(1100, 650);
+    setMaximumSize(1100, 650);
 
     titleFont = QFont( "Arial", 15, QFont::Bold);
     titleStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-top: 0.5em; subcontrol-origin: margin; left: 10px; padding: 25px 3px 0 3px;}";
@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     USER u("Trainer", "A trainer can record and save motions for others to use");
     u.addAction(EDIT);
     u.addAction(RECORD);
+    u.addAction(PLAYBACK);
 
     USER u2("Trainee", "A trainee can playback motions");
     u2.addAction(PLAYBACK);
@@ -90,8 +91,6 @@ void MainWindow::createMenuButtons()
     newBtn->hide();
     openBtn = new smartPushButton("Load Motion");
     openBtn->hide();
-    saveBtn = new smartPushButton("Save Motion");
-    saveBtn->hide();
     settingsBtn = new smartPushButton("Settings");
     connect(settingsBtn, SIGNAL(released()), this, SLOT(launchSettings()));
     helpBtn = new smartPushButton("Help");
@@ -99,7 +98,6 @@ void MainWindow::createMenuButtons()
 
     QHBoxLayout* menuLayout = new QHBoxLayout;
     menuLayout->addWidget(newBtn);
-    menuLayout->addWidget(saveBtn);
     menuLayout->addWidget(openBtn);
     menuLayout->addWidget(settingsBtn);
     menuLayout->addWidget(helpBtn);
@@ -139,9 +137,8 @@ void MainWindow::createSettings() {
 
     QHBoxLayout *h = new QHBoxLayout;
     QVBoxLayout *o = new QVBoxLayout;
-
-    voiceControl = new QCheckBox("Voice Control");
-    o->addWidget(voiceControl);
+    // Add user input here
+//    o->addWidget(voiceControl);
     h->addLayout(o, -1);
     // verticle line between voice control and active bands
     QFrame *vLine = new QFrame();
@@ -199,7 +196,6 @@ void MainWindow::createSettings() {
 
     connect(ok, SIGNAL(released()), this, SLOT(saveSettings()));
     connect(cancel, SIGNAL(released()), this, SLOT(closeSettings()));
-    connect(voiceControl, SIGNAL(clicked(bool)), this, SLOT(setTabContentVoiceControl(bool)));
     connect(connectBands, SIGNAL(released()), this, SLOT(connectCheckedBands()));
     // TODO: connect calibrate and connectBands
 }
@@ -283,7 +279,7 @@ void MainWindow::createNewMotion(USER u) {
     emit this->resizedWindow();
 }
 
-void MainWindow::createOpen(USER u) {
+void MainWindow::createOpenMotion(USER u) {
     openWidget = new OverlayWidget(this, "Load Motion");
     QVBoxLayout *layout = openWidget->getLayout();
     smartPushButton *openLib = new smartPushButton("Load Motion From Library", u);

@@ -8,7 +8,7 @@
 
 ChestBand::ChestBand() : AbsBand(CHEST) {}
 
-bool ChestBand::moveTo(AbsPose* x) const {
+bool ChestBand::moveTo(AbsState* x) const {
     if (!isActive())
         return true;
 
@@ -16,9 +16,10 @@ bool ChestBand::moveTo(AbsPose* x) const {
     return true;
 }
 
-AbsPose ChestBand::getPose() const {
+AbsState *ChestBand::getStateUpdate() const {
     // query for IMU position
     // parse value into Quaternion
+    return static_cast<QuatState*>(new QQuaternion());
 }
 
 void ChestBand::handleMessage(qint64 msgTimestamp, BandMessage *recvdMessage) {

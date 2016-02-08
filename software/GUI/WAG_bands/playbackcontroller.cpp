@@ -15,8 +15,7 @@
 #define MILLISECONDS_PER_FRAME 16
 
 
-PlaybackController::PlaybackController()
-{
+PlaybackController::PlaybackController() {
     playing = false;
     stepThrough = false;
     frameRate = 1;
