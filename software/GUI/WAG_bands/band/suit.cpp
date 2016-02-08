@@ -29,6 +29,7 @@ Suit::Suit(WifiManager *comms):QObject() {
     }
 
     refBand = bands[CHEST];
+    bands[CHEST]->setParentBand(new NullBand());
     bands[CHEST]->addChildBand(bands[RIGHT_SHOULDER]);
     bands[CHEST]->addChildBand(bands[LEFT_SHOULDER]);
     bands[LEFT_SHOULDER]->addChildBand(bands[LEFT_UPPER_ARM]);

@@ -1,5 +1,6 @@
 #include "absband.h"
 
+
 NullBand::NullBand() : AbsBand(_NULL) {
     setActive(false);
 }
