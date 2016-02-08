@@ -209,12 +209,3 @@ void MainWindow::closeOpen() {
     overlay->hide();
     openWidget->hide();
 }
-
-void MainWindow::setTabContentVoiceControl(bool b) {
-    TabContent *tmp=dynamic_cast<TabContent*>(tabs->widget(0));
-    if(tmp!=NULL)
-        ((TabContent*)tabs->widget(0))->setVoiceControl(b);
-    for(int i=1; i <tabs->count(); i++) {
-        ((TabContent*)tabs->widget(i))->setVoiceControl(b);
-    }
-}

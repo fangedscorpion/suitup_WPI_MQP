@@ -44,9 +44,6 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    bool isVoiceControlOn() { return voiceControl->isChecked(); }
-
-
 private:
     Ui::MainWindow *ui;
     void resizeEvent(QResizeEvent* r);
@@ -73,7 +70,6 @@ private:
     void createMenuButtons();
     // settings overlay
     QGraphicsView *view;
-    QCheckBox *voiceControl;
     QCheckBox *leftShoulder;
     QCheckBox *leftUpperArm;
     QCheckBox *leftLowerArm;
@@ -136,8 +132,6 @@ private slots:
     void closeUserOptions();
     void handleUserOptions(USER);
     // misc
-    void setTabContentVoiceControl(bool b);
-    void setVoiceControl(bool b) { voiceControl->setChecked(b); }
     void closeTab(int i) { tabs->removeTab(i); } // TODO: check for unsaved stuff
     void connectCheckedBands();
     void indicateConnectionStatusChange(BandType changedBand, ConnectionStatus updatedStatus);
