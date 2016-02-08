@@ -18,7 +18,7 @@ public:
     // PositionSnapshot takeSnapshot( )
     // void calibrate( )
     // map<enum, BandCalibration> getCalibrationData( )
-    AbsBand* getRefBand() const {return refBand;};
+    AbsBand* getRefBand() const {return refBand;}
 
 private:
     QHash<BandType, AbsBand*> bands;
