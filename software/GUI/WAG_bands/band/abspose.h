@@ -17,7 +17,7 @@ public:
 
     virtual void calibrate(AbsState* calibrationPose) = 0;
     virtual AbsState* adjust(AbsState* state) const = 0;
-    virtual AbsState* error(AbsState* state) const = 0;
+    virtual AbsState* error(AbsState* goal) const = 0;
     virtual void updatePoints(AbsState* parentState, QVector3D parentEndpoint) = 0;
 protected:
     std::vector<QVector3D> points;
@@ -30,7 +30,7 @@ public:
     QuatPose(QVector3D translation, QVector3D rotatedTranslation) : t(translation), rt(rotatedTranslation) {points.reserve(3);}
     void calibrate(AbsState *calibrationPose);
     AbsState* adjust(AbsState* state) const;
-    AbsState* error(AbsState* state) const;
+    AbsState* error(AbsState* goal) const;
     void updatePoints(AbsState* parentState, QVector3D parentEndpoint);
 private:
     QuatState* qqinv(AbsState* q1, AbsState* q2) const;
