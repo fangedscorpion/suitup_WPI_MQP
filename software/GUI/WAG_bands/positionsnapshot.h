@@ -2,6 +2,9 @@
 #define POSITIONSNAPSHOT_H
 
 #include <map>
+#include <QHash>
+#include "band/abspose.h"
+#include "band/absband.h"
 
 class PositionSnapshot
 {
@@ -11,6 +14,7 @@ public:
     //Pose getPositionOf(BandType b) { return snapshot[b]; }
 private:
     //std::map<BandType, Pose> snapshot;
+    QHash<BandType, AbsPose *> snapshotData;
 };
 
 #endif // POSITIONSNAPSHOT_H

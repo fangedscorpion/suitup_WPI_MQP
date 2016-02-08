@@ -26,7 +26,7 @@ AbsPose ShoulderBand::getPose() const {
     // parse value into Quaternion
 }
 
-void ShoulderBand::handleMessage(QTime msgTimestamp, BandMessage *recvdMessage) {
+void ShoulderBand::handleMessage(qint64 msgTimestamp, BandMessage *recvdMessage) {
     switch(recvdMessage->getMessageType()) {
         case BAND_POSITION_UPDATE:
         // do something

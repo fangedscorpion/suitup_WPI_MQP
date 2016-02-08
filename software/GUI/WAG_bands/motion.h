@@ -6,6 +6,7 @@ class Motion
 {
 public:
     Motion();
+    int getFrameNums();
 };
 
 #endif // MOTION_H

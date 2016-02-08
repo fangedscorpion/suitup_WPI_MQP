@@ -7,6 +7,7 @@
 Suit::Suit(WifiManager *comms):QObject() {
 
     wifiMan = comms;
+    startTime = QElapsedTimer();
 
     try {
         bands[CHEST] = new ChestBand();
@@ -39,7 +40,7 @@ Suit::Suit(WifiManager *comms):QObject() {
     /*bands[LEFT_LOWER_ARM]->addDependentBand(bands[LEFT_HAND]);
     bands[RIGHT_LOWER_ARM]->addDependentBand(bands[RIGHT_HAND]);*/
 
-    connect(wifiMan, SIGNAL(dataAvailable(BandType,BandMessage*, QTime)), this, SLOT(getRecvdData(BandType,BandMessage*,QTime)));
+    connect(wifiMan, SIGNAL(dataAvailable(BandType,BandMessage*, QElapsedTimer)), this, SLOT(getRecvdData(BandType,BandMessage*,QElapsedTimer)));
     connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(handleConnectionStatusChange(BandType, ConnectionStatus)));
 
     QList<BandType> allBands = bands.keys();
@@ -52,7 +53,7 @@ Suit::Suit(WifiManager *comms):QObject() {
 }
 
 
-void Suit::getRecvdData(BandType band, BandMessage *data, QTime dataTimestamp) {
+void Suit::getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTimestamp) {
     // process QByteArray here or let individual band do it?
     // pass data to band
     AbsBand *targetBand = getBand(band);
@@ -60,7 +61,8 @@ void Suit::getRecvdData(BandType band, BandMessage *data, QTime dataTimestamp) {
     qDebug()<<band;
 
     qDebug()<<data->getMessageType();
-    targetBand->handleMessage(dataTimestamp, data);
+    qint64 elapsedTime = startTime.msecsTo(dataTimestamp);
+    targetBand->handleMessage(elapsedTime, data);
 
     //wifiMan->sendMessageToBand(band, newMsg);
 
@@ -116,6 +118,7 @@ void Suit::toggleCollecting(bool shouldCollectData) {
         collectingData = shouldCollectData;
         if (collectingData) {
             // stop timer
+            qDebug("Killing timer");
             killTimer(pingTimerID);
         } else {
             // start timer
@@ -135,5 +138,40 @@ void Suit::sendToConnectedBands(BandMessage *sendMsg) {
     QList<BandType> allBands = bands.keys();
     for (int i = 0; i < allBands.length(); i++) {
         bands[allBands[i]]->sendIfConnected(sendMsg);
+    }
+}
+
+/*
+ * starts or stops playback or recording, depending on the parameters
+ * only messagetypes of Start/stop recording and start/stop playback should be used
+ */
+void Suit::startOrStopMode(MessageType commandType) {
+    BandMessage *newMsg;
+    switch (commandType) {
+    case START_RECORDING:
+        toggleCollecting(true);
+        startTime = QElapsedTimer();
+        newMsg = new BandMessage(START_RECORDING, QByteArray());
+        sendToConnectedBands(newMsg);
+        break;
+    case STOP_RECORDING:
+        newMsg = new BandMessage(STOP_RECORDING, QByteArray());
+        sendToConnectedBands(newMsg);
+        toggleCollecting(false);
+        break;
+    case START_PLAYBACK:
+        startTime = QElapsedTimer();
+        toggleCollecting(true);
+        newMsg = new BandMessage(START_PLAYBACK, QByteArray());
+        sendToConnectedBands(newMsg);
+        break;
+    case STOP_PLAYBACK:
+        newMsg = new BandMessage(STOP_PLAYBACK, QByteArray());
+        sendToConnectedBands(newMsg);
+        toggleCollecting(false);
+        break;
+    default:
+        // shouldn't give any other message types
+        break;
     }
 }

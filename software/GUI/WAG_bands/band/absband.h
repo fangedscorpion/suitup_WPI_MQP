@@ -5,7 +5,6 @@
 
 #include "abspose.h"
 #include "communications/bandmessage.h"
-#include <QTime>
 #include <QObject>
 
 
@@ -29,7 +28,7 @@ public:
     void setActive(bool a) {active = a;}
     bool isActive() const {return active;}
     void handleConnectionStatusChange(ConnectionStatus);
-    void handleMessage(QTime, BandMessage *);
+    void handleMessage(qint64, BandMessage *);
     void sendIfConnected(BandMessage *sendMsg);
 
 private:
@@ -51,7 +50,7 @@ public:
     ArmBand(BandType b);
     bool moveTo(AbsPose* x) const;
     AbsPose getPose() const;
-    void handleMessage(QTime, BandMessage *);
+    void handleMessage(qint64, BandMessage *);
 };
 
 class Glove : public AbsBand {
@@ -59,7 +58,7 @@ public:
     Glove(BandType b);
     bool moveTo(AbsPose* x) const;
     AbsPose getPose() const;
-    void handleMessage(QTime, BandMessage *);
+    void handleMessage(qint64, BandMessage *);
 };
 
 class ShoulderBand : public AbsBand {
@@ -67,7 +66,7 @@ public:
     ShoulderBand(BandType b);
     bool moveTo(AbsPose* x) const;
     AbsPose getPose() const;
-    void handleMessage(QTime, BandMessage *);
+    void handleMessage(qint64, BandMessage *);
 };
 
 class ChestBand : public AbsBand {
@@ -75,7 +74,7 @@ public:
     ChestBand();
     bool moveTo(AbsPose* x) const;
     AbsPose getPose() const;
-    void handleMessage(QTime, BandMessage *);
+    void handleMessage(qint64, BandMessage *);
 };
 
 

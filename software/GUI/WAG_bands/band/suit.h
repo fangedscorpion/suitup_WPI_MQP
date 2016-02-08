@@ -7,6 +7,7 @@
 #include <QObject>
 #include <QHash>
 #include "communications/bandmessage.h"
+#include "positionsnapshot.h"
 
 class Suit:public QObject
 {
@@ -19,6 +20,7 @@ public:
     // void calibrate( )
     // map<enum, BandCalibration> getCalibrationData( )
     AbsBand* getRefBand() const {return refBand;};
+    void startOrStopMode(MessageType);
 
 private:
     QHash<BandType, AbsBand*> bands;
@@ -32,12 +34,15 @@ private:
     int pingTimerID;
     void toggleCollecting(bool);
     void sendToConnectedBands(BandMessage*);
+    QElapsedTimer startTime;
+signals:
+    void positionSnapshotReady(qint64, PositionSnapshot *);
 protected:
     void timerEvent(QTimerEvent *);
 
 private slots:
     void sendData(BandType destBand, BandMessage* sendMsg);
-    void getRecvdData(BandType band, BandMessage *data, QTime dataTimestamp);
+    void getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTimestamp);
     void handleConnectionStatusChange(BandType band, ConnectionStatus newStatus);
 
 };
