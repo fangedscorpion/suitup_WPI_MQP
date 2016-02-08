@@ -43,7 +43,8 @@ SOURCES += main.cpp\
     tabcontent-record.cpp \
     tabcontent-edit.cpp \
     tabcontent-playback.cpp \
-    communications/bandmessage.cpp
+    communications/bandmessage.cpp \
+    customWidgets/motionviewer.cpp
 
 HEADERS  += mainwindow.h \
     motion.h \
@@ -69,7 +70,8 @@ HEADERS  += mainwindow.h \
     customWidgets/smartradiobutton.h \
     customWidgets/superslider.h \
     playbackcontroller.h \
-    communications/bandmessage.h
+    communications/bandmessage.h \
+    customWidgets/motionviewer.h
 
 FORMS    +=
 
