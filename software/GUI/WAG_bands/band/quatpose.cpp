@@ -1,15 +1,21 @@
 #include "abspose.h"
 
-AbsState* QuatPose::adjust(AbsState* state) const {
-    QQuaternion q = *(static_cast<QuatState*>(state))*static_cast<QuatState*>(calibration)->inverted();
+QuatState* QuatPose::qqinv(AbsState* q1, AbsState* q2) const {
+    QQuaternion q = *(static_cast<QuatState*>(q1))*static_cast<QuatState*>(q2)->inverted();
     QuatState* qState = static_cast<QuatState*>(&q);
     return qState;
 }
 
+void QuatPose::calibrate(AbsState *calibrationPose) {
+    calibration = qqinv(current,calibrationPose);
+}
+
+AbsState* QuatPose::adjust(AbsState* state) const {
+    return qqinv(state,calibration);
+}
+
 AbsState* QuatPose::error(AbsState* state) const {
-    QQuaternion q = *(static_cast<QuatState*>(state))*static_cast<QuatState*>(current)->inverted();
-    QuatState* qState = static_cast<QuatState*>(&q);
-    return qState;
+    return qqinv(state,current);
 }
 
 void QuatPose::updatePoints(AbsState* parentState, QVector3D parentEndPoint) {

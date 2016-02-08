@@ -29,7 +29,7 @@ public:
     // updating the pose
     void updateState(AbsState* state);
     void updatePoints();
-    void setCalibrationState() {pose->calibrate();}
+    void setCalibrationState(AbsState* refState) {pose->calibrate(refState);}
     virtual QVector3D getEndpoint() const {return pose->getEndpoint();}
     AbsState* getCalibrationState() const {return pose->getCalibrationState(); }
     virtual AbsState* getState() const {return pose->getState();}
