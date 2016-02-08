@@ -41,7 +41,7 @@ public:
     void closeAllConnections();
 
 signals:
-    void dataAvailable(BandType recvdFrom, BandMessage *dataRecvd, QTime timestamp);
+    void dataAvailable(BandType recvdFrom, BandMessage *dataRecvd, QElapsedTimer timestamp);
     void connectionStatusChanged(BandType affectedBand, ConnectionStatus status);
 
 private:

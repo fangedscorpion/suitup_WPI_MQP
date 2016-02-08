@@ -24,3 +24,9 @@ void EditingController::togglePlay() {
     qDebug()<<"editing mode, playing: "<<playing;
     emit editingPlayStateChanged(playing);
 }
+
+void EditingController::setActiveMotion(Motion *editMotion) {
+    activeMotion = editMotion;
+    int newSliderMax = activeMotion->getFrameNums();
+    // change slider length
+}

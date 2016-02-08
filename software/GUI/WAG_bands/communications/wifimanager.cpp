@@ -191,7 +191,7 @@ void WifiManager::routeToBandObject(BandType bandWithData) {
         // consider timestamping (get current time and pass with data)
         BandMessage *msg = new BandMessage(readData);
 
-        emit dataAvailable(bandWithData, msg, QTime::currentTime());
+        emit dataAvailable(bandWithData, msg, QElapsedTimer());
     }
 }
 

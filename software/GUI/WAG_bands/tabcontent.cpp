@@ -55,6 +55,8 @@ TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION
     connect(recordCountdownTimer, SIGNAL(timeout()), this, SLOT(recordCountdownTimerEvent()));
     connect(recordStopwatchTimer, SIGNAL(timeout()), this, SLOT(recordStopwatchTimerEvent()));
     connect(playbackCountdownTimer, SIGNAL(timeout()), this, SLOT(playbackCountdownTimerEvent()));
+
+    saveMotion();
 }
 
 TabContent::~TabContent() {}
@@ -190,3 +192,21 @@ void TabContent::updateMotion(WAGFile* file) {
         recordGroup->setTitle(QString("Recording: ") + motion->getName());
 }
 
+// save the motion file
+void TabContent::saveMotion() {
+    if (motion->getSaveLocation() == LIBRARY) {
+
+    } else if (motion->getSaveLocation() == LOCALLY) {
+        //     * QFileDialog
+        QFile f( motion->getName() );
+        f.open( QIODevice::WriteOnly );
+        // store data in f
+        f.close();
+    }
+
+
+//    closeSaveAs();
+    // TODO: Save da file!
+
+
+}

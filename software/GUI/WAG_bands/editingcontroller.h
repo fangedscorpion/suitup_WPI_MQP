@@ -2,12 +2,14 @@
 #define EDITINGCONTROLLER_H
 
 #include <QObject>
+#include "motion.h"
 
 class EditingController : public QObject
 {
     Q_OBJECT
 public:
     EditingController();
+    void setActiveMotion(Motion *newMotion);
 
 signals:
     void editingPlayStateChanged(bool);
@@ -18,6 +20,7 @@ public slots:
 
 private:
     bool playing;
+    Motion * activeMotion;
 };
 
 #endif // EDITINGCONTROLLER_H

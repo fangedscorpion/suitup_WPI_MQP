@@ -30,6 +30,11 @@ QWidget* TabContent::createEditOptionsAndControls() {
     MotionInfoBtn->setIconSize(QSize(62,25));
     MotionInfoBtn->setMinimumHeight(buttonHeight);
     MotionInfoBtn->setText("Edit Motion Information");
+    QPushButton *saveBtn = new QPushButton;
+//    saveBtn->setIcon(cropIcon);
+//    saveBtn->setIconSize(QSize(49,25));
+    saveBtn->setMinimumHeight(buttonHeight);
+    saveBtn->setText("Save");
     QVBoxLayout *recordPlaybackLayout = new QVBoxLayout;
     QVBoxLayout *buttons = new QVBoxLayout;
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -37,12 +42,14 @@ QWidget* TabContent::createEditOptionsAndControls() {
     buttons->addWidget(cropBtn);
     buttons->addWidget(splitBtn);
     buttons->addWidget(MotionInfoBtn);
+    buttons->addWidget(saveBtn);
     recordPlaybackLayout->addLayout(buttons, 1);
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     editOptions->setLayout(recordPlaybackLayout);
 
     connect(MotionInfoBtn, SIGNAL(released()), this, SLOT(launchMotionInfo()));
-
+    connect(saveBtn, SIGNAL(released()), this, SLOT(saveMotion()));
+    // add connections to crop and split and undo
     connect(editingControls, SIGNAL(editingPlayStateChanged(bool)), this, SLOT(editPlayToggled(bool)));
 
     return editOptions;
@@ -113,8 +120,8 @@ void TabContent::createMotionInfoWindow() {
     // only connect handleUserOptions when the user selection window is visible to user
     connect(saveMotionInfoBtn, SIGNAL(released()), this, SLOT(saveMotionInfo()));
     connect(cancel, SIGNAL(released()), this, SLOT(closeMotionInfo()));
-    connect(addTagBtn, SIGNAL(released()), this, SLOT(addTag()));
-    connect(infoMotionTagsTextEdit, SIGNAL(returnPressed()), this, SLOT(addTag()));
+//    connect(addTagBtn, SIGNAL(released()), this, SLOT(addTag()));
+//    connect(infoMotionTagsTextEdit, SIGNAL(returnPressed()), this, SLOT(addTag()));
     connect(infoMotionNameTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewMotionRequiredInput(QString)));
     connect(infoMotionDescription, SIGNAL(textChanged()), this, SLOT(handleNewMotionRequiredInput()));
     connect(infoMotionTagsTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewMotionRequiredInput(QString)));

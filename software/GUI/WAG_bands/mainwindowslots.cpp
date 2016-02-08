@@ -62,32 +62,13 @@ void MainWindow::handleUserOptions(USER u) {
     if (u.hasAction(EDIT) || u.hasAction(PLAYBACK)) {
         openBtn->setUser(u);
         openBtn->show();
-        createOpen(u);
+        createOpenMotion(u);
         connect(openBtn, SIGNAL(released()), this, SLOT(launchOpen()));
-    }
-    // only set once even if u has both RECORD and EDIT
-    if (u.hasAction(RECORD) || u.hasAction(EDIT)) {
-        saveBtn->setUser(u);
-        saveBtn->show();
-        connect(saveBtn, SIGNAL(released(USER)), this, SLOT(save()));
     }
     userOptionsWidget->hide();
     overlay->hide();
     tabs->removeTab(0);
     tabs->setTabsClosable(true);
-}
-
-// save the motion file
-void MainWindow::save() {
-    /*
-     * QFileDialog
-    QFile f( filename );
-    f.open( QIODevice::WriteOnly );
-    // store data in f
-    f.close();
-*/
-//    closeSaveAs();
-    // TODO: Save da file!
 }
 
 // in new file window, adds a tag to the tags list
@@ -102,9 +83,10 @@ void MainWindow::addTag() {
 // opens the dialog box to find a local file
 void MainWindow::launchOpenFromComputer(USER u) {
     // File browser
-    QString f = QFileDialog::getOpenFileName(this, "Open File", "/");
+    QString f = QFileDialog::getOpenFileName(this, "Open File", "", "WAG Files (*.wagz)");
     // open f and get metadata
     if (!f.trimmed().isEmpty()) { // user clicked "open"
+        handleUserOptions(u); // setup the top bar
         WAGFile* w = new WAGFile(f.trimmed(), QString("desc"), QString("author"), QVector<QString>());
         addTab(u, w, EDIT);
         closeOpen();
@@ -154,7 +136,6 @@ void MainWindow::closeSettings() {
 void MainWindow::saveSettings() {
     // TODO: save user settings here...
     closeSettings();
-
 }
 
 // launch the new file overlay
@@ -207,5 +188,8 @@ void MainWindow::launchOpen() {
 
 void MainWindow::closeOpen() {
     overlay->hide();
-    openWidget->hide();
+    if (!userOptionsWidget->isVisible())
+        openWidget->hide();
+    else
+        closeUserOptions();
 }
