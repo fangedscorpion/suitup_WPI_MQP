@@ -29,3 +29,14 @@ AbsPose ArmBand::getPose() const {
     return AbsPose();
 }
 
+
+void ArmBand::handleMessage(QTime msgTimestamp, BandMessage *recvdMessage) {
+    switch(recvdMessage->getMessageType()) {
+        case BAND_POSITION_UPDATE:
+        // do something
+        break;
+    default:
+        AbsBand::handleMessage(msgTimestamp, recvdMessage);
+    }
+}
+

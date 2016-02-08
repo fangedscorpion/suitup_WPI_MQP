@@ -20,3 +20,16 @@ AbsPose ChestBand::getPose() const {
     // query for IMU position
     // parse value into Quaternion
 }
+
+void ChestBand::handleMessage(QTime msgTimestamp, BandMessage *recvdMessage) {
+    switch(recvdMessage->getMessageType()) {
+        case BAND_POSITION_UPDATE:
+        // do something
+        break;
+    case VOICE_CONTROL:
+        // do something else
+        break;
+    default:
+        AbsBand::handleMessage(msgTimestamp, recvdMessage);
+    }
+}

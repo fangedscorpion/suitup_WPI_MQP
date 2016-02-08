@@ -25,8 +25,7 @@
 #include <QtNetwork>
 #include "band/absband.h"
 #include <QSignalMapper>
-
-enum ConnectionStatus {CONNECTED, DISCONNECTED};
+#include "communications/bandmessage.h"
 
 class WifiManager:public QObject
 {
@@ -35,26 +34,27 @@ public:
     // consider having wifimanager take in the suit object here
     WifiManager();
     void initiateConnection(QList<BandType> bandsToConnect);
-    void sendToBand(BandType destBand, QByteArray data);
-    void sendToBand(BandType destBand, char * bandData);
+    void sendRawDataToBand(BandType destBand, QByteArray data);
+    void sendRawDataToBand(BandType destBand, char * bandData);
+    void sendMessageToBand(BandType destBand, QByteArray msgData, MessageType msgType);
+    void sendMessageToBand(BandType destBand, BandMessage *fullMsg);
     void closeAllConnections();
 
 signals:
-    void dataAvailable(BandType recvdFrom, QByteArray dataRecvd, QTime timestamp);
+    void dataAvailable(BandType recvdFrom, BandMessage *dataRecvd, QTime timestamp);
     void connectionStatusChanged(BandType affectedBand, ConnectionStatus status);
 
 private:
     QTcpServer *serv;
     QHash<BandType, QTcpSocket*> socketMap;
     void routeToBandObject(BandType bandWithData);
-    QByteArray trimNewLineAtEnd(QByteArray trimFrom);
-    QByteArray reverseByteArray(QByteArray reverseThis);
     void startSingleConnection(BandType bandToConnect);
     QSignalMapper *connectedMapper;
     QSignalMapper *recvdMapper;
     QSignalMapper *disconnectedMapper;
     QHash<BandType, QString> ipMap;
     QHash<BandType, quint16> portMap;
+
 
 private slots:
    // void connectToNewDevice();

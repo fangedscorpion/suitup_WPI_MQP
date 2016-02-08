@@ -32,10 +32,7 @@ SOURCES += main.cpp\
     band/armband.cpp \
     band/suit.cpp \
     communications/wifimanager.cpp \
-    communications/bluetoothmanager.cpp \
-    communications/networkmonitor.cpp \
     editingcontroller.cpp \
-    communications/messageinterpreter.cpp \
     recordingcontroller.cpp \
     customWidgets/customshadoweffect.cpp \
     customWidgets/overlay.cpp \
@@ -45,7 +42,8 @@ SOURCES += main.cpp\
     customWidgets/superslider.cpp \
     tabcontent-record.cpp \
     tabcontent-edit.cpp \
-    tabcontent-playback.cpp
+    tabcontent-playback.cpp \
+    communications/bandmessage.cpp
 
 HEADERS  += mainwindow.h \
     motion.h \
@@ -62,10 +60,7 @@ HEADERS  += mainwindow.h \
     band/abspose.h \
     band/suit.h \
     communications/wifimanager.h \
-    communications/networkmonitor.h \
-    communications/bluetoothmanager.h \
     editingcontroller.h \
-    communications/messageinterpreter.h \
     recordingcontroller.h \
     customWidgets/customshadoweffect.h \
     customWidgets/overlay.h \
@@ -73,7 +68,8 @@ HEADERS  += mainwindow.h \
     customWidgets/smartpushbutton.h \
     customWidgets/smartradiobutton.h \
     customWidgets/superslider.h \
-    playbackcontroller.h
+    playbackcontroller.h \
+    communications/bandmessage.h
 
 FORMS    +=
 
