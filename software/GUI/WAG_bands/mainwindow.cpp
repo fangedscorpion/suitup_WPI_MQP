@@ -140,9 +140,8 @@ void MainWindow::createSettings() {
 
     QHBoxLayout *h = new QHBoxLayout;
     QVBoxLayout *o = new QVBoxLayout;
-
-    voiceControl = new QCheckBox("Voice Control");
-    o->addWidget(voiceControl);
+    // Add user input here
+//    o->addWidget(voiceControl);
     h->addLayout(o, -1);
     // verticle line between voice control and active bands
     QFrame *vLine = new QFrame();

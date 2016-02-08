@@ -15,11 +15,8 @@ public:
     ~TabContent();
 
     QString getFilename() { return motion->getName();}
-    bool isVoiceControlOn() { return voiceControl->isChecked(); }
-    void setVoiceControl(bool b) { voiceControl->setChecked(b); }
-
-protected:
-    void timerEvent(QTimerEvent *event);
+    bool isVoiceControlOn() { return recordVoiceControl->isChecked(); }
+    void setVoiceControl(bool b) { recordVoiceControl->setChecked(b); }
 
 private:
     MainWindow* parent;
@@ -43,13 +40,20 @@ private:
     smartRadioButton *editRadio;
     smartRadioButton *recordRadio;
     QWidget* createModeRadios(USER u);
-    // playback recording options
+    // playback options
     QCheckBox *playOnSuit;
     QComboBox *stepThrough;
     QSlider *speedSlider;
     QSpinBox *secondsToHold;
     QSlider *toleranceSlider;
     QGroupBox *playbackOptions;
+    QTimer *playbackCountdownTimer;
+    QLabel *playbackCountdownTime;
+    QDoubleSpinBox *playbackCountDownSpinner;
+    QLabel *playbackCountDownTitleLabel;
+    QLabel *playbackCountdownSecondsTitleLabel;
+    QCheckBox* playbackVoiceControl;
+    void playbackResetCountDownTimer();
     // playback controls
     QPushButton *playPause;
     QLabel *sfi;
@@ -73,28 +77,27 @@ private:
     QLabel *handle1Time;
     QLabel *handle2Time;
     QWidget* createViewer(ACTION_TYPE t);
-    // recording viewer
-    QLabel *time;
-    QLabel *countDownLabel;
-    QLabel *recordTime;
-    QLabel *seconds;
-    QLabel *minutes;
-    QPushButton *recordButton;
-    QPushButton *resetButton;
-    void resetCountDownTimer();
-    void handleCountDown();
-    void handleRecordTimeCounter();
-    int countDownTimerID;
-    int recordTimeTimerID;
-    int msecs;
     // recording
     QGroupBox *recordGroup;
     QLabel *recordMessage;
     QIcon stopIcon;
-    QCheckBox* voiceControl;
-    QDoubleSpinBox *countDownSpinner;
+    QCheckBox* recordVoiceControl;
+    QDoubleSpinBox *recordCountDownSpinner;
     QWidget* createRecordOptionsAndController();
     QWidget* createRecordingWindow();
+    // recording viewer
+    QLabel *recordCountdownTime;
+    QLabel *recordCountDownTitleLabel;
+    QLabel *recordStopwatchTitleLabel;
+    QLabel *recordCountdownSecondsTitleLabel;
+    QLabel *recordStopwatchMinutesTitleLabel;
+    QPushButton *recordButton;
+    QPushButton *resetButton;
+    void recordResetCountDownTimer();
+    void handleRecordTimeCounter();
+    QTimer *recordCountdownTimer;
+    QTimer *recordStopwatchTimer;
+    int msecs;
     // edit
     QIcon cropIcon;
     QIcon splitIcon;
@@ -116,10 +119,9 @@ private:
 public slots:
     void show(ACTION_TYPE a);
     void updateSpeedSliderText(QString playbackModeString);
-    void setCountDownTimer(double d);
     void applicationResized();
     void handleRecordingWindowButtons();
-    void displayNewTime(int newMillis);
+    void recordDisplayNewTime(int newMillis);
     void playbackToggled(bool playing);
     void editPlayToggled(bool playing);
 
@@ -130,6 +132,12 @@ public slots:
     // validate input
     void handleNewMotionRequiredInput();
     void handleNewMotionRequiredInput(QString);
+    // timers
+    void recordCountdownTimerEvent();
+    void recordStopwatchTimerEvent();
+    void playbackCountdownTimerEvent();
+    void recordSetCountDownTimer(double d);
+    void playbackSetCountDownTimer(double d);
 
 signals:
     void stepThroughChanged(bool steppingThrough);

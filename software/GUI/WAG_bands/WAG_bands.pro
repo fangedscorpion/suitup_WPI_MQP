@@ -42,7 +42,10 @@ SOURCES += main.cpp\
     customWidgets/overlaywidget.cpp \
     customWidgets/smartpushbutton.cpp \
     customWidgets/smartradiobutton.cpp \
-    customWidgets/superslider.cpp
+    customWidgets/superslider.cpp \
+    tabcontent-record.cpp \
+    tabcontent-edit.cpp \
+    tabcontent-playback.cpp
 
 HEADERS  += mainwindow.h \
     motion.h \
@@ -69,7 +72,8 @@ HEADERS  += mainwindow.h \
     customWidgets/overlaywidget.h \
     customWidgets/smartpushbutton.h \
     customWidgets/smartradiobutton.h \
-    customWidgets/superslider.h
+    customWidgets/superslider.h \
+    playbackcontroller.h
 
 FORMS    +=
 
