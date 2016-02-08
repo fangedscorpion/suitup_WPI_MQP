@@ -8,6 +8,7 @@ QuatState* QuatPose::qqinv(AbsState* q1, AbsState* q2) const {
 
 void QuatPose::calibrate(AbsState *calibrationPose) {
     calibration = qqinv(current,calibrationPose);
+    current = calibrationPose;
 }
 
 AbsState* QuatPose::adjust(AbsState* state) const {
