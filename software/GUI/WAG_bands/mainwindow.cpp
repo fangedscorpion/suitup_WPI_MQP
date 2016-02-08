@@ -199,7 +199,6 @@ void MainWindow::createSettings() {
 
     connect(ok, SIGNAL(released()), this, SLOT(saveSettings()));
     connect(cancel, SIGNAL(released()), this, SLOT(closeSettings()));
-    connect(voiceControl, SIGNAL(clicked(bool)), this, SLOT(setTabContentVoiceControl(bool)));
     connect(connectBands, SIGNAL(released()), this, SLOT(connectCheckedBands()));
     // TODO: connect calibrate and connectBands
 }
