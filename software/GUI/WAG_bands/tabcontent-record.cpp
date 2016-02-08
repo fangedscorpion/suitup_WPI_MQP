@@ -23,8 +23,8 @@ QWidget* TabContent::createRecordOptionsAndController() {
 
     QVBoxLayout *buttons = new QVBoxLayout;
     buttons->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
-    buttons->addLayout(h);
     buttons->addWidget(recordVoiceControl);
+    buttons->addLayout(h);
     buttons->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     recordOptionsGroup->setLayout(buttons);
 
@@ -129,6 +129,8 @@ void TabContent::handleRecordingWindowButtons() {
         modeRadiosGroup->setEnabled(true);
         // stop recording timer
         recordStopwatchTimer->stop();
+        // save new recording
+        saveMotion();
     // pressed "reset"
     } else if (recordButton->text() == QString("Recording Stopped")) {
         // update button

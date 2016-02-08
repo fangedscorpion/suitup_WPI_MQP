@@ -138,6 +138,8 @@ public slots:
     void playbackCountdownTimerEvent();
     void recordSetCountDownTimer(double d);
     void playbackSetCountDownTimer(double d);
+    // save
+    void saveMotion();
 
 signals:
     void stepThroughChanged(bool steppingThrough);

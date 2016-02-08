@@ -91,8 +91,6 @@ void MainWindow::createMenuButtons()
     newBtn->hide();
     openBtn = new smartPushButton("Load Motion");
     openBtn->hide();
-    saveBtn = new smartPushButton("Save Motion");
-    saveBtn->hide();
     settingsBtn = new smartPushButton("Settings");
     connect(settingsBtn, SIGNAL(released()), this, SLOT(launchSettings()));
     helpBtn = new smartPushButton("Help");
@@ -100,7 +98,6 @@ void MainWindow::createMenuButtons()
 
     QHBoxLayout* menuLayout = new QHBoxLayout;
     menuLayout->addWidget(newBtn);
-    menuLayout->addWidget(saveBtn);
     menuLayout->addWidget(openBtn);
     menuLayout->addWidget(settingsBtn);
     menuLayout->addWidget(helpBtn);
@@ -282,7 +279,7 @@ void MainWindow::createNewMotion(USER u) {
     emit this->resizedWindow();
 }
 
-void MainWindow::createOpen(USER u) {
+void MainWindow::createOpenMotion(USER u) {
     openWidget = new OverlayWidget(this, "Load Motion");
     QVBoxLayout *layout = openWidget->getLayout();
     smartPushButton *openLib = new smartPushButton("Load Motion From Library", u);
