@@ -44,7 +44,9 @@ SOURCES += main.cpp\
     tabcontent-edit.cpp \
     tabcontent-playback.cpp \
     communications/bandmessage.cpp \
-    customWidgets/motionviewer.cpp
+    customWidgets/motionviewer.cpp \
+    band/quatpose.cpp \
+    band/nullband.cpp
 
 HEADERS  += mainwindow.h \
     motion.h \
@@ -71,7 +73,8 @@ HEADERS  += mainwindow.h \
     customWidgets/superslider.h \
     playbackcontroller.h \
     communications/bandmessage.h \
-    customWidgets/motionviewer.h
+    customWidgets/motionviewer.h \
+    band/absstate.h
 
 FORMS    +=
 

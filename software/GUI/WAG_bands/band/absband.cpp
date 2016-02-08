@@ -55,3 +55,15 @@ void AbsBand::sendIfConnected(BandMessage *sendMsg) {
         emit dataToSend(type, sendMsg);
     }
 }
+
+void AbsBand::updateState(AbsState* state){
+    pose->update(state);
+    updatePoints();
+}
+
+void AbsBand::updatePoints(){
+    pose->updatePoints(parentBand->getState(),parentBand->getEndpoint());
+    for (unsigned int i = 0; i < childBands.size(); i++){
+        childBands[i]->updatePoints();
+    }
+}

@@ -13,7 +13,7 @@ ShoulderBand::ShoulderBand(BandType b) : AbsBand(b) {
     }
 }
 
-bool ShoulderBand::moveTo(AbsPose* x) const {
+bool ShoulderBand::moveTo(AbsState* x) const {
     if (!isActive())
         return true;
 
@@ -21,9 +21,10 @@ bool ShoulderBand::moveTo(AbsPose* x) const {
     return true;
 }
 
-AbsPose ShoulderBand::getPose() const {
+AbsState *ShoulderBand::getStateUpdate() const {
     // query for IMU position
     // parse value into Quaternion
+    return static_cast<QuatState*>(new QQuaternion());
 }
 
 void ShoulderBand::handleMessage(QTime msgTimestamp, BandMessage *recvdMessage) {

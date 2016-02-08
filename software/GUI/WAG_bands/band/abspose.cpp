@@ -4,4 +4,3 @@ AbsPose::AbsPose()
 {
 
 }
-
