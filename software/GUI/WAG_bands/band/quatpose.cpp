@@ -15,16 +15,17 @@ AbsState* QuatPose::adjust(AbsState* state) const {
     return qqinv(state,calibration);
 }
 
-AbsState* QuatPose::error(AbsState* goal) const {
+IError* QuatPose::error(AbsState* goal) const {
     QVector3D* errAxis = new QVector3D();
     float* angle = new float();
+    QuatState* qCurrent = static_cast<QuatState*>(current);
 
     // calculate error
     QuatState* qErr = qqinv(goal,current);
     // get error axis
     qErr->getAxisAndAngle(errAxis, angle);
     // rotate rt by current to get axis along joint
-    QVector3D axis = static_cast<QuatState*>(current)->rotatedVector(rt.normalized());
+    QVector3D axis = qCurrent->rotatedVector(rt.normalized());
     // scale the joint axis by the length of its projection onto the error axis
     axis *= QVector3D::dotProduct(*errAxis,axis);
 
@@ -34,8 +35,7 @@ AbsState* QuatPose::error(AbsState* goal) const {
     // swing = rotation perpendicular to joint axis
     QQuaternion swing = twist.inverted()*(*qErr);
 
-    // TODO: how to return error representation?
-    return qErr;
+    return new QuatError(*qErr,swing,twist,qCurrent->rotatedVector(z),qCurrent->rotatedVector(rt));
 }
 
 void QuatPose::updatePoints(AbsState* parentState, QVector3D parentEndPoint) {

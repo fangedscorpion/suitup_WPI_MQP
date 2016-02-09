@@ -46,7 +46,8 @@ SOURCES += main.cpp\
     communications/bandmessage.cpp \
     customWidgets/motionviewer.cpp \
     band/quatpose.cpp \
-    band/nullband.cpp
+    band/nullband.cpp \
+    band/quaterror.cpp
 
 HEADERS  += mainwindow.h \
     motion.h \
@@ -74,7 +75,8 @@ HEADERS  += mainwindow.h \
     playbackcontroller.h \
     communications/bandmessage.h \
     customWidgets/motionviewer.h \
-    band/absstate.h
+    band/absstate.h \
+    band/abserror.h
 
 FORMS    +=
 
