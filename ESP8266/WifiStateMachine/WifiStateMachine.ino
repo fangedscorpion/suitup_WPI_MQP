@@ -1,5 +1,5 @@
 #include <ESP8266WiFi.h> //The Arduino ESP8266 WiFi Core --> These guys are the real MVP
-
+#include <WiFiUDP.h>
 #define DEBUG //Debugging information printed to Serial. This clogs up the Teensy port
 
 ////////////////////////////////////
@@ -59,6 +59,7 @@ const char* password = "modelbased";
 const char* host_preprogrammed = "192.168.1.11"; 
 const char* streamId   = "WAGBND";
 #define UDP_BROADCAST_PORT 2016 //Used if a BAND doesn't know the HOST IP
+#define UDP_BROADCAST_SIZE 2
 
 char value = 0; //Test value to send
 boolean conn = false; //If connected to WiFi computer host
@@ -99,28 +100,73 @@ void GoToStateConnection(){ //Connects to WiFi
   #endif
 }
 
-void GoToStateFindHost(){
+void GoToStateFindHost(){ //Info from: https://github.com/PaulStoffregen/Time/blob/master/examples/TimeNTP_ESP8266WiFi/TimeNTP_ESP8266WiFi.ino
+  hostFinder.begin(UDP_BROADCAST_PORT); //For any UDP connection info
   #ifdef DEBUG
       Serial.println("Sending ID msg for host");
-      hostFinder.beginMulticast("255.255.255.255", UDP_BROADCAST_PORT); //Send out an ID msg
+      hostFinder.beginPacket("255.255.255.255", UDP_BROADCAST_PORT); //Send out an ID msg
+      byte packetBuffer[UDP_BROADCAST_SIZE];
+      packetBuffer[0] = byte('H');
+      packetBuffer[1] = byte('I');
+
+      int j = 0;
+      while(j < 1000){
+          hostFinder.write(packetBuffer, UDP_BROADCAST_SIZE);
+          int success = hostFinder.endPacket();
+          Serial.print("Successfully sent packet: ");
+          Serial.print(success);
+
+          delay(100);
+          int noBytes = hostFinder.parsePacket();
+          String received_command = "";
+          
+          if ( noBytes ) {//See http://www.esp8266.com/viewtopic.php?f=29&t=2222
+            Serial.print(millis() / 1000);
+            Serial.print(":Packet of ");
+            Serial.print(noBytes);
+            Serial.print(" received from ");
+            Serial.print(hostFinder.remoteIP());
+            Serial.print(":");
+            Serial.println(hostFinder.remotePort());
+            // We've received a packet, read the data from it
+            hostFinder.read(packetBuffer,noBytes); // read the packet into the buffer
+        
+            // display the packet contents in HEX
+            for (int i=1;i<=noBytes;i++)
+            {
+              Serial.print(packetBuffer[i-1],HEX);
+              received_command = received_command + char(packetBuffer[i - 1]);
+              if (i % 32 == 0)
+              {
+                Serial.println();
+              }
+              else Serial.print(' ');
+            } // end for
+          }
+          Serial.println("End of Loop");
+      }
+      
       //SOMETHING HERE FROM THIS PAGE: https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/src/WiFiUdp.h
   #endif
 
+      
+
   
-      Serial.print("connecting to ");
-        Serial.println(host);
-       
-        // Use WiFiClient class to create TCP connections
-        
-        const int httpPort = 81;
-        if (!client.connect(host, httpPort)) {
-          Serial.println("connection failed");
-          conn = 0;
-          return;
-        }
-        else{
-          conn = 1;
-        }
+//      Serial.print("connecting to ");
+//        Serial.println(host);
+//       
+//        // Use WiFiClient class to create TCP connections
+//        
+//        const int httpPort = 81;
+//        if (!client.connect(host, httpPort)) {
+//          Serial.println("connection failed");
+//          conn = 0;
+//          return;
+//        }
+//        else{
+//          conn = 1;
+//        }
+   hostFinder.stop(); //End UDP stuff
 }
 
 void setup() {
@@ -145,44 +191,44 @@ void loop() {
         GoToStateFindHost();
     break;
   }
-  #ifndef DEBUG
-      delay(11);
-      ++value % 100;
-     
-      if(conn == 0){
-        Serial.print("connecting to ");
-        Serial.println(host);
-       
-        // Use WiFiClient class to create TCP connections
-        
-        const int httpPort = 81;
-        if (!client.connect(host, httpPort)) {
-          Serial.println("connection failed");
-          conn = 0;
-          return;
-        }
-        else{
-          conn = 1;
-        }
-      }
-      
-      // This will send the request to the server
-      client.print(String("_mpudta_") + value + String("!"));
-    //  client.print(String("GET ") + streamId + " HTTP/1.1\r\n" +
-    //               "Host: " + host + "\r\n" + "Connection: Keep-Alive\r\n\r\n");
-      delay(10);
-      
-      // Read all the lines of the reply from server and print them to Serial
-      if(client.available()>=10){
-        char buf[10];
-        client.readBytes(buf,10);
-        Serial.print(buf);
-      }
-    //  Serial.println();
-      client.flush();
-  #else
-      Serial.println("HELLO WORLD!");
-      delay(500);
-  #endif
+//  #ifndef DEBUG
+//      delay(11);
+//      ++value % 100;
+//     
+//      if(conn == 0){
+//        Serial.print("connecting to ");
+//        Serial.println(host);
+//       
+//        // Use WiFiClient class to create TCP connections
+//        
+//        const int httpPort = 81;
+//        if (!client.connect(host, httpPort)) {
+//          Serial.println("connection failed");
+//          conn = 0;
+//          return;
+//        }
+//        else{
+//          conn = 1;
+//        }
+//      }
+//      
+//      // This will send the request to the server
+//      client.print(String("_mpudta_") + value + String("!"));
+//    //  client.print(String("GET ") + streamId + " HTTP/1.1\r\n" +
+//    //               "Host: " + host + "\r\n" + "Connection: Keep-Alive\r\n\r\n");
+//      delay(10);
+//      
+//      // Read all the lines of the reply from server and print them to Serial
+//      if(client.available()>=10){
+//        char buf[10];
+//        client.readBytes(buf,10);
+//        Serial.print(buf);
+//      }
+//    //  Serial.println();
+//      client.flush();
+//  #else
+//      Serial.println("HELLO WORLD!");
+//      delay(500);
+//  #endif
 }
 
