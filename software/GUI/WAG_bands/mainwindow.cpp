@@ -77,7 +77,6 @@ MainWindow::~MainWindow() {}
 
 void MainWindow::addTab(USER u, WAGFile* w, ACTION_TYPE a) {
     TabContent *tab = new TabContent(this, w, u, a);
-    connect(this, SIGNAL(resizedWindow()), tab, SLOT(applicationResized()));
     tabs->addTab(tab, tab->getFilename());
     tabs->setCurrentIndex(tabs->indexOf(tab));
     tabs->clearFocus();
