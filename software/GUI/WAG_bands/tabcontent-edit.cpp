@@ -4,6 +4,8 @@
 // Edit Recording options and controller
 // TODO: add edit file name and description in here
 QWidget* TabContent::createEditOptionsAndControls() {
+
+    editingControls->setActiveMotion(motion);
     // Edit recording options
     QGroupBox *editOptions = new QGroupBox("Editing Options");
     editOptions->setStyleSheet(groupboxStyleSheet);

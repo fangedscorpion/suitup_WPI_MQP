@@ -149,6 +149,7 @@ void Suit::startOrStopMode(MessageType commandType) {
     BandMessage *newMsg;
     switch (commandType) {
     case START_RECORDING:
+        qDebug("Suit starting to drecord");
         toggleCollecting(true);
         startTime = QElapsedTimer();
         newMsg = new BandMessage(START_RECORDING, QByteArray());
@@ -174,4 +175,19 @@ void Suit::startOrStopMode(MessageType commandType) {
         // shouldn't give any other message types
         break;
     }
+}
+
+void Suit::catchStartPlayback() {
+    startOrStopMode(START_PLAYBACK);
+
+}
+
+void Suit::playSnapshot(PositionSnapshot goToSnap) {
+    // TODO
+    // probably want to set a snapshot to match, and then when we receive a full snapshot, we can compare
+    // and send back error
+}
+
+void Suit::catchStopPlayback() {
+    startOrStopMode(STOP_PLAYBACK);
 }

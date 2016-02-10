@@ -25,7 +25,7 @@ void EditingController::togglePlay() {
     emit editingPlayStateChanged(playing);
 }
 
-void EditingController::setActiveMotion(Motion *editMotion) {
+void EditingController::setActiveMotion(WAGFile *editMotion) {
     activeMotion = editMotion;
     int newSliderMax = activeMotion->getFrameNums();
     // change slider length

@@ -15,7 +15,6 @@ TEMPLATE = app
 SOURCES += main.cpp\
     mainwindow.cpp \
     playbackcontroller.cpp \
-    motion.cpp \
     positionsnapshot.cpp \
     tabcontent.cpp \
     wagfile.cpp \
@@ -49,7 +48,6 @@ SOURCES += main.cpp\
     band/nullband.cpp
 
 HEADERS  += mainwindow.h \
-    motion.h \
     positionsnapshot.h \
     tabcontent.h \
     wagfile.h \

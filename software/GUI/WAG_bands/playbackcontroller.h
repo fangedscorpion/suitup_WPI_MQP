@@ -2,15 +2,15 @@
 #define PLAYBACKCONTROLLER_H
 
 #include <QObject>
-#include "motion.h"
+#include "wagfile.h"
 #include <QString>
+#include "band/suit.h"
 
 class PlaybackController:public QObject {
     Q_OBJECT
 public:
-    PlaybackController();
-    Motion loadMotionFrom(QString fileLocation);
-    void setActiveMotion(Motion *);
+    PlaybackController(Suit *);
+    void setActiveMotion(WAGFile *);
 
 protected:
     void timerEvent(QTimerEvent *);
@@ -26,18 +26,19 @@ public slots: // some of these might be better as normal functions
     void updateStepThroughTolerance(int sliderValue);
     void speedChanged(int sliderValue);
     void positionMet();
-    void computeTimeInFile(int frameNum);
     void beginningSliderChanged(int);
     void endSliderChanged(int);
+    void catchFrameUpdate(qint32 newFrame);
 
 
 signals:
-    void frameChanged(int newFrame);
+    void frameChanged(qint32 newFrame);
     void startPlayback();
     void stopPlayback();
     void endOfTimeRange();
-    void timeChanged(int millis);
+    void metPosition();
     void playbackStateChanged(bool playing);
+    void goToSnapshot(PositionSnapshot);
 
 private:
     bool playing;
@@ -48,12 +49,13 @@ private:
     int currentFrame;
     int timeToHoldFrameMillis;
     int stepThroughInterval; // number of frames to jump between poses to match in step through mode
-    Motion *activeMotion;
+    WAGFile *activeMotion;
     //Time timeToHoldFinalFrame;
     //Time stepThroughInterval;
     float stepThroughTolerance;
     int timerId;
     int lastFrameNum;
+    Suit *suitObj;
 
     void changeFrameRate(float newFrameRate);
     void setStepThroughInterval(int newInterval);

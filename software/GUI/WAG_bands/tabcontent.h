@@ -3,6 +3,8 @@
 #include "mainwindow.h"
 #include "customWidgets/smartradiobutton.h"
 #include "editingcontroller.h"
+#include "band/suit.h"
+#include "recordingcontroller.h"
 
 class GLWidget;
 
@@ -11,7 +13,7 @@ class TabContent : public QWidget
     Q_OBJECT
 
 public:
-    TabContent(MainWindow* parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow);
+    TabContent(MainWindow* parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow, Suit *sysSuit);
     ~TabContent();
 
     QString getFilename() { return motion->getName();}
@@ -27,6 +29,7 @@ private:
     void resizeEvent(QResizeEvent* r);
     Overlay* overlay;
     void updateMotion(WAGFile* file);
+    Suit *suitObj;
 
     // fonts & styles
     QFont titleFont;
@@ -62,6 +65,7 @@ private:
     QLabel *maxSpeed;
     PlaybackController *playbackControls;
     EditingController *editingControls;
+    RecordingController *recordingControls;
     QWidget* createPlaybackOptionsAndControls();
     void lockOnPlayback(bool playing);
     void switchStepThroughMode(bool steppingThrough);

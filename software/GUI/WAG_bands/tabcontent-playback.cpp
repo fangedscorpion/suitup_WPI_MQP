@@ -3,6 +3,8 @@
 // Playback motion options and controller
 QWidget* TabContent::createPlaybackOptionsAndControls() {
     // Playback options
+    playbackControls->setActiveMotion(motion);
+
     playbackOptions = new QGroupBox("Playback Options");
     playbackOptions->setStyleSheet(groupboxStyleSheet);
     playbackOptions->setFont(titleFont);
@@ -224,3 +226,5 @@ void TabContent::playbackResetCountDownTimer() {
 // have playbackCountdownTimerEvent() call playbackController play
 // when pause button is pressed.
 // playbackCountdownTimer->stop(); <- if .isActive();
+
+

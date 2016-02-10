@@ -1,9 +1,5 @@
 #include "bandmessage.h"
 
-/* BandMessage::BandMessage() : QObject() {
-
-} */
-
 BandMessage::BandMessage(MessageType msgType, QByteArray msgData){
     this->msgType = msgType;
     this->msgData = msgData;
