@@ -1,6 +1,5 @@
 #include "absband.h"
 #include <cstddef>
-#include <QTime>
 #include <QDebug>
 
 AbsBand::AbsBand(BandType bt):QObject() {
@@ -23,7 +22,7 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
     }
 }
 
-void AbsBand::handleMessage(QTime msgTimestamp, BandMessage *recvdMessage) {
+void AbsBand::handleMessage(qint64 msgTimestamp, BandMessage *recvdMessage) {
     switch(recvdMessage->getMessageType()) {
     case BAND_CONNECTING:
         if (!commsSetUp) {

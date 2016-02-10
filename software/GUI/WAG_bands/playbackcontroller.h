@@ -10,7 +10,7 @@ class PlaybackController:public QObject {
 public:
     PlaybackController();
     Motion loadMotionFrom(QString fileLocation);
-    bool playMotion(Motion motionToPlay); // play from currentFrame to end
+    void setActiveMotion(Motion *);
 
 protected:
     void timerEvent(QTimerEvent *);
@@ -48,6 +48,7 @@ private:
     int currentFrame;
     int timeToHoldFrameMillis;
     int stepThroughInterval; // number of frames to jump between poses to match in step through mode
+    Motion *activeMotion;
     //Time timeToHoldFinalFrame;
     //Time stepThroughInterval;
     float stepThroughTolerance;

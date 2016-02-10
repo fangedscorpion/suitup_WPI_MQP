@@ -126,6 +126,8 @@ void PlaybackController::startPlaying() {
 
 void PlaybackController::timerEvent(QTimerEvent *event) {
     if (stepThrough) {
+
+        // TO DO remove once we can actually do position met
         emit positionMet();
     } else {
         currentFrame += 1;
@@ -170,8 +172,10 @@ Motion PlaybackController::loadMotionFrom(QString fileLocation) {
     return Motion();
 }
 
-bool playMotion(Motion motionToPlay) { // play from currentFrame to end
-    return true;
+void PlaybackController::setActiveMotion(Motion *newMotion) {
+    activeMotion = newMotion;
+    int sliderMax = activeMotion->getFrameNums();
+    // TODO change slider range
 }
 
 void PlaybackController::computeTimeInFile(int frameNum) {
