@@ -10,6 +10,8 @@
 #include <visualization/glwidget.h>
 #include "user.h"
 
+#define SLIDER_DIVIDE_FACTOR 100
+
 class MotionViewer : public QWidget {
     Q_OBJECT
 public:
@@ -35,4 +37,6 @@ private:
 public slots:
     void playToggled(bool playing);
     void displayNewTime(int newMillis);
+    void changeSliderRange(qint32 newSliderLen);
+
 };

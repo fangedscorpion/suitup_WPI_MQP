@@ -2,8 +2,11 @@
 
 // Playback motion options and controller
 QWidget* TabContent::createPlaybackOptionsAndControls() {
-    playbackControls = new PlaybackController();
+    playbackControls = new PlaybackController(suitObj);
+    connect(playbackControls, SIGNAL(changeSliderMax(qint32)), playbackMotionViewer, SLOT(changeSliderRange(qint32)));
     // Playback options
+    playbackControls->setActiveMotion(motion);
+
     playbackOptions = new QGroupBox("Playback Options");
     playbackOptions->setStyleSheet(groupboxStyleSheet);
     playbackOptions->setFont(titleFont);
@@ -96,7 +99,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     connect(speedSlider, SIGNAL(sliderMoved(int)), playbackControls, SLOT(speedChanged(int)));
     connect(playOnSuit, SIGNAL(toggled(bool)), playbackControls, SLOT(toggleSuitActive(bool)));
     connect(seconds, SIGNAL(valueChanged(double)), playbackControls, SLOT(modifyHoldTime(double)));
-    connect(playbackControls, SIGNAL(timeChanged(int)), playbackMotionViewer, SLOT(displayNewTime(int)));
+//    connect(playbackControls, SIGNAL(timeChanged(int)), playbackMotionViewer, SLOT(displayNewTime(int)));
     connect(playbackControls, SIGNAL(playbackStateChanged(bool)), playbackMotionViewer, SLOT(playToggled(bool)));
     connect(playbackCountDownSpinner, SIGNAL(valueChanged(double)), this, SLOT(playbackSetCountDownTimer(double)));
     // viewer controls
@@ -186,3 +189,5 @@ void TabContent::playbackResetCountDownTimer() {
 // have playbackCountdownTimerEvent() call playbackController play
 // when pause button is pressed.
 // playbackCountdownTimer->stop(); <- if .isActive();
+
+

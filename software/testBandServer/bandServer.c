@@ -151,9 +151,11 @@ int constructMsg(char *sendBuff, char *dataBuf, char msgType) {
   sendBuff[1] = msgType;
 
   strncpy(sendBuff + 2, dataBuf, BUF_SIZE - 2);
-  if ((len + 2) < (BUF_SIZE - 1)) {
+  if ((len + 3) < (BUF_SIZE - 1)) {
+    sendBuff[len+2] = '\n';
     sendBuff[len+2] = '\0';
   } else {
+    sendBuff[BUF_SIZE - 2] = '\n';
     sendBuff[BUF_SIZE - 1] = '\0';
   }
 
@@ -161,7 +163,7 @@ int constructMsg(char *sendBuff, char *dataBuf, char msgType) {
   printf("length: %d\n", ((int) sendBuff[0] - 2));
   printf("msgType: %d\n", (int) sendBuff[1]);
   printf("msg: %s\n\n", sendBuff + 2);
-  return len + 2;
+  return len + 3;
 }
 
 int processReply(char *recvdBuffer, char *sendBuff) {
@@ -179,13 +181,15 @@ int processReply(char *recvdBuffer, char *sendBuff) {
     case COMPUTER_INITIATE_CONNECTION:
       sendBuff[0] = (char) 2;
       sendBuff[1] = (char) BAND_CONNECTING;
+      sendBuff[2] = '\n';
       printf("Initiating connection\n");
-      dataLen = 2;
+      dataLen = 3;
        break;
     case COMPUTER_PING:
       sendBuff[0] = (char) 2;
       sendBuff[1] = (char) BAND_PING;
-      dataLen = 2;
+      sendBuff[2] = '\n';
+      dataLen = 3;
       printf("returning ping\n");
     break;
     /*case POSITION_ERROR:
@@ -199,10 +203,12 @@ int processReply(char *recvdBuffer, char *sendBuff) {
     case STOP_HAPTICS:
     break;
     */default:
-    printf("Default case\n");
-    reverseString(recvdBuffer + 2);
-    dataLen = constructMsg(sendBuff, recvdBuffer + 2, (char) recvdBuffer[1]);
-    // this shouldn't happen
+      printf("Default case\n");
+      int recvdLen = strlen(recvdBuffer);
+      recvdBuffer[recvdLen - 1] = '\0';
+      reverseString(recvdBuffer + 2);
+      dataLen = constructMsg(sendBuff, recvdBuffer + 2, (char) recvdBuffer[1]);
+      // this shouldn't happen
     break;
   }
   printf("Done with case statement");

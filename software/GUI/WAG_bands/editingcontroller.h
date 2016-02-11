@@ -2,17 +2,18 @@
 #define EDITINGCONTROLLER_H
 
 #include <QObject>
-#include "motion.h"
+#include "wagfile.h"
 
 class EditingController : public QObject
 {
     Q_OBJECT
 public:
     EditingController();
-    void setActiveMotion(Motion *newMotion);
+    void setActiveMotion(WAGFile *newMotion);
 
 signals:
     void editingPlayStateChanged(bool);
+    void changeSliderMax(qint32);
 public slots:
     void beginningSliderChanged(int);
     void endSliderChanged(int);
@@ -20,7 +21,7 @@ public slots:
 
 private:
     bool playing;
-    Motion * activeMotion;
+    WAGFile * activeMotion;
 };
 
 #endif // EDITINGCONTROLLER_H

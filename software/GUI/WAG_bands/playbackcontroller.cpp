@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <QString>
 #include <math.h>
-#include "motion.h"
+#include "wagfile.h"
 
 #define HOLD_POSE_DEFAULT_MILLIS 500 // change later
 #define STEP_THROUGH_INTERVAL_DEFAULT 30 // can change later,
@@ -15,7 +15,8 @@
 #define MILLISECONDS_PER_FRAME 16
 
 
-PlaybackController::PlaybackController() {
+PlaybackController::PlaybackController(Suit *newSuitObj) {
+    suitObj = newSuitObj;
     playing = false;
     stepThrough = false;
     frameRate = 1;
@@ -25,9 +26,10 @@ PlaybackController::PlaybackController() {
     timeToHoldFrameMillis = HOLD_POSE_DEFAULT_MILLIS;
     stepThroughInterval = STEP_THROUGH_INTERVAL_DEFAULT;
     stepThroughTolerance = DEFAULT_TOLERANCE; // how are we expressing this
-    lastFrameNum = 1000;
+    lastFrameNum = 1000; // TODO get from motion
     connect(this, SIGNAL(endOfTimeRange()), this, SLOT(togglePlay()));
-    connect(this, SIGNAL(frameChanged(int)), this, SLOT(computeTimeInFile(int)));
+    connect(this, SIGNAL(frameChanged(qint32)), this, SLOT(catchFrameUpdate(qint32)));
+    qDebug("HERE     88888");
 }
 
 void PlaybackController::togglePlay() {
@@ -58,6 +60,16 @@ void PlaybackController::toggleVoiceControl() {
 }
 
 void PlaybackController::toggleSuitActive(bool active) {
+    if (active != suitActive) {
+        if (active) {
+            connect(this, SIGNAL(goToSnapshot(PositionSnapshot)), suitObj, SLOT(playSnapshot(PositionSnapshot)));
+            connect(this, SIGNAL(startPlayback()), suitObj, SLOT(catchStartPlayback()));
+            connect(this, SIGNAL(startPlayback()), suitObj, SLOT(catchStopPlayback()));
+        } else {
+            // disconnect everything from suit obj
+            disconnect(this, 0, suitObj, 0);
+        }
+    }
     suitActive = active;
     qDebug()<<"Suit activated: "<<suitActive;
 }
@@ -128,12 +140,13 @@ void PlaybackController::timerEvent(QTimerEvent *event) {
     if (stepThrough) {
 
         // TO DO remove once we can actually do position met
-        emit positionMet();
+        emit metPosition();
     } else {
         currentFrame += 1;
-        qDebug()<<"Current frame: "<<currentFrame<<", event: "<<event;
+        qDebug()<<"Current frame: "<<currentFrame;//<<", event: "<<event;
         if (currentFrame < lastFrameNum) {
-            emit frameChanged(currentFrame);
+            qDebug("HERE2");
+            emit frameChanged(currentFrame*MILLISECONDS_PER_FRAME);
         }
         else {
             emit endOfTimeRange();
@@ -167,20 +180,11 @@ void PlaybackController::stopPlaying() {
     emit stopPlayback();
 }
 
-
-Motion PlaybackController::loadMotionFrom(QString fileLocation) {
-    return Motion();
-}
-
-void PlaybackController::setActiveMotion(Motion *newMotion) {
+void PlaybackController::setActiveMotion(WAGFile *newMotion) {
     activeMotion = newMotion;
-    int sliderMax = activeMotion->getFrameNums();
-    // TODO change slider range
-}
-
-void PlaybackController::computeTimeInFile(int frameNum) {
-    int millis = MILLISECONDS_PER_FRAME*frameNum;
-    emit timeChanged(millis);
+    qint32 sliderMax = activeMotion->getFrameNums();
+    lastFrameNum = sliderMax;
+    emit changeSliderMax(sliderMax);
 }
 
 void PlaybackController::beginningSliderChanged(int sliderVal) {
@@ -189,4 +193,11 @@ void PlaybackController::beginningSliderChanged(int sliderVal) {
 
 void PlaybackController::endSliderChanged(int sliderVal) {
     qDebug()<<"playback mode, end slider val: "<<sliderVal;
+}
+
+void PlaybackController::catchFrameUpdate(qint32 newFrame) {
+    PositionSnapshot desiredPos = activeMotion->getSnapshot(newFrame, CLOSEST);
+    // should probably figure out how to handle null snapshots
+    // TODO
+    emit goToSnapshot(desiredPos);
 }

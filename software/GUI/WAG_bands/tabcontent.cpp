@@ -2,9 +2,10 @@
 #include <unistd.h>
 #include <QTimerEvent>
 
-TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow) : parent(in_parent){
+TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow, Suit *sysSuit) : parent(in_parent){
     motion = in_motion;
     user = u;
+    suitObj = sysSuit;
 
     titleFont = QFont( "Arial", 15, QFont::Bold);
     groupboxStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-left: 0.25em; margin-right: 0.25em; margin-top: 0.5em; padding: 25px 3px 0 3px;} QGroupBox::title{subcontrol-position: top center; subcontrol-origin: margin;}";
@@ -180,7 +181,6 @@ void TabContent::saveMotion() {
         // store data in f
         f.close();
     }
-
 
 //    closeSaveAs();
     // TODO: Save da file!

@@ -35,8 +35,13 @@ private:
     void toggleCollecting(bool);
     void sendToConnectedBands(BandMessage*);
     QElapsedTimer startTime;
+
+public slots:
+    void catchStartPlayback();
+    void catchStopPlayback();
+    void playSnapshot(PositionSnapshot);
 signals:
-    void positionSnapshotReady(qint64, PositionSnapshot *);
+    void positionSnapshotReady(qint64, PositionSnapshot);
 protected:
     void timerEvent(QTimerEvent *);
 

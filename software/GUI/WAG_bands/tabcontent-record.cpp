@@ -1,6 +1,8 @@
 #include "tabcontent.h"
 
 QWidget* TabContent::createRecordOptionsAndController() {
+    recordingControls = new RecordingController(suitObj);
+    recordingControls->setActiveMotion(motion);
     QGroupBox *recordOptionsGroup = new QGroupBox("Recording Options");
     recordOptionsGroup->setStyleSheet(groupboxStyleSheet);
     recordOptionsGroup->setFont(titleFont);
@@ -123,6 +125,8 @@ void TabContent::handleRecordingWindowButtons() {
             handleRecordingWindowButtons();
             modeRadiosGroup->setEnabled(true);
             return;
+        } else {
+            recordingControls->stopRecording();
         }
         resetButton->setEnabled(true);
         recordButton->setEnabled(false);
@@ -177,6 +181,7 @@ void TabContent::recordCountdownTimerEvent() {
         recordStopwatchTitleLabel->show();
         recordCountdownSecondsTitleLabel->hide();
         recordStopwatchMinutesTitleLabel->show();
+        recordingControls->startRecording();
     }
 }
 

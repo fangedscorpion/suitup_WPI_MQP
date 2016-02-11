@@ -72,8 +72,6 @@ void VertexTranslator::addPointOrdering(QVector<GLuint> pointOrder, int numPoint
 
     vertexIndices += pointOrder;
     pointCount += numPoints;
-
-    qDebug()<<"Indices: "<<vertexIndices;
 }
 
 void VertexTranslator::addConvexPlane(QVector<QVector3D> planeCorners, QVector3D translatePlane, QQuaternion rotatePlane) {
@@ -106,11 +104,9 @@ void VertexTranslator::addConvexPlane(QVector<QVector3D> planeCorners, QVector3D
         indices.append(i+2);
         indices.append(i+1);
     }
-    qDebug("Adding points");
     addPointOrdering(indices, indices.size());
 
     verticesAdded += planeCorners.size();
-    qDebug()<<"Vertifes added: "<<verticesAdded;
 }
 
 void VertexTranslator::drawRectangle(QVector3D llcorner, QVector3D lrcorner, QVector3D trcorner, QVector3D tlcorner) {
@@ -119,7 +115,6 @@ void VertexTranslator::drawRectangle(QVector3D llcorner, QVector3D lrcorner, QVe
     points.append(lrcorner);
     points.append(trcorner);
     points.append(tlcorner);
-    qDebug("drawing single rect");
     addConvexPlane(points, QVector3D(0, 0, 0), QQuaternion());
 
 }

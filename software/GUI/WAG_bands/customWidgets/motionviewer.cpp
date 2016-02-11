@@ -32,7 +32,6 @@ MotionViewer::MotionViewer(QWidget *parent) : QWidget(parent){
 MotionViewer::~MotionViewer() {}
 
 void MotionViewer::playToggled(bool playing) {
-    qDebug("HERE");
     if (playing) {
         playPause->setIcon(pauseIcon);
     }
@@ -52,4 +51,11 @@ void MotionViewer::displayNewTime(int newMillis) {
     QString secNum = QString("%1").arg(numSeconds, 2, 10, QChar('0'));
     QString hundNum = QString("%1").arg(hundredths, 2, 10, QChar('0'));
     handle1Time->setText(minNum + ":" + secNum + "." + hundNum);
+}
+
+void MotionViewer::changeSliderRange(qint32 newSliderLen) {
+    qDebug("asldjfhw");
+    qDebug()<<videoSlider;
+    //videoSlider->setRange(0, newSliderLen/SLIDER_DIVIDE_FACTOR);
+    qDebug("uwoqefhdn");
 }
