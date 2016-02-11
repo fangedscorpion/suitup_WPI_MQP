@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui bluetooth network
+QT       += core gui bluetooth network testlib
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -48,7 +48,9 @@ SOURCES += main.cpp\
     band/quatpose.cpp \
     band/nullband.cpp \
     band/quaterror.cpp \
-    math/reflection.cpp
+    math/reflection.cpp \
+    test/testreflection.cpp \
+    test/runtests.cpp
 
 HEADERS  += mainwindow.h \
     motion.h \
@@ -78,7 +80,9 @@ HEADERS  += mainwindow.h \
     customWidgets/motionviewer.h \
     band/absstate.h \
     band/abserror.h \
-    math/reflection.h
+    math/reflection.h \
+    test/testreflection.h \
+    test/runtests.h
 
 FORMS    +=
 
