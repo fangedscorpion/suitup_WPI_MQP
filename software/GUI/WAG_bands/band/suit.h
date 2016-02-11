@@ -8,6 +8,7 @@
 #include <QHash>
 #include "communications/bandmessage.h"
 #include "positionsnapshot.h"
+#include "user.h"
 
 class Suit:public QObject
 {
@@ -26,6 +27,7 @@ private:
     QHash<BandType, AbsBand*> bands;
     AbsBand* refBand;
     WifiManager *wifiMan;
+    ACTION_TYPE currentMode;
 
     QByteArray trimNewLineAtEnd(QByteArray trimFrom);
 
@@ -35,6 +37,7 @@ private:
     void toggleCollecting(bool);
     void sendToConnectedBands(BandMessage*);
     QElapsedTimer startTime;
+    void processVoiceControlMessage(BandMessage *msg);
 
 public slots:
     void catchStartPlayback();
@@ -42,6 +45,7 @@ public slots:
     void playSnapshot(PositionSnapshot);
 signals:
     void positionSnapshotReady(qint64, PositionSnapshot);
+    void voiceControlCommandReady(MessageType);
 protected:
     void timerEvent(QTimerEvent *);
 
@@ -49,6 +53,7 @@ private slots:
     void sendData(BandType destBand, BandMessage* sendMsg);
     void getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTimestamp);
     void handleConnectionStatusChange(BandType band, ConnectionStatus newStatus);
+    void catchModeChanged(ACTION_TYPE);
 
 };
 

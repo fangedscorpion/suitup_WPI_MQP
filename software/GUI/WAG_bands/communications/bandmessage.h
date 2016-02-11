@@ -3,6 +3,11 @@
 
 #include <QObject>
 
+#define VOICE_CONTROL_START 67
+#define VOICE_CONTROL_STOP 15
+#define VOICE_CONTROL_DATA_LEN 1
+// change these once here from Chas
+
 // not sure if we need to have 2 different stops, can consolidate if desired
 enum MessageType {
     COMPUTER_INITIATE_CONNECTION = 0,
@@ -16,6 +21,12 @@ enum MessageType {
     START_PLAYBACK = 8,
     STOP_PLAYBACK = 9,
     VOICE_CONTROL = 10
+};
+
+enum VoiceControlMsgType {
+    VC_START = VOICE_CONTROL_START,
+    VC_STOP = VOICE_CONTROL_STOP,
+    OTHER = 6
 };
 
 
@@ -33,6 +44,7 @@ public:
     MessageType getMessageType();
     QByteArray getMessageData();
     QByteArray getSerializedMessage();
+    VoiceControlMsgType parseVoiceControlMsg();
 
 signals:
 

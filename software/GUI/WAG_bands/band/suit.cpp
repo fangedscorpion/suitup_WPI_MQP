@@ -17,7 +17,7 @@ Suit::Suit(WifiManager *comms):QObject() {
         bands[RIGHT_UPPER_ARM] = new ArmBand(RIGHT_UPPER_ARM);
         bands[LEFT_LOWER_ARM] = new ArmBand(LEFT_LOWER_ARM);
         bands[RIGHT_LOWER_ARM] = new ArmBand(RIGHT_LOWER_ARM);
-       /* bands.insert(std::make_pair<BandType, AbsBand*>(RIGHT_HAND,
+        /* bands.insert(std::make_pair<BandType, AbsBand*>(RIGHT_HAND,
                                                      new Glove(RIGHT_HAND)));
         bands.insert(std::make_pair<BandType, AbsBand*>(LEFT_HAND,
                                                      new Glove(LEFT_HAND))); */
@@ -62,7 +62,11 @@ void Suit::getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTime
 
     qDebug()<<data->getMessageType();
     qint64 elapsedTime = startTime.msecsTo(dataTimestamp);
-    targetBand->handleMessage(elapsedTime, data);
+    if (data->getMessageType() == VOICE_CONTROL) {
+        processVoiceControlMessage(data);
+    } else {
+        targetBand->handleMessage(elapsedTime, data);
+    }
 
     //wifiMan->sendMessageToBand(band, newMsg);
 
@@ -191,3 +195,58 @@ void Suit::playSnapshot(PositionSnapshot goToSnap) {
 void Suit::catchStopPlayback() {
     startOrStopMode(STOP_PLAYBACK);
 }
+
+void Suit::catchModeChanged(ACTION_TYPE newMode) {
+    currentMode = newMode;
+}
+
+void Suit::processVoiceControlMessage(BandMessage *msg) {
+    if (currentMode == PLAYBACK) {
+        switch (msg->parseVoiceControlMsg()) {
+        case VC_START:
+            if (!collectingData) {
+                // start playback
+                emit voiceControlCommandReady(START_PLAYBACK);
+            } else {
+                // user error!
+            }
+            break;
+        case VC_STOP:
+            if (collectingData) {
+                // stop playback
+                emit voiceControlCommandReady(STOP_PLAYBACK);
+            } else {
+                // user error!
+            }
+            break;
+        default:
+            // do nothing
+            // error (user said wrong word or data wasn't properly transmitted)
+            break;
+        }
+    } else if (currentMode == RECORD) {
+        switch (msg->parseVoiceControlMsg()) {
+        case VC_START:
+            if (!collectingData) {
+                // start recording
+                emit voiceControlCommandReady(START_RECORDING);
+            } else {
+                // user error!
+            }
+            break;
+        case VC_STOP:
+            if (collectingData) {
+                emit voiceControlCommandReady(STOP_RECORDING);
+                // start playback
+            } else {
+                // user error!
+            }
+            break;
+        default:
+            // do nothing
+            break;
+        }
+    }
+    // currently shouldn't do anything in edit mode
+}
+

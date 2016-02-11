@@ -141,4 +141,5 @@ signals:
     void stepThroughChanged(bool steppingThrough);
     void countDownChanged(double d);
     void resizedWindow();
+    void modeChanged(ACTION_TYPE);
 };

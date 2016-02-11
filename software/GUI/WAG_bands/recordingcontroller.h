@@ -25,6 +25,9 @@ signals:
 
 public slots:
     void addSnapshotToMotion(qint64, PositionSnapshot);
+    void catchVoiceControlCommand(MessageType);
+
+
 };
 
 #endif // RECORDINGCONTROLLER_H
