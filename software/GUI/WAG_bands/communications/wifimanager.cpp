@@ -34,13 +34,13 @@ WifiManager::WifiManager():QObject()
     ipMap[RIGHT_LOWER_ARM] = ipString.replace(lastPd+1, 3, QString::number(RIGHT_FOREARM_IP_END));
     ipMap[LEFT_LOWER_ARM] = ipString.replace(lastPd+1, 3, QString::number(LEFT_FOREARM_IP_END));
 
-    ipMap[CHEST] = "127.0.0.1";// for testing purposes only, remove later
+/*     ipMap[CHEST] = "127.0.0.1";// for testing purposes only, remove later
     ipMap[RIGHT_SHOULDER] = "127.0.0.1";
     ipMap[LEFT_SHOULDER] = "127.0.0.1";
     ipMap[RIGHT_UPPER_ARM] = "127.0.0.1";
     ipMap[LEFT_UPPER_ARM] = "127.0.0.1";
     ipMap[RIGHT_LOWER_ARM] = "127.0.0.1";
-    ipMap[LEFT_LOWER_ARM] = "127.0.0.1";
+    ipMap[LEFT_LOWER_ARM] = "127.0.0.1"; */
     // TODO
 
     portMap[CHEST] = CHEST_BAND_PORT;

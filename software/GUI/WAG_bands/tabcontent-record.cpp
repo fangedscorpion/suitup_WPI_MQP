@@ -1,6 +1,8 @@
 #include "tabcontent.h"
 
 QWidget* TabContent::createRecordOptionsAndController() {
+    recordingControls = new RecordingController(suitObj);
+    recordingControls->setActiveMotion(motion);
     QGroupBox *recordOptionsGroup = new QGroupBox("Recording Options");
     recordOptionsGroup->setStyleSheet(groupboxStyleSheet);
     recordOptionsGroup->setFont(titleFont);
@@ -123,6 +125,8 @@ void TabContent::handleRecordingWindowButtons() {
             handleRecordingWindowButtons();
             modeRadiosGroup->setEnabled(true);
             return;
+        } else {
+            recordingControls->stopRecording();
         }
         resetButton->setEnabled(true);
         recordButton->setEnabled(false);
@@ -161,19 +165,6 @@ void TabContent::recordResetCountDownTimer() {
     recordCountdownTime->setText(QString::number(recordCountDownSpinner->value(), 'f', 1));
 }
 
-// display stopwatch timer time
-void TabContent::recordDisplayNewTime(int newMillis) {
-    int numSeconds = newMillis/1000;
-    int hundredths = (newMillis - numSeconds*1000)/10;
-    int numMinutes = numSeconds/60;
-    numSeconds = numSeconds - numMinutes*60;
-    // set label
-    QString minNum = QString("%1").arg(numMinutes, 2, 10, QChar('0'));
-    QString secNum = QString("%1").arg(numSeconds, 2, 10, QChar('0'));
-    QString hundNum = QString("%1").arg(hundredths, 2, 10, QChar('0'));
-    handle1Time->setText(minNum + ":" + secNum + "." + hundNum);
-}
-
 // handle the countdown
 void TabContent::recordCountdownTimerEvent() {
     // counting down
@@ -190,6 +181,7 @@ void TabContent::recordCountdownTimerEvent() {
         recordStopwatchTitleLabel->show();
         recordCountdownSecondsTitleLabel->hide();
         recordStopwatchMinutesTitleLabel->show();
+        recordingControls->startRecording();
     }
 }
 

@@ -2,11 +2,11 @@
 #include <unistd.h>
 #include <QTimerEvent>
 
-TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow) : parent(in_parent){
+TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow, Suit *sysSuit) : parent(in_parent){
     motion = in_motion;
     user = u;
-    playbackControls = new PlaybackController();
-    editingControls = new EditingController();
+    suitObj = sysSuit;
+
     titleFont = QFont( "Arial", 15, QFont::Bold);
     groupboxStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-left: 0.25em; margin-right: 0.25em; margin-top: 0.5em; padding: 25px 3px 0 3px;} QGroupBox::title{subcontrol-position: top center; subcontrol-origin: margin;}";
     textInputStyleRed = "QLineEdit {border: 1px solid red; background: white;} QTextEdit {border: 1px solid red; background: white;}";
@@ -23,12 +23,14 @@ TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION
         viewerStack->addWidget(createRecordingWindow());
     }
     if (u.hasAction(EDIT)) {
-        optionsStack->addWidget(createEditOptionsAndControls());
+        // createViewer must come first
         viewerStack->addWidget(createViewer(EDIT));
+        optionsStack->addWidget(createEditOptionsAndControls());
     }
     if (u.hasAction(PLAYBACK)) {
-        optionsStack->addWidget(createPlaybackOptionsAndControls());
+        // createViewer must come first
         viewerStack->addWidget(createViewer(PLAYBACK));
+        optionsStack->addWidget(createPlaybackOptionsAndControls());
     }
 
     // contains both options and viewer
@@ -62,8 +64,6 @@ TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION
 TabContent::~TabContent() {}
 
 void TabContent::createIcons() {
-    playIcon = QIcon(QPixmap(":/icons/play.png"));
-    pauseIcon = QIcon(QPixmap(":/icons/pause.png"));
     recordIcon = QIcon(QPixmap(":/icons/record.png"));
     cropIcon = QIcon(QPixmap(":/icons/crop.png"));
     splitIcon = QIcon(QPixmap(":/icons/split.png"));
@@ -103,26 +103,8 @@ void TabContent::show(ACTION_TYPE a) {
     if (a == RECORD && user.hasAction(RECORD)) {
         recordRadio->setChecked(true);
     } else if (a == EDIT && user.hasAction(EDIT)) {
-        disconnect(playPause, SIGNAL(released()), playbackControls, 0);
-        disconnect(videoSlider, SIGNAL(alt_valueChanged(int)), playbackControls, 0);
-        disconnect(videoSlider, SIGNAL(valueChanged(int)), playbackControls, 0);
-
-
-        connect(playPause, SIGNAL(released()), editingControls, SLOT (togglePlay()));
-        connect(videoSlider, SIGNAL(alt_valueChanged(int)), editingControls, SLOT(beginningSliderChanged(int)));
-        connect(videoSlider, SIGNAL(valueChanged(int)), editingControls, SLOT(endSliderChanged(int)));
-
-
         editRadio->setChecked(true);
     } else if ((a == PLAYBACK || a == EDIT) && user.hasAction(PLAYBACK)) {
-        disconnect(playPause, SIGNAL(released()), editingControls, 0);
-        disconnect(videoSlider, SIGNAL(alt_valueChanged(int)), editingControls, 0);
-        disconnect(videoSlider, SIGNAL(valueChanged(int)), editingControls, 0);
-
-        connect(playPause, SIGNAL(released()), playbackControls, SLOT (togglePlay()));
-        connect(videoSlider, SIGNAL(alt_valueChanged(int)), playbackControls, SLOT(beginningSliderChanged(int)));
-        connect(videoSlider, SIGNAL(valueChanged(int)), playbackControls, SLOT(endSliderChanged(int)));
-
         playbackRadio->setChecked(true);
     } else {
         std::set<ACTION_TYPE>::iterator it=user.getActions().begin();
@@ -178,10 +160,6 @@ QWidget* TabContent::createModeRadios(USER u) {
     return modeRadiosGroup;
 }
 
-void TabContent::applicationResized() {
-    videoSlider->resized();
-}
-
 void TabContent::updateMotion(WAGFile* file) {
     motion = file;
     if (user.hasAction(PLAYBACK))
@@ -204,9 +182,27 @@ void TabContent::saveMotion() {
         f.close();
     }
 
-
 //    closeSaveAs();
     // TODO: Save da file!
+}
 
+// OpenGL Motion Viewer window with video slider
+QWidget* TabContent::createViewer(ACTION_TYPE t) {
+    QGroupBox* v;
+    QVBoxLayout *viewerPane = new QVBoxLayout;
 
+    if (t == EDIT) {
+        v = new QGroupBox("Editing: " + motion->getName());
+        editMotionViewer = new MotionViewer(this);
+        viewerPane->addWidget(editMotionViewer);
+    } else {
+        v= new QGroupBox("Playing: " + motion->getName());
+        playbackMotionViewer = new MotionViewer(this);
+        viewerPane->addWidget(playbackMotionViewer);
+    }
+
+    v->setStyleSheet(groupboxStyleSheet);
+    v->setFont(titleFont);
+    v->setLayout(viewerPane);
+    return v;
 }

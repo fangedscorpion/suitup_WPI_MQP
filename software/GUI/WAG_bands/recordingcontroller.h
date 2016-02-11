@@ -1,25 +1,25 @@
 #ifndef RECORDINGCONTROLLER_H
 #define RECORDINGCONTROLLER_H
 
-#include "motion.h"
-
 #include <QObject>
 #include "band/suit.h"
+#include "wagfile.h"
 
 class RecordingController : public QObject
 {
     Q_OBJECT
 public:
-    RecordingController();
+    RecordingController(Suit *newSuitObj);
 
-    void setSuit(Suit *newSuitObj);
-
-    Motion stopRecording();
+    void stopRecording();
 
     void startRecording();
+
+    void setActiveMotion(WAGFile *motion);
 private:
     Suit *suitObj;
-    QHash<qint64, PositionSnapshot> currentMotion;
+    QHash<qint32, PositionSnapshot> currentMotionData;
+    WAGFile *activeMotion;
 
 signals:
 

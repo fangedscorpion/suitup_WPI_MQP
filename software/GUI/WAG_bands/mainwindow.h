@@ -88,7 +88,7 @@ private:
     OverlayWidget *openFromLibWidget;
     OverlayWidget *openWidget;
     void createOpenFromLib(USER u);
-    void createOpenMotion(USER u) ;
+    void createOpenMotionOptions(USER u) ;
     // create new file
     OverlayWidget *newMotionWidget;
     QLineEdit *newMotionNameTextEdit;
@@ -109,9 +109,9 @@ private slots:
     // open
     void launchOpenFromComputer(USER u);
     void launchOpenFromLibrary(USER u);
-    void launchOpen();
+    void launchOpen(USER u);
     void closeOpenFromLibrary();
-    void closeOpen();
+    void closeOpenMotionOptions();
     void openFromLibrary(USER u);
     // settings
     void launchSettings();

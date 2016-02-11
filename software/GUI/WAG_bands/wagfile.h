@@ -6,8 +6,15 @@
 #include <string>
 #include <QString>
 #include <QVector>
+#include <QHash>
+#include "positionsnapshot.h"
 
 enum SAVE_LOCATION {LIBRARY, LOCALLY};
+enum SNAP_CLOSENESS {
+    BEFORE,
+    AFTER,
+    CLOSEST
+};
 
 class WAGFile {
 public:
@@ -28,6 +35,11 @@ public:
     void updateTags(QVector<QString> t) {tags = t;}
     void updateTags(QString t);
     void updateSaveLocation(SAVE_LOCATION l) {loc = l;}
+    qint32 getFrameNums();
+    void setMotionData(QHash<qint32, PositionSnapshot> newMotionData);
+    QHash<qint32, PositionSnapshot> getMotionData();
+
+    PositionSnapshot getSnapshot(qint32 snapTime, SNAP_CLOSENESS retrieveType);
 
 private:
     // the path to the file location
@@ -38,6 +50,7 @@ private:
     QString author;
     QVector<QString> tags;
     SAVE_LOCATION loc;
+    QHash<qint32, PositionSnapshot> motionData;
 
     void setFilenameAndPath(QString filename);
 };

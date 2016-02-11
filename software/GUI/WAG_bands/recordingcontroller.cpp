@@ -1,27 +1,30 @@
 #include "recordingcontroller.h"
 
 // takes in record commands (stop/start recording), talks to suit,
-RecordingController::RecordingController() : QObject()
+RecordingController::RecordingController(Suit *newSuitObj) : QObject()
 {
-
-}
-
-void RecordingController::setSuit(Suit *newSuitObj) {
     suitObj = newSuitObj;
     connect(suitObj, SIGNAL(positionSnapshotReady(qint64,PositionSnapshot)), this, SLOT(addSnapshotToMotion(qint64, PositionSnapshot)));
 }
 
-Motion RecordingController::stopRecording() {
-    // start recording
+void RecordingController::stopRecording() {
+    // stop recording
+    suitObj->startOrStopMode(STOP_RECORDING);
+    activeMotion->setMotionData(currentMotionData);
 }
 
 void RecordingController::startRecording() {
-    currentMotion.clear();
+    currentMotionData.clear();
     suitObj->startOrStopMode(START_RECORDING);
 }
 
 void RecordingController::addSnapshotToMotion(qint64 snapTime, PositionSnapshot snap) {
-    currentMotion[snapTime] = snap;
+    qint32 newSnapTime = (qint32) snapTime;
+    currentMotionData[newSnapTime] = snap;
+}
+
+void RecordingController::setActiveMotion(WAGFile *motion) {
+    activeMotion = motion;
 }
 
 
