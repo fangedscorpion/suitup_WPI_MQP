@@ -129,7 +129,7 @@ void Suit::toggleCollecting(bool shouldCollectData) {
 }
 
 void Suit::timerEvent(QTimerEvent *event) {
-    BandMessage *newMsg = new BandMessage(COMPUTER_PING, QByteArray());
+    BandMessage *newMsg = new BandMessage(COMPUTER_PING, QByteArray("HI"));
     qDebug("Timer event");
     sendToConnectedBands(newMsg);
 }
