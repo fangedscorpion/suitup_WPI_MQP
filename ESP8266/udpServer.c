@@ -48,7 +48,7 @@ void echo( int sd ) {
 
 /* server main routine */
 
-int main() {
+int main(int argc, char *argv[]) {
   int ld;
   struct sockaddr_in skaddr;
   int length;
@@ -57,6 +57,15 @@ int main() {
      IP protocol family (PF_INET)
      UDP protocol (SOCK_DGRAM)
   */
+     /* Test for correct number of arguments */
+  if (argc != 2) {
+    fprintf(stderr, "Usage: %s <ServerPort>\n", argv[0]);
+    fprintf(stderr, "Try again\n");
+    exit(1);
+  }
+
+  unsigned short echoServPort;        /* server port */
+  echoServPort = atoi(argv[1]);  /* first arg: local port */
 
   if ((ld = socket( PF_INET, SOCK_DGRAM, 0 )) < 0) {
     printf("Problem creating socket\n");
@@ -71,7 +80,7 @@ int main() {
 
   skaddr.sin_family = AF_INET;
   skaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-  skaddr.sin_port = htons(0);
+  skaddr.sin_port = htons(echoServPort);         /* local port */
 
   if (bind(ld, (struct sockaddr *) &skaddr, sizeof(skaddr))<0) {
     printf("Problem binding\n");
