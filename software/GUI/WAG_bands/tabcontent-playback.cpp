@@ -35,9 +35,10 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     QHBoxLayout *holdLast = new QHBoxLayout;
     holdLast->addWidget(new QLabel("Hold last frame for"));
     QDoubleSpinBox *seconds = new QDoubleSpinBox;
-    seconds->setMinimum(0.1);
+    seconds->setMinimum(0.5);
     seconds->setMaximum(15); // consider changing
     seconds->setDecimals(1);
+    seconds->setSingleStep(.5);
     holdLast->addWidget(seconds);
     holdLast->addWidget(new QLabel("sec(s)"), -1);
     // speed/frame slider
@@ -61,6 +62,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     playbackCountDownSpinner->setDecimals(1);
     playbackCountDownSpinner->setSingleStep(.5);
     playbackCountDownSpinner->setMaximumWidth(60);
+    playbackCountdownTime = new QLabel();
     QLabel *countDownPreMessage = new QLabel("Count down for");
     QLabel *countDownMessage = new QLabel("sec(s)");
     QHBoxLayout* h = new QHBoxLayout;
@@ -96,7 +98,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     connect(seconds, SIGNAL(valueChanged(double)), playbackControls, SLOT(modifyHoldTime(double)));
     connect(playbackControls, SIGNAL(timeChanged(int)), playbackMotionViewer, SLOT(displayNewTime(int)));
     connect(playbackControls, SIGNAL(playbackStateChanged(bool)), playbackMotionViewer, SLOT(playToggled(bool)));
-    connect(playbackCountDownSpinner, SIGNAL(valueChanged(double)), this, SLOT(recordSetCountDownTimer(double)));
+    connect(playbackCountDownSpinner, SIGNAL(valueChanged(double)), this, SLOT(playbackSetCountDownTimer(double)));
     // viewer controls
     connect(playbackMotionViewer->getPlayPauseBtn(), SIGNAL(released()), playbackControls, SLOT (togglePlay()));
     connect(playbackMotionViewer->getSlider(), SIGNAL(alt_valueChanged(int)), playbackControls, SLOT(beginningSliderChanged(int)));

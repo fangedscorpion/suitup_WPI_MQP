@@ -40,13 +40,12 @@ void MainWindow::launchUserOptions(USER u) {
     layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     connect(back, SIGNAL(released()), this, SLOT(closeUserOptions()));
 
-    connect(this, SIGNAL(resizedWindow()), userOptionsWidget, SLOT(resizeWindow()));
+//    connect(this, SIGNAL(resizedWindow()), userOptionsWidget, SLOT(resizeWindow()));
     overlay->show();
     userOptionsWidget->show();
     emit this->resizedWindow();
 }
 
-// close window with user options
 void MainWindow::closeUserOptions() {
     overlay->hide();
     delete userOptionsWidget;
@@ -62,11 +61,12 @@ void MainWindow::handleUserOptions(USER u) {
     if (u.hasAction(EDIT) || u.hasAction(PLAYBACK)) {
         openBtn->setUser(u);
         openBtn->show();
-        createOpenMotion(u);
-        connect(openBtn, SIGNAL(released()), this, SLOT(launchOpen()));
+        createOpenMotionOptions(u);
+        connect(openBtn, SIGNAL(released(USER)), this, SLOT(launchOpen(USER)));
     }
-    userOptionsWidget->hide();
     overlay->hide();
+    delete userOptionsWidget;
+    userOptionsWidget = NULL;
     tabs->removeTab(0);
     tabs->setTabsClosable(true);
 }
@@ -86,10 +86,11 @@ void MainWindow::launchOpenFromComputer(USER u) {
     QString f = QFileDialog::getOpenFileName(this, "Open File", "", "WAG Files (*.wagz)");
     // open f and get metadata
     if (!f.trimmed().isEmpty()) { // user clicked "open"
-        handleUserOptions(u); // setup the top bar
+        if (userOptionsWidget != NULL)
+            handleUserOptions(u); // setup the top bar
         WAGFile* w = new WAGFile(f.trimmed(), QString("desc"), QString("author"), QVector<QString>());
         addTab(u, w, EDIT);
-        closeOpen();
+        closeOpenMotionOptions();
     }    
 }
 
@@ -100,12 +101,12 @@ void MainWindow::openFromLibrary(USER u) {
     WAGFile* w = new WAGFile(QString("filename"), QString("desc"), QString("author"), QVector<QString>());
     addTab(u, w, EDIT);
     closeOpenFromLibrary();
-    closeOpen();
+    closeOpenMotionOptions();
 }
 
 // closes the open from library overlay
 void MainWindow::closeOpenFromLibrary() {
-    if (!userOptionsWidget->isVisible())
+    if (userOptionsWidget == NULL)
         overlay->hide();
     delete openFromLibWidget;
 }
@@ -115,6 +116,20 @@ void MainWindow::launchOpenFromLibrary(USER u) {
     createOpenFromLib(u);
     overlay->show();
     openFromLibWidget->show();
+}
+
+void MainWindow::launchOpen(USER u) {
+    createOpenMotionOptions(u);
+    overlay->show();
+    openWidget->show();
+}
+
+void MainWindow::closeOpenMotionOptions() {
+    overlay->hide();
+    if (userOptionsWidget == NULL) {
+        delete openWidget;
+        openWidget = NULL;
+    }
 }
 
 // opens the settings window
@@ -156,7 +171,7 @@ void MainWindow::saveNewMotion(USER u) {
 
 // close the new file overlay
 void MainWindow::closeNewMotion() {
-    if (!userOptionsWidget->isVisible())
+    if (userOptionsWidget == NULL)
         overlay->hide();
     delete newMotionWidget;
 }
@@ -178,18 +193,4 @@ void MainWindow::handleNewMotionRequiredInput() {
     // enables the create button if the description AND filename text boxes are filled
     createNewMotionBtn->setEnabled(!newMotionDescription->toPlainText().isEmpty() &&
                                  !newMotionNameTextEdit->text().isEmpty());
-}
-
-void MainWindow::launchOpen() {
-    overlay->show();
-    openWidget->show();
-    openWidget->raise();
-}
-
-void MainWindow::closeOpen() {
-    overlay->hide();
-    if (!userOptionsWidget->isVisible())
-        openWidget->hide();
-    else
-        closeUserOptions();
 }
