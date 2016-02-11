@@ -39,6 +39,7 @@ signals:
     void metPosition();
     void playbackStateChanged(bool playing);
     void goToSnapshot(PositionSnapshot);
+    void changeSliderMax(qint32);
 
 private:
     bool playing;

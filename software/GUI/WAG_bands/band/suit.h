@@ -41,7 +41,7 @@ public slots:
     void catchStopPlayback();
     void playSnapshot(PositionSnapshot);
 signals:
-    void positionSnapshotReady(qint64, PositionSnapshot *);
+    void positionSnapshotReady(qint64, PositionSnapshot);
 protected:
     void timerEvent(QTimerEvent *);
 

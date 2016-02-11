@@ -6,9 +6,14 @@ TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION
     motion = in_motion;
     user = u;
     suitObj = sysSuit;
+
     playbackControls = new PlaybackController(suitObj);
     editingControls = new EditingController();
     recordingControls = new RecordingController(suitObj);
+
+    connect(playbackControls, SIGNAL(changeSliderMax(qint32)), this, SLOT(changeSliderRange(qint32)));
+    connect(editingControls, SIGNAL(changeSliderMax(qint32)), this, SLOT(changeSliderRange(qint32)));
+
     titleFont = QFont( "Arial", 15, QFont::Bold);
     groupboxStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-left: 0.25em; margin-right: 0.25em; margin-top: 0.5em; padding: 25px 3px 0 3px;} QGroupBox::title{subcontrol-position: top center; subcontrol-origin: margin;}";
     textInputStyleRed = "QLineEdit {border: 1px solid red; background: white;} QTextEdit {border: 1px solid red; background: white;}";
@@ -206,9 +211,13 @@ void TabContent::saveMotion() {
         f.close();
     }
 
-
 //    closeSaveAs();
     // TODO: Save da file!
+}
 
-
+void TabContent::changeSliderRange(qint32 newSliderLen) {
+    qDebug("asldjfhw");
+    qDebug()<<videoSlider;
+    //videoSlider->setRange(0, newSliderLen/SLIDER_DIVIDE_FACTOR);
+    qDebug("uwoqefhdn");
 }

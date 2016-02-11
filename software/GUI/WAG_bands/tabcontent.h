@@ -6,6 +6,8 @@
 #include "band/suit.h"
 #include "recordingcontroller.h"
 
+#define SLIDER_DIVIDE_FACTOR 100
+
 class GLWidget;
 
 class TabContent : public QWidget
@@ -128,6 +130,7 @@ public slots:
     void recordDisplayNewTime(int newMillis);
     void playbackToggled(bool playing);
     void editPlayToggled(bool playing);
+    void changeSliderRange(qint32 newSliderLen);
 
     void sliderValueChanged(int newVal);
     void launchMotionInfo();

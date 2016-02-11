@@ -29,6 +29,7 @@ PlaybackController::PlaybackController(Suit *newSuitObj) {
     lastFrameNum = 1000; // TODO get from motion
     connect(this, SIGNAL(endOfTimeRange()), this, SLOT(togglePlay()));
     connect(this, SIGNAL(frameChanged(qint32)), this, SLOT(catchFrameUpdate(qint32)));
+    qDebug("HERE     88888");
 }
 
 void PlaybackController::togglePlay() {
@@ -181,9 +182,9 @@ void PlaybackController::stopPlaying() {
 
 void PlaybackController::setActiveMotion(WAGFile *newMotion) {
     activeMotion = newMotion;
-    int sliderMax = activeMotion->getFrameNums();
+    qint32 sliderMax = activeMotion->getFrameNums();
     lastFrameNum = sliderMax;
-    // TODO change slider range
+    emit changeSliderMax(sliderMax);
 }
 
 void PlaybackController::beginningSliderChanged(int sliderVal) {
@@ -195,12 +196,8 @@ void PlaybackController::endSliderChanged(int sliderVal) {
 }
 
 void PlaybackController::catchFrameUpdate(qint32 newFrame) {
-    qDebug("HERE3");
-    qDebug()<<activeMotion;
     PositionSnapshot desiredPos = activeMotion->getSnapshot(newFrame, CLOSEST);
     // should probably figure out how to handle null snapshots
     // TODO
-    qDebug("here 4");
     emit goToSnapshot(desiredPos);
-    qDebug("EHERE@$REW");
 }

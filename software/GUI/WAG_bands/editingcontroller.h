@@ -13,6 +13,7 @@ public:
 
 signals:
     void editingPlayStateChanged(bool);
+    void changeSliderMax(qint32);
 public slots:
     void beginningSliderChanged(int);
     void endSliderChanged(int);
