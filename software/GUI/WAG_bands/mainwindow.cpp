@@ -77,7 +77,7 @@ MainWindow::~MainWindow() {}
 
 void MainWindow::addTab(USER u, WAGFile* w, ACTION_TYPE a) {
     TabContent *tab = new TabContent(this, w, u, a, fullSuit);
-    connect(this, SIGNAL(resizedWindow()), tab, SLOT(applicationResized()));
+//    connect(this, SIGNAL(resizedWindow()), tab, SLOT(applicationResized()));
     tabs->addTab(tab, tab->getFilename());
     tabs->setCurrentIndex(tabs->indexOf(tab));
     tabs->clearFocus();
@@ -266,7 +266,7 @@ void MainWindow::createNewMotion(USER u) {
     layout->addLayout(btns);
 
     // only connect handleUserOptions when the user selection window is visible to user
-    if (userOptionsWidget->isVisible())
+    if (userOptionsWidget != NULL)
         connect(createNewMotionBtn, SIGNAL(released(USER)), this, SLOT(handleUserOptions(USER)));
     connect(createNewMotionBtn, SIGNAL(released(USER)), this, SLOT(saveNewMotion(USER)));
     connect(cancel, SIGNAL(released()), this, SLOT(closeNewMotion()));
@@ -275,11 +275,11 @@ void MainWindow::createNewMotion(USER u) {
     connect(newMotionNameTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewMotionRequiredInput(QString)));
     connect(newMotionDescription, SIGNAL(textChanged()), this, SLOT(handleNewMotionRequiredInput()));
     connect(newMotionTagsTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewMotionRequiredInput(QString)));
-    connect(this, SIGNAL(resizedWindow()), newMotionWidget, SLOT(resizeWindow()));
-    emit this->resizedWindow();
+//    connect(this, SIGNAL(resizedWindow()), newMotionWidget, SLOT(resizeWindow()));
+//    emit this->resizedWindow();
 }
 
-void MainWindow::createOpenMotion(USER u) {
+void MainWindow::createOpenMotionOptions(USER u) {
     openWidget = new OverlayWidget(this, "Load Motion");
     QVBoxLayout *layout = openWidget->getLayout();
     smartPushButton *openLib = new smartPushButton("Load Motion From Library", u);
@@ -295,9 +295,7 @@ void MainWindow::createOpenMotion(USER u) {
 
     connect(openLib, SIGNAL(released(USER)), this, SLOT(launchOpenFromLibrary(USER)));
     connect(openComp, SIGNAL(released(USER)), this, SLOT(launchOpenFromComputer(USER)));
-    connect(cancel, SIGNAL(released()), this, SLOT(closeOpen()));
-    connect(this, SIGNAL(resizedWindow()), openWidget, SLOT(resizeWindow()));
-    emit this->resizedWindow();
+    connect(cancel, SIGNAL(released()), this, SLOT(closeOpenMotionOptions()));
 }
 
 // Open from library overlay
@@ -314,12 +312,12 @@ void MainWindow::createOpenFromLib(USER u) {
     layout->addLayout(btns);
 
     // only connect handleUserOptions when the user selection window is visible to user
-    if (userOptionsWidget->isVisible())
+    if (userOptionsWidget != NULL)
         connect(open, SIGNAL(released(USER)), this, SLOT(handleUserOptions(USER)));
     connect(open, SIGNAL(released(USER)), this, SLOT(openFromLibrary(USER)));
     connect(cancel, SIGNAL(released()), this, SLOT(closeOpenFromLibrary()));
-    connect(this, SIGNAL(resizedWindow()), openFromLibWidget, SLOT(resizeWindow()));
-    emit this->resizedWindow();
+//    connect(this, SIGNAL(resizedWindow()), openFromLibWidget, SLOT(resizeWindow()));
+//    emit this->resizedWindow();
 }
 
 // event for when the main window is resized

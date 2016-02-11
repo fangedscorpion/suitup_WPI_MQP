@@ -4,8 +4,9 @@
 // Edit Recording options and controller
 // TODO: add edit file name and description in here
 QWidget* TabContent::createEditOptionsAndControls() {
-
+    editingControls = new EditingController();
     editingControls->setActiveMotion(motion);
+    connect(editingControls, SIGNAL(changeSliderMax(qint32)), editMotionViewer, SLOT(changeSliderRange(qint32)));
     // Edit recording options
     QGroupBox *editOptions = new QGroupBox("Editing Options");
     editOptions->setStyleSheet(groupboxStyleSheet);
@@ -52,7 +53,10 @@ QWidget* TabContent::createEditOptionsAndControls() {
     connect(MotionInfoBtn, SIGNAL(released()), this, SLOT(launchMotionInfo()));
     connect(saveBtn, SIGNAL(released()), this, SLOT(saveMotion()));
     // add connections to crop and split and undo
-    connect(editingControls, SIGNAL(editingPlayStateChanged(bool)), this, SLOT(editPlayToggled(bool)));
+    connect(editingControls, SIGNAL(editingPlayStateChanged(bool)), editMotionViewer, SLOT(playToggled(bool)));
+    connect(editMotionViewer->getPlayPauseBtn(), SIGNAL(released()), editingControls, SLOT (togglePlay()));
+    connect(editMotionViewer->getSlider(), SIGNAL(alt_valueChanged(int)), editingControls, SLOT(beginningSliderChanged(int)));
+    connect(editMotionViewer->getSlider(), SIGNAL(valueChanged(int)), editingControls, SLOT(endSliderChanged(int)));
 
     return editOptions;
 }
@@ -122,8 +126,8 @@ void TabContent::createMotionInfoWindow() {
     // only connect handleUserOptions when the user selection window is visible to user
     connect(saveMotionInfoBtn, SIGNAL(released()), this, SLOT(saveMotionInfo()));
     connect(cancel, SIGNAL(released()), this, SLOT(closeMotionInfo()));
-//    connect(addTagBtn, SIGNAL(released()), this, SLOT(addTag()));
-//    connect(infoMotionTagsTextEdit, SIGNAL(returnPressed()), this, SLOT(addTag()));
+    connect(addTagBtn, SIGNAL(released()), this, SLOT(addTag()));
+    connect(infoMotionTagsTextEdit, SIGNAL(returnPressed()), this, SLOT(addTag()));
     connect(infoMotionNameTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewMotionRequiredInput(QString)));
     connect(infoMotionDescription, SIGNAL(textChanged()), this, SLOT(handleNewMotionRequiredInput()));
     connect(infoMotionTagsTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewMotionRequiredInput(QString)));
@@ -154,16 +158,6 @@ void TabContent::saveMotionInfo() {
 void TabContent::closeMotionInfo() {
     overlay->hide();
     motionInfoWidget->hide();
-}
-
-void TabContent::editPlayToggled(bool playing) {
-    qDebug("HERE");
-    if (playing) {
-        playPause->setIcon(pauseIcon);
-    }
-    else {
-        playPause->setIcon(playIcon);
-    }
 }
 
 // Needed for QLineEdit's textChanged(QString) SIGNAL

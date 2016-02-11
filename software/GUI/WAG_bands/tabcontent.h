@@ -3,10 +3,9 @@
 #include "mainwindow.h"
 #include "customWidgets/smartradiobutton.h"
 #include "editingcontroller.h"
+#include "customWidgets/motionviewer.h"
 #include "band/suit.h"
 #include "recordingcontroller.h"
-
-#define SLIDER_DIVIDE_FACTOR 100
 
 class GLWidget;
 
@@ -59,34 +58,27 @@ private:
     QLabel *playbackCountdownSecondsTitleLabel;
     QCheckBox* playbackVoiceControl;
     void playbackResetCountDownTimer();
-    // playback controls
-    QPushButton *playPause;
+    // playback viewer and controls
+    QWidget* createViewer(ACTION_TYPE t);
+    QWidget* createPlaybackOptionsAndControls();
     QLabel *sfi;
     QLabel *minSpeed;
     QLabel *midSpeed;
     QLabel *maxSpeed;
+    QStackedWidget *viewerStack;
+    QLabel *currentLoadedFilename;
+    MotionViewer* playbackMotionViewer;
     PlaybackController *playbackControls;
     EditingController *editingControls;
     RecordingController *recordingControls;
-    QWidget* createPlaybackOptionsAndControls();
     void lockOnPlayback(bool playing);
     void switchStepThroughMode(bool steppingThrough);
     void initializePlaybackSettings();
-    // viewer
-    QStackedWidget *viewerStack;
-    QLabel *currentLoadedFilename;
-    GLWidget *viewer;
-    SuperSlider *videoSlider;
-    QIcon playIcon;
-    QIcon pauseIcon;
-    QIcon recordIcon;
-    QLabel *handle1Time;
-    QLabel *handle2Time;
-    QWidget* createViewer(ACTION_TYPE t);
     // recording
     QGroupBox *recordGroup;
     QLabel *recordMessage;
     QIcon stopIcon;
+    QIcon recordIcon;
     QCheckBox* recordVoiceControl;
     QDoubleSpinBox *recordCountDownSpinner;
     QWidget* createRecordOptionsAndController();
@@ -111,6 +103,7 @@ private:
     QIcon editIcon;
     QIcon resetIcon;
     QWidget* createEditOptionsAndControls();
+    MotionViewer* editMotionViewer;
     // file info
     OverlayWidget *motionInfoWidget;
     void createMotionInfoWindow();
@@ -125,12 +118,8 @@ private:
 public slots:
     void show(ACTION_TYPE a);
     void updateSpeedSliderText(QString playbackModeString);
-    void applicationResized();
     void handleRecordingWindowButtons();
-    void recordDisplayNewTime(int newMillis);
-    void playbackToggled(bool playing);
-    void editPlayToggled(bool playing);
-    void changeSliderRange(qint32 newSliderLen);
+//    void changeSliderRange(qint32 newSliderLen);
 
     void sliderValueChanged(int newVal);
     void launchMotionInfo();

@@ -2,6 +2,8 @@
 
 // Playback motion options and controller
 QWidget* TabContent::createPlaybackOptionsAndControls() {
+    playbackControls = new PlaybackController(suitObj);
+    connect(playbackControls, SIGNAL(changeSliderMax(qint32)), playbackMotionViewer, SLOT(changeSliderRange(qint32)));
     // Playback options
     playbackControls->setActiveMotion(motion);
 
@@ -36,9 +38,10 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     QHBoxLayout *holdLast = new QHBoxLayout;
     holdLast->addWidget(new QLabel("Hold last frame for"));
     QDoubleSpinBox *seconds = new QDoubleSpinBox;
-    seconds->setMinimum(0.1);
+    seconds->setMinimum(0.5);
     seconds->setMaximum(15); // consider changing
     seconds->setDecimals(1);
+    seconds->setSingleStep(.5);
     holdLast->addWidget(seconds);
     holdLast->addWidget(new QLabel("sec(s)"), -1);
     // speed/frame slider
@@ -62,6 +65,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     playbackCountDownSpinner->setDecimals(1);
     playbackCountDownSpinner->setSingleStep(.5);
     playbackCountDownSpinner->setMaximumWidth(60);
+    playbackCountdownTime = new QLabel();
     QLabel *countDownPreMessage = new QLabel("Count down for");
     QLabel *countDownMessage = new QLabel("sec(s)");
     QHBoxLayout* h = new QHBoxLayout;
@@ -95,50 +99,19 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     connect(speedSlider, SIGNAL(sliderMoved(int)), playbackControls, SLOT(speedChanged(int)));
     connect(playOnSuit, SIGNAL(toggled(bool)), playbackControls, SLOT(toggleSuitActive(bool)));
     connect(seconds, SIGNAL(valueChanged(double)), playbackControls, SLOT(modifyHoldTime(double)));
-    connect(playbackControls, SIGNAL(timeChanged(int)), this, SLOT(recordDisplayNewTime(int)));
-    connect(playbackControls, SIGNAL(playbackStateChanged(bool)), this, SLOT(playbackToggled(bool)));
-    connect(playbackCountDownSpinner, SIGNAL(valueChanged(double)), this, SLOT(recordSetCountDownTimer(double)));
+//    connect(playbackControls, SIGNAL(timeChanged(int)), playbackMotionViewer, SLOT(displayNewTime(int)));
+    connect(playbackControls, SIGNAL(playbackStateChanged(bool)), playbackMotionViewer, SLOT(playToggled(bool)));
+    connect(playbackCountDownSpinner, SIGNAL(valueChanged(double)), this, SLOT(playbackSetCountDownTimer(double)));
+    // viewer controls
+    connect(playbackMotionViewer->getPlayPauseBtn(), SIGNAL(released()), playbackControls, SLOT (togglePlay()));
+    connect(playbackMotionViewer->getSlider(), SIGNAL(alt_valueChanged(int)), playbackControls, SLOT(beginningSliderChanged(int)));
+    connect(playbackMotionViewer->getSlider(), SIGNAL(valueChanged(int)), playbackControls, SLOT(endSliderChanged(int)));
 
     initializePlaybackSettings();
 
     return playbackOptions;
 }
 
-
-// OpenGL Motion Viewer window with video slider
-QWidget* TabContent::createViewer(ACTION_TYPE t) {
-    QGroupBox* v;
-    if (t == EDIT) {
-        v = new QGroupBox("Editing: " + motion->getName());
-    } else {
-        v= new QGroupBox("Playing: " + motion->getName());
-    }
-
-    v->setStyleSheet(groupboxStyleSheet);
-    v->setFont(titleFont);
-
-    // viewer window
-    viewer = new GLWidget;
-    // video controls
-    QHBoxLayout *controls = new QHBoxLayout;
-    playPause = new QPushButton;
-    videoSlider = new SuperSlider;
-    handle1Time = new QLabel("00:00.00");
-    handle2Time = new QLabel("00:10.00");
-    playPause->setIcon(playIcon);
-    playPause->setIconSize(QSize(15,15));
-    controls->addWidget(playPause);
-    controls->addWidget(handle1Time);
-    controls->addWidget(videoSlider);
-    controls->addWidget(handle2Time);
-
-    // viewer side of the GUI
-    QVBoxLayout *viewerPane = new QVBoxLayout;
-    viewerPane->addWidget(viewer,1);
-    viewerPane->addLayout(controls);
-    v->setLayout(viewerPane);
-    return v;
-}
 
 // updates the playback mode's speed slider labels
 void TabContent::updateSpeedSliderText(QString playbackModeString) {
@@ -169,16 +142,6 @@ void TabContent::switchStepThroughMode(bool steppingThrough) {
         minSpeed->setText("1/4x");
         midSpeed->setText("1x");
         maxSpeed->setText("4x");
-    }
-}
-
-void TabContent::playbackToggled(bool playing) {
-    lockOnPlayback(playing);
-    if (playing) {
-        playPause->setIcon(pauseIcon);
-    }
-    else {
-        playPause->setIcon(playIcon);
     }
 }
 
