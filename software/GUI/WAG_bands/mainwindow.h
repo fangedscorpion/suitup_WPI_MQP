@@ -65,8 +65,11 @@ private:
     smartPushButton *openBtn;
     smartPushButton *settingsBtn;
     smartPushButton *helpBtn;
-    QWidget *menu;
-    void createMenuButtons();
+    QHBoxLayout* createMenuButtons();
+    // statusbar
+    QLabel *connectionStatus;
+    QLabel *batteryStatus;
+    QHBoxLayout* createStatusBar();
     // settings overlay
     QGraphicsView *view;
     QCheckBox *leftShoulder;
@@ -132,6 +135,9 @@ private slots:
     void closeTab(int i) { tabs->removeTab(i); } // TODO: check for unsaved stuff
     void connectCheckedBands();
     void indicateConnectionStatusChange(BandType changedBand, ConnectionStatus updatedStatus);
+    // statusbar
+    void updateConnectionStatus();
+    void updateBatteryStatus();
 
 signals:
     void resizedWindow();

@@ -194,3 +194,11 @@ void MainWindow::handleNewMotionRequiredInput() {
     createNewMotionBtn->setEnabled(!newMotionDescription->toPlainText().isEmpty() &&
                                  !newMotionNameTextEdit->text().isEmpty());
 }
+
+void MainWindow::updateConnectionStatus() {
+
+}
+
+void MainWindow::updateBatteryStatus() {
+
+}
