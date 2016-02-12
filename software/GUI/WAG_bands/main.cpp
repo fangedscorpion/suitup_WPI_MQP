@@ -1,4 +1,4 @@
-#define WAG_TEST
+//#define WAG_TEST
 
 #ifdef WAG_TEST
     #include "test/runtests.cpp"
