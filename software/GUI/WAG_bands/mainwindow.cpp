@@ -38,10 +38,6 @@ MainWindow::MainWindow(QWidget *parent) :
     users.push_back(u);
     users.push_back(u2);
 
-    // menubar
-    menu = new QWidget;
-    createMenuButtons();
-
     // line under menubar
     QFrame *line = new QFrame();
     line->setObjectName(QString::fromUtf8("line"));
@@ -66,7 +62,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(resizedWindow()), overlay, SLOT(resizeWindow()));
 
     applicationLayout->setMargin(5);
-    applicationLayout->addWidget(menu);
+    applicationLayout->addLayout(createMenuButtons());
+    applicationLayout->addLayout(createStatusBar());
     applicationLayout->addWidget(line);
     applicationLayout->addWidget(tabs, 1);
     wifiMan = new WifiManager();
@@ -79,7 +76,6 @@ MainWindow::~MainWindow() {}
 
 void MainWindow::addTab(USER u, WAGFile* w, ACTION_TYPE a) {
     TabContent *tab = new TabContent(this, w, u, a, fullSuit);
-    //    connect(this, SIGNAL(resizedWindow()), tab, SLOT(applicationResized()));
     tabs->addTab(tab, tab->getFilename());
     tabs->setCurrentIndex(tabs->indexOf(tab));
     tabs->clearFocus();
@@ -87,8 +83,7 @@ void MainWindow::addTab(USER u, WAGFile* w, ACTION_TYPE a) {
 
 // Menubar actions
 // TODO: finish actions
-void MainWindow::createMenuButtons()
-{
+QHBoxLayout* MainWindow::createMenuButtons() {
     newBtn = new smartPushButton("Record New Motion");
     newBtn->hide();
     openBtn = new smartPushButton("Load Motion");
@@ -103,7 +98,22 @@ void MainWindow::createMenuButtons()
     menuLayout->addWidget(openBtn);
     menuLayout->addWidget(settingsBtn);
     menuLayout->addWidget(helpBtn);
-    menu->setLayout(menuLayout);
+    return menuLayout;
+}
+
+QHBoxLayout* MainWindow::createStatusBar() {
+    QHBoxLayout *l = new QHBoxLayout;
+    connectionStatus = new QLabel("2 Bands Disconnected");
+    connectionStatus->setStyleSheet("QLabel { color : red; }");
+    connectionStatus->setAlignment(Qt::AlignLeft);
+    batteryStatus = new QLabel("Battery full");
+    batteryStatus->setStyleSheet("QLabel { color : green; }");
+    batteryStatus->setAlignment(Qt::AlignRight);
+    l->addWidget(connectionStatus);
+    l->addWidget(batteryStatus);
+
+    settingsBtn->setStyleSheet("QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }");
+    return l;
 }
 
 // The first window a user sees on launch.
