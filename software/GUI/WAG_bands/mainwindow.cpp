@@ -50,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
     tabs->addTab(createUserSelectionWindow(users), "User selection");
     tabs->clearFocus();
     connect(tabs, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+    connect(tabs, SIGNAL(currentChanged(int)), this, SLOT(catchTabChange(int)));
 
     overlay = new Overlay(this);
     overlay->makeSemiTransparent();
@@ -68,6 +69,7 @@ MainWindow::MainWindow(QWidget *parent) :
     wifiMan = new WifiManager();
     fullSuit = new Suit(wifiMan);
     connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(indicateConnectionStatusChange(BandType, ConnectionStatus)));
+    connect(this, SIGNAL(modeChanged(ACTION_TYPE)), fullSuit, SLOT(catchModeChanged(ACTION_TYPE)));
 }
 
 MainWindow::~MainWindow() {}
@@ -89,7 +91,7 @@ QHBoxLayout* MainWindow::createMenuButtons() {
     settingsBtn = new smartPushButton("Settings");
     connect(settingsBtn, SIGNAL(released()), this, SLOT(launchSettings()));
     helpBtn = new smartPushButton("Help");
-//    connect(helpAct, SIGNAL(triggered()), this, SLOT(help()));
+    //    connect(helpAct, SIGNAL(triggered()), this, SLOT(help()));
 
     QHBoxLayout* menuLayout = new QHBoxLayout;
     menuLayout->addWidget(newBtn);
@@ -148,7 +150,7 @@ void MainWindow::createSettings() {
     QHBoxLayout *h = new QHBoxLayout;
     QVBoxLayout *o = new QVBoxLayout;
     // Add user input here
-//    o->addWidget(voiceControl);
+    //    o->addWidget(voiceControl);
     h->addLayout(o, -1);
     // verticle line between voice control and active bands
     QFrame *vLine = new QFrame();
@@ -285,8 +287,8 @@ void MainWindow::createNewMotion(USER u) {
     connect(newMotionNameTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewMotionRequiredInput(QString)));
     connect(newMotionDescription, SIGNAL(textChanged()), this, SLOT(handleNewMotionRequiredInput()));
     connect(newMotionTagsTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewMotionRequiredInput(QString)));
-//    connect(this, SIGNAL(resizedWindow()), newMotionWidget, SLOT(resizeWindow()));
-//    emit this->resizedWindow();
+    //    connect(this, SIGNAL(resizedWindow()), newMotionWidget, SLOT(resizeWindow()));
+    //    emit this->resizedWindow();
 }
 
 void MainWindow::createOpenMotionOptions(USER u) {
@@ -326,8 +328,8 @@ void MainWindow::createOpenFromLib(USER u) {
         connect(open, SIGNAL(released(USER)), this, SLOT(handleUserOptions(USER)));
     connect(open, SIGNAL(released(USER)), this, SLOT(openFromLibrary(USER)));
     connect(cancel, SIGNAL(released()), this, SLOT(closeOpenFromLibrary()));
-//    connect(this, SIGNAL(resizedWindow()), openFromLibWidget, SLOT(resizeWindow()));
-//    emit this->resizedWindow();
+    //    connect(this, SIGNAL(resizedWindow()), openFromLibWidget, SLOT(resizeWindow()));
+    //    emit this->resizedWindow();
 }
 
 // event for when the main window is resized
@@ -375,4 +377,21 @@ void MainWindow::connectCheckedBands() {
 // Samee, connection status changes indicated here, (CONNECTED/DISCONNECTED)
 void MainWindow::indicateConnectionStatusChange(BandType changedBand, ConnectionStatus updatedStatus) {
     qDebug()<<"Band "<<changedBand<<" switched conenection status to " <<updatedStatus;
+}
+
+void MainWindow::catchTabChange(int tabIndex) {
+    //
+    QWidget *current = tabs->currentWidget();
+
+
+    // there's probably a better way to do this, but I can't think of one right now
+    if (TabContent *tab = qobject_cast<TabContent *>(current)) {
+        ACTION_TYPE mode = tab->getCurrentMode();
+        qDebug()<<"Mode changed to "<<mode;
+        emit modeChanged(mode);
+    } else {
+        // not a tab
+        qDebug("Not a tab");
+    }
+
 }

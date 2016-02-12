@@ -29,7 +29,7 @@ public slots: // some of these might be better as normal functions
     void beginningSliderChanged(int);
     void endSliderChanged(int);
     void catchFrameUpdate(qint32 newFrame);
-
+    void catchVoiceControlCommand(MessageType vcCommandInstruction);
 
 signals:
     void frameChanged(qint32 newFrame);
@@ -40,6 +40,7 @@ signals:
     void playbackStateChanged(bool playing);
     void goToSnapshot(PositionSnapshot);
     void changeSliderMax(qint32);
+
 
 private:
     bool playing;

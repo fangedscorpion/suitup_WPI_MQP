@@ -38,3 +38,21 @@ QByteArray BandMessage::getSerializedMessage() {
     fullMsg.append('\n');
     return fullMsg;
 }
+
+VoiceControlMsgType BandMessage::parseVoiceControlMsg() {
+    QByteArray data = getMessageData();
+    if (getMessageLength() == VOICE_CONTROL_DATA_LEN) {
+        const char *constMsgData = data.constData();
+        // for now, assuming VOICE_CONTROL_DATA_LEN is 1, if not, have to change equality check
+        if (constMsgData[0] == VOICE_CONTROL_START) {
+            return VC_START;
+        } else if (constMsgData[0] == VOICE_CONTROL_STOP){
+            return VC_STOP;
+        } else {
+            return OTHER;
+        }
+    } else {
+        // ERROR
+        return OTHER;
+    }
+}

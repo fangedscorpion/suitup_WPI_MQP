@@ -28,6 +28,7 @@ PlaybackController::PlaybackController(Suit *newSuitObj) {
     stepThroughTolerance = DEFAULT_TOLERANCE; // how are we expressing this
     lastFrameNum = 1000; // TODO get from motion
     connect(this, SIGNAL(endOfTimeRange()), this, SLOT(togglePlay()));
+    connect(suitObj, SIGNAL(voiceControlCommandReady(MessageType)), this, SLOT(catchVoiceControlCommand(MessageType)));
     connect(this, SIGNAL(frameChanged(qint32)), this, SLOT(catchFrameUpdate(qint32)));
     qDebug("HERE     88888");
 }
@@ -200,4 +201,18 @@ void PlaybackController::catchFrameUpdate(qint32 newFrame) {
     // should probably figure out how to handle null snapshots
     // TODO
     emit goToSnapshot(desiredPos);
+}
+
+void PlaybackController::catchVoiceControlCommand(MessageType vcCommandInstruction) {
+    if (voiceControl) {
+        if (vcCommandInstruction == START_PLAYBACK) {
+            if (!playing) {
+                togglePlay();
+            }
+        } else if (vcCommandInstruction == STOP_PLAYBACK) {
+            if (playing) {
+                togglePlay();
+            }
+        }
+    }
 }

@@ -7,6 +7,10 @@ TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION
     user = u;
     suitObj = sysSuit;
 
+    connect(this, SIGNAL(modeChanged(ACTION_TYPE)), suitObj, SLOT(catchModeChanged(ACTION_TYPE)));
+    connect(this, SIGNAL(modeChanged(ACTION_TYPE)), this, SLOT(catchModeChanged(ACTION_TYPE)));
+    emit modeChanged(initiallyShow);
+
     titleFont = QFont( "Arial", 15, QFont::Bold);
     groupboxStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-left: 0.25em; margin-right: 0.25em; margin-top: 0.5em; padding: 25px 3px 0 3px;} QGroupBox::title{subcontrol-position: top center; subcontrol-origin: margin;}";
     textInputStyleRed = "QLineEdit {border: 1px solid red; background: white;} QTextEdit {border: 1px solid red; background: white;}";
@@ -86,10 +90,12 @@ void TabContent::show(ACTION_TYPE a) {
     if (user.hasAction(a)) {
         optionsStack->setCurrentIndex(a);
         viewerStack->setCurrentIndex(a);
+        emit modeChanged(a);
     // EDIT is used when opening a file, so if the user doesn't have edit ability, check playback
     } else if (a == EDIT && user.hasAction(PLAYBACK)) {
         optionsStack->setCurrentIndex(PLAYBACK);
         viewerStack->setCurrentIndex(PLAYBACK);
+        emit modeChanged(PLAYBACK);
     // otherwise show any one of the available actions.
     } else {
         std::set<ACTION_TYPE>::iterator it=user.getActions().begin();
@@ -205,4 +211,12 @@ QWidget* TabContent::createViewer(ACTION_TYPE t) {
     v->setFont(titleFont);
     v->setLayout(viewerPane);
     return v;
+}
+
+void TabContent::catchModeChanged(ACTION_TYPE newMode)  {
+    currentMode = newMode;
+}
+
+ACTION_TYPE TabContent::getCurrentMode() {
+    return currentMode;
 }
