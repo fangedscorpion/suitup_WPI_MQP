@@ -20,7 +20,8 @@ enum MessageType {
     STOP_RECORDING = 7,
     START_PLAYBACK = 8,
     STOP_PLAYBACK = 9,
-    VOICE_CONTROL = 10
+    VOICE_CONTROL = 10,
+    LOW_BATTERY_UPDATE = 11
 };
 
 enum VoiceControlMsgType {

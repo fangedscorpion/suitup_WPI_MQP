@@ -43,9 +43,11 @@ public slots:
     void catchStartPlayback();
     void catchStopPlayback();
     void playSnapshot(PositionSnapshot);
+    void propagateLowBattery(BandType);
 signals:
     void positionSnapshotReady(qint64, PositionSnapshot);
     void voiceControlCommandReady(MessageType);
+    void bandHasLowBattery(BandType);
 protected:
     void timerEvent(QTimerEvent *);
 
