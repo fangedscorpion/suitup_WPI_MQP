@@ -22,6 +22,7 @@ int state; //Holds the state
 
 void GoToStatePowerOn(){ //Anything to be done while powering up --> Maybe talk to Teensy?
  Serial.begin(115200);
+ Serial.println("Hello world!");
 }
 
 ///////////////////////////////////
@@ -38,6 +39,8 @@ void GoToErrorState(int error_num){ // Does anything involving errors
     case TIMEOUT_ON_CONN:
       WiFi.disconnect();
       Serial.println("Could not connect to AP! Test Wifi Router");
+      delay(3000);
+      Serial.println("Retrying router");
     break;
 
     default:
@@ -48,7 +51,7 @@ void GoToErrorState(int error_num){ // Does anything involving errors
 
 ///////////////////////////////////
 // Time out information for WiFi Connection
-#define TIMEOUT_RETRIES 10
+#define TIMEOUT_RETRIES 30
 int timeoutCounter = 0;
 ///////////////////////////////////
 ///////////////////////////////////
@@ -66,38 +69,44 @@ boolean conn = false; //If connected to WiFi computer host
 WiFiClient client; 
 WiFiUDP hostFinder;
 ////////////////////////////////////
-
-void GoToStateConnection(){ //Connects to WiFi
+//Returns true if could connect
+//FALSE if connection failed
+boolean GoToStateConnection(){ //Connects to WiFi
   timeoutCounter = 0;
-  #ifndef DEBUG
-      delay(10);
-      // We start by connecting to a WiFi network
-      Serial.println();
-      Serial.print("Connecting to ");
-      Serial.println(ssid);
-      
-      WiFi.begin(ssid, password);
-      
-      while (WiFi.status() != WL_CONNECTED) {
-        if(timeoutCounter >= TIMEOUT_RETRIES){
-          break; 
-          state = ERROR_STATE;
-          GoToErrorState(TIMEOUT_ON_CONN);
-        }
-        else{
-          delay(500);
-          Serial.print(".");
-          timeoutCounter++; 
-        }
-      }
-    
-      Serial.println("");
-      Serial.println("WiFi connected");  
-      Serial.println("BND IP ADDR: ");
-      Serial.println(WiFi.localIP());
-  #else
+  delay(10);
+  // We start by connecting to a WiFi network
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    if(timeoutCounter >= TIMEOUT_RETRIES){
+      Serial.print("FAILED!!! after ");
+      Serial.print(timeoutCounter + 1);
+      Serial.println(" tries");
+      return false;
+    }
+    else{
+      delay(250);
+      Serial.print(".");
+      timeoutCounter++; 
+    }
+  }
+  
+  Serial.print("Connected after ");
+  Serial.print(timeoutCounter);
+  Serial.println(" tries");
+
+  Serial.println("");
+  delay(100);
+  Serial.println("WiFi connected");  
+  Serial.println("BAND IP ADDR: ");
+  Serial.println(WiFi.localIP());
+  #ifdef DEBUG
     Serial.println("DEBUG MODE");
   #endif
+  return true;
 }
 
 void GoToStateFindHost(){ //Info from: https://github.com/PaulStoffregen/Time/blob/master/examples/TimeNTP_ESP8266WiFi/TimeNTP_ESP8266WiFi.ino
@@ -114,7 +123,7 @@ void GoToStateFindHost(){ //Info from: https://github.com/PaulStoffregen/Time/bl
           hostFinder.write(packetBuffer, UDP_BROADCAST_SIZE);
           int success = hostFinder.endPacket();
           Serial.print("Successfully sent packet: ");
-          Serial.print(success);
+          Serial.println(success);
 
           delay(100);
           int noBytes = hostFinder.parsePacket();
@@ -144,6 +153,7 @@ void GoToStateFindHost(){ //Info from: https://github.com/PaulStoffregen/Time/bl
             } // end for
           }
           Serial.println("End of Loop");
+         j++;
       }
       
       //SOMETHING HERE FROM THIS PAGE: https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/src/WiFiUdp.h
@@ -174,7 +184,12 @@ void setup() {
   GoToStatePowerOn(); 
   
   state = CONNECTION;
-  GoToStateConnection();
+  boolean goodConnect = GoToStateConnection();
+  while(!goodConnect){
+    state = ERROR_STATE;
+    GoToErrorState(TIMEOUT_ON_CONN);
+    goodConnect = GoToStateConnection();
+  }
 
   state = IDLE_CONNECTED_TO_AP;
 }
