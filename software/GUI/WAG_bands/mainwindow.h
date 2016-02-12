@@ -132,7 +132,9 @@ private slots:
     void closeTab(int i) { tabs->removeTab(i); } // TODO: check for unsaved stuff
     void connectCheckedBands();
     void indicateConnectionStatusChange(BandType changedBand, ConnectionStatus updatedStatus);
+    void catchTabChange(int);
 
 signals:
     void resizedWindow();
+    void modeChanged(ACTION_TYPE);
 };

@@ -20,12 +20,14 @@ private:
     Suit *suitObj;
     QHash<qint32, PositionSnapshot> currentMotionData;
     WAGFile *activeMotion;
+    bool voiceEnabled;
 
 signals:
 
 public slots:
     void addSnapshotToMotion(qint64, PositionSnapshot);
     void catchVoiceControlCommand(MessageType);
+    void toggleVoiceControl(bool voiceControlOn);
 
 
 };

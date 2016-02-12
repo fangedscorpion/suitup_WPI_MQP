@@ -8,6 +8,7 @@ TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION
     suitObj = sysSuit;
 
     connect(this, SIGNAL(modeChanged(ACTION_TYPE)), suitObj, SLOT(catchModeChanged(ACTION_TYPE)));
+    connect(this, SIGNAL(modeChanged(ACTION_TYPE)), this, SLOT(catchModeChanged(ACTION_TYPE)));
     emit modeChanged(initiallyShow);
 
     titleFont = QFont( "Arial", 15, QFont::Bold);
@@ -210,4 +211,12 @@ QWidget* TabContent::createViewer(ACTION_TYPE t) {
     v->setFont(titleFont);
     v->setLayout(viewerPane);
     return v;
+}
+
+void TabContent::catchModeChanged(ACTION_TYPE newMode)  {
+    currentMode = newMode;
+}
+
+ACTION_TYPE TabContent::getCurrentMode() {
+    return currentMode;
 }

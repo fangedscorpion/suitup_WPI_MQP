@@ -21,11 +21,14 @@ public:
     bool isVoiceControlOn() { return recordVoiceControl->isChecked(); }
     void setVoiceControl(bool b) { recordVoiceControl->setChecked(b); }
 
+    ACTION_TYPE getCurrentMode();
+
 private:
     MainWindow* parent;
     USER user;
     WAGFile* motion;
     QStackedWidget *optionsStack;
+    ACTION_TYPE currentMode;
     void createIcons();
     void resizeEvent(QResizeEvent* r);
     Overlay* overlay;
@@ -119,8 +122,7 @@ public slots:
     void show(ACTION_TYPE a);
     void updateSpeedSliderText(QString playbackModeString);
     void handleRecordingWindowButtons();
-//    void changeSliderRange(qint32 newSliderLen);
-
+    void catchModeChanged(ACTION_TYPE newMode);
     void sliderValueChanged(int newVal);
     void launchMotionInfo();
     void closeMotionInfo();

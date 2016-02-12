@@ -31,6 +31,7 @@ QWidget* TabContent::createRecordOptionsAndController() {
     recordOptionsGroup->setLayout(buttons);
 
     connect(recordCountDownSpinner, SIGNAL(valueChanged(double)), this, SLOT(recordSetCountDownTimer(double)));
+    connect(recordVoiceControl, SIGNAL(toggled(bool)), recordingControls, SLOT(toggleVoiceControl(bool)));
     return recordOptionsGroup;
 }
 
