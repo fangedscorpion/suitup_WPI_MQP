@@ -40,6 +40,7 @@ public:
     QHash<qint32, PositionSnapshot> getMotionData();
 
     PositionSnapshot getSnapshot(qint32 snapTime, SNAP_CLOSENESS retrieveType);
+    QHash<qint32, PositionSnapshot> getChunkInRange(qint32 startTime, qint32 endTime);
 
 private:
     // the path to the file location
