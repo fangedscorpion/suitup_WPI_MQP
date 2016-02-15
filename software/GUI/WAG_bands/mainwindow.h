@@ -137,7 +137,7 @@ private slots:
     void indicateConnectionStatusChange(BandType changedBand, ConnectionStatus updatedStatus);
     void catchTabChange(int);
     // statusbar
-    void updateConnectionStatus();
+    void updateConnectionStatus(BandType b, ConnectionStatus c);
     void updateBatteryStatus();
 
 signals:
