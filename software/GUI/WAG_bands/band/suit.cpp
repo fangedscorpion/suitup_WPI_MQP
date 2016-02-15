@@ -250,3 +250,6 @@ void Suit::processVoiceControlMessage(BandMessage *msg) {
     // currently shouldn't do anything in edit mode
 }
 
+void Suit::propagateLowBattery(BandType chargeBand) {
+    emit bandHasLowBattery(chargeBand);
+}

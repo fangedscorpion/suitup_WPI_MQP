@@ -54,6 +54,7 @@ private:
     bool pendingBandPing;
 signals:
     void dataToSend(BandType, BandMessage *);
+    void lowBattery(BandType);
 };
 
 

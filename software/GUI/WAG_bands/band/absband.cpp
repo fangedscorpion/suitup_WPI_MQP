@@ -39,6 +39,9 @@ void AbsBand::handleMessage(qint64 msgTimestamp, BandMessage *recvdMessage) {
     case BAND_POSITION_UPDATE:
         // should probably handle in subclass
         break;
+    case LOW_BATTERY_UPDATE:
+        emit lowBattery(type);
+        break;
     default:
         // should never receive a message that isn't one of these types
         break;
