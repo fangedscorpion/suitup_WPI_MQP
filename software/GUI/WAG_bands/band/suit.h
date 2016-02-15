@@ -38,6 +38,8 @@ private:
     void sendToConnectedBands(BandMessage*);
     QElapsedTimer startTime;
     void processVoiceControlMessage(BandMessage *msg);
+    QList<qint32> activeSnapTimes;
+    PositionSnapshot activeSnapshot;
 
 public slots:
     void catchStartPlayback();
@@ -45,7 +47,7 @@ public slots:
     void playSnapshot(PositionSnapshot);
     void propagateLowBattery(BandType);
 signals:
-    void positionSnapshotReady(qint64, PositionSnapshot);
+    void positionSnapshotReady(qint32, PositionSnapshot);
     void voiceControlCommandReady(MessageType);
     void bandHasLowBattery(BandType);
 protected:

@@ -46,6 +46,7 @@ Suit::Suit(WifiManager *comms):QObject() {
     QList<BandType> allBands = bands.keys();
     for (int i = 0; i < allBands.length(); i++) {
         connect(bands[allBands[i]], SIGNAL(dataToSend(BandType,BandMessage*)), this, SLOT(sendData(BandType, BandMessage*)));
+        connect(bands[allBands[i]], SIGNAL(poseRecvd(AbsPose*,BandType,qint32)), this, SLOT(catchNewPose(AbsPose*, BandType, qint32)));
     }
 
     collectingData = true;
@@ -61,7 +62,7 @@ void Suit::getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTime
     qDebug()<<band;
 
     qDebug()<<data->getMessageType();
-    qint64 elapsedTime = startTime.msecsTo(dataTimestamp);
+    qint32 elapsedTime = (qint32) startTime.msecsTo(dataTimestamp);
     if (data->getMessageType() == VOICE_CONTROL) {
         processVoiceControlMessage(data);
     } else {
@@ -124,6 +125,7 @@ void Suit::toggleCollecting(bool shouldCollectData) {
             // stop timer
             qDebug("Killing timer");
             killTimer(pingTimerID);
+            activeSnapshot = PositionSnapshot();
         } else {
             // start timer
             qDebug("Starting timer");
@@ -252,4 +254,48 @@ void Suit::processVoiceControlMessage(BandMessage *msg) {
 
 void Suit::propagateLowBattery(BandType chargeBand) {
     emit bandHasLowBattery(chargeBand);
+}
+
+
+void Suit::catchNewPose(AbsPose* newPose, BandType bandForPose, qint32 poseTime) {
+    AbsPose *copiedPose = malloc(newPose->objSize()); // not sure if can do this for abs
+    // TODO figure out where to free this
+    *copiedPose = *newPose;
+    activeSnapshot.addMapping(bandForPose, copiedPose);
+
+    activeSnapTimes.append(poseTime);
+
+    // maybe just want to make it so it's all bands, not just the connected ones
+    if (getConnectedBands() == activeSnapshot.getRecordedBands()) {
+        // full snapshot!
+
+        qint64 totalTime = 0;
+
+        for (int i = 0; i < activeSnapTimes.length(); i++) {
+            totalTime += activeSnapTimes[i];
+        }
+        qint32 avgReadingTime;
+        if (activeSnapTimes.length() != 0) {
+           avgReadingTime = (qint32) (totalTime/activeSnapTimes.length());
+        }
+        else {
+            avgReadingTime = 0;
+        }
+        emit positionSnapshotReady(avgReadingTime, activeSnapshot);
+
+        activeSnapshot = PositionSnapshot();
+    }
+}
+
+
+QSet<BandType> Suit::getConnectedBands() {
+    QSet<BandType> connectedBands = new QSet<BandType>();
+    QList<BandType> possibleBands = bands.keys();
+    for (int i = 0; i < possibleBands.length(); i++) {
+        if (bands[possibleBands[i]]->isConnected()) {
+            connectedBands += possibleBands[i];
+        }
+    }
+
+    return connectedBands;
 }

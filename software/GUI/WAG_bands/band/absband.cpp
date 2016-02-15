@@ -22,7 +22,7 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
     }
 }
 
-void AbsBand::handleMessage(qint64 msgTimestamp, BandMessage *recvdMessage) {
+void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     switch(recvdMessage->getMessageType()) {
     case BAND_CONNECTING:
         if (!commsSetUp) {
@@ -37,6 +37,9 @@ void AbsBand::handleMessage(qint64 msgTimestamp, BandMessage *recvdMessage) {
         qDebug("Recvd band ping");
         break;
     case BAND_POSITION_UPDATE:
+        // parse into absstate
+        AbsState *newState = new AbsState();// deserialize TODO
+        updateState(newState, msgTimestamp);
         // should probably handle in subclass
         break;
     case LOW_BATTERY_UPDATE:
@@ -58,9 +61,11 @@ void AbsBand::sendIfConnected(BandMessage *sendMsg) {
     }
 }
 
-void AbsBand::updateState(AbsState* state){
+void AbsBand::updateState(AbsState* state, qint32 msgTime){
+    poseRecvdTime = msgTime;
     pose->update(state);
     updatePoints();
+    emit poseRecvd(pose, type, poseRecvdTime);
 }
 
 void AbsBand::updatePoints(){
@@ -68,4 +73,8 @@ void AbsBand::updatePoints(){
     for (unsigned int i = 0; i < childBands.size(); i++){
         childBands[i]->updatePoints();
     }
+}
+
+bool AbsBand::isConnected() {
+    return commsSetUp;
 }

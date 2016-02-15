@@ -25,7 +25,7 @@ private:
 signals:
 
 public slots:
-    void addSnapshotToMotion(qint64, PositionSnapshot);
+    void addSnapshotToMotion(qint32, PositionSnapshot);
     void catchVoiceControlCommand(MessageType);
     void toggleVoiceControl(bool voiceControlOn);
 

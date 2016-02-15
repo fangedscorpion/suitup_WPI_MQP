@@ -26,7 +26,7 @@ public:
     AbsBand* getParentBand() {return parentBand;}
 
     // updating the pose
-    void updateState(AbsState* state);
+    void updateState(AbsState* state, qint32 msgTime);
     void updatePoints();
     void setCalibrationState(AbsState* refState) {pose->calibrate(refState);}
     virtual QVector3D getEndpoint() const {return pose->getEndpoint();}
@@ -39,8 +39,9 @@ public:
     void setActive(bool a) {active = a;}
     bool isActive() const {return active;}
     void handleConnectionStatusChange(ConnectionStatus);
-    void handleMessage(qint64, BandMessage *);
+    void handleMessage(qint32, BandMessage *);
     void sendIfConnected(BandMessage *sendMsg);
+    bool isConnected();
 
 private:
     BandType type;
@@ -49,19 +50,21 @@ private:
     AbsBand* parentBand;
     std::vector<AbsBand*> childBands;
     AbsPose* pose;
+    qint32 poseRecvdTime;
 
     bool commsSetUp;
     bool pendingBandPing;
 signals:
     void dataToSend(BandType, BandMessage *);
     void lowBattery(BandType);
+    void poseRecvd(AbsPose *, BandType, qint32);
 };
 
 
 class ArmBand : public AbsBand {
 public:
     ArmBand(BandType b);
-    void handleMessage(qint64, BandMessage *);
+    void handleMessage(qint32, BandMessage *);
     AbsState* getStateUpdate() const;
     bool moveTo(AbsState* x) const;
 };
@@ -69,7 +72,7 @@ public:
 class Glove : public AbsBand {
 public:
     Glove(BandType b);
-    void handleMessage(qint64, BandMessage *);
+    void handleMessage(qint32, BandMessage *);
     AbsState* getStateUpdate() const;
     bool moveTo(AbsState* x) const;
 };
@@ -77,7 +80,7 @@ public:
 class ShoulderBand : public AbsBand {
 public:
     ShoulderBand(BandType b);
-    void handleMessage(qint64, BandMessage *);
+    void handleMessage(qint32, BandMessage *);
     AbsState* getStateUpdate() const;
     bool moveTo(AbsState* x) const;
 };
@@ -85,7 +88,7 @@ public:
 class ChestBand : public AbsBand {
 public:
     ChestBand();
-    void handleMessage(qint64, BandMessage *);
+    void handleMessage(qint32, BandMessage *);
     AbsState* getStateUpdate() const;
     bool moveTo(AbsState* x) const;
 };
