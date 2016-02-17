@@ -28,13 +28,17 @@ protected:
 
 class QuatPose : public AbsPose{
 public:
-    QuatPose(QVector3D translation, QVector3D rotatedTranslation, QVector3D zAxis) : t(translation), rt(rotatedTranslation), z(zAxis) {points.reserve(3);}
+    QuatPose(QVector3D translation, QVector3D rotatedTranslation, QVector3D zAxis);
     void calibrate(AbsState *calibrationPose);
     AbsState* adjust(AbsState* state) const;
     IError* error(AbsState* goal) const;
     void updatePoints(AbsState* parentState, QVector3D parentEndpoint);
-private:
     QuatState* qqinv(AbsState* q1, AbsState* q2) const;
+
+    QVector3D getT() {return t;}
+    QVector3D getRT() {return rt;}
+    QVector3D getZ() {return z;}
+private:
     QVector3D t;
     QVector3D rt;
     QVector3D z;

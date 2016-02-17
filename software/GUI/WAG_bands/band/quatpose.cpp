@@ -1,17 +1,32 @@
 #include "abspose.h"
 
+QuatPose::QuatPose(QVector3D translation, QVector3D rotatedTranslation, QVector3D zAxis) :
+    t(translation),
+    rt(rotatedTranslation),
+    z(zAxis) {
+    calibration = new QuatState(1,0,0,0);
+    points.reserve(3);
+}
+
 QuatState* QuatPose::qqinv(AbsState* q1, AbsState* q2) const {
+    // multiplies q1 by the inverse of q2
+    QQuaternion* qout = new QQuaternion();
     QQuaternion q = *(static_cast<QuatState*>(q1))*static_cast<QuatState*>(q2)->inverted();
-    QuatState* qState = static_cast<QuatState*>(&q);
+    qout->setScalar(q.scalar());
+    qout->setVector(q.vector());
+    QuatState* qState = static_cast<QuatState*>(qout);
     return qState;
 }
 
 void QuatPose::calibrate(AbsState *calibrationPose) {
+    // calibrationPose comes from externally configured calibration
+    // state (ie where the entire suit calibration configuration is defined)
     calibration = qqinv(current,calibrationPose);
     current = calibrationPose;
 }
 
 AbsState* QuatPose::adjust(AbsState* state) const {
+    // shifts the given state by the calibration state
     return qqinv(state,calibration);
 }
 

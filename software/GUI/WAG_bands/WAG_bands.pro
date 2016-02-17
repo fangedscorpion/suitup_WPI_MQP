@@ -49,7 +49,8 @@ SOURCES += main.cpp\
     band/quaterror.cpp \
     math/reflection.cpp \
     test/testreflection.cpp \
-    test/runtests.cpp
+    test/runtests.cpp \
+    test/testquatpose.cpp
 
 HEADERS  += mainwindow.h \
     positionsnapshot.h \
@@ -80,7 +81,11 @@ HEADERS  += mainwindow.h \
     band/abserror.h \
     math/reflection.h \
     test/testreflection.h \
-    test/runtests.h
+    test/runtests.h \
+    test/testquatpose.h \
+    test/testquatstate.h \
+    test/testquaterror.h \
+    test/testband.h
 
 FORMS    +=
 

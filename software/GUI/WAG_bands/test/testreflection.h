@@ -13,4 +13,4 @@ private slots:
 
 bool qFuzzyCompare2(QQuaternion q1, QQuaternion q2);
 
-#endif // TESTQSTRING_H
+#endif // TESTREFLECTION_H

@@ -1,8 +1,6 @@
-#ifndef MAIN_H
-#define MAIN_H
-
-#include
+#ifndef RUNTESTS_H
+#define RUNTESTS_H
 
 void runtests(int argc, char *argv[]);
 
-#endif // MAIN_H
+#endif // RUNTESTS_H
