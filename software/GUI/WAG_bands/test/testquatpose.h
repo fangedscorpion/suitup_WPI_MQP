@@ -9,8 +9,6 @@ class TestQuatPose: public QObject
 private slots:
     void testQuatPose();
     void testUpdate();
-    void testGetCalibrationState();
-    void testGetState();
     void testGetEndpoint();
 
     void testCalibrate();
