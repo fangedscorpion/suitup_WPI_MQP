@@ -183,7 +183,7 @@ void WAGFile::loadFromFile(QString f) {
     in >> loc;
 //    in >> motionData;
 
-//    qDebug() << "path: " << temp.toStdString().c_str();
+    qDebug() << "path: " << path.c_str();
     qDebug() << "name: " << name.toStdString().c_str();
     qDebug() << "desc: " << description.toStdString().c_str();
     qDebug() << "author: " << author.toStdString().c_str();

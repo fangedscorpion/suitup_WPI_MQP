@@ -181,13 +181,11 @@ void TabContent::updateMotion(WAGFile* file) {
 
 // save the motion file
 void TabContent::saveMotion() {
-//    if (motion->getSaveLocation() == LIBRARY) {
+    if (motion->getSaveLocation() == LIBRARY) {
 
-//    } else if (motion->getSaveLocation() == LOCALLY) {
+    } else if (motion->getSaveLocation() == LOCALLY) {
         motion->saveToFile();
-//    }
-//    closeSaveAs();
-    // TODO: Save da file!
+    }
 }
 
 // OpenGL Motion Viewer window with video slider

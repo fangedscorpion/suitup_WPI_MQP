@@ -7,8 +7,9 @@
 #include <QVector3D>
 #include <QQuaternion>
 
-class AbsPose
-{
+class AbsPose {
+//    Q_PROPERTY(std::vector<QVector3D> points READ getPoints WRITE setPoints)
+
 public:
     AbsPose();
     void update(AbsState* s) {current = adjust(s);}

@@ -8,9 +8,10 @@
 
 class PositionSnapshot
 {
+    Q_PROPERTY(QHash snapshotData READ getSnapshot WRITE PositionSnapshot)
 public:
     PositionSnapshot();
-    //std::map<BandType, Pose> getSnapshot() { return snapshot; }
+    QHash<BandType, AbsPose *> getSnapshot() { return snapshotData; }
     //Pose getPositionOf(BandType b) { return snapshot[b]; }
 private:
     //std::map<BandType, Pose> snapshot;
