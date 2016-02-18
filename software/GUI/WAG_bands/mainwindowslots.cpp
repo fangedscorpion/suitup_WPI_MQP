@@ -105,8 +105,8 @@ void MainWindow::openFromLibrary(USER u) {
 
 // closes the open from library overlay
 void MainWindow::closeOpenFromLibrary() {
-    if (userOptionsWidget == NULL)
-        overlay->hide();
+//    if (userOptionsWidget == NULL)
+//        overlay->hide();
     delete openFromLibWidget;
 }
 
