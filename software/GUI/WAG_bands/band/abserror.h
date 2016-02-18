@@ -15,6 +15,9 @@ public:
     QuatError(QQuaternion err, QQuaternion swing, QQuaternion twist, QVector3D zAxis, QVector3D xAxis);
     QByteArray toMessage() const;
     bool withinTolerance() const;
+    QQuaternion getErr() const {return err;}
+    QQuaternion getSwing() const {return swing;}
+    QQuaternion getTwist() const {return twist;}
 private:
     const QQuaternion err;
     const QQuaternion swing;

@@ -44,6 +44,8 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void setCurrentTabName(QString s);
+
 private:
     Ui::MainWindow *ui;
     void resizeEvent(QResizeEvent* r);
@@ -137,7 +139,7 @@ private slots:
     void indicateConnectionStatusChange(BandType changedBand, ConnectionStatus updatedStatus);
     void catchTabChange(int);
     // statusbar
-    void updateConnectionStatus();
+    void updateConnectionStatus(BandType b, ConnectionStatus c);
     void updateBatteryStatus();
 
 signals:

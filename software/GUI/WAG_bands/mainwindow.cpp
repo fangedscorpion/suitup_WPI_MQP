@@ -70,9 +70,14 @@ MainWindow::MainWindow(QWidget *parent) :
     fullSuit = new Suit(wifiMan);
     connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(indicateConnectionStatusChange(BandType, ConnectionStatus)));
     connect(this, SIGNAL(modeChanged(ACTION_TYPE)), fullSuit, SLOT(catchModeChanged(ACTION_TYPE)));
+    connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(updateConnectionStatus(BandType, ConnectionStatus)));
 }
 
 MainWindow::~MainWindow() {}
+
+void MainWindow::setCurrentTabName(QString s) {
+    tabs->setTabText(tabs->currentIndex(), s);
+}
 
 void MainWindow::addTab(USER u, WAGFile* w, ACTION_TYPE a) {
     TabContent *tab = new TabContent(this, w, u, a, fullSuit);
@@ -103,16 +108,15 @@ QHBoxLayout* MainWindow::createMenuButtons() {
 
 QHBoxLayout* MainWindow::createStatusBar() {
     QHBoxLayout *l = new QHBoxLayout;
-    connectionStatus = new QLabel("2 Bands Disconnected");
+    connectionStatus = new QLabel("All Bands Disconnected");
     connectionStatus->setStyleSheet("QLabel { color : red; }");
+    settingsBtn->setStyleSheet("QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }");
     connectionStatus->setAlignment(Qt::AlignLeft);
     batteryStatus = new QLabel("Battery full");
     batteryStatus->setStyleSheet("QLabel { color : green; }");
     batteryStatus->setAlignment(Qt::AlignRight);
     l->addWidget(connectionStatus);
     l->addWidget(batteryStatus);
-
-    settingsBtn->setStyleSheet("QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }");
     return l;
 }
 

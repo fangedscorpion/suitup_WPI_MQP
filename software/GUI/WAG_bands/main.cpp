@@ -1,7 +1,7 @@
 //#define WAG_TEST
 
 #ifdef WAG_TEST
-    #include "test/runtests.cpp"
+    #include "test/runtests.h"
 
     int main(int argc, char *argv[]){
         runtests(argc, argv);
