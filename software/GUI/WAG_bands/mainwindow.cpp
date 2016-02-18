@@ -75,6 +75,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow() {}
 
+void MainWindow::setCurrentTabName(QString s) {
+    tabs->setTabText(tabs->currentIndex(), s);
+}
+
 void MainWindow::addTab(USER u, WAGFile* w, ACTION_TYPE a) {
     TabContent *tab = new TabContent(this, w, u, a, fullSuit);
     tabs->addTab(tab, tab->getFilename());
