@@ -44,6 +44,8 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void setCurrentTabName(QString s);
+
 private:
     Ui::MainWindow *ui;
     void resizeEvent(QResizeEvent* r);

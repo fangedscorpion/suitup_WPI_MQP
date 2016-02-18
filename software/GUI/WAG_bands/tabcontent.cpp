@@ -167,6 +167,7 @@ QWidget* TabContent::createModeRadios(USER u) {
 }
 
 void TabContent::updateMotion(WAGFile* file) {
+    delete motion;
     motion = file;
     if (user.hasAction(PLAYBACK))
         static_cast<QGroupBox*>(viewerStack->widget(PLAYBACK))->setTitle(QString("Playing: ") + motion->getName());
@@ -174,20 +175,17 @@ void TabContent::updateMotion(WAGFile* file) {
         static_cast<QGroupBox*>(viewerStack->widget(EDIT))->setTitle(QString("Editing: ") + motion->getName());
     if (user.hasAction(RECORD))
         recordGroup->setTitle(QString("Recording: ") + motion->getName());
+    parent->setCurrentTabName(file->getName());
+
 }
 
 // save the motion file
 void TabContent::saveMotion() {
-    if (motion->getSaveLocation() == LIBRARY) {
+//    if (motion->getSaveLocation() == LIBRARY) {
 
-    } else if (motion->getSaveLocation() == LOCALLY) {
-        //     * QFileDialog
-        QFile f( motion->getName() );
-        f.open( QIODevice::WriteOnly );
-        // store data in f
-        f.close();
-    }
-
+//    } else if (motion->getSaveLocation() == LOCALLY) {
+        motion->saveToFile();
+//    }
 //    closeSaveAs();
     // TODO: Save da file!
 }
