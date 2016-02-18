@@ -178,16 +178,11 @@ void TabContent::updateMotion(WAGFile* file) {
 
 // save the motion file
 void TabContent::saveMotion() {
-    if (motion->getSaveLocation() == LIBRARY) {
+//    if (motion->getSaveLocation() == LIBRARY) {
 
-    } else if (motion->getSaveLocation() == LOCALLY) {
-        //     * QFileDialog
-        QFile f( motion->getName() );
-        f.open( QIODevice::WriteOnly );
-        // store data in f
-        f.close();
-    }
-
+//    } else if (motion->getSaveLocation() == LOCALLY) {
+        motion->saveToFile();
+//    }
 //    closeSaveAs();
     // TODO: Save da file!
 }

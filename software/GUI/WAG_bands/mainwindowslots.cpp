@@ -40,7 +40,6 @@ void MainWindow::launchUserOptions(USER u) {
     layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     connect(back, SIGNAL(released()), this, SLOT(closeUserOptions()));
 
-//    connect(this, SIGNAL(resizedWindow()), userOptionsWidget, SLOT(resizeWindow()));
     overlay->show();
     userOptionsWidget->show();
     emit this->resizedWindow();
@@ -88,7 +87,7 @@ void MainWindow::launchOpenFromComputer(USER u) {
     if (!f.trimmed().isEmpty()) { // user clicked "open"
         if (userOptionsWidget != NULL)
             handleUserOptions(u); // setup the top bar
-        WAGFile* w = new WAGFile(f.trimmed(), QString("desc"), QString("author"), QVector<QString>());
+        WAGFile* w = new WAGFile(f.trimmed());
         addTab(u, w, EDIT);
         closeOpenMotionOptions();
     }    

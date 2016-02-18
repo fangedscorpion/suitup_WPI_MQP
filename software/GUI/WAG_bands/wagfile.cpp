@@ -1,5 +1,14 @@
 #include "wagfile.h"
 #include <QDebug>
+#include <QFile>
+
+QDataStream & operator>>(QDataStream & str, SAVE_LOCATION & v) {
+  unsigned int loc = 0;
+  str >> loc;
+  if (loc)
+    v = static_cast<SAVE_LOCATION>(loc);
+  return str;
+}
 
 WAGFile::WAGFile(QString filename, QString in_description, QString author,
                  QVector<QString> in_tags) : description(in_description), author(author), tags(in_tags) {
@@ -15,6 +24,13 @@ WAGFile::WAGFile(QString filename, QString in_description, QString author,
     qDebug()<<motionData.isEmpty();
 }
 
+WAGFile::WAGFile(QString filename) {
+    setFilenameAndPath(filename);
+    motionData = QHash<qint32, PositionSnapshot>();
+    tags = QVector<QString>();
+    loadFromFile(filename);
+}
+
 void WAGFile::updateTags(QString t) {
     tags = t.split("; ").toVector();
 }
@@ -24,6 +40,7 @@ void WAGFile::setFilenameAndPath(QString filename) {
     if (!path.has_extension())
         path += ".wagz";
 
+    // if filename does not include the full path, add the current working directory
     if (!path.has_root_path()) {
         char *buffer = (char *) malloc (2048);
         if (getcwd (buffer, 2048) != buffer) {
@@ -133,3 +150,45 @@ QHash<qint32, PositionSnapshot> WAGFile::getChunkInRange(qint32 startTime, qint3
     return motionDataCopy;
 }
 
+void WAGFile::saveToFile() {
+    QFile file(path.c_str());
+    file.open(QIODevice::WriteOnly);
+    QDataStream out(&file);
+    out.setVersion(QDataStream::Qt_5_5);
+    out << description;
+    out << author;
+    out << tags;
+    out << loc;
+//    out << motionData;
+
+    qDebug() << "path: " << path.c_str();
+    qDebug() << "name: " << name.toStdString().c_str();
+    qDebug() << "desc: " << description.toStdString().c_str();
+    qDebug() << "author: " << author.toStdString().c_str();
+    qDebug() << "loc: " << loc;
+
+
+    file.flush();
+    file.close();
+}
+
+void WAGFile::loadFromFile(QString f) {
+    QFile file(f);
+    file.open(QIODevice::ReadOnly);
+    QDataStream in(&file);
+    in.setVersion(QDataStream::Qt_5_5);
+    in >> description;
+    in >> author;
+    in >> tags;
+    in >> loc;
+//    in >> motionData;
+
+//    qDebug() << "path: " << temp.toStdString().c_str();
+    qDebug() << "name: " << name.toStdString().c_str();
+    qDebug() << "desc: " << description.toStdString().c_str();
+    qDebug() << "author: " << author.toStdString().c_str();
+    qDebug() << "loc: " << loc;
+
+
+    file.close();
+}

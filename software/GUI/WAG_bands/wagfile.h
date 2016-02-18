@@ -23,6 +23,8 @@ public:
             QVector<QString> in_tags);
     WAGFile(QString filename, QString description, QString author,
             QString in_tags);
+    // Loads WAGFile content from the given filename.
+    WAGFile(QString filename);
     QString getName() {return name;}
     QString getDescription() {return description;}
     QString getAuthor() {return author;}
@@ -42,8 +44,10 @@ public:
     PositionSnapshot getSnapshot(qint32 snapTime, SNAP_CLOSENESS retrieveType);
     QHash<qint32, PositionSnapshot> getChunkInRange(qint32 startTime, qint32 endTime);
 
+    void saveToFile();
+
 private:
-    // the path to the file location
+    // the path to the file (includes the file)
     boost::filesystem::path path;
     // the file's actual name x.wagz
     QString name;
@@ -54,4 +58,5 @@ private:
     QHash<qint32, PositionSnapshot> motionData;
 
     void setFilenameAndPath(QString filename);
+    void loadFromFile(QString f);
 };
