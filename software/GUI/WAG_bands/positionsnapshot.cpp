@@ -12,6 +12,6 @@ void PositionSnapshot::addMapping(BandType band, AbsPose *pose) {
 
 
 QSet<BandType> PositionSnapshot::getRecordedBands() {
-    return new QSet(snapshotData.keys());
+    return QSet<BandType>::fromList(snapshotData.keys());
 }
 

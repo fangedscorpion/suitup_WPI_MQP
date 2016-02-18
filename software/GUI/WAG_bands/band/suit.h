@@ -40,12 +40,15 @@ private:
     void processVoiceControlMessage(BandMessage *msg);
     QList<qint32> activeSnapTimes;
     PositionSnapshot activeSnapshot;
+    QSet<BandType> getConnectedBands();
 
 public slots:
     void catchStartPlayback();
     void catchStopPlayback();
     void playSnapshot(PositionSnapshot);
     void propagateLowBattery(BandType);
+
+    void catchNewPose(AbsPose* newPose, BandType bandForPose, qint32 poseTime);
 signals:
     void positionSnapshotReady(qint32, PositionSnapshot);
     void voiceControlCommandReady(MessageType);

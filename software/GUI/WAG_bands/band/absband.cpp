@@ -23,6 +23,8 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
 }
 
 void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
+
+    AbsState *newState;
     switch(recvdMessage->getMessageType()) {
     case BAND_CONNECTING:
         if (!commsSetUp) {
@@ -38,7 +40,7 @@ void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
         break;
     case BAND_POSITION_UPDATE:
         // parse into absstate
-        AbsState *newState = new AbsState();// deserialize TODO
+        newState = new AbsState(); // SERIALIZE TODO
         updateState(newState, msgTimestamp);
         // should probably handle in subclass
         break;

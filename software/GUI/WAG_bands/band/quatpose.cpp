@@ -46,3 +46,6 @@ void QuatPose::updatePoints(AbsState* parentState, QVector3D parentEndPoint) {
     points[2] = transTotal;
 }
 
+size_t QuatPose::objectSize() {
+    return sizeof(QuatPose);
+}

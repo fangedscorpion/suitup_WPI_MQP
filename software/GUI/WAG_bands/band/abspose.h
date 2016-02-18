@@ -20,7 +20,7 @@ public:
     virtual AbsState* adjust(AbsState* state) const = 0;
     virtual IError* error(AbsState* goal) const = 0;
     virtual void updatePoints(AbsState* parentState, QVector3D parentEndpoint) = 0;
-    virtual size_t objSize();
+    virtual size_t objectSize() = 0;
 protected:
     std::vector<QVector3D> points;
     AbsState* current;
@@ -34,7 +34,7 @@ public:
     AbsState* adjust(AbsState* state) const;
     IError* error(AbsState* goal) const;
     void updatePoints(AbsState* parentState, QVector3D parentEndpoint);
-    size_t objSize() { return sizeof(QuatPose);
+    size_t objectSize();
 private:
     QuatState* qqinv(AbsState* q1, AbsState* q2) const;
     QVector3D t;

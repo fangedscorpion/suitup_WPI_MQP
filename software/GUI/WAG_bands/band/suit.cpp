@@ -258,7 +258,7 @@ void Suit::propagateLowBattery(BandType chargeBand) {
 
 
 void Suit::catchNewPose(AbsPose* newPose, BandType bandForPose, qint32 poseTime) {
-    AbsPose *copiedPose = malloc(newPose->objSize()); // not sure if can do this for abs
+    AbsPose *copiedPose = (AbsPose*) malloc(newPose->objectSize()); // not sure if can do this for abs
     // TODO figure out where to free this
     *copiedPose = *newPose;
     activeSnapshot.addMapping(bandForPose, copiedPose);
@@ -289,7 +289,7 @@ void Suit::catchNewPose(AbsPose* newPose, BandType bandForPose, qint32 poseTime)
 
 
 QSet<BandType> Suit::getConnectedBands() {
-    QSet<BandType> connectedBands = new QSet<BandType>();
+    QSet<BandType> connectedBands = QSet<BandType>();
     QList<BandType> possibleBands = bands.keys();
     for (int i = 0; i < possibleBands.length(); i++) {
         if (bands[possibleBands[i]]->isConnected()) {
