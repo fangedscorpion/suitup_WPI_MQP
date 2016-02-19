@@ -7,8 +7,8 @@ ClosableLabel::ClosableLabel(QString text){
     QPushButton *close = new QPushButton("×");
     close->setStyleSheet("QPushButton{font-weight: bold; border:none; } QPushButton:hover{border: 1px solid grey; border-radius: 2px;}");
     close->setFocusPolicy(Qt::NoFocus);
-    close->setMaximumWidth(22);
-    close->setMinimumWidth(22);
+    close->setMaximumWidth(16);
+    close->setMinimumWidth(16);
     label = text;
     QLabel *lbl = new QLabel(text);
     QFontMetrics fm(this->font());
@@ -31,6 +31,8 @@ ClosableLabel::ClosableLabel(QString text){
     this->setMaximumHeight(33); // buttonHeight-2
     this->setFrameStyle(QFrame::Panel | QFrame::Raised);
     this->setLineWidth(2);
+
+    connect(close, SIGNAL(released()), this, SLOT(close()));
 }
 
 // Can be used in a resize event to add '...' after text
@@ -38,3 +40,7 @@ ClosableLabel::ClosableLabel(QString text){
 //QFontMetrics metrics(label->font());
 //QString elidedText = metrics.elidedText(text, Qt::ElideRight, label->width());
 //label->setText(elidedText);
+
+void ClosableLabel::closeLabel() {
+
+}
