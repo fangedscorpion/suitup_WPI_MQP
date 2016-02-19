@@ -13,4 +13,5 @@ public:
 
 private:
     QString label;
+
 };

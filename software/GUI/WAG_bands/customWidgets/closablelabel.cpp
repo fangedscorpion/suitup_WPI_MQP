@@ -3,7 +3,7 @@
 #include <QLabel>
 #include <QHBoxLayout>
 
-ClosableLabel::ClosableLabel(QString text){
+ClosableLabel::ClosableLabel(QString text) {
     QPushButton *close = new QPushButton("×");
     close->setStyleSheet("QPushButton{font-weight: bold; border:none; } QPushButton:hover{border: 1px solid grey; border-radius: 2px;}");
     close->setFocusPolicy(Qt::NoFocus);
@@ -33,6 +33,7 @@ ClosableLabel::ClosableLabel(QString text){
     this->setLineWidth(2);
 
     connect(close, SIGNAL(released()), this, SLOT(close()));
+    this->setAttribute(Qt::WA_DeleteOnClose);
 }
 
 // Can be used in a resize event to add '...' after text
@@ -41,6 +42,3 @@ ClosableLabel::ClosableLabel(QString text){
 //QString elidedText = metrics.elidedText(text, Qt::ElideRight, label->width());
 //label->setText(elidedText);
 
-void ClosableLabel::closeLabel() {
-
-}
