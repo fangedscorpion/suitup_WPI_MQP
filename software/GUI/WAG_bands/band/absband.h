@@ -37,7 +37,7 @@ public:
     virtual AbsState* getStateUpdate() const = 0;
 
     BandType getType() const {return type;}
-    virtual bool moveTo(AbsState* x) const = 0;
+    bool moveTo(AbsState* x);
     void setActive(bool a) {active = a;}
     bool isActive() const {return active;}
     void handleConnectionStatusChange(ConnectionStatus);
@@ -47,6 +47,9 @@ public:
     PositionRepresentation getPositionRepresentation() { return positionRep; }
 
     static AbsState *deserialize(QByteArray byteRep, PositionRepresentation positionRep);
+
+public slots:
+    void catchTolChange(int newTol);
 
 protected:
     AbsPose *pose;
@@ -61,10 +64,12 @@ private:
 
     bool commsSetUp;
     bool pendingBandPing;
+    int tolerance;
 signals:
     void dataToSend(BandType, BandMessage *);
     void lowBattery(BandType);
-    void poseRecvd(AbsPose *, BandType, qint32);
+    void poseRecvd(AbsState *, BandType, qint32);
+    void withinTolerance(BandType);
 };
 
 
@@ -73,23 +78,23 @@ public:
     ArmBand(BandType b);
     void handleMessage(qint32, BandMessage *);
     AbsState* getStateUpdate() const;
-    bool moveTo(AbsState* x) const;
+    bool moveTo(AbsState* x);
 };
 
-class Glove : public AbsBand {
+/* class Glove : public AbsBand {
 public:
     Glove(BandType b);
     void handleMessage(qint32, BandMessage *);
     AbsState* getStateUpdate() const;
-    bool moveTo(AbsState* x) const;
-};
+    bool moveTo(AbsState* x);
+}; */
 
 class ShoulderBand : public AbsBand {
 public:
     ShoulderBand(BandType b);
     void handleMessage(qint32, BandMessage *);
     AbsState* getStateUpdate() const;
-    bool moveTo(AbsState* x) const;
+    bool moveTo(AbsState* x);
 };
 
 class ChestBand : public AbsBand {
@@ -97,14 +102,14 @@ public:
     ChestBand();
     void handleMessage(qint32, BandMessage *);
     AbsState* getStateUpdate() const;
-    bool moveTo(AbsState* x) const;
+    bool moveTo(AbsState* x);
 };
 
 class NullBand : public AbsBand {
 public:
     NullBand();
     AbsState* getStateUpdate() const {return NULL;}
-    bool moveTo(AbsState* x) const {return false;}
+    bool moveTo(AbsState* x) {return false;}
     AbsState* getState();
     QVector3D getEndpoint();
 };

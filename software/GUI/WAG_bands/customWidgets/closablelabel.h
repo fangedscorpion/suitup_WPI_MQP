@@ -10,6 +10,7 @@ class ClosableLabel : public QLabel
 public:
     ClosableLabel(QString text);
     QString getText() { return label;}
+    void closeLabel();
 
 private:
     QString label;

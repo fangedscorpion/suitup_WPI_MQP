@@ -8,12 +8,11 @@
 
 ChestBand::ChestBand() : AbsBand(CHEST) {}
 
-bool ChestBand::moveTo(AbsState* x) const {
+bool ChestBand::moveTo(AbsState* x) {
     if (!isActive())
         return true;
 
-    //qDebug()<<(static_cast<QQuaternion*>(x)->x)<<" \n";
-    return true;
+    return AbsBand::moveTo(x);
 }
 
 AbsState *ChestBand::getStateUpdate() const {
@@ -24,9 +23,9 @@ AbsState *ChestBand::getStateUpdate() const {
 
 void ChestBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     switch(recvdMessage->getMessageType()) {
-        case BAND_POSITION_UPDATE:
+        //case BAND_POSITION_UPDATE:
         // do something
-        break;
+        //break;
     case VOICE_CONTROL:
         // do something else
         break;

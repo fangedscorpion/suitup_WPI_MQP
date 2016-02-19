@@ -67,7 +67,7 @@ void AbsBand::updateState(AbsState* state, qint32 msgTime){
     poseRecvdTime = msgTime;
     pose->update(state);
     updatePoints();
-    emit poseRecvd(pose, type, poseRecvdTime);
+    emit poseRecvd(pose->getState(), type, poseRecvdTime);
 }
 
 void AbsBand::updatePoints(){
@@ -90,10 +90,33 @@ AbsState *AbsBand::deserialize(QByteArray byteRep, PositionRepresentation positi
         quatFloat[1] = ((byteRep[2] << 8) | byteRep[3]) / 16384.0f;
         quatFloat[2] = ((byteRep[4] << 8) | byteRep[5]) / 16384.0f;
         quatFloat[3] = ((byteRep[6] << 8) | byteRep[7]) / 16384.0f;
+        for (int i = 0; i < 4; i++) {
+            if (quatFloat[i] >= 2) {
+                quatFloat[i] = -4 + quatFloat[i];
+            }
+        }
         state = new QuatState(QVector4D(quatFloat[0], quatFloat[1], quatFloat[2], quatFloat[3]));
         break;
     default:
         break;
     }
     return state;
+}
+
+bool AbsBand::moveTo(AbsState* x) {
+    if (!isActive())
+        return true;
+
+    IError * posError = pose->error(x);
+    QByteArray msgData = posError->toMessage();
+    BandMessage *newMsg = new BandMessage(POSITION_ERROR, msgData);
+    emit dataToSend(type, newMsg);
+    if (posError->withinTolerance(tolerance)) {
+        return true;
+    }
+    return false;
+}
+
+void AbsBand::catchTolChange(int newTol) {
+    tolerance = newTol;
 }

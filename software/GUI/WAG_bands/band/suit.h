@@ -28,10 +28,6 @@ private:
     AbsBand* refBand;
     WifiManager *wifiMan;
     ACTION_TYPE currentMode;
-
-    QByteArray trimNewLineAtEnd(QByteArray trimFrom);
-
-    QByteArray reverseByteArray(QByteArray reverseThis);
     bool collectingData;
     int pingTimerID;
     void toggleCollecting(bool);
@@ -48,11 +44,14 @@ public slots:
     void playSnapshot(PositionSnapshot);
     void propagateLowBattery(BandType);
 
-    void catchNewPose(AbsPose* newPose, BandType bandForPose, qint32 poseTime);
+    void catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime);
+    void catchToleranceChange(int);
 signals:
     void positionSnapshotReady(qint32, PositionSnapshot);
     void voiceControlCommandReady(MessageType);
     void bandHasLowBattery(BandType);
+    void toleranceChanged(int);
+    void positionMet();
 protected:
     void timerEvent(QTimerEvent *);
 

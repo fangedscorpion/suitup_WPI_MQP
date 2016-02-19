@@ -3,7 +3,7 @@
 
 #include <map>
 #include <QHash>
-#include "band/abspose.h"
+#include "band/absstate.h"
 #include "band/absband.h"
 
 class PositionSnapshot
@@ -11,13 +11,13 @@ class PositionSnapshot
     Q_PROPERTY(QHash snapshotData READ getSnapshot WRITE PositionSnapshot)
 public:
     PositionSnapshot();
-    QHash<BandType, AbsPose *> getSnapshot() { return snapshotData; }
+    QHash<BandType, AbsState *> getSnapshot() { return snapshotData; }
     //Pose getPositionOf(BandType b) { return snapshot[b]; }
-    void addMapping(BandType band, AbsPose *pose);
+    void addMapping(BandType band, AbsState *pose);
     QSet<BandType> getRecordedBands();
 private:
     //std::map<BandType, Pose> snapshot;
-    QHash<BandType, AbsPose *> snapshotData;
+    QHash<BandType, AbsState *> snapshotData;
 };
 
 #endif // POSITIONSNAPSHOT_H

@@ -13,12 +13,11 @@ ShoulderBand::ShoulderBand(BandType b) : AbsBand(b) {
     }
 }
 
-bool ShoulderBand::moveTo(AbsState* x) const {
+bool ShoulderBand::moveTo(AbsState* x) {
     if (!isActive())
         return true;
 
-    //qDebug()<<(static_cast<QQuaternion*>(x)->x)<<"\n";
-    return true;
+    return AbsBand::moveTo(x);
 }
 
 AbsState *ShoulderBand::getStateUpdate() const {

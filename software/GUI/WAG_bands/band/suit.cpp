@@ -46,7 +46,8 @@ Suit::Suit(WifiManager *comms):QObject() {
     QList<BandType> allBands = bands.keys();
     for (int i = 0; i < allBands.length(); i++) {
         connect(bands[allBands[i]], SIGNAL(dataToSend(BandType,BandMessage*)), this, SLOT(sendData(BandType, BandMessage*)));
-        connect(bands[allBands[i]], SIGNAL(poseRecvd(AbsPose*,BandType,qint32)), this, SLOT(catchNewPose(AbsPose*, BandType, qint32)));
+        connect(bands[allBands[i]], SIGNAL(poseRecvd(AbsState *,BandType,qint32)), this, SLOT(catchNewPose(AbsPose*, BandType, qint32)));
+        connect(this, SIGNAL(toleranceChanged(int)), bands[allBands[i]], SLOT(catchTolChange(int)));
     }
 
     collectingData = true;
@@ -55,8 +56,7 @@ Suit::Suit(WifiManager *comms):QObject() {
 
 
 void Suit::getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTimestamp) {
-    // process QByteArray here or let individual band do it?
-    // pass data to band
+
     AbsBand *targetBand = getBand(band);
     // send data to target band
     qDebug()<<band;
@@ -68,52 +68,16 @@ void Suit::getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTime
     } else {
         targetBand->handleMessage(elapsedTime, data);
     }
-
-    //wifiMan->sendMessageToBand(band, newMsg);
-
 }
-
-QByteArray Suit::trimNewLineAtEnd(QByteArray trimFrom) {
-    bool keepTrimming = true;
-    while (keepTrimming) {
-        if (trimFrom[trimFrom.length() - 1] == '\n') {
-            trimFrom.remove(trimFrom.length() - 1, 1);
-        }
-        // uncomment if we should also remove trailing spaces
-        //else if (trimFrom[trimFrom.length() - 1] == ' '){
-        //    trimFrom.remove(trimFrom.length() - 1, 1);
-        //}
-        else  {
-            keepTrimming = false;
-        }
-    }
-    qDebug()<<trimFrom;
-    return trimFrom;
-}
-
-QByteArray Suit::reverseByteArray(QByteArray reverseThis) {
-    qDebug()<<"Reversing "<<reverseThis;
-    for (int i = 0; i < reverseThis.length()/2; i++) {
-        char tmp = reverseThis[i];
-        reverseThis[i] = reverseThis[reverseThis.length() - 1 -i];
-        reverseThis[reverseThis.length() - 1 -i] = tmp;
-    }
-    qDebug()<<"Reversed: "<<reverseThis;
-    return reverseThis;
-}
-
 
 AbsBand* Suit::getBand(BandType bt) {
     return bands[bt];
 }
-// bool playback(vector<PositionSnapshot> motion)
-// PositionSnapshot takeSnapshot( )
-// void calibrate( )
-// map<enum, BandCalibration> getCalibrationData( )
 
 void Suit::handleConnectionStatusChange(BandType band, ConnectionStatus newStatus) {
     bands[band]->handleConnectionStatusChange(newStatus);
 }
+
 void Suit::sendData(BandType destBand, BandMessage* sendMsg) {
     wifiMan->sendMessageToBand(destBand, sendMsg);
 }
@@ -193,13 +157,17 @@ void Suit::playSnapshot(PositionSnapshot goToSnap) {
     // probably want to set a snapshot to match, and then when we receive a full snapshot, we can compare
     // and send back error
     QList<BandType> connected = getConnectedBands().toList();
-    QHash<BandType, AbsPose*> snapshotData = goToSnap.getSnapshot();
+    QHash<BandType, AbsState*> snapshotData = goToSnap.getSnapshot();
+    bool posWithinTol = true;
     for (int i = 0; i < connected.size(); i++){
         BandType getBand = connected[i];
         if (snapshotData.contains(getBand)) {
-            // calculate error
-            // send to band
+            posWithinTol &= bands[getBand]->moveTo(snapshotData[getBand]);
         }
+    }
+
+    if (posWithinTol) {
+        emit positionMet();
     }
 }
 
@@ -266,11 +234,14 @@ void Suit::propagateLowBattery(BandType chargeBand) {
 }
 
 
-void Suit::catchNewPose(AbsPose* newPose, BandType bandForPose, qint32 poseTime) {
-    AbsPose *copiedPose = (AbsPose*) malloc(newPose->objectSize()); // not sure if can do this for abs
+void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime) {
+    /* AbsState *copiedPose = (AbsState*) malloc(newPose->objectSize()); // not sure if can do this for abs
     // TODO figure out where to free this
-    *copiedPose = *newPose;
-    activeSnapshot.addMapping(bandForPose, copiedPose);
+    *copiedPose = *newPose; */
+
+    // NOTE: may have to make sure changes to this absstate later are not reflected in position snapshot
+
+    activeSnapshot.addMapping(bandForPose, newPose);
 
     activeSnapTimes.append(poseTime);
 
@@ -307,4 +278,8 @@ QSet<BandType> Suit::getConnectedBands() {
     }
 
     return connectedBands;
+}
+
+void Suit::catchToleranceChange(int newTol) {
+    emit toleranceChanged(newTol);
 }
