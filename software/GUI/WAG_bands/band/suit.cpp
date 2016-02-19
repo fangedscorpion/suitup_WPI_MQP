@@ -197,7 +197,7 @@ void Suit::playSnapshot(PositionSnapshot goToSnap) {
     for (int i = 0; i < connected.size(); i++){
         BandType getBand = connected[i];
         if (snapshotData.contains(getBand)) {
-            bands[i]->moveTo(snapshotData[getBand]);
+            bands[getBand]->moveTo(snapshotData[getBand]);
         }
     }
 }
