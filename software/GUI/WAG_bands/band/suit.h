@@ -49,10 +49,13 @@ public slots:
     void propagateLowBattery(BandType);
 
     void catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime);
+    void catchToleranceChange(int);
 signals:
     void positionSnapshotReady(qint32, PositionSnapshot);
     void voiceControlCommandReady(MessageType);
     void bandHasLowBattery(BandType);
+    void toleranceChanged(int);
+    void positionMet();
 protected:
     void timerEvent(QTimerEvent *);
 

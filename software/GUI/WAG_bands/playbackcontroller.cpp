@@ -30,10 +30,15 @@ PlaybackController::PlaybackController(Suit *newSuitObj) {
     connect(this, SIGNAL(endOfTimeRange()), this, SLOT(togglePlay()));
     connect(suitObj, SIGNAL(voiceControlCommandReady(MessageType)), this, SLOT(catchVoiceControlCommand(MessageType)));
     connect(this, SIGNAL(frameChanged(qint32)), this, SLOT(catchFrameUpdate(qint32)));
+    connect(this, SIGNAL(toleranceChanged(int)), suitObj, SLOT(catchToleranceChange(int)));
     qDebug("HERE     88888");
 }
 
 void PlaybackController::togglePlay() {
+    qDebug("Toggling play");
+    qDebug()<<"Playing: "<<playing;
+    qDebug()<<"Last frame num: "<<lastFrameNum;
+    qDebug()<<"Current frame num: "<<currentFrame;
     if (!((!playing) && (currentFrame >= lastFrameNum))) {
         playing = !playing;
         qDebug("toggle play");
@@ -68,7 +73,9 @@ void PlaybackController::toggleSuitActive(bool active) {
             connect(this, SIGNAL(startPlayback()), suitObj, SLOT(catchStopPlayback()));
         } else {
             // disconnect everything from suit obj
-            disconnect(this, 0, suitObj, 0);
+            disconnect(this, SIGNAL(goToSnapshot(PositionSnapshot)), suitObj, 0);
+            disconnect(this, SIGNAL(startPlayback()), suitObj, 0);
+            disconnect(this, SIGNAL(startPlayback()), suitObj, 0);
         }
     }
     suitActive = active;
@@ -95,7 +102,9 @@ void PlaybackController::setStepThroughInterval(int newInterval) {
 
 void PlaybackController::setStepThroughTolerance(float newTolerance) {
     // bounds checking
-    stepThroughTolerance = newTolerance;
+    stepThroughTolerance = newTolerance/10 + 1;
+    qDebug()<<"New tolerance "<<newTolerance;
+    emit toleranceChanged(stepThroughTolerance);
 }
 
 // sliderPosition seems to be 0-99
@@ -143,11 +152,12 @@ void PlaybackController::timerEvent(QTimerEvent *event) {
         // TO DO remove once we can actually do position met
         emit metPosition();
     } else {
-        currentFrame += 1;
+        currentFrame += MILLISECONDS_PER_FRAME;
         qDebug()<<"Current frame: "<<currentFrame;//<<", event: "<<event;
         if (currentFrame < lastFrameNum) {
             qDebug("HERE2");
-            emit frameChanged(currentFrame*MILLISECONDS_PER_FRAME);
+            qDebug()<<"Current frame "<<currentFrame;
+            emit frameChanged(currentFrame);
         }
         else {
             emit endOfTimeRange();
