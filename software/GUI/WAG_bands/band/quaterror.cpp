@@ -1,10 +1,12 @@
 #include "abserror.h"
 #include <math.h>
 
-#define SWING_TOL 0.08725  // 5 deg
-#define TWIST_TOL 0.08725  // 5 deg
+#define MAX_SWING_TOL 0.35 // 20 deg
+#define MAX_TWIST_TOL 0.35 // 20 deg
 #define MAX_SWING_ERR 0.35 // 20 deg
 #define MAX_TWIST_ERR 0.35 // 20 deg
+
+#define MAX_TOL_INPUT 10
 
 QuatError::QuatError(QQuaternion err, QQuaternion swing, QQuaternion twist, QVector3D zAxis, QVector3D xAxis) : err(err), swing(swing), twist(twist), z(zAxis), x(xAxis) {
 
@@ -24,13 +26,13 @@ QByteArray QuatError::toMessage() const {
     if (abs(*twistAngle) > MAX_TWIST_ERR)
         *twistAngle /= abs(*twistAngle); // = +/- 1
     else
-        *twistAngle /= MAX_TWIST_ERR; // [-1,+1]
+        *twistAngle /= MAX_TWIST_ERR; // on interval [-1,+1]
 
     // swing error between -1 and 1
     if (abs(*swingAngle) > MAX_SWING_ERR)
         *swingAngle /= abs(*swingAngle); // = +/- 1
     else
-        *swingAngle /= MAX_SWING_ERR; // [-1,+1]
+        *swingAngle /= MAX_SWING_ERR; // on interval [-1,+1]
 
     // message contains swing orientation, swing error, twist error
     QByteArray msg = QByteArray();
@@ -41,14 +43,23 @@ QByteArray QuatError::toMessage() const {
     return msg;
 }
 
-bool QuatError::withinTolerance() const {
+bool QuatError::withinTolerance(int tolerance) const {
+    // tolerance betweeen 1 and 10
+    // this function assumes a tolerance of 0 to require 0 error
     float *swingAngle = new float(), *twistAngle = new float();
     QVector3D *swingAxis = new QVector3D(), *twistAxis = new QVector3D();
     swing.getAxisAndAngle(swingAxis,swingAngle);
     twist.getAxisAndAngle(twistAxis,twistAngle);
 
-    // tentative implementation
-    return (abs(*twistAngle) < TWIST_TOL) && (abs(*swingAngle < SWING_TOL));
+    bool twistWithinTol = abs(*twistAngle) < (MAX_TWIST_TOL*tolerance/MAX_TOL_INPUT);
+    bool swingWithinTol = abs(*swingAngle) < (MAX_SWING_TOL*tolerance/MAX_TOL_INPUT);
+
+    delete swingAxis;
+    delete twistAxis;
+    delete swingAngle;
+    delete twistAngle;
+
+    return twistWithinTol && swingWithinTol;
 }
 
 
