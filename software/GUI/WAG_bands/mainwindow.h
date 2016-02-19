@@ -99,7 +99,7 @@ private:
     QLineEdit *newMotionNameTextEdit;
     QTextEdit *newMotionDescription;
     QLineEdit *newMotionTagsTextEdit;
-    QLabel *newMotionTagsLabel;
+    QHBoxLayout *newMotionTagsLayout;
     QPushButton *addTagBtn;
     QPushButton *createNewMotionBtn;
     void createNewMotion(USER u);

@@ -255,14 +255,15 @@ void MainWindow::createNewMotion(USER u) {
     addTagBtn = new QPushButton("Add Keyword");
     addTagBtn->setEnabled(false);
     addTagBtn->setMinimumHeight(buttonHeight);
+    addTagBtn->setMaximumWidth(110);
     // tags list
     QHBoxLayout *t2 = new QHBoxLayout;
     QLabel *l4 = new QLabel;
     l4->setMinimumWidth(100);
     t2->addWidget(l4, -1);
-    t2->addWidget(addTagBtn, -1);
-    newMotionTagsLabel = new QLabel;
-    t2->addWidget(newMotionTagsLabel, 1);
+    t2->addWidget(addTagBtn, 1, Qt::AlignLeft);
+    newMotionTagsLayout = new QHBoxLayout;
+    t2->addLayout(newMotionTagsLayout, 2);
 
     QHBoxLayout *btns = new QHBoxLayout;
     createNewMotionBtn = new smartPushButton("Create", u);
@@ -291,8 +292,6 @@ void MainWindow::createNewMotion(USER u) {
     connect(newMotionNameTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewMotionRequiredInput(QString)));
     connect(newMotionDescription, SIGNAL(textChanged()), this, SLOT(handleNewMotionRequiredInput()));
     connect(newMotionTagsTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewMotionRequiredInput(QString)));
-    //    connect(this, SIGNAL(resizedWindow()), newMotionWidget, SLOT(resizeWindow()));
-    //    emit this->resizedWindow();
 }
 
 void MainWindow::createOpenMotionOptions(USER u) {
