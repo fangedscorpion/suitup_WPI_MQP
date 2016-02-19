@@ -5,7 +5,7 @@ PositionSnapshot::PositionSnapshot()
 
 }
 
-void PositionSnapshot::addMapping(BandType band, AbsPose *pose) {
+void PositionSnapshot::addMapping(BandType band, AbsState *pose) {
     snapshotData[band] = pose;
 }
 

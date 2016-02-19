@@ -67,7 +67,7 @@ void AbsBand::updateState(AbsState* state, qint32 msgTime){
     poseRecvdTime = msgTime;
     pose->update(state);
     updatePoints();
-    emit poseRecvd(pose, type, poseRecvdTime);
+    emit poseRecvd(pose->getState(), type, poseRecvdTime);
 }
 
 void AbsBand::updatePoints(){
@@ -96,4 +96,15 @@ AbsState *AbsBand::deserialize(QByteArray byteRep, PositionRepresentation positi
         break;
     }
     return state;
+}
+
+bool AbsBand::moveTo(AbsState* x) {
+    if (!isActive())
+        return true;
+
+    IError * posError = pose->error(x);
+    QByteArray msgData = posError->toMessage();
+    BandMessage *newMsg = new BandMessage(POSITION_ERROR, msgData);
+    emit dataToSend(type, newMsg);
+    return true;
 }

@@ -48,7 +48,7 @@ public slots:
     void playSnapshot(PositionSnapshot);
     void propagateLowBattery(BandType);
 
-    void catchNewPose(AbsPose* newPose, BandType bandForPose, qint32 poseTime);
+    void catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime);
 signals:
     void positionSnapshotReady(qint32, PositionSnapshot);
     void voiceControlCommandReady(MessageType);

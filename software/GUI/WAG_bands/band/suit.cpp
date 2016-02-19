@@ -46,7 +46,7 @@ Suit::Suit(WifiManager *comms):QObject() {
     QList<BandType> allBands = bands.keys();
     for (int i = 0; i < allBands.length(); i++) {
         connect(bands[allBands[i]], SIGNAL(dataToSend(BandType,BandMessage*)), this, SLOT(sendData(BandType, BandMessage*)));
-        connect(bands[allBands[i]], SIGNAL(poseRecvd(AbsPose*,BandType,qint32)), this, SLOT(catchNewPose(AbsPose*, BandType, qint32)));
+        connect(bands[allBands[i]], SIGNAL(poseRecvd(AbsState *,BandType,qint32)), this, SLOT(catchNewPose(AbsPose*, BandType, qint32)));
     }
 
     collectingData = true;
@@ -193,12 +193,11 @@ void Suit::playSnapshot(PositionSnapshot goToSnap) {
     // probably want to set a snapshot to match, and then when we receive a full snapshot, we can compare
     // and send back error
     QList<BandType> connected = getConnectedBands().toList();
-    QHash<BandType, AbsPose*> snapshotData = goToSnap.getSnapshot();
+    QHash<BandType, AbsState*> snapshotData = goToSnap.getSnapshot();
     for (int i = 0; i < connected.size(); i++){
         BandType getBand = connected[i];
         if (snapshotData.contains(getBand)) {
-            // calculate error
-            // send to band
+            bands[i]->moveTo(snapshotData[getBand]);
         }
     }
 }
@@ -266,11 +265,14 @@ void Suit::propagateLowBattery(BandType chargeBand) {
 }
 
 
-void Suit::catchNewPose(AbsPose* newPose, BandType bandForPose, qint32 poseTime) {
-    AbsPose *copiedPose = (AbsPose*) malloc(newPose->objectSize()); // not sure if can do this for abs
+void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime) {
+    /* AbsState *copiedPose = (AbsState*) malloc(newPose->objectSize()); // not sure if can do this for abs
     // TODO figure out where to free this
-    *copiedPose = *newPose;
-    activeSnapshot.addMapping(bandForPose, copiedPose);
+    *copiedPose = *newPose; */
+
+    // NOTE: may have to make sure changes to this absstate later are not reflected in position snapshot
+
+    activeSnapshot.addMapping(bandForPose, newPose);
 
     activeSnapTimes.append(poseTime);
 

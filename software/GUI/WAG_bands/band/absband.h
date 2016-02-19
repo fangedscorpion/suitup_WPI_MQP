@@ -37,7 +37,7 @@ public:
     virtual AbsState* getStateUpdate() const = 0;
 
     BandType getType() const {return type;}
-    virtual bool moveTo(AbsState* x) const = 0;
+    bool moveTo(AbsState* x);
     void setActive(bool a) {active = a;}
     bool isActive() const {return active;}
     void handleConnectionStatusChange(ConnectionStatus);
@@ -64,7 +64,7 @@ private:
 signals:
     void dataToSend(BandType, BandMessage *);
     void lowBattery(BandType);
-    void poseRecvd(AbsPose *, BandType, qint32);
+    void poseRecvd(AbsState *, BandType, qint32);
 };
 
 
