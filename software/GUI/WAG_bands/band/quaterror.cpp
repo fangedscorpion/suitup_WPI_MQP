@@ -41,7 +41,7 @@ QByteArray QuatError::toMessage() const {
     return msg;
 }
 
-bool QuatError::withinTolerance() const {
+bool QuatError::withinTolerance(int tolerance) const {
     float *swingAngle = new float(), *twistAngle = new float();
     QVector3D *swingAxis = new QVector3D(), *twistAxis = new QVector3D();
     swing.getAxisAndAngle(swingAxis,swingAngle);

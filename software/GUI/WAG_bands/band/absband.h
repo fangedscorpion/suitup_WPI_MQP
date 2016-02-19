@@ -48,6 +48,9 @@ public:
 
     static AbsState *deserialize(QByteArray byteRep, PositionRepresentation positionRep);
 
+public slots:
+    void catchTolChange(int newTol);
+
 protected:
     AbsPose *pose;
 private:
@@ -61,10 +64,12 @@ private:
 
     bool commsSetUp;
     bool pendingBandPing;
+    int tolerance;
 signals:
     void dataToSend(BandType, BandMessage *);
     void lowBattery(BandType);
     void poseRecvd(AbsState *, BandType, qint32);
+    void withinTolerance(BandType);
 };
 
 

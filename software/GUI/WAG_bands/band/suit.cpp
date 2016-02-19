@@ -43,10 +43,12 @@ Suit::Suit(WifiManager *comms):QObject() {
     connect(wifiMan, SIGNAL(dataAvailable(BandType,BandMessage*, QElapsedTimer)), this, SLOT(getRecvdData(BandType,BandMessage*,QElapsedTimer)));
     connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(handleConnectionStatusChange(BandType, ConnectionStatus)));
 
+
     QList<BandType> allBands = bands.keys();
     for (int i = 0; i < allBands.length(); i++) {
         connect(bands[allBands[i]], SIGNAL(dataToSend(BandType,BandMessage*)), this, SLOT(sendData(BandType, BandMessage*)));
         connect(bands[allBands[i]], SIGNAL(poseRecvd(AbsState *,BandType,qint32)), this, SLOT(catchNewPose(AbsPose*, BandType, qint32)));
+        connect(this, SIGNAL(toleranceChanged(int)), bands[allBands[i]], SLOT(catchTolChange(int)));
     }
 
     collectingData = true;
@@ -309,4 +311,8 @@ QSet<BandType> Suit::getConnectedBands() {
     }
 
     return connectedBands;
+}
+
+void Suit::catchToleranceChange(int newTol) {
+    emit toleranceChanged(newTol);
 }

@@ -40,6 +40,7 @@ signals:
     void playbackStateChanged(bool playing);
     void goToSnapshot(PositionSnapshot);
     void changeSliderMax(qint32);
+    void toleranceChanged(int);
 
 
 private:
@@ -54,7 +55,7 @@ private:
     WAGFile *activeMotion;
     //Time timeToHoldFinalFrame;
     //Time stepThroughInterval;
-    float stepThroughTolerance;
+    int stepThroughTolerance;
     int timerId;
     int lastFrameNum;
     Suit *suitObj;
