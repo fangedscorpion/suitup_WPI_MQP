@@ -105,8 +105,8 @@ void TabContent::createMotionInfoWindow() {
     l4->setMinimumWidth(100);
     t2->addWidget(l4, -1);
     t2->addWidget(addTagBtn, -1);
-    infoMotionTagsLabel = new QLabel();
-    t2->addWidget(infoMotionTagsLabel, 1);
+    infoMotionTagsLayout = new QHBoxLayout();
+    t2->addLayout(infoMotionTagsLayout, 1);
 
     QHBoxLayout *btns = new QHBoxLayout;
     saveMotionInfoBtn = new smartPushButton("Save");
@@ -150,7 +150,7 @@ void TabContent::launchMotionInfo() {
 
 void TabContent::saveMotionInfo() {
     WAGFile* w = new WAGFile(infoMotionNameTextEdit->text(), infoMotionDescription->toPlainText(),
-                             motion->getAuthor(), infoMotionTagsLabel->text().split("; ").toVector());
+                             motion->getAuthor(), infoMotionTagsLayout->children().toVector());
     updateMotion(w);
     closeMotionInfo();
 }

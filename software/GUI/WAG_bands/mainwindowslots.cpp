@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "customWidgets/smartpushbutton.h"
 #include "tabcontent.h"
+#include "customWidgets/closablelabel.h"
 #include <sstream>
 
 // Launch window with user's options based on which type of user was selected
@@ -74,7 +75,8 @@ void MainWindow::handleUserOptions(USER u) {
 void MainWindow::addTag() {
     if (newMotionTagsTextEdit->text().isEmpty())
         return;
-    newMotionTagsLabel->setText(newMotionTagsTextEdit->text() + "; " + newMotionTagsLabel->text());
+
+    newMotionTagsLayout->addWidget(new ClosableLabel(newMotionTagsTextEdit->text()));
     newMotionTagsTextEdit->clear();
     addTagBtn->setEnabled(false);
 }
@@ -97,7 +99,7 @@ void MainWindow::launchOpenFromComputer(USER u) {
 void MainWindow::openFromLibrary(USER u) {
     // TODO: open file somehow...
     // based on file, open and get metadata
-    WAGFile* w = new WAGFile(QString("filename"), QString("desc"), QString("author"), QVector<QString>());
+    WAGFile* w = new WAGFile(QString("filename"), QString("desc"), QString("author"), QVector<QObject*>());
     addTab(u, w, EDIT);
     closeOpenFromLibrary();
     closeOpenMotionOptions();
@@ -161,7 +163,8 @@ void MainWindow::launchNewMotion(USER u) {
 
 // creates the new file and opens a tab
 void MainWindow::saveNewMotion(USER u) {
-    WAGFile* w = new WAGFile(newMotionNameTextEdit->text(), newMotionDescription->toPlainText(), QString("author"), newMotionTagsLabel->text().split("; ").toVector());
+    WAGFile* w = new WAGFile(newMotionNameTextEdit->text(), newMotionDescription->toPlainText(),
+                             QString("author"), newMotionTagsLayout->children().toVector());
     addTab(u, w, RECORD);
     closeNewMotion();
 }

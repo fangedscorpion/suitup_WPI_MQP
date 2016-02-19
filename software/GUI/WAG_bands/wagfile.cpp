@@ -10,15 +10,11 @@ QDataStream & operator>>(QDataStream & str, SAVE_LOCATION & v) {
   return str;
 }
 
-WAGFile::WAGFile(QString filename, QString in_description, QString author,
-                 QVector<QString> in_tags) : description(in_description), author(author), tags(in_tags) {
-    setFilenameAndPath(filename);
-    motionData = QHash<qint32, PositionSnapshot>();
-}
 
 WAGFile::WAGFile(QString filename, QString in_description, QString author,
-                 QString in_tags) : description(in_description), author(author) {
-    tags = in_tags.split("; ").toVector();
+                 QVector<QObject*> in_tags) : description(in_description), author(author) {
+    tags = QVector<ClosableLabel*>();
+    replaceTags(in_tags);
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot>();
     qDebug()<<motionData.isEmpty();
@@ -27,12 +23,16 @@ WAGFile::WAGFile(QString filename, QString in_description, QString author,
 WAGFile::WAGFile(QString filename) {
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot>();
-    tags = QVector<QString>();
+    tags = QVector<ClosableLabel*>();
     loadFromFile(filename);
 }
 
-void WAGFile::updateTags(QString t) {
-    tags = t.split("; ").toVector();
+void WAGFile::replaceTags(QVector<QObject*> t) {
+    tags.clear();
+    int i;
+    for (i=0; i < t.length(); i++) {
+        tags.push_back(static_cast<ClosableLabel*>(t[i]));
+    }
 }
 
 void WAGFile::setFilenameAndPath(QString filename) {
@@ -157,7 +157,7 @@ void WAGFile::saveToFile() {
     out.setVersion(QDataStream::Qt_5_5);
     out << description;
     out << author;
-    out << tags;
+//    out << tags;
     out << loc;
 //    out << motionData;
 
@@ -166,6 +166,7 @@ void WAGFile::saveToFile() {
     qDebug() << "desc: " << description.toStdString().c_str();
     qDebug() << "author: " << author.toStdString().c_str();
     qDebug() << "loc: " << loc;
+    qDebug() << "tags: " << tags;
 
 
     file.flush();
@@ -179,7 +180,7 @@ void WAGFile::loadFromFile(QString f) {
     in.setVersion(QDataStream::Qt_5_5);
     in >> description;
     in >> author;
-    in >> tags;
+//    in >> tags;
     in >> loc;
 //    in >> motionData;
 
@@ -188,7 +189,7 @@ void WAGFile::loadFromFile(QString f) {
     qDebug() << "desc: " << description.toStdString().c_str();
     qDebug() << "author: " << author.toStdString().c_str();
     qDebug() << "loc: " << loc;
-
+    qDebug() << "tags: " << tags;
 
     file.close();
 }

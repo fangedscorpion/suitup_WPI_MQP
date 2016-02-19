@@ -116,7 +116,7 @@ private:
     QLineEdit* infoMotionNameTextEdit;
     QTextEdit* infoMotionDescription;
     QLineEdit* infoMotionTagsTextEdit;
-    QLabel* infoMotionTagsLabel;
+    QHBoxLayout* infoMotionTagsLayout;
 
 public slots:
     void show(ACTION_TYPE a);

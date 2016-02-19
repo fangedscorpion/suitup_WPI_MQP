@@ -50,7 +50,8 @@ SOURCES += main.cpp\
     math/reflection.cpp \
     test/testreflection.cpp \
     test/runtests.cpp \
-    test/testquatpose.cpp
+    test/testquatpose.cpp \
+    customWidgets/closablelabel.cpp
 
 HEADERS  += mainwindow.h \
     positionsnapshot.h \
@@ -85,7 +86,8 @@ HEADERS  += mainwindow.h \
     test/testquatpose.h \
     test/testquatstate.h \
     test/testquaterror.h \
-    test/testband.h
+    test/testband.h \
+    customWidgets/closablelabel.h
 
 FORMS    +=
 
