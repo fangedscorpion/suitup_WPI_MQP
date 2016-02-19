@@ -22,7 +22,7 @@ AbsState *ChestBand::getStateUpdate() const {
     return static_cast<QuatState*>(new QQuaternion());
 }
 
-void ChestBand::handleMessage(qint64 msgTimestamp, BandMessage *recvdMessage) {
+void ChestBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     switch(recvdMessage->getMessageType()) {
         case BAND_POSITION_UPDATE:
         // do something

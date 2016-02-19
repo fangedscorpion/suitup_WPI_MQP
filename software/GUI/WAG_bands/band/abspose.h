@@ -21,6 +21,7 @@ public:
     virtual void calibrate(AbsState* calibrationPose) = 0;
     virtual AbsState* adjust(AbsState* state) const = 0;
     virtual IError* error(AbsState* goal) const = 0;
+    virtual size_t objectSize() = 0;
     virtual void updatePoints(AbsState* parentState, QVector3D* parentEndpoint) = 0;
 protected:
     std::vector<QVector3D*> points;
@@ -34,12 +35,14 @@ public:
     void calibrate(AbsState *calibrationPose);
     AbsState* adjust(AbsState* state) const;
     IError* error(AbsState* goal) const;
-    void updatePoints(AbsState* parentState, QVector3D* parentEndpoint);
-    QuatState* qqinv(AbsState* q1, AbsState* q2) const;
-
+    size_t objectSize();
     QVector3D getT() {return t;}
     QVector3D getRT() {return rt;}
     QVector3D getZ() {return z;}
+
+    void updatePoints(AbsState* parentState, QVector3D* parentEndpoint);
+    QuatState* qqinv(AbsState* q1, AbsState* q2) const;
+
 private:
     QVector3D t;
     QVector3D rt;

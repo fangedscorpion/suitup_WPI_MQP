@@ -22,7 +22,9 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
     }
 }
 
-void AbsBand::handleMessage(qint64 msgTimestamp, BandMessage *recvdMessage) {
+void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
+
+    AbsState *newState;
     switch(recvdMessage->getMessageType()) {
     case BAND_CONNECTING:
         if (!commsSetUp) {
@@ -37,6 +39,9 @@ void AbsBand::handleMessage(qint64 msgTimestamp, BandMessage *recvdMessage) {
         qDebug("Recvd band ping");
         break;
     case BAND_POSITION_UPDATE:
+        // parse into absstate
+        newState = deserialize(recvdMessage->getMessageData(), this->getPositionRepresentation());
+        updateState(newState, msgTimestamp);
         // should probably handle in subclass
         break;
     case LOW_BATTERY_UPDATE:
@@ -58,9 +63,11 @@ void AbsBand::sendIfConnected(BandMessage *sendMsg) {
     }
 }
 
-void AbsBand::updateState(AbsState* state){
+void AbsBand::updateState(AbsState* state, qint32 msgTime){
+    poseRecvdTime = msgTime;
     pose->update(state);
     updatePoints();
+    emit poseRecvd(pose, type, poseRecvdTime);
 }
 
 void AbsBand::updatePoints(){
@@ -68,4 +75,25 @@ void AbsBand::updatePoints(){
     for (unsigned int i = 0; i < childBands.size(); i++){
         childBands[i]->updatePoints();
     }
+}
+
+bool AbsBand::isConnected() {
+    return commsSetUp;
+}
+
+AbsState *AbsBand::deserialize(QByteArray byteRep, PositionRepresentation positionRep) {
+    AbsState *state;
+    switch (positionRep) {
+    case QUATERNION:
+        float quatFloat[4];
+        quatFloat[0] = ((byteRep[0] << 8) | byteRep[1]) / 16384.0f;
+        quatFloat[1] = ((byteRep[2] << 8) | byteRep[3]) / 16384.0f;
+        quatFloat[2] = ((byteRep[4] << 8) | byteRep[5]) / 16384.0f;
+        quatFloat[3] = ((byteRep[6] << 8) | byteRep[7]) / 16384.0f;
+        state = new QuatState(QVector4D(quatFloat[0], quatFloat[1], quatFloat[2], quatFloat[3]));
+        break;
+    default:
+        break;
+    }
+    return state;
 }

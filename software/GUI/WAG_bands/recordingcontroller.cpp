@@ -4,7 +4,7 @@
 RecordingController::RecordingController(Suit *newSuitObj) : QObject()
 {
     suitObj = newSuitObj;
-    connect(suitObj, SIGNAL(positionSnapshotReady(qint64,PositionSnapshot)), this, SLOT(addSnapshotToMotion(qint64, PositionSnapshot)));
+    connect(suitObj, SIGNAL(positionSnapshotReady(qint32,PositionSnapshot)), this, SLOT(addSnapshotToMotion(qint32, PositionSnapshot)));
     connect(suitObj, SIGNAL(voiceControlCommandReady(MessageType)), this, SLOT(catchVoiceControlCommand(MessageType)));
     voiceEnabled = false;
 }
@@ -20,7 +20,7 @@ void RecordingController::startRecording() {
     suitObj->startOrStopMode(START_RECORDING);
 }
 
-void RecordingController::addSnapshotToMotion(qint64 snapTime, PositionSnapshot snap) {
+void RecordingController::addSnapshotToMotion(qint32 snapTime, PositionSnapshot snap) {
     qint32 newSnapTime = (qint32) snapTime;
     currentMotionData[newSnapTime] = snap;
 }

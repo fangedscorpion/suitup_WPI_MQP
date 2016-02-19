@@ -27,11 +27,11 @@ AbsState *ShoulderBand::getStateUpdate() const {
     return static_cast<QuatState*>(new QQuaternion());
 }
 
-void ShoulderBand::handleMessage(qint64 msgTimestamp, BandMessage *recvdMessage) {
+void ShoulderBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     switch(recvdMessage->getMessageType()) {
-        case BAND_POSITION_UPDATE:
+       // case BAND_POSITION_UPDATE:
         // do something
-        break;
+        //break;
     default:
         AbsBand::handleMessage(msgTimestamp, recvdMessage);
     }

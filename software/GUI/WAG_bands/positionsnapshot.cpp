@@ -5,6 +5,16 @@ PositionSnapshot::PositionSnapshot()
 
 }
 
+void PositionSnapshot::addMapping(BandType band, AbsPose *pose) {
+    snapshotData[band] = pose;
+}
+
+
+
+QSet<BandType> PositionSnapshot::getRecordedBands() {
+    return QSet<BandType>::fromList(snapshotData.keys());
+}
+
 //QDataStream &operator<<(QDataStream &ds, const PositionSnapshot &obj) {
 //    for(int i=0; i<obj.metaObject()->propertyCount(); ++i) {
 //        if(obj.metaObject()->property(i).isStored(&obj)) {
@@ -24,3 +34,4 @@ PositionSnapshot::PositionSnapshot()
 //    }
 //    return ds;
 //}
+
