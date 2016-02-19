@@ -261,7 +261,8 @@ void MainWindow::createNewMotion(USER u) {
     QLabel *l4 = new QLabel;
     l4->setMinimumWidth(100);
     t2->addWidget(l4, -1);
-    t2->addWidget(addTagBtn, 1, Qt::AlignLeft);
+    t2->addWidget(addTagBtn);
+    t2->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
     newMotionTagsLayout = new QHBoxLayout;
     t2->addLayout(newMotionTagsLayout, 2);
 

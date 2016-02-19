@@ -2,8 +2,9 @@
 
 #include <QFrame>
 #include <QWidget>
+#include <QLabel>
 
-class ClosableLabel : public QFrame
+class ClosableLabel : public QLabel
 {
     Q_OBJECT
 public:
