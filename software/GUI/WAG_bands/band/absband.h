@@ -6,11 +6,13 @@
 #include "abspose.h"
 #include "communications/bandmessage.h"
 #include <QObject>
+#include "abserror.h"
 
 
 enum BandType {LEFT_HAND, RIGHT_HAND, LEFT_LOWER_ARM, RIGHT_LOWER_ARM,
                 LEFT_UPPER_ARM, RIGHT_UPPER_ARM, LEFT_SHOULDER, RIGHT_SHOULDER,
                 CHEST,_NULL};
+enum PositionRepresentation {QUATERNION};
 
 class AbsBand:public QObject
 {
@@ -42,14 +44,19 @@ public:
     void handleMessage(qint32, BandMessage *);
     void sendIfConnected(BandMessage *sendMsg);
     bool isConnected();
+    PositionRepresentation getPositionRepresentation() { return positionRep; }
 
+    static AbsState *deserialize(QByteArray byteRep, PositionRepresentation positionRep);
+
+protected:
+    AbsPose *pose;
 private:
     BandType type;
+    PositionRepresentation positionRep;
     bool active;
 
     AbsBand* parentBand;
     std::vector<AbsBand*> childBands;
-    AbsPose* pose;
     qint32 poseRecvdTime;
 
     bool commsSetUp;

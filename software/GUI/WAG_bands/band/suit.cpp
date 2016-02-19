@@ -192,6 +192,15 @@ void Suit::playSnapshot(PositionSnapshot goToSnap) {
     // TODO
     // probably want to set a snapshot to match, and then when we receive a full snapshot, we can compare
     // and send back error
+    QList<BandType> connected = getConnectedBands().toList();
+    QHash<BandType, AbsPose*> snapshotData = goToSnap.getSnapshot();
+    for (int i = 0; i < connected.size(); i++){
+        BandType getBand = connected[i];
+        if (snapshotData.contains(getBand)) {
+            // calculate error
+            // send to band
+        }
+    }
 }
 
 void Suit::catchStopPlayback() {

@@ -2,6 +2,7 @@
 #include "abspose.h"
 #include <stdio.h>
 #include <stdexcept>
+#include "abserror.h"
 // ArmBand class should ONLY be extended into either:
 // LEFT_UPPER_ARM
 // RIGHT_UPPER_ARM
@@ -18,6 +19,9 @@ ArmBand::ArmBand(BandType b) : AbsBand(b) {
 bool ArmBand::moveTo(AbsState* x) const {
     if (!isActive())
         return true;
+
+    IError * posError = this->pose->error(x);
+    // serialize error
 
     //printf("%f \n", static_cast<Quaternion*>(x)->x * static_cast<Quaternion*>(getCalibrationPose())->x);
     return true;

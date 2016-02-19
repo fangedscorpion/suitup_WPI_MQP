@@ -12,6 +12,7 @@ public:
     QuatState(float scalar, const QVector3D &vector) : QQuaternion(scalar,vector){}
     QuatState(float scalar, float xpos, float ypos, float zpos) : QQuaternion(scalar,xpos,ypos,zpos){}
     QuatState() : QQuaternion(){}
+
 };
 
 #endif // ABSSTATE_H

@@ -34,3 +34,4 @@ QSet<BandType> PositionSnapshot::getRecordedBands() {
 //    }
 //    return ds;
 //}
+

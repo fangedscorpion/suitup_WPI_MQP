@@ -40,7 +40,7 @@ void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
         break;
     case BAND_POSITION_UPDATE:
         // parse into absstate
-        newState = new AbsState(); // SERIALIZE TODO
+        newState = deserialize(recvdMessage->getMessageData(), this->getPositionRepresentation());
         updateState(newState, msgTimestamp);
         // should probably handle in subclass
         break;
@@ -79,4 +79,21 @@ void AbsBand::updatePoints(){
 
 bool AbsBand::isConnected() {
     return commsSetUp;
+}
+
+AbsState *AbsBand::deserialize(QByteArray byteRep, PositionRepresentation positionRep) {
+    AbsState *state;
+    switch (positionRep) {
+    case QUATERNION:
+        float quatFloat[4];
+        quatFloat[0] = ((byteRep[0] << 8) | byteRep[1]) / 16384.0f;
+        quatFloat[1] = ((byteRep[2] << 8) | byteRep[3]) / 16384.0f;
+        quatFloat[2] = ((byteRep[4] << 8) | byteRep[5]) / 16384.0f;
+        quatFloat[3] = ((byteRep[6] << 8) | byteRep[7]) / 16384.0f;
+        state = new QuatState(QVector4D(quatFloat[0], quatFloat[1], quatFloat[2], quatFloat[3]));
+        break;
+    default:
+        break;
+    }
+    return state;
 }
