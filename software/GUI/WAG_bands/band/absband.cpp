@@ -90,7 +90,11 @@ AbsState *AbsBand::deserialize(QByteArray byteRep, PositionRepresentation positi
         quatFloat[1] = ((byteRep[2] << 8) | byteRep[3]) / 16384.0f;
         quatFloat[2] = ((byteRep[4] << 8) | byteRep[5]) / 16384.0f;
         quatFloat[3] = ((byteRep[6] << 8) | byteRep[7]) / 16384.0f;
-        for (int i = 0; i < 4; i++) if (q[i] >= 2) q[i] = -4 + q[i];
+        for (int i = 0; i < 4; i++) {
+            if (quatFloat[i] >= 2) {
+                quatFloat[i] = -4 + quatFloat[i];
+            }
+        }
         state = new QuatState(QVector4D(quatFloat[0], quatFloat[1], quatFloat[2], quatFloat[3]));
         break;
     default:
