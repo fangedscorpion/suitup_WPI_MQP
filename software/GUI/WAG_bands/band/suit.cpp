@@ -196,11 +196,16 @@ void Suit::playSnapshot(PositionSnapshot goToSnap) {
     // and send back error
     QList<BandType> connected = getConnectedBands().toList();
     QHash<BandType, AbsState*> snapshotData = goToSnap.getSnapshot();
+    bool posWithinTol = true;
     for (int i = 0; i < connected.size(); i++){
         BandType getBand = connected[i];
         if (snapshotData.contains(getBand)) {
-            bands[getBand]->moveTo(snapshotData[getBand]);
+            posWithinTol &= bands[getBand]->moveTo(snapshotData[getBand]);
         }
+    }
+
+    if (posWithinTol) {
+        emit positionMet();
     }
 }
 

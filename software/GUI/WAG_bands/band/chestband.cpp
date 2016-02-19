@@ -8,12 +8,11 @@
 
 ChestBand::ChestBand() : AbsBand(CHEST) {}
 
-bool ChestBand::moveTo(AbsState* x) const {
+bool ChestBand::moveTo(AbsState* x) {
     if (!isActive())
         return true;
 
-    //qDebug()<<(static_cast<QQuaternion*>(x)->x)<<" \n";
-    return true;
+    return AbsBand::moveTo(x);
 }
 
 AbsState *ChestBand::getStateUpdate() const {

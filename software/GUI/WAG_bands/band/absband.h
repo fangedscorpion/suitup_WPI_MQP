@@ -78,23 +78,23 @@ public:
     ArmBand(BandType b);
     void handleMessage(qint32, BandMessage *);
     AbsState* getStateUpdate() const;
-    bool moveTo(AbsState* x) const;
+    bool moveTo(AbsState* x);
 };
 
-class Glove : public AbsBand {
+/* class Glove : public AbsBand {
 public:
     Glove(BandType b);
     void handleMessage(qint32, BandMessage *);
     AbsState* getStateUpdate() const;
-    bool moveTo(AbsState* x) const;
-};
+    bool moveTo(AbsState* x);
+}; */
 
 class ShoulderBand : public AbsBand {
 public:
     ShoulderBand(BandType b);
     void handleMessage(qint32, BandMessage *);
     AbsState* getStateUpdate() const;
-    bool moveTo(AbsState* x) const;
+    bool moveTo(AbsState* x);
 };
 
 class ChestBand : public AbsBand {
@@ -102,14 +102,14 @@ public:
     ChestBand();
     void handleMessage(qint32, BandMessage *);
     AbsState* getStateUpdate() const;
-    bool moveTo(AbsState* x) const;
+    bool moveTo(AbsState* x);
 };
 
 class NullBand : public AbsBand {
 public:
     NullBand();
     AbsState* getStateUpdate() const {return NULL;}
-    bool moveTo(AbsState* x) const {return false;}
+    bool moveTo(AbsState* x) {return false;}
     AbsState* getState();
     QVector3D getEndpoint();
 };

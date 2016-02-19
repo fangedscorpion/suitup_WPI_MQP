@@ -16,15 +16,10 @@ ArmBand::ArmBand(BandType b) : AbsBand(b) {
     }
 }
 
-bool ArmBand::moveTo(AbsState* x) const {
+bool ArmBand::moveTo(AbsState* x) {
     if (!isActive())
         return true;
-
-    IError * posError = this->pose->error(x);
-    // serialize error
-
-    //printf("%f \n", static_cast<Quaternion*>(x)->x * static_cast<Quaternion*>(getCalibrationPose())->x);
-    return true;
+    return AbsBand::moveTo(x);
 }
 
 AbsState *ArmBand::getStateUpdate() const {

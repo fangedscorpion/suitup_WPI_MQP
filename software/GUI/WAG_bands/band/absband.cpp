@@ -107,9 +107,9 @@ bool AbsBand::moveTo(AbsState* x) {
     BandMessage *newMsg = new BandMessage(POSITION_ERROR, msgData);
     emit dataToSend(type, newMsg);
     if (posError->withinTolerance(tolerance)) {
-
+        return true;
     }
-    return true;
+    return false;
 }
 
 void AbsBand::catchTolChange(int newTol) {
