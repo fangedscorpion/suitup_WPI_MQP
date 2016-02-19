@@ -31,9 +31,9 @@ AbsState *ArmBand::getStateUpdate() const {
 
 void ArmBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     switch(recvdMessage->getMessageType()) {
-        case BAND_POSITION_UPDATE:
+        //case BAND_POSITION_UPDATE:
         // do something
-        break;
+        //break;
     default:
         AbsBand::handleMessage(msgTimestamp, recvdMessage);
     }
