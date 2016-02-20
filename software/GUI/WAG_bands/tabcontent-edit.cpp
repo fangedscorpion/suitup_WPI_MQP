@@ -74,6 +74,9 @@ void TabContent::createMotionInfoWindow() {
     f->addWidget(l1, -1);
     infoMotionNameTextEdit = new QLineEdit;
     infoMotionNameTextEdit->setStyleSheet(textInputStyleWhite);
+    infoMotionNameTextEdit->setText(motion->getName().mid(0, motion->getName().length()-5));
+    infoMotionNameTextEdit->selectAll();
+    infoMotionNameTextEdit->setFocus();
     f->addWidget(infoMotionNameTextEdit);
 
     // description
@@ -85,6 +88,7 @@ void TabContent::createMotionInfoWindow() {
     infoMotionDescription = new QTextEdit;
     infoMotionDescription->setStyleSheet(textInputStyleWhite);
     infoMotionDescription->setMinimumHeight(150);
+    infoMotionDescription->setText(motion->getDescription());
     d->addWidget(infoMotionDescription);
 
     // tags input
@@ -104,9 +108,14 @@ void TabContent::createMotionInfoWindow() {
     QLabel *l4 = new QLabel;
     l4->setMinimumWidth(100);
     t2->addWidget(l4, -1);
-    t2->addWidget(addTagBtn, -1);
+    t2->addWidget(addTagBtn);
+    t2->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
     infoMotionTagsLayout = new QHBoxLayout();
-    t2->addLayout(infoMotionTagsLayout, 1);
+    // populate the motion tags
+    QVector<ClosableLabel*> c = motion->getTagLabels();
+    for (int i=0; i < c.size(); i++)
+        infoMotionTagsLayout->addWidget(c[i]);
+    t2->addLayout(infoMotionTagsLayout, 2);
 
     QHBoxLayout *btns = new QHBoxLayout;
     saveMotionInfoBtn = new smartPushButton("Save");
@@ -123,6 +132,8 @@ void TabContent::createMotionInfoWindow() {
     layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     layout->addLayout(btns);
 
+    motionInfoWidget->show();
+
     // only connect handleUserOptions when the user selection window is visible to user
     connect(saveMotionInfoBtn, SIGNAL(released()), this, SLOT(saveMotionInfo()));
     connect(cancel, SIGNAL(released()), this, SLOT(closeMotionInfo()));
@@ -137,27 +148,24 @@ void TabContent::createMotionInfoWindow() {
 
 void TabContent::launchMotionInfo() {
     overlay->show();
-    motionInfoWidget->show();
-    motionInfoWidget->raise();
-
-    infoMotionNameTextEdit->setText(motion->getName().mid(0, motion->getName().length()-5));
-    infoMotionNameTextEdit->selectAll();
-    infoMotionNameTextEdit->setFocus();
-    infoMotionDescription->setText(motion->getDescription());
-//    infoMotionTagsLabel->setText(motion->getTagsString());
-
+    createMotionInfoWindow();
 }
 
 void TabContent::saveMotionInfo() {
     WAGFile* w = new WAGFile(infoMotionNameTextEdit->text(), infoMotionDescription->toPlainText(),
-                             motion->getAuthor(), infoMotionTagsLayout->children().toVector());
-    updateMotion(w);
+                             motion->getAuthor(), infoMotionTagsLayout);
+    // new motion info
+    delete motion;
+    motion = w;
+    updateMotion();
+    saveMotion();
     closeMotionInfo();
 }
 
 void TabContent::closeMotionInfo() {
     overlay->hide();
-    motionInfoWidget->hide();
+//    motionInfoWidget->hide();
+    delete motionInfoWidget;
 }
 
 // Needed for QLineEdit's textChanged(QString) SIGNAL
@@ -180,4 +188,13 @@ void TabContent::handleNewMotionRequiredInput() {
     // enables the create button if the description AND filename text boxes are filled
     saveMotionInfoBtn->setEnabled(!infoMotionDescription->toPlainText().isEmpty() &&
                                  !infoMotionNameTextEdit->text().isEmpty());
+}
+
+void TabContent::addTag() {
+    if (infoMotionTagsTextEdit->text().isEmpty())
+        return;
+
+    infoMotionTagsLayout->addWidget(new ClosableLabel(infoMotionTagsTextEdit->text()));
+    infoMotionTagsTextEdit->clear();
+    addTagBtn->setEnabled(false);
 }

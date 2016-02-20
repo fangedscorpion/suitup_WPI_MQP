@@ -263,7 +263,7 @@ void MainWindow::createNewMotion(USER u) {
     t2->addWidget(l4, -1);
     t2->addWidget(addTagBtn);
     t2->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
-    newMotionTagsLayout = new QHBoxLayout;
+    newMotionTagsLayout = new QHBoxLayout();
     t2->addLayout(newMotionTagsLayout, 2);
 
     QHBoxLayout *btns = new QHBoxLayout;

@@ -71,11 +71,13 @@ void PlaybackController::toggleSuitActive(bool active) {
             connect(this, SIGNAL(goToSnapshot(PositionSnapshot)), suitObj, SLOT(playSnapshot(PositionSnapshot)));
             connect(this, SIGNAL(startPlayback()), suitObj, SLOT(catchStartPlayback()));
             connect(this, SIGNAL(startPlayback()), suitObj, SLOT(catchStopPlayback()));
+            connect(suitObj, SIGNAL(positionMet()), this, SLOT(positionMet()));
         } else {
             // disconnect everything from suit obj
             disconnect(this, SIGNAL(goToSnapshot(PositionSnapshot)), suitObj, 0);
             disconnect(this, SIGNAL(startPlayback()), suitObj, 0);
             disconnect(this, SIGNAL(startPlayback()), suitObj, 0);
+            disconnect(suitObj, SIGNAL(positionMet()), this, 0);
         }
     }
     suitActive = active;
@@ -166,13 +168,15 @@ void PlaybackController::timerEvent(QTimerEvent *event) {
 }
 
 void PlaybackController::positionMet() {
-    currentFrame += stepThroughInterval;
-    if (currentFrame < lastFrameNum) {
-        qDebug()<<"Frame: "<<currentFrame;
-        emit frameChanged(currentFrame);
-    }
-    else {
-        emit endOfTimeRange();
+    if (playing && stepThrough) {
+        currentFrame += stepThroughInterval*MILLISECONDS_PER_FRAME;
+        if (currentFrame < lastFrameNum) {
+            qDebug()<<"Frame: "<<currentFrame;
+            emit frameChanged(currentFrame);
+        }
+        else {
+            emit endOfTimeRange();
+        }
     }
 }
 

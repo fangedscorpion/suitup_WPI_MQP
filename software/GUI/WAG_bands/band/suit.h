@@ -28,10 +28,6 @@ private:
     AbsBand* refBand;
     WifiManager *wifiMan;
     ACTION_TYPE currentMode;
-
-    QByteArray trimNewLineAtEnd(QByteArray trimFrom);
-
-    QByteArray reverseByteArray(QByteArray reverseThis);
     bool collectingData;
     int pingTimerID;
     void toggleCollecting(bool);

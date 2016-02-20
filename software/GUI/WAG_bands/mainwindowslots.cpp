@@ -99,7 +99,7 @@ void MainWindow::launchOpenFromComputer(USER u) {
 void MainWindow::openFromLibrary(USER u) {
     // TODO: open file somehow...
     // based on file, open and get metadata
-    WAGFile* w = new WAGFile(QString("filename"), QString("desc"), QString("author"), QVector<QObject*>());
+    WAGFile* w = new WAGFile(QString("filename"), QString("desc"), QString("author"), QVector<QString>());
     addTab(u, w, EDIT);
     closeOpenFromLibrary();
     closeOpenMotionOptions();
@@ -164,7 +164,7 @@ void MainWindow::launchNewMotion(USER u) {
 // creates the new file and opens a tab
 void MainWindow::saveNewMotion(USER u) {
     WAGFile* w = new WAGFile(newMotionNameTextEdit->text(), newMotionDescription->toPlainText(),
-                             QString("author"), newMotionTagsLayout->children().toVector());
+                             QString("author"), newMotionTagsLayout);
     addTab(u, w, RECORD);
     closeNewMotion();
 }
