@@ -152,8 +152,9 @@ void TabContent::launchMotionInfo() {
 }
 
 void TabContent::saveMotionInfo() {
+    // UPDATE THIS LATER. vvv LOCALLY needs to be based on user input
     WAGFile* w = new WAGFile(infoMotionNameTextEdit->text(), infoMotionDescription->toPlainText(),
-                             motion->getAuthor(), infoMotionTagsLayout);
+                             motion->getAuthor(), infoMotionTagsLayout, LOCALLY);
     // new motion info
     delete motion;
     motion = w;

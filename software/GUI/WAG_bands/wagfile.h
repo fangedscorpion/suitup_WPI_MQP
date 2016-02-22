@@ -22,9 +22,9 @@ class WAGFile {
 public:
 
     WAGFile(QString filename, QString description, QString author,
-            QVector<QString> in_tags);
+            QVector<QString> in_tags, SAVE_LOCATION saveLoc);
     WAGFile(QString filename, QString description, QString author,
-            QHBoxLayout* container);
+            QHBoxLayout* container, SAVE_LOCATION saveLoc);
     WAGFile(QString filename); // Loads WAGFile content from the given filename.
     QString getName() {return name;}
     QString getDescription() {return description;}
