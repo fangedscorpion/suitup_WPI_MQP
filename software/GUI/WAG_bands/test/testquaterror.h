@@ -7,6 +7,9 @@ class TestQuatError: public QObject
 {
     Q_OBJECT
 private slots:
+    void testQuatError();
+    void testToMessage();
+    void testWithinTolerance();
 };
 
 #endif // TESTQUATERROR_H

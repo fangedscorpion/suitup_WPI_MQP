@@ -51,7 +51,9 @@ SOURCES += main.cpp\
     test/testreflection.cpp \
     test/runtests.cpp \
     test/testquatpose.cpp \
-    customWidgets/closablelabel.cpp
+    customWidgets/closablelabel.cpp \
+    test/testquatstate.cpp \
+    test/testquaterror.cpp
 
 HEADERS  += mainwindow.h \
     positionsnapshot.h \

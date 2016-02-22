@@ -95,7 +95,7 @@ AbsState *AbsBand::deserialize(QByteArray byteRep, PositionRepresentation positi
                 quatFloat[i] = -4 + quatFloat[i];
             }
         }
-        state = new QuatState(QVector4D(quatFloat[0], quatFloat[1], quatFloat[2], quatFloat[3]));
+        state = new QuatState(quatFloat[0], quatFloat[1], quatFloat[2], quatFloat[3]);
         break;
     default:
         break;

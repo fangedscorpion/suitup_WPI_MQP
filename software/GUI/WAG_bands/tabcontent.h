@@ -32,7 +32,7 @@ private:
     void createIcons();
     void resizeEvent(QResizeEvent* r);
     Overlay* overlay;
-    void updateMotion(WAGFile* file);
+    void updateMotion();
     Suit *suitObj;
 
     // fonts & styles
@@ -130,6 +130,7 @@ public slots:
     // validate input
     void handleNewMotionRequiredInput();
     void handleNewMotionRequiredInput(QString);
+    void addTag();
     // timers
     void recordCountdownTimerEvent();
     void recordStopwatchTimerEvent();

@@ -19,11 +19,11 @@ public:
     QQuaternion getSwing() const {return swing;}
     QQuaternion getTwist() const {return twist;}
 private:
-    const QQuaternion err;
-    const QQuaternion swing;
-    const QQuaternion twist;
-    const QVector3D z;
-    const QVector3D x;
+    QQuaternion err;
+    QQuaternion swing;
+    QQuaternion twist;
+    QVector3D z;
+    QVector3D x;
 };
 
 #endif // ABSERROR_H

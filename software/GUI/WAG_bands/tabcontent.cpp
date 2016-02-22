@@ -18,7 +18,6 @@ TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION
     buttonHeight = 35;
 
     createIcons();
-    createMotionInfoWindow();
 
     optionsStack = new QStackedWidget;
     viewerStack = new QStackedWidget;
@@ -166,16 +165,14 @@ QWidget* TabContent::createModeRadios(USER u) {
     return modeRadiosGroup;
 }
 
-void TabContent::updateMotion(WAGFile* file) {
-    delete motion;
-    motion = file;
+void TabContent::updateMotion() {
     if (user.hasAction(PLAYBACK))
         static_cast<QGroupBox*>(viewerStack->widget(PLAYBACK))->setTitle(QString("Playing: ") + motion->getName());
     if (user.hasAction(EDIT))
         static_cast<QGroupBox*>(viewerStack->widget(EDIT))->setTitle(QString("Editing: ") + motion->getName());
     if (user.hasAction(RECORD))
         recordGroup->setTitle(QString("Recording: ") + motion->getName());
-    parent->setCurrentTabName(file->getName());
+    parent->setCurrentTabName(motion->getName());
 
 }
 
