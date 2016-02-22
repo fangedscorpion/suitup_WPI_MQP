@@ -87,7 +87,8 @@ HEADERS  += mainwindow.h \
     test/testquatstate.h \
     test/testquaterror.h \
     test/testband.h \
-    customWidgets/closablelabel.h
+    customWidgets/closablelabel.h \
+    localtesting.h
 
 FORMS    +=
 

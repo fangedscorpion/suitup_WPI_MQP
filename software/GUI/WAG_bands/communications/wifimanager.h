@@ -2,17 +2,25 @@
 #define WIFIMANAGER_H
 
 
-/*
+
 // for using with command line, or if we revert from static IPs
+
+#include "localtesting.h"
+
+#ifdef TESTING
 #define CHEST_BAND_PORT 12930
 #define RIGHT_SHOULDER_PORT 12992
 #define RIGHT_UPPER_ARM_PORT 13028
 #define RIGHT_FOREARM_PORT 12949
 #define LEFT_SHOULDER_PORT 12941
 #define LEFT_UPPER_ARM_PORT 13491
-#define LEFT_FOREARM_PORT 13291 */
+#define LEFT_FOREARM_PORT 13291
+
+
+#else
 
 // for using with physical bands
+
 #define CHEST_BAND_PORT 12941
 #define RIGHT_SHOULDER_PORT 12941
 #define RIGHT_UPPER_ARM_PORT 12941
@@ -20,6 +28,7 @@
 #define LEFT_SHOULDER_PORT 12941
 #define LEFT_UPPER_ARM_PORT 12941
 #define LEFT_FOREARM_PORT 12941
+#endif
 
 #define CHEST_IP_END 200
 #define RIGHT_SHOULDER_IP_END 205
