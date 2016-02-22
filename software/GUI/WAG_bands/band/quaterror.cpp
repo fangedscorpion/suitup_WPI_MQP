@@ -25,7 +25,7 @@ QByteArray QuatError::toMessage() const {
     /*
      * Returns a 12-byte QByteArray made of 3 floats:
      * float 1: swing orientation (radians from z to the swing motion vector, from -pi to pi)
-     * float 2: swing error (from -1 to 1)
+     * float 2: swing error (from 0 to 1)
      * float 3: twist error (from -1 to 1)
      */
 
@@ -54,6 +54,13 @@ QByteArray QuatError::toMessage() const {
         swingAngle = swingAngle / abs(swingAngle); // = +/- 1
     else
         swingAngle = swingAngle / MAX_SWING_ERR; // on interval [-1,+1]
+
+    // swing error between 0 and 1
+    if (swingAngle < 0){
+        swingAngle = -swingAngle;
+        swingOrientation += PI;
+        if (swingOrientation > PI) swingOrientation -= TWO_PI;
+    }
 
     // message contains swing orientation, swing error, twist error
     QByteArray msg = QByteArray();

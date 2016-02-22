@@ -1,4 +1,6 @@
 #include "positionsnapshot.h"
+#include <QMetaProperty>
+#include "band/absstate.h"
 
 PositionSnapshot::PositionSnapshot()
 {
@@ -15,23 +17,15 @@ QSet<BandType> PositionSnapshot::getRecordedBands() {
     return QSet<BandType>::fromList(snapshotData.keys());
 }
 
-//QDataStream &operator<<(QDataStream &ds, const PositionSnapshot &obj) {
-//    for(int i=0; i<obj.metaObject()->propertyCount(); ++i) {
-//        if(obj.metaObject()->property(i).isStored(&obj)) {
-//            ds << obj.metaObject()->property(i).read(&obj);
+QDataStream & operator<<(QDataStream & str, PositionSnapshot & v) {
+    str << v.getSnapshot();
+    return str;
+}
 
-//        }
-//    }
-//    return ds;
-//}
-//QDataStream &operator>>(QDataStream &ds, PositionSnapshot &obj) {
-//    QVariant var;
-//    for(int i=0; i<obj.metaObject()->propertyCount(); ++i) {
-//        if(obj.metaObject()->property(i).isStored(&obj)) {
-//            ds >> var;
-//            obj.metaObject()->property(i).write(&obj, var);
-//        }
-//    }
-//    return ds;
-//}
+QDataStream & operator>>(QDataStream & str, PositionSnapshot & v) {
+    QHash<BandType, AbsState *> t;
+    str >> t;
+    v.setSnapshot(t);
+    return str;
+}
 
