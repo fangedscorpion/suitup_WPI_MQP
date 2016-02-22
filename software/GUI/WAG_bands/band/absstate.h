@@ -15,4 +15,20 @@ public:
 
 };
 
+inline QDataStream & operator<<(QDataStream & str, AbsState*) {
+    return str;
+}
+
+inline QDataStream & operator>>(QDataStream & str, AbsState*) {
+    return str;
+}
+
+inline QDataStream & operator<<(QDataStream & str, QuatState*) {
+    return str;
+}
+
+inline QDataStream & operator>>(QDataStream & str, QuatState*) {
+    return str;
+}
+
 #endif // ABSSTATE_H

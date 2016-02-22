@@ -2,6 +2,14 @@
 #include <cstddef>
 #include <QDebug>
 
+QDataStream & operator>>(QDataStream & str, BandType & v) {
+  unsigned int type = 0;
+  str >> type;
+  if (type)
+    v = static_cast<BandType>(type);
+  return str;
+}
+
 AbsBand::AbsBand(BandType bt):QObject() {
     type = bt;
     active = true;
