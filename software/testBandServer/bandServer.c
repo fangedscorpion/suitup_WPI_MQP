@@ -11,11 +11,17 @@
 #include <stdlib.h>           /* for atoi() and exit() */
 #include <string.h>           /* for memset() */
 #include <unistd.h>           /* for close() */
+#include <signal.h>
+
 
 #define MAX_PENDING 5         /* Max outstanding connection requests */
 #define BUF_SIZE 32           /* size of string buffer for recieving  */
 #define TRUE 1
+#define FALSE 0
 #define RECV 7
+#define ALARM_INTERVAL 100000
+#define SEC_TIMEOUT 0
+#define USEC_TIMEOUT 10000
 
 void DieWithError(char *errorMessage);/* error handling function */
 void HandleTCPClient(int clntSocket); /* TCP client handling function */
@@ -23,6 +29,8 @@ int constructMsg(char *sendBuff, char *dataBuf, char msgType);
 int processReply(char *recvdBuffer, char* sendBuff);
 
 void reverseString(char *stringToReverse);
+int constructPositionMsg(char *sendBuff, char *dataBuf);
+int startTimer(int);
 
 typedef enum {
   COMPUTER_INITIATE_CONNECTION, 
@@ -35,7 +43,19 @@ typedef enum {
   STOP_RECORDING, 
   START_HAPTICS, 
   STOP_HAPTICS, 
-  VOICE_CONTROL} msgType;
+  VOICE_CONTROL, 
+  LOW_BATTERY
+} msgType;
+
+volatile int alarmActivated = FALSE;
+int recording = FALSE;
+int playback = FALSE;
+
+void alarmHandler(int sig) {
+  signal(SIGALRM, SIG_IGN);
+  alarmActivated = TRUE;
+  signal(SIGALRM, alarmHandler);
+}
 
 
 int main(int argc, char *argv[]) {
@@ -87,6 +107,7 @@ int main(int argc, char *argv[]) {
   /* indicate the the server has connected  */
   printf("Handling client %s\n", inet_ntoa(echoClntAddr.sin_addr));
   /* call function to recieve and send back a string from the client */
+  signal(SIGALRM, alarmHandler);
   HandleTCPClient(clntSock);
 
 }
@@ -102,44 +123,61 @@ void DieWithError(char *errorString) {
  * clntSocket - socket descriptor for connection between client and server
  * get string from client and sent it back
  */
-void HandleTCPClient(int clntSocket) {
+ void HandleTCPClient(int clntSocket) {
   char buffer[BUF_SIZE];
   int msgTypeInt;
   char msgType;
   char tmpBuff[BUF_SIZE];
   int dataLen;
+  ssize_t numBytesRcvd;
   //ssize_t numBytesRcvd;
   // receive the data from the client */
-  ssize_t numBytesRcvd = recv(clntSocket, buffer, BUF_SIZE, 0);
-  if (numBytesRcvd < 0) {
-    DieWithError("recv() failed");
-  }
 
-  dataLen = processReply(buffer, tmpBuff);
-
-  // while bytes are being trasmitted, keep sending and receiving data
   while (TRUE) {
-    printf("Input here:");
-    //scanf("%d %s", &msgTypeInt, tmpBuff);
-    msgType = (char) *(buffer + 1);
+    // while bytes are being trasmitted, keep sending and receiving data
 
+    if (alarmActivated) {
+      alarmActivated = FALSE;
+      printf("ALARM TRIGGERED -----------------------\n");
+      dataLen = constructPositionMsg(buffer, tmpBuff);
+      // send 
+    } else if (recording) {
+      if (startTimer(clntSocket) == 0) {
+        // timed out
+      } else {
+        // receive more data
+        numBytesRcvd = recv(clntSocket, buffer, BUF_SIZE, 0);
+        if (numBytesRcvd < 0) {
+          DieWithError("recv() failed");
+        }
 
-    //strncpy(tmpBuff, buffer + 2, BUF_SIZE);
-    //reverseString(tmpBuff);
+        dataLen = processReply(buffer, tmpBuff);
+        if (dataLen != 0) {
 
-    //constructMsg(buffer, tmpBuff, msgType);
-    // send back the message just received 
-    ssize_t numBytesSent = send(clntSocket, tmpBuff, dataLen, 0);
-    if (numBytesSent < 0) {
-      DieWithError("send() failed");
+          ssize_t numBytesSent = send(clntSocket, tmpBuff, dataLen, 0);
+          if (numBytesSent < 0) {
+            DieWithError("send() failed");
+          }
+        }
+      }
+
+    } else {
+      // receive more data
+      numBytesRcvd = recv(clntSocket, buffer, BUF_SIZE, 0);
+      if (numBytesRcvd < 0) {
+        DieWithError("recv() failed");
+      }
+
+      dataLen = processReply(buffer, tmpBuff);
+      if (dataLen != 0) {
+
+        ssize_t numBytesSent = send(clntSocket, tmpBuff, dataLen, 0);
+        if (numBytesSent < 0) {
+          DieWithError("send() failed");
+        }
+      }
+
     }
-    
-    // receive more data
-    numBytesRcvd = recv(clntSocket, buffer, BUF_SIZE, 0);
-    if (numBytesRcvd < 0) {
-      DieWithError("recv() failed");
-    }
-    processReply(buffer, tmpBuff);
   }
   // close the socket 
   close(clntSocket);
@@ -179,35 +217,62 @@ int processReply(char *recvdBuffer, char *sendBuff) {
   printf("typeOfMsg %d\n", (int) typeOfMsg);
   switch(typeOfMsg) {
     case COMPUTER_INITIATE_CONNECTION:
-      sendBuff[0] = (char) 2;
-      sendBuff[1] = (char) BAND_CONNECTING;
-      sendBuff[2] = '\n';
-      printf("Initiating connection\n");
-      dataLen = 3;
-       break;
-    case COMPUTER_PING:
-      sendBuff[0] = (char) 2;
-      sendBuff[1] = (char) BAND_PING;
-      sendBuff[2] = '\n';
-      dataLen = 3;
-      printf("returning ping\n");
+    sendBuff[0] = (char) 2;
+    sendBuff[1] = (char) BAND_CONNECTING;
+    sendBuff[2] = '\n';
+    printf("Initiating connection\n");
+    dataLen = 3;
     break;
-    /*case POSITION_ERROR:
+    case COMPUTER_PING:
+    sendBuff[0] = (char) 2;
+    sendBuff[1] = (char) BAND_PING;
+    sendBuff[2] = '\n';
+    dataLen = 3;
+    printf("returning ping\n");
     break;
     case START_RECORDING:
+    if ((!recording) && (!playback)) {
+      printf("STart recording\n");
+      recording = TRUE;
+      ualarm(ALARM_INTERVAL, 0);
+      return 0;
+    }
     break;
     case STOP_RECORDING:
+    if ((recording) && (!playback)) {
+      printf("Stop recording\n");
+      recording = FALSE;
+      ualarm(0, 0);
+      return 0;
+    }
     break;
     case START_HAPTICS:
+    if ((!playback) && (!recording)) {
+      printf("Start haptics\n");
+      playback = TRUE;
+      ualarm(ALARM_INTERVAL, 0);
+      return 0;
+    }
+
     break;
     case STOP_HAPTICS:
+    if ((playback) && (!recording)) {
+      printf("Stop haptics\n");
+      playback = FALSE;
+      ualarm(0, 0);
+      return 0;
+    }
     break;
-    */default:
-      printf("Default case\n");
-      int recvdLen = strlen(recvdBuffer);
-      recvdBuffer[recvdLen - 1] = '\0';
-      reverseString(recvdBuffer + 2);
-      dataLen = constructMsg(sendBuff, recvdBuffer + 2, (char) recvdBuffer[1]);
+    case POSITION_ERROR:
+    return 0;
+    break;
+
+    default:
+    printf("Default case\n");
+    int recvdLen = strlen(recvdBuffer);
+    recvdBuffer[recvdLen - 1] = '\0';
+    reverseString(recvdBuffer + 2);
+    dataLen = constructMsg(sendBuff, recvdBuffer + 2, (char) recvdBuffer[1]);
       // this shouldn't happen
     break;
   }
@@ -222,4 +287,27 @@ void reverseString(char *stringToReverse) {
     stringToReverse[i] = stringToReverse[len - i - 1];
     stringToReverse[len - i - 1] = tmpChar;
   }
+}
+
+int constructPositionMsg(char *dataBuf, char *sendBuff) {
+  // replace dataBuff buff
+  for (int i = 0; i < 4; i++) {
+    float serializeNum = 1;
+    char *serailizeNumPointer = (char *) &serializeNum;
+    dataBuf[i] = serializeNum;
+    dataBuf[i+1] = serializeNum + 1;
+  }
+  dataBuf[8] = '\0';
+  return constructMsg(sendBuff, dataBuf, BAND_POSITION_UPDATE);
+}
+
+int startTimer(int socket) {
+  struct timeval timeout;
+  fd_set bvfdRead;
+  timeout.tv_sec = SEC_TIMEOUT;
+  timeout.tv_usec = USEC_TIMEOUT;
+  FD_ZERO(&bvfdRead);
+  FD_SET(socket, &bvfdRead);
+
+  return select(socket + 1, &bvfdRead, 0, 0, &timeout);
 }

@@ -26,22 +26,24 @@ WifiManager::WifiManager():QObject()
     QString ipString = myIp.toString();
     int lastPd = ipString.lastIndexOf(".");
 
-    ipMap[CHEST] = ipString.replace(lastPd+1, 3, QString::number(CHEST_IP_END));
-    ipMap[RIGHT_SHOULDER] = ipString.replace(lastPd+1, 3, QString::number(RIGHT_SHOULDER_IP_END));
-    ipMap[LEFT_SHOULDER] = ipString.replace(lastPd+1, 3, QString::number(LEFT_SHOULDER_IP_END));
-    ipMap[RIGHT_UPPER_ARM] = ipString.replace(lastPd+1, 3, QString::number(RIGHT_UPPER_ARM_IP_END));
-    ipMap[LEFT_UPPER_ARM] = ipString.replace(lastPd+1, 3, QString::number(LEFT_UPPER_ARM_IP_END));
-    ipMap[RIGHT_LOWER_ARM] = ipString.replace(lastPd+1, 3, QString::number(RIGHT_FOREARM_IP_END));
-    ipMap[LEFT_LOWER_ARM] = ipString.replace(lastPd+1, 3, QString::number(LEFT_FOREARM_IP_END));
+    if (!LocalTesting::inTestingMode()) {
+        ipMap[CHEST] = ipString.replace(lastPd+1, 3, QString::number(CHEST_IP_END));
+        ipMap[RIGHT_SHOULDER] = ipString.replace(lastPd+1, 3, QString::number(RIGHT_SHOULDER_IP_END));
+        ipMap[LEFT_SHOULDER] = ipString.replace(lastPd+1, 3, QString::number(LEFT_SHOULDER_IP_END));
+        ipMap[RIGHT_UPPER_ARM] = ipString.replace(lastPd+1, 3, QString::number(RIGHT_UPPER_ARM_IP_END));
+        ipMap[LEFT_UPPER_ARM] = ipString.replace(lastPd+1, 3, QString::number(LEFT_UPPER_ARM_IP_END));
+        ipMap[RIGHT_LOWER_ARM] = ipString.replace(lastPd+1, 3, QString::number(RIGHT_FOREARM_IP_END));
+        ipMap[LEFT_LOWER_ARM] = ipString.replace(lastPd+1, 3, QString::number(LEFT_FOREARM_IP_END));
 
-/*     ipMap[CHEST] = "127.0.0.1";// for testing purposes only, remove later
-    ipMap[RIGHT_SHOULDER] = "127.0.0.1";
-    ipMap[LEFT_SHOULDER] = "127.0.0.1";
-    ipMap[RIGHT_UPPER_ARM] = "127.0.0.1";
-    ipMap[LEFT_UPPER_ARM] = "127.0.0.1";
-    ipMap[RIGHT_LOWER_ARM] = "127.0.0.1";
-    ipMap[LEFT_LOWER_ARM] = "127.0.0.1"; */
-    // TODO
+    } else {
+        ipMap[CHEST] = "127.0.0.1";// for testing purposes only, remove later
+        ipMap[RIGHT_SHOULDER] = "127.0.0.1";
+        ipMap[LEFT_SHOULDER] = "127.0.0.1";
+        ipMap[RIGHT_UPPER_ARM] = "127.0.0.1";
+        ipMap[LEFT_UPPER_ARM] = "127.0.0.1";
+        ipMap[RIGHT_LOWER_ARM] = "127.0.0.1";
+        ipMap[LEFT_LOWER_ARM] = "127.0.0.1";
+    }
 
     portMap[CHEST] = CHEST_BAND_PORT;
     portMap[LEFT_SHOULDER] = LEFT_SHOULDER_PORT;
