@@ -1,4 +1,5 @@
 #include "bandmessage.h"
+#include "qdebug.h"
 
 BandMessage::BandMessage(MessageType msgType, QByteArray msgData){
     this->msgType = msgType;
@@ -13,6 +14,8 @@ BandMessage::BandMessage(QByteArray fullMsg) {
     data.remove(data.length() -1, 1);
     if (data.length()  != expectedLen) {
         // error of some sort
+        qDebug()<<"Expected length: "<<expectedLen;
+        qDebug()<<"Actual length: "<<data.length();
     }
     this->msgData = data;
 }
