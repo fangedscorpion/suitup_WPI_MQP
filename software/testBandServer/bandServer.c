@@ -21,7 +21,7 @@
 #define RECV 7
 #define ALARM_INTERVAL 100000
 #define SEC_TIMEOUT 0
-#define USEC_TIMEOUT 10000
+#define USEC_TIMEOUT 1000
 
 void DieWithError(char *errorMessage);/* error handling function */
 void HandleTCPClient(int clntSocket); /* TCP client handling function */
@@ -140,19 +140,31 @@ void DieWithError(char *errorString) {
       alarmActivated = FALSE;
       printf("ALARM TRIGGERED -----------------------\n");
       dataLen = constructPositionMsg(buffer, tmpBuff);
+      ssize_t numBytesSent = send(clntSocket, tmpBuff, dataLen, 0);
+          if (numBytesSent < 0) {
+            DieWithError("send() failed");
+          }
+      ualarm(ALARM_INTERVAL, 0);
       // send 
     } else if (recording) {
-      if (startTimer(clntSocket) == 0) {
+      //printf("Alarm not activatived\n");
+      int timerReturn = startTimer(clntSocket);
+      if (timerReturn <= 0){
         // timed out
+        //printf("Timed out\n");
       } else {
+        printf ("not timed out\n");
         // receive more data
         numBytesRcvd = recv(clntSocket, buffer, BUF_SIZE, 0);
         if (numBytesRcvd < 0) {
-          DieWithError("recv() failed");
+          printf("recv failed\n");
+          continue;
+          //DieWithError("recv() failed");
         }
+        printf("Recvd\n");
 
         dataLen = processReply(buffer, tmpBuff);
-        if (dataLen != 0) {
+        if (dataLen > 0) {
 
           ssize_t numBytesSent = send(clntSocket, tmpBuff, dataLen, 0);
           if (numBytesSent < 0) {
@@ -234,6 +246,7 @@ int processReply(char *recvdBuffer, char *sendBuff) {
     if ((!recording) && (!playback)) {
       printf("STart recording\n");
       recording = TRUE;
+      printf("Start alarm\n");
       ualarm(ALARM_INTERVAL, 0);
       return 0;
     }
@@ -242,7 +255,8 @@ int processReply(char *recvdBuffer, char *sendBuff) {
     if ((recording) && (!playback)) {
       printf("Stop recording\n");
       recording = FALSE;
-      ualarm(0, 0);
+      printf("Turn off alarm\n");
+      //ualarm(0, 0);
       return 0;
     }
     break;
@@ -259,7 +273,7 @@ int processReply(char *recvdBuffer, char *sendBuff) {
     if ((playback) && (!recording)) {
       printf("Stop haptics\n");
       playback = FALSE;
-      ualarm(0, 0);
+      //ualarm(0, 0);
       return 0;
     }
     break;

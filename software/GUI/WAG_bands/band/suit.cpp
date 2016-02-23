@@ -46,7 +46,7 @@ Suit::Suit(WifiManager *comms):QObject() {
     QList<BandType> allBands = bands.keys();
     for (int i = 0; i < allBands.length(); i++) {
         connect(bands[allBands[i]], SIGNAL(dataToSend(BandType,BandMessage*)), this, SLOT(sendData(BandType, BandMessage*)));
-        connect(bands[allBands[i]], SIGNAL(poseRecvd(AbsState *,BandType,qint32)), this, SLOT(catchNewPose(AbsPose*, BandType, qint32)));
+        connect(bands[allBands[i]], SIGNAL(poseRecvd(AbsState *,BandType,qint32)), this, SLOT(catchNewPose(AbsState *, BandType, qint32)));
         connect(this, SIGNAL(toleranceChanged(int)), bands[allBands[i]], SLOT(catchTolChange(int)));
     }
 
@@ -66,6 +66,7 @@ void Suit::getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTime
     if (data->getMessageType() == VOICE_CONTROL) {
         processVoiceControlMessage(data);
     } else {
+        qDebug()<<"Forward message to band to handle";
         targetBand->handleMessage(elapsedTime, data);
     }
 }
@@ -235,6 +236,8 @@ void Suit::propagateLowBattery(BandType chargeBand) {
 
 
 void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime) {
+    qDebug()<<"ADDING POSE from band "<<bandForPose;
+
     /* AbsState *copiedPose = (AbsState*) malloc(newPose->objectSize()); // not sure if can do this for abs
     // TODO figure out where to free this
     *copiedPose = *newPose; */
@@ -245,7 +248,10 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
 
     activeSnapTimes.append(poseTime);
 
+
     // maybe just want to make it so it's all bands, not just the connected ones
+    qDebug()<<"connected bands: "<<getConnectedBands();
+    qDebug()<<activeSnapshot.getRecordedBands();
     if (getConnectedBands() == activeSnapshot.getRecordedBands()) {
         // full snapshot!
 
@@ -261,6 +267,7 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
         else {
             avgReadingTime = 0;
         }
+        qDebug()<<"position snapshot ready";
         emit positionSnapshotReady(avgReadingTime, activeSnapshot);
 
         activeSnapshot = PositionSnapshot();

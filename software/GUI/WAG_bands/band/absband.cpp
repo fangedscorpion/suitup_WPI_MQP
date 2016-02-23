@@ -31,7 +31,9 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
 }
 
 void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
-
+    qDebug("Handling message\n");
+    qDebug()<<recvdMessage->getMessageType();
+    qDebug()<<BAND_POSITION_UPDATE;
     AbsState *newState;
     switch(recvdMessage->getMessageType()) {
     case BAND_CONNECTING:
@@ -48,6 +50,7 @@ void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
         break;
     case BAND_POSITION_UPDATE:
         // parse into absstate
+        qDebug()<<"BAND POSITION RECEIVED FROM"<<type;
         newState = deserialize(recvdMessage->getMessageData(), this->getPositionRepresentation());
         updateState(newState, msgTimestamp);
         // should probably handle in subclass
@@ -90,6 +93,7 @@ bool AbsBand::isConnected() {
 }
 
 AbsState *AbsBand::deserialize(QByteArray byteRep, PositionRepresentation positionRep) {
+    qDebug()<<"Deserializing";
     AbsState *state;
     switch (positionRep) {
     case QUATERNION:
@@ -97,13 +101,16 @@ AbsState *AbsBand::deserialize(QByteArray byteRep, PositionRepresentation positi
         quatFloat[0] = ((byteRep[0] << 8) | byteRep[1]) / 16384.0f;
         quatFloat[1] = ((byteRep[2] << 8) | byteRep[3]) / 16384.0f;
         quatFloat[2] = ((byteRep[4] << 8) | byteRep[5]) / 16384.0f;
+        qDebug("deserializing more");
         quatFloat[3] = ((byteRep[6] << 8) | byteRep[7]) / 16384.0f;
         for (int i = 0; i < 4; i++) {
             if (quatFloat[i] >= 2) {
                 quatFloat[i] = -4 + quatFloat[i];
             }
         }
+        qDebug("Done eserializing");
         state = new QuatState(quatFloat[0], quatFloat[1], quatFloat[2], quatFloat[3]);
+        qDebug("Made new state");
         break;
     default:
         break;
