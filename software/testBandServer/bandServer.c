@@ -12,6 +12,7 @@
 #include <string.h>           /* for memset() */
 #include <unistd.h>           /* for close() */
 #include <signal.h>
+#include <errno.h>
 
 
 #define MAX_PENDING 5         /* Max outstanding connection requests */
@@ -19,7 +20,7 @@
 #define TRUE 1
 #define FALSE 0
 #define RECV 7
-#define ALARM_INTERVAL 100000
+#define ALARM_INTERVAL 25000
 #define SEC_TIMEOUT 0
 #define USEC_TIMEOUT 50000
 
@@ -65,6 +66,7 @@ int main(int argc, char *argv[]) {
   struct sockaddr_in echoClntAddr;    /* client address */
   unsigned short echoServPort;        /* server port */
   unsigned int clntLen;               /* length of client address data structure */
+  printf("%d\n", sizeof(useconds_t));
 
   /* Test for correct number of arguments */
   if (argc != 2) {
@@ -135,7 +137,7 @@ void DieWithError(char *errorString) {
   while (TRUE) {
     // while bytes are being trasmitted, keep sending and receiving data
 
-    if (alarmActivated) {
+    if ((alarmActivated) && (recording||playback)) {
       alarmActivated = FALSE;
       printf("ALARM TRIGGERED -----------------------\n");
       dataLen = constructPositionMsg(buffer, tmpBuff);
@@ -146,8 +148,6 @@ void DieWithError(char *errorString) {
       ualarm(ALARM_INTERVAL, 0);
       // send 
     } else if (recording) {
-      //printf("Alarm not activatived\n");
-
       struct timeval timeout;
       fd_set bvfdRead;
       timeout.tv_sec = SEC_TIMEOUT;
@@ -156,30 +156,28 @@ void DieWithError(char *errorString) {
       FD_SET(clntSocket, &bvfdRead);
 
       int timerReturn = select(clntSocket + 1, &bvfdRead, 0, 0, &timeout);
+      printf("Timer return %d\n", timerReturn);
 
-
-      if (timerReturn <= 0){
-        // timed out
-        //printf("Timed out\n");
+      if (timerReturn < 0){
+        printf("%d: %s\n", errno, strerror(errno));
+      } else if (timerReturn == 0) {
+        printf("Timed out\n");
       } else {
-        if (FD_ISSET(0, &bvfdRead)) {
-          printf ("not timed out\n");
         // receive more data
-          numBytesRcvd = recv(clntSocket, buffer, BUF_SIZE, 0);
-          if (numBytesRcvd < 0) {
-            printf("recv failed\n");
-            continue;
+        numBytesRcvd = recv(clntSocket, buffer, BUF_SIZE, 0);
+        if (numBytesRcvd < 0) {
+          printf("recv failed\n");
+          continue;
           //DieWithError("recv() failed");
-          }
-          printf("Recvd\n");
+        } 
+        printf("Recvd\n");
 
-          dataLen = processReply(buffer, tmpBuff);
-          if (dataLen > 0) {
+        dataLen = processReply(buffer, tmpBuff);
+        if (dataLen > 0) {
 
-            ssize_t numBytesSent = send(clntSocket, tmpBuff, dataLen, 0);
-            if (numBytesSent < 0) {
-              DieWithError("send() failed");
-            }
+          ssize_t numBytesSent = send(clntSocket, tmpBuff, dataLen, 0);
+          if (numBytesSent < 0) {
+            DieWithError("send() failed");
           }
         }
       }
