@@ -106,6 +106,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     connect(playbackMotionViewer->getPlayPauseBtn(), SIGNAL(released()), playbackControls, SLOT (togglePlay()));
     connect(playbackMotionViewer->getSlider(), SIGNAL(alt_valueChanged(int)), playbackControls, SLOT(beginningSliderChanged(int)));
     connect(playbackMotionViewer->getSlider(), SIGNAL(valueChanged(int)), playbackControls, SLOT(endSliderChanged(int)));
+    connect(playbackControls, SIGNAL(changeSliderVal(int)), this, SLOT(catchCurrentFrameChange(int)));
 
     initializePlaybackSettings();
 
@@ -191,3 +192,6 @@ void TabContent::playbackResetCountDownTimer() {
 // playbackCountdownTimer->stop(); <- if .isActive();
 
 
+void TabContent::catchCurrentFrameChange(int newSliderPos) {
+    qDebug()<<"New slider pos "<<newSliderPos;
+}

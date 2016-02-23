@@ -144,6 +144,7 @@ public slots:
     void saveMotion();
     // motion info
     void handleInfoMotionRadios();
+    void catchCurrentFrameChange(int newSliderPos);
 
 signals:
     void stepThroughChanged(bool steppingThrough);

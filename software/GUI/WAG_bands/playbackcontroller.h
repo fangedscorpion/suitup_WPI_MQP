@@ -42,6 +42,7 @@ signals:
     void goToSnapshot(PositionSnapshot);
     void changeSliderMax(qint32);
     void toleranceChanged(int);
+    void changeSliderVal(int);
 
 
 

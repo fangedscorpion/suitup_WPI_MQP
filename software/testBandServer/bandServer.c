@@ -22,7 +22,7 @@
 #define RECV 7
 #define ALARM_INTERVAL 25000
 #define SEC_TIMEOUT 0
-#define USEC_TIMEOUT 50000
+#define USEC_TIMEOUT 1000
 
 void DieWithError(char *errorMessage);/* error handling function */
 void HandleTCPClient(int clntSocket); /* TCP client handling function */

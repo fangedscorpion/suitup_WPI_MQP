@@ -12,7 +12,7 @@
 #define DEFAULT_TOLERANCE 1 // how are we expressing tolerance
 #define RECORDING_RATE 60 // 60 fps
 
-#define MILLISECONDS_PER_FRAME 16
+#define MILLISECONDS_PER_FRAME 25
 
 
 PlaybackController::PlaybackController(Suit *newSuitObj) {
@@ -212,6 +212,7 @@ void PlaybackController::endSliderChanged(int sliderVal) {
 }
 
 void PlaybackController::catchFrameUpdate(qint32 newFrame) {
+    emit changeSliderVal((newFrame * 100)/lastFrameNum);
     PositionSnapshot desiredPos = activeMotion->getSnapshot(newFrame, CLOSEST);
     // should probably figure out how to handle null snapshots
     // TODO
