@@ -22,8 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     titleFont = QFont( "Arial", 15, QFont::Bold);
     titleStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-top: 0.5em; subcontrol-origin: margin; left: 10px; padding: 25px 3px 0 3px;}";
-    textInputStyleRed = "QLineEdit {border: 1px solid red; background: white;} QTextEdit {border: 1px solid red; background: white;}";
-    textInputStyleWhite = "QLineEdit {background: white;} QTextEdit {background: white;}";
+    textInputStyleRed = "QLineEdit {border: 1px solid red; background: white;} QTextEdit {border-radius: 2px; border: 1px solid red; background: white;}";
+    textInputStyleWhite = "QLineEdit {background: white;} QTextEdit {border-radius: 2px; border: 1px outset grey; background: white;}";
     buttonHeight = 35;
 
     // users
@@ -221,36 +221,48 @@ void MainWindow::createNewMotion(USER u) {
     newMotionWidget = new OverlayWidget(this, "New Motion");
     QVBoxLayout *layout = newMotionWidget->getLayout();
 
+    int inputMaxWidth = 800;
+    int labelMaxWidth = 110;
+
     // Filename: textbox
     QHBoxLayout *f = new QHBoxLayout;
+    f->setAlignment(Qt::AlignLeft);
     QLabel *l1 = new QLabel("Name: ");
-    l1->setMinimumWidth(100);
+    l1->setMinimumWidth(labelMaxWidth);
+    l1->setMaximumWidth(labelMaxWidth);
     l1->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     f->addWidget(l1, -1);
     newMotionNameTextEdit = new QLineEdit;
     newMotionNameTextEdit->setStyleSheet(textInputStyleRed);
+    newMotionNameTextEdit->setMaximumWidth(inputMaxWidth);
     f->addWidget(newMotionNameTextEdit);
 
     // description
     QHBoxLayout *d = new QHBoxLayout;
+    d->setAlignment(Qt::AlignLeft);
     QLabel *l2 = new QLabel("Description: ");
     l2->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-    l2->setMinimumWidth(100);
+    l2->setMinimumWidth(labelMaxWidth);
+    l2->setMaximumWidth(labelMaxWidth);
     d->addWidget(l2, -1);
     newMotionDescription = new QTextEdit;
     newMotionDescription->setStyleSheet(textInputStyleRed);
     newMotionDescription->setMinimumHeight(150);
+    newMotionDescription->setMaximumWidth(inputMaxWidth);
     newMotionDescription->setTabChangesFocus(true);
     d->addWidget(newMotionDescription);
 
     // tags input
     QHBoxLayout *t = new QHBoxLayout;
+    t->setAlignment(Qt::AlignLeft);
     QLabel *l3 = new QLabel("Keywords: ");
     l3->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-    l3->setMinimumWidth(100);
+    l3->setMinimumWidth(labelMaxWidth);
+    l3->setMaximumWidth(labelMaxWidth);
     t->addWidget(l3, -1);
     newMotionTagsTextEdit = new QLineEdit;
     newMotionTagsTextEdit->setStyleSheet(textInputStyleWhite);
+    newMotionTagsTextEdit->setMaximumWidth(inputMaxWidth);
     t->addWidget(newMotionTagsTextEdit);
     addTagBtn = new QPushButton("Add Keyword");
     addTagBtn->setEnabled(false);
@@ -258,13 +270,42 @@ void MainWindow::createNewMotion(USER u) {
     addTagBtn->setMaximumWidth(110);
     // tags list
     QHBoxLayout *t2 = new QHBoxLayout;
-    QLabel *l4 = new QLabel;
-    l4->setMinimumWidth(100);
-    t2->addWidget(l4, -1);
+    QLabel *spacer = new QLabel;
+    spacer->setMinimumWidth(labelMaxWidth);
+    spacer->setMaximumWidth(labelMaxWidth);
+    t2->addWidget(spacer, -1);
     t2->addWidget(addTagBtn);
-    t2->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
     newMotionTagsLayout = new QHBoxLayout();
     t2->addLayout(newMotionTagsLayout, 2);
+    t2->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
+    QLabel *spacer2 = new QLabel;
+    spacer2->setMinimumWidth(60);
+    spacer2->setMaximumWidth(60);
+    t2->addWidget(spacer2);
+
+    // save to options
+    QHBoxLayout *s = new QHBoxLayout;
+    s->setAlignment(Qt::AlignLeft);
+    QLabel *l5 = new QLabel("Save to: ");
+    l5->setMinimumWidth(labelMaxWidth);
+    l5->setMaximumWidth(labelMaxWidth);
+    l5->setAlignment(Qt::AlignRight);
+    s->addWidget(l5, -1);
+    QVBoxLayout *s1 = new QVBoxLayout;
+    QRadioButton *newMotionLibRadio = new QRadioButton("Motion Library");
+    newMotionLibRadio->setChecked(true);
+    QHBoxLayout *c = new QHBoxLayout;
+    c->setContentsMargins(0,0,0,0);
+    newMotionCompRadio = new QRadioButton("Local Computer");
+    newMotionBrowseBtn = new QPushButton("Select Save Location");
+    newMotionBrowseBtn->setEnabled(false);
+    newMotionSaveLocation = new QLabel("");
+    c->addWidget(newMotionBrowseBtn);
+    c->addWidget(newMotionSaveLocation);
+    s1->addWidget(newMotionLibRadio);
+    s1->addWidget(newMotionCompRadio);
+    s1->addLayout(c);
+    s->addLayout(s1);
 
     QHBoxLayout *btns = new QHBoxLayout;
     createNewMotionBtn = new smartPushButton("Create", u);
@@ -273,12 +314,15 @@ void MainWindow::createNewMotion(USER u) {
     cancel->setMinimumHeight(buttonHeight);
     btns->addWidget(cancel);
     btns->addWidget(createNewMotionBtn);
+    layout->setAlignment(Qt::AlignLeft);
     layout->addLayout(f);
     layout->addSpacing(10);
     layout->addLayout(d);
     layout->addSpacing(10);
     layout->addLayout(t);
     layout->addLayout(t2);
+    layout->addSpacing(10);
+    layout->addLayout(s);
     layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     layout->addLayout(btns);
@@ -293,6 +337,11 @@ void MainWindow::createNewMotion(USER u) {
     connect(newMotionNameTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewMotionRequiredInput(QString)));
     connect(newMotionDescription, SIGNAL(textChanged()), this, SLOT(handleNewMotionRequiredInput()));
     connect(newMotionTagsTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleNewMotionRequiredInput(QString)));
+    connect(newMotionBrowseBtn, SIGNAL(released()), this, SLOT(handleNewMotionRadios()));
+    connect(newMotionCompRadio, SIGNAL(toggled(bool)), newMotionBrowseBtn, SLOT(setEnabled(bool)));
+    connect(newMotionCompRadio, SIGNAL(released()), this, SLOT(handleNewMotionRequiredInput()));
+    connect(newMotionLibRadio, SIGNAL(released()), this, SLOT(handleNewMotionRequiredInput()));
+    connect(newMotionCompRadio, SIGNAL(toggled(bool)), newMotionSaveLocation, SLOT(setVisible(bool)));
 }
 
 void MainWindow::createOpenMotionOptions(USER u) {

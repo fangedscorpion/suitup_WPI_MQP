@@ -117,6 +117,9 @@ private:
     QTextEdit* infoMotionDescription;
     QLineEdit* infoMotionTagsTextEdit;
     QHBoxLayout* infoMotionTagsLayout;
+    QRadioButton *infoMotionCompRadio;
+    QLabel *infoMotionSaveLocation;
+    QPushButton *infoMotionBrowseBtn;
 
 public slots:
     void show(ACTION_TYPE a);
@@ -128,8 +131,8 @@ public slots:
     void closeMotionInfo();
     void saveMotionInfo();
     // validate input
-    void handleNewMotionRequiredInput();
-    void handleNewMotionRequiredInput(QString);
+    void handleInfoMotionRequiredInput();
+    void handleInfoMotionRequiredInput(QString);
     void addTag();
     // timers
     void recordCountdownTimerEvent();
@@ -139,6 +142,8 @@ public slots:
     void playbackSetCountDownTimer(double d);
     // save
     void saveMotion();
+    // motion info
+    void handleInfoMotionRadios();
 
 signals:
     void stepThroughChanged(bool steppingThrough);

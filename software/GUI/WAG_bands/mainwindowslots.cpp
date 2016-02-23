@@ -99,7 +99,7 @@ void MainWindow::launchOpenFromComputer(USER u) {
 void MainWindow::openFromLibrary(USER u) {
     // TODO: open file somehow...
     // based on file, open and get metadata
-    WAGFile* w = new WAGFile(QString("filename"), QString("desc"), QString("author"), QVector<QString>());
+    WAGFile* w = new WAGFile(QString("filename"), QString("desc"), QString("author"), QVector<QString>(), LIBRARY);
     addTab(u, w, EDIT);
     closeOpenFromLibrary();
     closeOpenMotionOptions();
@@ -163,8 +163,15 @@ void MainWindow::launchNewMotion(USER u) {
 
 // creates the new file and opens a tab
 void MainWindow::saveNewMotion(USER u) {
-    WAGFile* w = new WAGFile(newMotionNameTextEdit->text(), newMotionDescription->toPlainText(),
-                             QString("author"), newMotionTagsLayout);
+    SAVE_LOCATION s;
+    QString filename = newMotionNameTextEdit->text();
+    if (newMotionCompRadio->isChecked()) {
+        s = LOCALLY;
+        filename = newMotionSaveLocation->text() + "/" + filename;
+    } else
+        s = LIBRARY;
+    WAGFile* w = new WAGFile(filename, newMotionDescription->toPlainText(),
+                             QString("author"), newMotionTagsLayout, s);
     addTab(u, w, RECORD);
     closeNewMotion();
 }
@@ -175,10 +182,14 @@ void MainWindow::closeNewMotion() {
         overlay->hide();
     delete newMotionWidget;
 }
+
+// makes sure that all required info is entered by the user
+// this prototype is required for Qt SLOTs
 void MainWindow::handleNewMotionRequiredInput(QString) {
     handleNewMotionRequiredInput();
 }
 
+// makes sure that all required info is entered by the user
 void MainWindow::handleNewMotionRequiredInput() {
     // sets the border color of filename textbox depending on if it has text or not
     (newMotionNameTextEdit->text().isEmpty() ?
@@ -190,11 +201,31 @@ void MainWindow::handleNewMotionRequiredInput() {
                 newMotionDescription->setStyleSheet(textInputStyleWhite));
     // makes the add tags button only enabled when there is text in the tags box
     addTagBtn->setEnabled(!newMotionTagsTextEdit->text().isEmpty());
+    if (newMotionCompRadio->isChecked() && newMotionSaveLocation->text().isEmpty()) {
+        newMotionBrowseBtn->setStyleSheet("QPushButton { border-radius: 2px; border-style: outset; border-width: 1px; border-color: red; padding-left: 9px; padding-right: 9px; padding-top: 4px; padding-bottom: 4px;}");
+    } else {
+        newMotionBrowseBtn->setStyleSheet("QPushButton { }");
+    }
+
     // enables the create button if the description AND filename text boxes are filled
     createNewMotionBtn->setEnabled(!newMotionDescription->toPlainText().isEmpty() &&
-                                 !newMotionNameTextEdit->text().isEmpty());
+                                   !newMotionNameTextEdit->text().isEmpty() &&
+                                   ((newMotionCompRadio->isChecked() && !newMotionSaveLocation->text().isEmpty()) ||
+                                   !newMotionCompRadio->isChecked()));
 }
 
+// handles the behavior of the radio buttons on the new motion window.
+void MainWindow::handleNewMotionRadios() {
+    QString dir = QFileDialog::getExistingDirectory(this, "Select Save Location", "",
+                                                    QFileDialog::ShowDirsOnly |
+                                                    QFileDialog::DontResolveSymlinks);
+    if (!dir.trimmed().isEmpty()) { // user clicked "open"
+        newMotionSaveLocation->setText(dir.trimmed()); // do something with this
+    }
+    handleNewMotionRequiredInput();
+}
+
+// updates the band connection status label
 static int disconnectedBands = 7;
 void MainWindow::updateConnectionStatus(BandType b, ConnectionStatus c) {
     if (c == CONNECTED) {
@@ -219,6 +250,7 @@ void MainWindow::updateConnectionStatus(BandType b, ConnectionStatus c) {
 
 }
 
+// updates the band battery level label
 void MainWindow::updateBatteryStatus() {
     settingsBtn->setStyleSheet("QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }");
     batteryStatus->setStyleSheet("QLabel { color : red; }");

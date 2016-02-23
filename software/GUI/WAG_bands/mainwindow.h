@@ -101,7 +101,10 @@ private:
     QLineEdit *newMotionTagsTextEdit;
     QHBoxLayout *newMotionTagsLayout;
     QPushButton *addTagBtn;
+    QRadioButton *newMotionCompRadio;
+    QLabel *newMotionSaveLocation;
     QPushButton *createNewMotionBtn;
+    QPushButton *newMotionBrowseBtn;
     void createNewMotion(USER u);
     // user options
     OverlayWidget *userOptionsWidget;
@@ -128,6 +131,7 @@ private slots:
     void launchNewMotion(USER u);
     void handleNewMotionRequiredInput();
     void handleNewMotionRequiredInput(QString);
+    void handleNewMotionRadios();
     void addTag();
     // on launch
     void launchUserOptions(USER);

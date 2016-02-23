@@ -12,14 +12,16 @@ QDataStream & operator>>(QDataStream & str, SAVE_LOCATION & v) {
 
 
 WAGFile::WAGFile(QString filename, QString in_description, QString author,
-                 QVector<QString> in_tags) : description(in_description), author(author), tags(in_tags) {
+                 QVector<QString> in_tags, SAVE_LOCATION saveLoc) : description(in_description),
+                 author(author), tags(in_tags), loc(saveLoc) {
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot>();
     qDebug()<<motionData.isEmpty();
 }
 
 WAGFile::WAGFile(QString filename, QString in_description, QString author,
-                 QHBoxLayout* container) : description(in_description), author(author) {
+                 QHBoxLayout* container, SAVE_LOCATION saveLoc) : description(in_description),
+                 author(author), loc(saveLoc) {
     tags = QVector<QString>();
     replaceTags(container);
     setFilenameAndPath(filename);
@@ -31,6 +33,7 @@ WAGFile::WAGFile(QString filename) {
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot>();
     tags = QVector<QString>();
+    loc = LOCALLY;
     loadFromFile(filename);
 }
 
@@ -56,7 +59,8 @@ void WAGFile::setFilenameAndPath(QString filename) {
         path += ".wagz";
 
     // if filename does not include the full path, add the current working directory
-    if (!path.has_root_path()) {
+    if (!path.has_parent_path()) {
+        qDebug() << "creating parent path";
         char *buffer = (char *) malloc (2048);
         if (getcwd (buffer, 2048) != buffer) {
             // TODO: throw error
