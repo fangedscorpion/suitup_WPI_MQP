@@ -101,7 +101,6 @@ private:
     QLineEdit *newMotionTagsTextEdit;
     QHBoxLayout *newMotionTagsLayout;
     QPushButton *addTagBtn;
-    QRadioButton *newMotionLibRadio;
     QRadioButton *newMotionCompRadio;
     QLabel *newMotionSaveLocation;
     QPushButton *createNewMotionBtn;

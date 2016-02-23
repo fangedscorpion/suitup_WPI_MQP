@@ -22,8 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     titleFont = QFont( "Arial", 15, QFont::Bold);
     titleStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-top: 0.5em; subcontrol-origin: margin; left: 10px; padding: 25px 3px 0 3px;}";
-    textInputStyleRed = "QLineEdit {border: 1px solid red; background: white;} QTextEdit {border: 1px solid red; background: white;}";
-    textInputStyleWhite = "QLineEdit {background: white;} QTextEdit {background: white;}";
+    textInputStyleRed = "QLineEdit {border: 1px solid red; background: white;} QTextEdit {border-radius: 2px; border: 1px solid red; background: white;}";
+    textInputStyleWhite = "QLineEdit {background: white;} QTextEdit {border-radius: 2px; border: 1px outset grey; background: white;}";
     buttonHeight = 35;
 
     // users
@@ -270,14 +270,18 @@ void MainWindow::createNewMotion(USER u) {
     addTagBtn->setMaximumWidth(110);
     // tags list
     QHBoxLayout *t2 = new QHBoxLayout;
-    QLabel *l4 = new QLabel;
-    l4->setMinimumWidth(labelMaxWidth);
-    l4->setMaximumWidth(labelMaxWidth);
-    t2->addWidget(l4, -1);
+    QLabel *spacer = new QLabel;
+    spacer->setMinimumWidth(labelMaxWidth);
+    spacer->setMaximumWidth(labelMaxWidth);
+    t2->addWidget(spacer, -1);
     t2->addWidget(addTagBtn);
-    t2->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
     newMotionTagsLayout = new QHBoxLayout();
     t2->addLayout(newMotionTagsLayout, 2);
+    t2->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
+    QLabel *spacer2 = new QLabel;
+    spacer2->setMinimumWidth(60);
+    spacer2->setMaximumWidth(60);
+    t2->addWidget(spacer2);
 
     // save to options
     QHBoxLayout *s = new QHBoxLayout;
@@ -288,7 +292,7 @@ void MainWindow::createNewMotion(USER u) {
     l5->setAlignment(Qt::AlignRight);
     s->addWidget(l5, -1);
     QVBoxLayout *s1 = new QVBoxLayout;
-    newMotionLibRadio = new QRadioButton("Motion Library");
+    QRadioButton *newMotionLibRadio = new QRadioButton("Motion Library");
     newMotionLibRadio->setChecked(true);
     QHBoxLayout *c = new QHBoxLayout;
     c->setContentsMargins(0,0,0,0);

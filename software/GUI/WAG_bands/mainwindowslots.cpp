@@ -165,12 +165,11 @@ void MainWindow::launchNewMotion(USER u) {
 void MainWindow::saveNewMotion(USER u) {
     SAVE_LOCATION s;
     QString filename = newMotionNameTextEdit->text();
-    if (newMotionLibRadio->isChecked())
-        s = LIBRARY;
-    else {
+    if (newMotionCompRadio->isChecked()) {
         s = LOCALLY;
         filename = newMotionSaveLocation->text() + "/" + filename;
-    }
+    } else
+        s = LIBRARY;
     WAGFile* w = new WAGFile(filename, newMotionDescription->toPlainText(),
                              QString("author"), newMotionTagsLayout, s);
     addTab(u, w, RECORD);
@@ -211,7 +210,8 @@ void MainWindow::handleNewMotionRequiredInput() {
     // enables the create button if the description AND filename text boxes are filled
     createNewMotionBtn->setEnabled(!newMotionDescription->toPlainText().isEmpty() &&
                                    !newMotionNameTextEdit->text().isEmpty() &&
-                                   !newMotionSaveLocation->text().isEmpty());
+                                   ((newMotionCompRadio->isChecked() && !newMotionSaveLocation->text().isEmpty()) ||
+                                   !newMotionCompRadio->isChecked()));
 }
 
 // handles the behavior of the radio buttons on the new motion window.

@@ -59,7 +59,8 @@ void WAGFile::setFilenameAndPath(QString filename) {
         path += ".wagz";
 
     // if filename does not include the full path, add the current working directory
-    if (!path.has_root_path()) {
+    if (!path.has_parent_path()) {
+        qDebug() << "creating parent path";
         char *buffer = (char *) malloc (2048);
         if (getcwd (buffer, 2048) != buffer) {
             // TODO: throw error

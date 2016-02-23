@@ -26,22 +26,24 @@ public:
     WAGFile(QString filename, QString description, QString author,
             QHBoxLayout* container, SAVE_LOCATION saveLoc);
     WAGFile(QString filename); // Loads WAGFile content from the given filename.
+    // getters
     QString getName() {return name;}
     QString getDescription() {return description;}
     QString getAuthor() {return author;}
+    QString getPathWithoutFile() {return QString(path.parent_path().c_str()); }
     QVector<QString> getTagStrings() {return tags;}
     QVector<ClosableLabel*> getTagLabels();
     SAVE_LOCATION getSaveLocation() {return loc;}
+    qint32 getFrameNums();
+    QHash<qint32, PositionSnapshot> getMotionData();
+    PositionSnapshot getSnapshot(qint32 snapTime, SNAP_CLOSENESS retrieveType);
+    QHash<qint32, PositionSnapshot> getChunkInRange(qint32 startTime, qint32 endTime);
+    // setters
     void updateFilename(QString newName) { name = newName;}
     void updateDescription(QString desc) {description = desc;}
     void replaceTags(QHBoxLayout* container);
     void updateSaveLocation(SAVE_LOCATION l) {loc = l;}
-    qint32 getFrameNums();
     void setMotionData(QHash<qint32, PositionSnapshot> newMotionData);
-    QHash<qint32, PositionSnapshot> getMotionData();
-
-    PositionSnapshot getSnapshot(qint32 snapTime, SNAP_CLOSENESS retrieveType);
-    QHash<qint32, PositionSnapshot> getChunkInRange(qint32 startTime, qint32 endTime);
 
     void saveToFile();
 
