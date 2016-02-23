@@ -18,7 +18,8 @@ enum SNAP_CLOSENESS {
     CLOSEST
 };
 
-class WAGFile {
+class WAGFile: public QObject {
+    Q_OBJECT
 public:
 
     WAGFile(QString filename, QString description, QString author,
@@ -46,6 +47,9 @@ public:
     void setMotionData(QHash<qint32, PositionSnapshot> newMotionData);
 
     void saveToFile();
+
+signals:
+    void framesChanged(qint32);
 
 private:
     // the path to the file (includes the file)

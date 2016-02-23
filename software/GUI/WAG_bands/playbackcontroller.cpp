@@ -200,6 +200,7 @@ void PlaybackController::setActiveMotion(WAGFile *newMotion) {
     qint32 sliderMax = activeMotion->getFrameNums();
     lastFrameNum = sliderMax;
     emit changeSliderMax(sliderMax);
+    connect(newMotion, SIGNAL(framesChanged(qint32)), this, SLOT(catchFrameNumsChanged(qint32)));
 }
 
 void PlaybackController::beginningSliderChanged(int sliderVal) {
@@ -229,4 +230,8 @@ void PlaybackController::catchVoiceControlCommand(MessageType vcCommandInstructi
             }
         }
     }
+}
+
+void PlaybackController::catchFrameNumsChanged(qint32 newLastNum) {
+    lastFrameNum = newLastNum;
 }

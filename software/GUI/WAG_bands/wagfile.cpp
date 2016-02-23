@@ -13,7 +13,7 @@ QDataStream & operator>>(QDataStream & str, SAVE_LOCATION & v) {
 
 WAGFile::WAGFile(QString filename, QString in_description, QString author,
                  QVector<QString> in_tags, SAVE_LOCATION saveLoc) : description(in_description),
-                 author(author), tags(in_tags), loc(saveLoc) {
+                 author(author), tags(in_tags), loc(saveLoc), QObject() {
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot>();
     qDebug()<<motionData.isEmpty();
@@ -151,6 +151,7 @@ PositionSnapshot WAGFile::getSnapshot(qint32 snapTime, SNAP_CLOSENESS retrieveTy
 
 void WAGFile::setMotionData(QHash<qint32, PositionSnapshot> newMotionData) {
     motionData = newMotionData;
+    emit framesChanged(this->getFrameNums());
 }
 
 QHash<qint32, PositionSnapshot> WAGFile::getMotionData() {
