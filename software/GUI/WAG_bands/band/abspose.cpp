@@ -5,6 +5,10 @@ AbsPose::AbsPose()
 
 }
 
+//void AbsPose::update(AbsState *s){
+//     qDebug("Update");
+//}
+
 //QDataStream &operator<<(QDataStream &ds, const AbsPose &obj) {
 //    for(int i=0; i<obj.metaObject()->propertyCount(); ++i) {
 //        if(obj.metaObject()->property(i).isStored(&obj)) {

@@ -5,6 +5,7 @@
 #include <QObject>
 #include "band/absstate.h"
 #include "band/absband.h"
+#include <QDebug>
 
 class PositionSnapshot
 {

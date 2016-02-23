@@ -12,7 +12,10 @@ RecordingController::RecordingController(Suit *newSuitObj) : QObject()
 void RecordingController::stopRecording() {
     // stop recording
     suitObj->startOrStopMode(STOP_RECORDING);
+    qDebug("Setting motion data");
+    qDebug()<<currentMotionData.keys().size();
     activeMotion->setMotionData(currentMotionData);
+    qDebug()<<activeMotion->getFrameNums();
 }
 
 void RecordingController::startRecording() {
@@ -21,8 +24,10 @@ void RecordingController::startRecording() {
 }
 
 void RecordingController::addSnapshotToMotion(qint32 snapTime, PositionSnapshot snap) {
-    qint32 newSnapTime = (qint32) snapTime;
+    qint32 newSnapTime = snapTime;
+    qDebug()<<newSnapTime<<"Adding snpashot to motion data";
     currentMotionData[newSnapTime] = snap;
+    qDebug()<<currentMotionData.keys().size();
 }
 
 void RecordingController::catchVoiceControlCommand(MessageType vcCommandInstruction) {

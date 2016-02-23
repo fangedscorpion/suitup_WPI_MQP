@@ -35,13 +35,13 @@ AbsState* QuatPose::adjust(AbsState* state) const {
 }
 
 IError* QuatPose::error(AbsState* goal) const {
-//    % returns swing and twist components of this quaternion about
-//    % axis pure quaternion axis
-//    % qerr = twist * swing
-//    axis = axis.v/norm(axis.v);
-//    p = dot(qerr.v, axis)*axis;
-//    twist = Quaternion([qerr.w; p]).unit();
-//    swing = inv(twist) * qerr;
+    //    % returns swing and twist components of this quaternion about
+    //    % axis pure quaternion axis
+    //    % qerr = twist * swing
+    //    axis = axis.v/norm(axis.v);
+    //    p = dot(qerr.v, axis)*axis;
+    //    twist = Quaternion([qerr.w; p]).unit();
+    //    swing = inv(twist) * qerr;
     QVector3D axis = rt.normalized();
     QuatState* qerr = qqinv(goal,current);
 
@@ -63,4 +63,9 @@ void QuatPose::updatePoints(AbsState* parentState, QVector3D* parentEndPoint) {
 
 size_t QuatPose::objectSize() {
     return sizeof(QuatPose);
+}
+
+void QuatPose::update(AbsState *s){
+    //AbsPose::update(s);
+    current = adjust(s);
 }

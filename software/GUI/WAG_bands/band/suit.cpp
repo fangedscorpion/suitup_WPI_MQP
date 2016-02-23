@@ -8,6 +8,7 @@ Suit::Suit(WifiManager *comms):QObject() {
 
     wifiMan = comms;
     startTime = QElapsedTimer();
+    startTime.start();
 
     try {
         bands[CHEST] = new ChestBand();
@@ -62,12 +63,12 @@ void Suit::getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTime
     qDebug()<<band;
 
     qDebug()<<data->getMessageType();
-    qint32 elapsedTime = (qint32) startTime.msecsTo(dataTimestamp);
+    qint64 elapsedTime = startTime.msecsTo(dataTimestamp);
     if (data->getMessageType() == VOICE_CONTROL) {
         processVoiceControlMessage(data);
     } else {
-        qDebug()<<"Forward message to band to handle";
-        targetBand->handleMessage(elapsedTime, data);
+        qDebug()<<"Elasped time "<<elapsedTime;
+        targetBand->handleMessage((qint32) elapsedTime, data);
     }
 }
 
@@ -123,6 +124,7 @@ void Suit::startOrStopMode(MessageType commandType) {
         qDebug("Suit starting to drecord");
         toggleCollecting(true);
         startTime = QElapsedTimer();
+        startTime.start();
         newMsg = new BandMessage(START_RECORDING, QByteArray());
         sendToConnectedBands(newMsg);
         break;
@@ -133,6 +135,7 @@ void Suit::startOrStopMode(MessageType commandType) {
         break;
     case START_PLAYBACK:
         startTime = QElapsedTimer();
+        startTime.start();
         toggleCollecting(true);
         newMsg = new BandMessage(START_PLAYBACK, QByteArray());
         sendToConnectedBands(newMsg);
@@ -247,11 +250,12 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
     activeSnapshot.addMapping(bandForPose, newPose);
 
     activeSnapTimes.append(poseTime);
+    qDebug()<<"Pose time"<< poseTime;
 
 
     // maybe just want to make it so it's all bands, not just the connected ones
-    qDebug()<<"connected bands: "<<getConnectedBands();
-    qDebug()<<activeSnapshot.getRecordedBands();
+    qDebug()<<"connected bands: "<<getConnectedBands().toList();
+    qDebug()<<activeSnapshot.getRecordedBands().toList();
     if (getConnectedBands() == activeSnapshot.getRecordedBands()) {
         // full snapshot!
 
@@ -259,10 +263,13 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
 
         for (int i = 0; i < activeSnapTimes.length(); i++) {
             totalTime += activeSnapTimes[i];
+            qDebug()<<"total time"<<totalTime;
         }
         qint32 avgReadingTime;
         if (activeSnapTimes.length() != 0) {
+            qDebug()<<"calculating average reading time";
            avgReadingTime = (qint32) (totalTime/activeSnapTimes.length());
+           qDebug()<<avgReadingTime;
         }
         else {
             avgReadingTime = 0;
@@ -271,6 +278,7 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
         emit positionSnapshotReady(avgReadingTime, activeSnapshot);
 
         activeSnapshot = PositionSnapshot();
+        activeSnapTimes.clear();
     }
 }
 

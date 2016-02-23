@@ -12,7 +12,7 @@ class AbsPose {
 
 public:
     AbsPose();
-    void update(AbsState* s) {current = adjust(s);}
+    virtual void update(AbsState* s) = 0;
     AbsState* getCalibrationState() const {return calibration;}
     AbsState* getState() const {return current;}
     QVector3D* getEndpoint() const {return points.back();}
@@ -31,6 +31,7 @@ protected:
 
 class QuatPose : public AbsPose{
 public:
+    void update(AbsState *s);
     QuatPose(QVector3D translation, QVector3D rotatedTranslation, QVector3D zAxis);
     void calibrate(AbsState *calibrationPose);
     AbsState* adjust(AbsState* state) const;

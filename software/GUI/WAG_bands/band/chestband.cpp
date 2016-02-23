@@ -6,7 +6,9 @@
 
 // ChestBand class should probably not be extended
 
-ChestBand::ChestBand() : AbsBand(CHEST) {}
+ChestBand::ChestBand() : AbsBand(CHEST) {
+    pose = new QuatPose(QVector3D(0, 0, 0), QVector3D(1, 0, 0), QVector3D(0, 0, 1));
+}
 
 bool ChestBand::moveTo(AbsState* x) {
     if (!isActive())

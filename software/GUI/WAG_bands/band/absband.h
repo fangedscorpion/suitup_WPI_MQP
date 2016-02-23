@@ -23,7 +23,7 @@ public:
     AbsBand(BandType);
 
     // child and parent bands
-    void addChildBand(AbsBand *band) {childBands.push_back(band); band->setParent(this);}
+    void addChildBand(AbsBand *band) {childBands.push_back(band); band->setParentBand(this); band->setParent(this);}
     AbsBand* getChildBand(int index) const {return childBands[index]; }
     int numDependentBands() {return childBands.size();}
     void setParentBand(AbsBand* band) {parentBand = band;}

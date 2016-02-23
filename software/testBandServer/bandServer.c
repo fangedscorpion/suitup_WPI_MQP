@@ -21,7 +21,7 @@
 #define RECV 7
 #define ALARM_INTERVAL 100000
 #define SEC_TIMEOUT 0
-#define USEC_TIMEOUT 1000
+#define USEC_TIMEOUT 50000
 
 void DieWithError(char *errorMessage);/* error handling function */
 void HandleTCPClient(int clntSocket); /* TCP client handling function */
@@ -130,7 +130,6 @@ void DieWithError(char *errorString) {
   char tmpBuff[BUF_SIZE];
   int dataLen;
   ssize_t numBytesRcvd;
-  //ssize_t numBytesRcvd;
   // receive the data from the client */
 
   while (TRUE) {
@@ -141,34 +140,46 @@ void DieWithError(char *errorString) {
       printf("ALARM TRIGGERED -----------------------\n");
       dataLen = constructPositionMsg(buffer, tmpBuff);
       ssize_t numBytesSent = send(clntSocket, tmpBuff, dataLen, 0);
-          if (numBytesSent < 0) {
-            DieWithError("send() failed");
-          }
+      if (numBytesSent < 0) {
+        DieWithError("send() failed");
+      }
       ualarm(ALARM_INTERVAL, 0);
       // send 
     } else if (recording) {
       //printf("Alarm not activatived\n");
-      int timerReturn = startTimer(clntSocket);
+
+      struct timeval timeout;
+      fd_set bvfdRead;
+      timeout.tv_sec = SEC_TIMEOUT;
+      timeout.tv_usec = USEC_TIMEOUT;
+      FD_ZERO(&bvfdRead);
+      FD_SET(clntSocket, &bvfdRead);
+
+      int timerReturn = select(clntSocket + 1, &bvfdRead, 0, 0, &timeout);
+
+
       if (timerReturn <= 0){
         // timed out
         //printf("Timed out\n");
       } else {
-        printf ("not timed out\n");
+        if (FD_ISSET(0, &bvfdRead)) {
+          printf ("not timed out\n");
         // receive more data
-        numBytesRcvd = recv(clntSocket, buffer, BUF_SIZE, 0);
-        if (numBytesRcvd < 0) {
-          printf("recv failed\n");
-          continue;
+          numBytesRcvd = recv(clntSocket, buffer, BUF_SIZE, 0);
+          if (numBytesRcvd < 0) {
+            printf("recv failed\n");
+            continue;
           //DieWithError("recv() failed");
-        }
-        printf("Recvd\n");
+          }
+          printf("Recvd\n");
 
-        dataLen = processReply(buffer, tmpBuff);
-        if (dataLen > 0) {
+          dataLen = processReply(buffer, tmpBuff);
+          if (dataLen > 0) {
 
-          ssize_t numBytesSent = send(clntSocket, tmpBuff, dataLen, 0);
-          if (numBytesSent < 0) {
-            DieWithError("send() failed");
+            ssize_t numBytesSent = send(clntSocket, tmpBuff, dataLen, 0);
+            if (numBytesSent < 0) {
+              DieWithError("send() failed");
+            }
           }
         }
       }
@@ -315,13 +326,4 @@ int constructPositionMsg(char *dataBuf, char *sendBuff) {
   return constructMsg(sendBuff, dataBuf, BAND_POSITION_UPDATE);
 }
 
-int startTimer(int socket) {
-  struct timeval timeout;
-  fd_set bvfdRead;
-  timeout.tv_sec = SEC_TIMEOUT;
-  timeout.tv_usec = USEC_TIMEOUT;
-  FD_ZERO(&bvfdRead);
-  FD_SET(socket, &bvfdRead);
 
-  return select(socket + 1, &bvfdRead, 0, 0, &timeout);
-}

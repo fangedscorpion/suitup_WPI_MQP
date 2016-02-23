@@ -8,6 +8,7 @@ PositionSnapshot::PositionSnapshot()
 }
 
 void PositionSnapshot::addMapping(BandType band, AbsState *pose) {
+    qDebug()<<"Adding mapping for band "<<band<<" pose is "<<pose;
     snapshotData[band] = pose;
 }
 
