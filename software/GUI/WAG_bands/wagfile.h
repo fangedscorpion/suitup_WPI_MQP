@@ -11,6 +11,8 @@
 #include "positionsnapshot.h"
 #include "customWidgets/closablelabel.h"
 
+#define MOTION_LIBRARY "./.WAGConfig"
+
 enum SAVE_LOCATION {LIBRARY, LOCALLY};
 enum SNAP_CLOSENESS {
     BEFORE,
