@@ -188,8 +188,8 @@ void ModelWindow_GL::paintGL()
     // Set the model matrix
     // Translate and rotate it a bit to get a better view of the model
     m_model.setToIdentity();
-    m_model.translate(-0.2f, 0.0f, .5f);
-    m_model.rotate(55.0f, 0.0f, 1.0f, 0.0f);
+    m_model.translate(0.0f, 0.0f, 0.0f);
+    m_model.rotate(30.0f, 1.0f, 1.0f, 0.0f);
 
     // Set shader uniforms for light information
     m_shaderProgram.setUniformValue( "lightPosition", m_lightInfo.Position );

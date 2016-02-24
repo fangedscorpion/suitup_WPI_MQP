@@ -1,0 +1,5 @@
+- get bone origins and bone vectors from blender
+
+- translate vertices in assimp node to original origin from bone origin
+- rotate bone vector and model vertices by orientation update, and update child bone vectors and vertices
+- translate vertices and bone vector back to bone origin
