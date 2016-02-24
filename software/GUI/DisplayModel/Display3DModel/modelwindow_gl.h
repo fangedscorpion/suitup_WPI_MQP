@@ -1,19 +1,19 @@
-#ifndef MODELWINDOW_GL_3_3_H
-#define MODELWINDOW_GL_3_3_H
+#ifndef MODELWINDOW_GL_H
+#define MODELWINDOW_GL_H
 
 #include <string>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
-#include <QOpenGLFunctions_3_3_Core>
+#include <QOpenGLFunctions_3_1>
 #include <QOpenGLFunctions>
 #include "modelloader.h"
 #include "openglwindow.h"
 
-class ModelWindow_GL_3_3 : public QOpenGLFunctions_3_3_Core, public OpenGLWindow
+class ModelWindow_GL : public QOpenGLFunctions_3_1, public OpenGLWindow
 {
 public:
-    ModelWindow_GL_3_3(QString filepath, ModelLoader::PathType pathType, QString texturePath="");
+    ModelWindow_GL(QString filepath, ModelLoader::PathType pathType, QString texturePath="");
 
 protected:
     void initializeGL();
@@ -54,4 +54,4 @@ private:
     bool m_error;
 };
 
-#endif // MODELWINDOW_GL_3_3_H
+#endif // MODELWINDOW_GL_H

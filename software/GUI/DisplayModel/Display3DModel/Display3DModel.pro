@@ -18,14 +18,12 @@ TEMPLATE = app
 SOURCES += main.cpp\
     modelloader.cpp \
     openglwindow.cpp \
-    modelwindow_gl_3_3.cpp \
-    modelwindow_gl_2.cpp
+    modelwindow_gl.cpp
 
 HEADERS  += \
     modelloader.h \
     openglwindow.h \
-    modelwindow_gl_3_3.h \
-    modelwindow_gl_2.h
+    modelwindow_gl.h
 
 unix: !macx {
     INCLUDEPATH +=  /usr/include
