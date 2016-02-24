@@ -107,22 +107,12 @@ qint32 WAGFile::getFrameNums() {
 }
 
 PositionSnapshot WAGFile::getSnapshot(qint32 snapTime, SNAP_CLOSENESS retrieveType) {
-    qDebug("HERE82");
-    qDebug()<<&motionData;
-    motionData[1] = PositionSnapshot();
-    qDebug()<<"HERE2312";
-    motionData = QHash<qint32, PositionSnapshot>();
-    qDebug()<<motionData.size();
     if (motionData.contains(snapTime)) {
         qDebug("HERE238");
         return motionData[snapTime];
     }
-    qDebug("HERE@#!");
-    qDebug()<<"Motion data size"<<motionData.keys();
-    qDebug()<<motionData.keys().size();
     QList<qint32> keys = motionData.keys();
     if (keys.size() == 0) {
-        qDebug("HERE@!#");
         return PositionSnapshot();
         // not sure what to do here....
     }
@@ -130,7 +120,6 @@ PositionSnapshot WAGFile::getSnapshot(qint32 snapTime, SNAP_CLOSENESS retrieveTy
 
     qint32 closestKey = 0;
 
-    qDebug("HERE24");
     for (int i = 0; i < keys.size(); i++) {
         if (keys[i] > snapTime) {
             if (retrieveType == AFTER) {
@@ -162,15 +151,11 @@ PositionSnapshot WAGFile::getSnapshot(qint32 snapTime, SNAP_CLOSENESS retrieveTy
             closestKey = keys[i];
         }
     }
-    qDebug("HErew8293");
     return motionData[closestKey];
 }
 
 void WAGFile::setMotionData(QHash<qint32, PositionSnapshot> newMotionData) {
     motionData = newMotionData;
-    qDebug("Motion data set in wag file");
-    qDebug()<<"Motion data key size in wagfile "<<motionData.keys();
-    qDebug()<<"Motion data snapshot keys "<<motionData[motionData.keys()[0]].getSnapshot().keys();
     emit framesChanged(this->getFrameNums());
 }
 
