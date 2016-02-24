@@ -58,17 +58,33 @@ void WAGFile::setFilenameAndPath(QString filename) {
     if (!path.has_extension())
         path += ".wagz";
 
-    // if filename does not include the full path, add the current working directory
-    if (!path.has_parent_path()) {
-        qDebug() << "creating parent path";
-        char *buffer = (char *) malloc (2048);
-        if (getcwd (buffer, 2048) != buffer) {
-            // TODO: throw error
+    if (loc == LOCALLY) {
+        // if filename does not include the full path, add the current working directory
+        if (!path.has_parent_path()) {
+            qDebug() << "creating parent path";
+            char *buffer = (char *) malloc (2048);
+            if (getcwd (buffer, 2048) != buffer) {
+                // TODO: throw error
+            }
+            boost::filesystem::path newPath = boost::filesystem::path(buffer);
+            newPath += "/";
+            newPath += path;
+            free (buffer);
+            path = newPath;
         }
-        boost::filesystem::path newPath = boost::filesystem::path(buffer);
+    } else {
+        QFile file("./.WAGConfig");
+        file.open(QIODevice::ReadOnly);
+        QDataStream in(&file);
+//        in.setVersion(QDataStream::Qt_5_5);
+        QString library;
+        in >> library;
+        file.close();
+        qDebug() << "library file: " << library;
+
+        boost::filesystem::path newPath = boost::filesystem::path(library.toStdString());
         newPath += "/";
         newPath += path;
-        free (buffer);
         path = newPath;
     }
     name = path.filename().c_str();

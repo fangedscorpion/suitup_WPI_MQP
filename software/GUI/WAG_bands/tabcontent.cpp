@@ -178,11 +178,7 @@ void TabContent::updateMotion() {
 
 // save the motion file
 void TabContent::saveMotion() {
-//    if (motion->getSaveLocation() == LIBRARY) {
-
-//    } else if (motion->getSaveLocation() == LOCALLY) {
-        motion->saveToFile();
-//    }
+    motion->saveToFile();
 }
 
 // OpenGL Motion Viewer window with video slider
