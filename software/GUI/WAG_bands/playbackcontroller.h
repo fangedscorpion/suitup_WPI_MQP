@@ -43,6 +43,7 @@ signals:
     void changeSliderMax(qint32);
     void toleranceChanged(int);
     void changeSliderVal(int);
+    void playingOnSuit(bool playing);
 
 
 
@@ -63,11 +64,17 @@ private:
     int lastFrameNum;
     Suit *suitObj;
 
+    // These indicate the positions of the beginning and ending sliders on the super slider
+    // should be 0 - 100
+    int beginningPointer;
+    int endPointer;
+
     void changeFrameRate(float newFrameRate);
     void setStepThroughInterval(int newInterval);
     void setStepThroughTolerance(float newTolerance);
     void startPlaying();
     void stopPlaying();
+    void reachedEndOfTimeRange();
 };
 
 #endif // PLAYBACKCONTROLLER_H

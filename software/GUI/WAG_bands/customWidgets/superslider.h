@@ -39,6 +39,8 @@ public:
 
   /** Used to update the position of the alternate handle through the use of an event filter */
   void alt_update();
+
+  void setTimebarPosition(int newPos);
 protected:
   bool eventFilter(QObject* obj, QEvent* event);
 private:
@@ -50,6 +52,7 @@ signals:
 public slots:
   void update();
   void resized();
+  void catchCurrentFrameChange(int newPos);
 };
 
 class SliderEventFilter : public QObject

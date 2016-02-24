@@ -45,6 +45,7 @@ public:
     ~MainWindow();
 
     void setCurrentTabName(QString s);
+    void lockOnPlayOrRecord(bool suitRecording);
 
 private:
     Ui::MainWindow *ui;

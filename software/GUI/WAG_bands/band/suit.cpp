@@ -157,21 +157,23 @@ void Suit::catchStartPlayback() {
 }
 
 void Suit::playSnapshot(PositionSnapshot goToSnap) {
-    // TODO
-    // probably want to set a snapshot to match, and then when we receive a full snapshot, we can compare
-    // and send back error
-    QList<BandType> connected = getConnectedBands().toList();
-    QHash<BandType, AbsState*> snapshotData = goToSnap.getSnapshot();
-    bool posWithinTol = true;
-    for (int i = 0; i < connected.size(); i++){
-        BandType getBand = connected[i];
-        if (snapshotData.contains(getBand)) {
-            posWithinTol &= bands[getBand]->moveTo(snapshotData[getBand]);
+    if (collectingData) {
+        // TODO
+        // probably want to set a snapshot to match, and then when we receive a full snapshot, we can compare
+        // and send back error
+        QList<BandType> connected = getConnectedBands().toList();
+        QHash<BandType, AbsState*> snapshotData = goToSnap.getSnapshot();
+        bool posWithinTol = true;
+        for (int i = 0; i < connected.size(); i++){
+            BandType getBand = connected[i];
+            if (snapshotData.contains(getBand)) {
+                posWithinTol &= bands[getBand]->moveTo(snapshotData[getBand]);
+            }
         }
-    }
 
-    if (posWithinTol) {
-        emit positionMet();
+        if (posWithinTol) {
+            emit positionMet();
+        }
     }
 }
 
@@ -268,8 +270,8 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
         qint32 avgReadingTime;
         if (activeSnapTimes.length() != 0) {
             qDebug()<<"calculating average reading time";
-           avgReadingTime = (qint32) (totalTime/activeSnapTimes.length());
-           qDebug()<<avgReadingTime;
+            avgReadingTime = (qint32) (totalTime/activeSnapTimes.length());
+            qDebug()<<avgReadingTime;
         }
         else {
             avgReadingTime = 0;

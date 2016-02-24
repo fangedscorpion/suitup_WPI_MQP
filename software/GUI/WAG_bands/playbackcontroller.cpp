@@ -27,6 +27,8 @@ PlaybackController::PlaybackController(Suit *newSuitObj) {
     stepThroughInterval = STEP_THROUGH_INTERVAL_DEFAULT;
     stepThroughTolerance = DEFAULT_TOLERANCE; // how are we expressing this
     lastFrameNum = 1000; // TODO get from motion
+    beginningPointer = 0;
+    endPointer = 100;
     connect(this, SIGNAL(endOfTimeRange()), this, SLOT(togglePlay()));
     connect(suitObj, SIGNAL(voiceControlCommandReady(MessageType)), this, SLOT(catchVoiceControlCommand(MessageType)));
     connect(this, SIGNAL(frameChanged(qint32)), this, SLOT(catchFrameUpdate(qint32)));
@@ -39,7 +41,7 @@ void PlaybackController::togglePlay() {
     qDebug()<<"Playing: "<<playing;
     qDebug()<<"Last frame num: "<<lastFrameNum;
     qDebug()<<"Current frame num: "<<currentFrame;
-    if (!((!playing) && (currentFrame >= lastFrameNum))) {
+    if (!((!playing) && (currentFrame >= (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))))) {
         playing = !playing;
         qDebug("toggle play");
         qDebug()<<"Play status: "<<playing;
@@ -50,6 +52,7 @@ void PlaybackController::togglePlay() {
             stopPlaying();
         }
         emit playbackStateChanged(playing);
+        emit playingOnSuit(playing && suitActive);
     }
 }
 
@@ -156,13 +159,13 @@ void PlaybackController::timerEvent(QTimerEvent *event) {
     } else {
         currentFrame += MILLISECONDS_PER_FRAME;
         qDebug()<<"Current frame: "<<currentFrame;//<<", event: "<<event;
-        if (currentFrame < lastFrameNum) {
+        if (currentFrame < (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {
             qDebug("HERE2");
             qDebug()<<"Current frame "<<currentFrame;
             emit frameChanged(currentFrame);
         }
         else {
-            emit endOfTimeRange();
+            reachedEndOfTimeRange();
         }
     }
 }
@@ -170,12 +173,12 @@ void PlaybackController::timerEvent(QTimerEvent *event) {
 void PlaybackController::positionMet() {
     if (playing && stepThrough) {
         currentFrame += stepThroughInterval*MILLISECONDS_PER_FRAME;
-        if (currentFrame < lastFrameNum) {
+        if (currentFrame < std::min(lastFrameNum, lastFrameNum*endPointer/100)) {
             qDebug()<<"Frame: "<<currentFrame;
             emit frameChanged(currentFrame);
         }
         else {
-            emit endOfTimeRange();
+            reachedEndOfTimeRange();
         }
     }
 }
@@ -205,10 +208,20 @@ void PlaybackController::setActiveMotion(WAGFile *newMotion) {
 
 void PlaybackController::beginningSliderChanged(int sliderVal) {
     qDebug()<<"playback mode, beginning slider val: "<<sliderVal;
+    beginningPointer = sliderVal;
+    if (currentFrame < (beginningPointer*lastFrameNum/100)) {
+        currentFrame = beginningPointer *lastFrameNum/100;
+        emit frameChanged(currentFrame);
+    }
 }
 
 void PlaybackController::endSliderChanged(int sliderVal) {
     qDebug()<<"playback mode, end slider val: "<<sliderVal;
+    endPointer = sliderVal;
+    if (currentFrame > (endPointer*lastFrameNum/100)) {
+        currentFrame = endPointer *lastFrameNum/100;
+        emit frameChanged(currentFrame);
+    }
 }
 
 void PlaybackController::catchFrameUpdate(qint32 newFrame) {
@@ -235,4 +248,9 @@ void PlaybackController::catchVoiceControlCommand(MessageType vcCommandInstructi
 
 void PlaybackController::catchFrameNumsChanged(qint32 newLastNum) {
     lastFrameNum = newLastNum;
+}
+
+void PlaybackController::reachedEndOfTimeRange() {
+    currentFrame = beginningPointer*lastFrameNum/100;
+    emit endOfTimeRange();
 }

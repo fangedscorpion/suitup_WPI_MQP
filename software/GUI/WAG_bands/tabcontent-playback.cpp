@@ -101,12 +101,13 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     connect(seconds, SIGNAL(valueChanged(double)), playbackControls, SLOT(modifyHoldTime(double)));
 //    connect(playbackControls, SIGNAL(timeChanged(int)), playbackMotionViewer, SLOT(displayNewTime(int)));
     connect(playbackControls, SIGNAL(playbackStateChanged(bool)), playbackMotionViewer, SLOT(playToggled(bool)));
+    connect(playbackControls, SIGNAL(playingOnSuit(bool)), this, SLOT(lockOnSuitPlayback(bool)));
     connect(playbackCountDownSpinner, SIGNAL(valueChanged(double)), this, SLOT(playbackSetCountDownTimer(double)));
     // viewer controls
     connect(playbackMotionViewer->getPlayPauseBtn(), SIGNAL(released()), playbackControls, SLOT (togglePlay()));
     connect(playbackMotionViewer->getSlider(), SIGNAL(alt_valueChanged(int)), playbackControls, SLOT(beginningSliderChanged(int)));
     connect(playbackMotionViewer->getSlider(), SIGNAL(valueChanged(int)), playbackControls, SLOT(endSliderChanged(int)));
-    connect(playbackControls, SIGNAL(changeSliderVal(int)), this, SLOT(catchCurrentFrameChange(int)));
+    connect(playbackControls, SIGNAL(changeSliderVal(int)), playbackMotionViewer->getSlider(), SLOT(catchCurrentFrameChange(int)));
 
     initializePlaybackSettings();
 
@@ -155,6 +156,7 @@ void TabContent::initializePlaybackSettings() {
 void TabContent::lockOnPlayback(bool playing) {
     modeRadiosGroup->setEnabled(!playing);
     playbackOptions->setEnabled(!playing);
+
 }
 
 void TabContent::sliderValueChanged(int newVal) {
@@ -194,4 +196,17 @@ void TabContent::playbackResetCountDownTimer() {
 
 void TabContent::catchCurrentFrameChange(int newSliderPos) {
     qDebug()<<"New slider pos "<<newSliderPos;
+    const SuperSlider *slider = playbackMotionViewer->getSlider();
+    //slider->setTimebarPosition(newSliderPos);
+}
+
+void TabContent::lockOnSuitPlayback(bool playingOnSuit) {
+    parent->lockOnPlayOrRecord(playingOnSuit);
+    lockOnPlayback(playingOnSuit);
+    // prevent user from moving slider bars in motion viewer...probably
+    if (playingOnSuit) {
+
+    } else {
+
+    }
 }

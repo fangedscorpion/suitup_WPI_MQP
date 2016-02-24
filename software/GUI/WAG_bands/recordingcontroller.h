@@ -21,6 +21,7 @@ private:
     QHash<qint32, PositionSnapshot> currentMotionData;
     WAGFile *activeMotion;
     bool voiceEnabled;
+    bool recording;
 
 signals:
 

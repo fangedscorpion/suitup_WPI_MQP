@@ -255,3 +255,11 @@ void MainWindow::updateBatteryStatus() {
     settingsBtn->setStyleSheet("QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }");
     batteryStatus->setStyleSheet("QLabel { color : red; }");
 }
+
+void MainWindow::lockOnPlayOrRecord(bool suitRecording) {
+    // lock wifi button
+    // lock help button
+    // prevent user from switching tabs
+    settingsBtn->setEnabled(!suitRecording);
+
+}

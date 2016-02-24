@@ -3,6 +3,7 @@
 
 //Qt
 #include <QMouseEvent>
+#include <QDebug>
 #include "qmimedata.h"
 #include "qdrag.h"
 #include "qwidgetaction.h"
@@ -224,6 +225,7 @@ void SuperSlider::resized(){
 }
 
 int SuperSlider::getOffset() {
+    // What about 2...?
     if (width() > 400)
         return 1;
     else if (width() > 310)
@@ -240,4 +242,23 @@ int SuperSlider::getOffset() {
         return 8;
     else
         return 9;
+}
+
+void SuperSlider::setTimebarPosition(int newPos) {
+    float range = width()-26.0; // 8 on left, 18 on right
+    float ratio = newPos/100.0;
+    int location = ratio*range + 8;
+
+    time_bar->move(location, y());
+
+}
+
+void SuperSlider::catchCurrentFrameChange(int newPos) {
+    qDebug()<<"New pos: "<<newPos;
+    float range = width()-26.0; // 8 on left, 18 on right
+    float ratio = newPos/100.0;
+    int location = ratio*range + 8;
+    qDebug()<<"location: "<<location;
+
+    time_bar->move(location, y());
 }

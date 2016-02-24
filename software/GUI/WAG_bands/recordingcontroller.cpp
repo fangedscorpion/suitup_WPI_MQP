@@ -7,6 +7,7 @@ RecordingController::RecordingController(Suit *newSuitObj) : QObject()
     connect(suitObj, SIGNAL(positionSnapshotReady(qint32,PositionSnapshot)), this, SLOT(addSnapshotToMotion(qint32, PositionSnapshot)));
     connect(suitObj, SIGNAL(voiceControlCommandReady(MessageType)), this, SLOT(catchVoiceControlCommand(MessageType)));
     voiceEnabled = false;
+    recording = false;
 }
 
 void RecordingController::stopRecording() {
@@ -16,18 +17,22 @@ void RecordingController::stopRecording() {
     qDebug()<<currentMotionData.keys().size();
     activeMotion->setMotionData(currentMotionData);
     qDebug()<<activeMotion->getFrameNums();
+    recording = false;
 }
 
 void RecordingController::startRecording() {
+    recording = true;
     currentMotionData.clear();
     suitObj->startOrStopMode(START_RECORDING);
 }
 
 void RecordingController::addSnapshotToMotion(qint32 snapTime, PositionSnapshot snap) {
-    qint32 newSnapTime = snapTime;
-    qDebug()<<newSnapTime<<"Adding snpashot to motion data";
-    currentMotionData[newSnapTime] = snap;
-    qDebug()<<currentMotionData.keys().size();
+    if (recording) {
+        qint32 newSnapTime = snapTime;
+        qDebug()<<newSnapTime<<"Adding snpashot to motion data";
+        currentMotionData[newSnapTime] = snap;
+        qDebug()<<currentMotionData.keys().size();
+    }
 }
 
 void RecordingController::catchVoiceControlCommand(MessageType vcCommandInstruction) {
