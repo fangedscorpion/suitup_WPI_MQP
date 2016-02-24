@@ -137,9 +137,11 @@ void PlaybackController::speedChanged(int sliderPosition) {
 }
 
 void PlaybackController::startPlaying() {
-    if (stepThrough) {
+    if (stepThrough) {        
+        emit startPlayback();
         if (suitActive) {
-
+            qDebug("starting step through mode playback");
+            emit frameChanged(currentFrame);
         } else {
             qDebug("starting timer");
             int tempFrameRate = MILLISECONDS_PER_FRAME*stepThroughInterval;
@@ -147,8 +149,8 @@ void PlaybackController::startPlaying() {
         }
     } else {
         timerId = startTimer(MILLISECONDS_PER_FRAME/frameRate);
+        emit startPlayback();
     }
-    emit startPlayback();
 }
 
 void PlaybackController::timerEvent(QTimerEvent *event) {
@@ -171,13 +173,15 @@ void PlaybackController::timerEvent(QTimerEvent *event) {
 }
 
 void PlaybackController::positionMet() {
+    qDebug("Position met in playback controller");
     if (playing && stepThrough) {
         currentFrame += stepThroughInterval*MILLISECONDS_PER_FRAME;
         if (currentFrame < std::min(lastFrameNum, lastFrameNum*endPointer/100)) {
-            qDebug()<<"Frame: "<<currentFrame;
+            qDebug()<<"Position met Frame: "<<currentFrame;
             emit frameChanged(currentFrame);
         }
         else {
+            qDebug()<<"Reached end of time range in step through mode";
             reachedEndOfTimeRange();
         }
     }

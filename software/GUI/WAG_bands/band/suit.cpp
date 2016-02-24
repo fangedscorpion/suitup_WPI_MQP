@@ -187,6 +187,7 @@ void Suit::playSnapshot(PositionSnapshot goToSnap) {
         }
 
         if (posWithinTol) {
+            qDebug("Emitting position met");
             emit positionMet();
         }
     }
