@@ -102,13 +102,14 @@ PositionSnapshot WAGFile::getSnapshot(qint32 snapTime, SNAP_CLOSENESS retrieveTy
         return motionData[snapTime];
     }
     qDebug("HERE@#!");
+    qDebug()<<"Motion data size"<<motionData.keys();
+    qDebug()<<motionData.keys().size();
     QList<qint32> keys = motionData.keys();
     if (keys.size() == 0) {
         qDebug("HERE@!#");
         return PositionSnapshot();
         // not sure what to do here....
     }
-    qDebug("HERE@#I@O");
     qSort(keys);
 
     qint32 closestKey = 0;
@@ -151,6 +152,9 @@ PositionSnapshot WAGFile::getSnapshot(qint32 snapTime, SNAP_CLOSENESS retrieveTy
 
 void WAGFile::setMotionData(QHash<qint32, PositionSnapshot> newMotionData) {
     motionData = newMotionData;
+    qDebug("Motion data set in wag file");
+    qDebug()<<"Motion data key size in wagfile "<<motionData.keys();
+    qDebug()<<"Motion data snapshot keys "<<motionData[motionData.keys()[0]].getSnapshot().keys();
     emit framesChanged(this->getFrameNums());
 }
 

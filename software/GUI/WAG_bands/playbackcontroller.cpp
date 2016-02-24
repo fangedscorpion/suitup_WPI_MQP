@@ -73,13 +73,13 @@ void PlaybackController::toggleSuitActive(bool active) {
         if (active) {
             connect(this, SIGNAL(goToSnapshot(PositionSnapshot)), suitObj, SLOT(playSnapshot(PositionSnapshot)));
             connect(this, SIGNAL(startPlayback()), suitObj, SLOT(catchStartPlayback()));
-            connect(this, SIGNAL(startPlayback()), suitObj, SLOT(catchStopPlayback()));
+            connect(this, SIGNAL(stopPlayback()), suitObj, SLOT(catchStopPlayback()));
             connect(suitObj, SIGNAL(positionMet()), this, SLOT(positionMet()));
         } else {
             // disconnect everything from suit obj
             disconnect(this, SIGNAL(goToSnapshot(PositionSnapshot)), suitObj, 0);
             disconnect(this, SIGNAL(startPlayback()), suitObj, 0);
-            disconnect(this, SIGNAL(startPlayback()), suitObj, 0);
+            disconnect(this, SIGNAL(stopPlayback()), suitObj, 0);
             disconnect(suitObj, SIGNAL(positionMet()), this, 0);
         }
     }
@@ -226,7 +226,9 @@ void PlaybackController::endSliderChanged(int sliderVal) {
 
 void PlaybackController::catchFrameUpdate(qint32 newFrame) {
     emit changeSliderVal((newFrame * 100)/lastFrameNum);
+    qDebug()<<"snap length"<<activeMotion->getFrameNums();
     PositionSnapshot desiredPos = activeMotion->getSnapshot(newFrame, CLOSEST);
+    qDebug()<<"snapshot size "<<desiredPos.getSnapshot().keys().size();
     // should probably figure out how to handle null snapshots
     // TODO
     emit goToSnapshot(desiredPos);

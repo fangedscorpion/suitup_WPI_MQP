@@ -52,6 +52,7 @@ Suit::Suit(WifiManager *comms):QObject() {
     }
 
     collectingData = true;
+    qDebug("Toggle collecting 1");
     toggleCollecting(false);
 }
 
@@ -87,11 +88,13 @@ void Suit::sendData(BandType destBand, BandMessage* sendMsg) {
 void Suit::toggleCollecting(bool shouldCollectData) {
     if (collectingData != shouldCollectData) {
         collectingData = shouldCollectData;
+        qDebug()<<"Collecting data set to "<<collectingData;
         if (collectingData) {
             // stop timer
             qDebug("Killing timer");
             killTimer(pingTimerID);
             activeSnapshot = PositionSnapshot();
+            activeSnapTimes.clear();
         } else {
             // start timer
             qDebug("Starting timer");
@@ -122,6 +125,7 @@ void Suit::startOrStopMode(MessageType commandType) {
     switch (commandType) {
     case START_RECORDING:
         qDebug("Suit starting to drecord");
+        qDebug("Toggle collecting 2");
         toggleCollecting(true);
         startTime = QElapsedTimer();
         startTime.start();
@@ -131,11 +135,14 @@ void Suit::startOrStopMode(MessageType commandType) {
     case STOP_RECORDING:
         newMsg = new BandMessage(STOP_RECORDING, QByteArray());
         sendToConnectedBands(newMsg);
+        qDebug("toggleCollecting 3");
         toggleCollecting(false);
         break;
     case START_PLAYBACK:
+        qDebug("Starting playback");
         startTime = QElapsedTimer();
         startTime.start();
+        qDebug("Toggle collecting 4");
         toggleCollecting(true);
         newMsg = new BandMessage(START_PLAYBACK, QByteArray());
         sendToConnectedBands(newMsg);
@@ -143,6 +150,7 @@ void Suit::startOrStopMode(MessageType commandType) {
     case STOP_PLAYBACK:
         newMsg = new BandMessage(STOP_PLAYBACK, QByteArray());
         sendToConnectedBands(newMsg);
+        qDebug("Toggle collecting 5");
         toggleCollecting(false);
         break;
     default:
@@ -157,7 +165,10 @@ void Suit::catchStartPlayback() {
 }
 
 void Suit::playSnapshot(PositionSnapshot goToSnap) {
+    qDebug("Received snap to play\n");
+    qDebug()<<"Collecting data = "<<collectingData;
     if (collectingData) {
+        qDebug("Trying to play snap\n");
         // TODO
         // probably want to set a snapshot to match, and then when we receive a full snapshot, we can compare
         // and send back error
@@ -166,8 +177,12 @@ void Suit::playSnapshot(PositionSnapshot goToSnap) {
         bool posWithinTol = true;
         for (int i = 0; i < connected.size(); i++){
             BandType getBand = connected[i];
+            qDebug()<<"Sending to band "<<getBand;
+            qDebug()<<"Num bands"<<snapshotData.keys().size();
+            qDebug()<<snapshotData;
             if (snapshotData.contains(getBand)) {
                 posWithinTol &= bands[getBand]->moveTo(snapshotData[getBand]);
+                qDebug()<<"Position within tolerance "<<posWithinTol;
             }
         }
 
@@ -178,6 +193,7 @@ void Suit::playSnapshot(PositionSnapshot goToSnap) {
 }
 
 void Suit::catchStopPlayback() {
+    qDebug("STOPPING PLAYBACK ------------------------");
     startOrStopMode(STOP_PLAYBACK);
 }
 

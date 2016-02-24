@@ -147,7 +147,7 @@ void DieWithError(char *errorString) {
       }
       ualarm(ALARM_INTERVAL, 0);
       // send 
-    } else if (recording) {
+    } else if (recording || playback) {
       struct timeval timeout;
       fd_set bvfdRead;
       timeout.tv_sec = SEC_TIMEOUT;
@@ -287,6 +287,7 @@ int processReply(char *recvdBuffer, char *sendBuff) {
     }
     break;
     case POSITION_ERROR:
+    printf("Error message recvd\n");
     return 0;
     break;
 

@@ -14,7 +14,7 @@ void RecordingController::stopRecording() {
     // stop recording
     suitObj->startOrStopMode(STOP_RECORDING);
     qDebug("Setting motion data");
-    qDebug()<<currentMotionData.keys().size();
+
     activeMotion->setMotionData(currentMotionData);
     qDebug()<<activeMotion->getFrameNums();
     recording = false;
@@ -28,6 +28,7 @@ void RecordingController::startRecording() {
 
 void RecordingController::addSnapshotToMotion(qint32 snapTime, PositionSnapshot snap) {
     if (recording) {
+        qDebug()<<"Position snapshot contains "<<snap.getRecordedBands().size();
         qint32 newSnapTime = snapTime;
         qDebug()<<newSnapTime<<"Adding snpashot to motion data";
         currentMotionData[newSnapTime] = snap;

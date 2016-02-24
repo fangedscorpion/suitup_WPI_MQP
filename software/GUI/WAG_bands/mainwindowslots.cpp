@@ -261,5 +261,14 @@ void MainWindow::lockOnPlayOrRecord(bool suitRecording) {
     // lock help button
     // prevent user from switching tabs
     settingsBtn->setEnabled(!suitRecording);
+    newBtn->setEnabled(!suitRecording);
+    openBtn->setEnabled(!suitRecording);
+    int currentTabIndex = tabs->currentIndex();
+
+    for (int i = 0; i < tabs->count(); i++) {
+        if (i != currentTabIndex) {
+            tabs->setTabEnabled(i, !suitRecording);
+        }
+    }
 
 }
