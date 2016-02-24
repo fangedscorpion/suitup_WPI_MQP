@@ -13,7 +13,7 @@ ModelWindow_GL::ModelWindow_GL(QString filepath, ModelLoader::PathType pathType,
 
 void ModelWindow_GL::initializeGL()
 {
-    this->initializeOpenGLFunctions();
+    initializeOpenGLFunctions();
 
     createShaderProgram(":/es_ads_fragment.vert", ":/es_ads_fragment.frag");
 

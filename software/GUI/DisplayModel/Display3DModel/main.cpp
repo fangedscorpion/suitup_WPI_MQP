@@ -2,7 +2,7 @@
 #include "openglwindow.h"
 #include "modelwindow_gl.h"
 
-QString OpenGL_Model("biped/test/c3po.obj");
+QString OpenGL_Model("biped/test/biped_rig.obj");
 
 int main(int argc, char *argv[])
 {

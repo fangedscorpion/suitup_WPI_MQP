@@ -5,8 +5,9 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
+#include <QOpenGLShaderProgram>
 #include <QMatrix4x4>
-#include "logo.h"
+#include "modelloader.h"
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
@@ -15,7 +16,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         Q_OBJECT
 
     public:
-        GLWidget(QWidget *parent = 0);
+        GLWidget(QString filepath, ModelLoader::PathType pathType /*QString texturePath, QWidget *parent = 0*/);
         ~GLWidget();
 
     public slots:
@@ -35,23 +36,56 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
     private:
-        void setupVertexAttribs();
+//        void setupVertexAttribs();
+
+        void createShaderProgram( QString vShader, QString fShader);
+        void createBuffers();
+        void createAttributes();
+        void setupLightingAndMatrices();
+
+        void draw();
+        void drawNode(const Node *node, QMatrix4x4 objectMatrix);
+        void setMaterialUniforms(MaterialInfo &mater);
+
+        QOpenGLShaderProgram m_shaderProgram;
+
+        QOpenGLVertexArrayObject m_vao;
+
+        QOpenGLBuffer m_vertexBuffer;
+        QOpenGLBuffer m_normalBuffer;
+        QOpenGLBuffer m_textureUVBuffer;
+        QOpenGLBuffer m_indexBuffer;
+
+        QSharedPointer<Node> m_rootNode;
+
+        QMatrix4x4 m_projection, m_view, m_model;
+
+        QString m_filepath;
+        ModelLoader::PathType m_pathType;
+        QString m_texturePath;
+
+        LightInfo m_lightInfo;
+        MaterialInfo m_materialInfo;
+
+        bool m_error;
 
         int m_xRot;
         int m_yRot;
         int m_zRot;
         QPoint m_lastPos;
-        Logo m_logo;
-        QOpenGLVertexArrayObject m_vao;
-        QOpenGLBuffer m_logoVbo;
-        QOpenGLShaderProgram *m_program;
-        int m_projMatrixLoc;
-        int m_mvMatrixLoc;
-        int m_normalMatrixLoc;
-        int m_lightPosLoc;
-        QMatrix4x4 m_proj;
-        QMatrix4x4 m_camera;
-        QMatrix4x4 m_world;
+
+
+//        Logo m_logo;
+//        QOpenGLVertexArrayObject m_vao;
+//        QOpenGLBuffer m_logoVbo;
+//        QOpenGLShaderProgram *m_program;
+//        int m_projMatrixLoc;
+//        int m_mvMatrixLoc;
+//        int m_normalMatrixLoc;
+//        int m_lightPosLoc;
+//        QMatrix4x4 m_proj;
+//        QMatrix4x4 m_camera;
+//        QMatrix4x4 m_world;
     };
 
     #endif

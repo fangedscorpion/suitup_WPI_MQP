@@ -11,7 +11,10 @@
 #include <QMessageBox>
 
 Window::Window(MainWindow *mw) : mainWindow(mw) {
-    glWidget = new GLWidget;
+    QString OpenGL_Model("/home/suitup/Documents/suitup_WPI_MQP/software/GUI/DisplayModel/biped/test/biped_rig.obj");
+
+
+    glWidget = new GLWidget(OpenGL_Model,ModelLoader::AbsolutePath);
 
     xSlider = createSlider();
     zSlider = createSlider();
