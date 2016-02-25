@@ -420,12 +420,7 @@ void MainWindow::connectCheckedBands() {
     if (rightLowerArm->isChecked()) {
         connectBands<<RIGHT_LOWER_ARM;
     }
-
-    qDebug()<<connectBands.count();
-
     wifiMan->initiateConnection(connectBands);
-
-
 }
 
 // Samee, connection status changes indicated here, (CONNECTED/DISCONNECTED)
@@ -441,11 +436,11 @@ void MainWindow::catchTabChange(int tabIndex) {
     // there's probably a better way to do this, but I can't think of one right now
     if (TabContent *tab = qobject_cast<TabContent *>(current)) {
         ACTION_TYPE mode = tab->getCurrentMode();
-        qDebug()<<"Mode changed to "<<mode;
+        qDebug()<<"MainWindow: Mode changed to "<<mode;
         emit modeChanged(mode);
     } else {
         // not a tab
-        qDebug("Not a tab");
+        qDebug("MainWindow: Not a tab");
     }
 
 }

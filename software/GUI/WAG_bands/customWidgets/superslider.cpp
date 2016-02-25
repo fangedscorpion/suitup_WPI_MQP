@@ -254,11 +254,11 @@ void SuperSlider::setTimebarPosition(int newPos) {
 }
 
 void SuperSlider::catchCurrentFrameChange(int newPos) {
-    qDebug()<<"New pos: "<<newPos;
+    qDebug()<<"SuperSlider: New pos: "<<newPos;
     float range = width()-26.0; // 8 on left, 18 on right
     float ratio = newPos/100.0;
     int location = ratio*range + 8;
-    qDebug()<<"location: "<<location;
+    qDebug()<<"SuperSlider: location: "<<location;
 
     time_bar->move(location, y());
 }

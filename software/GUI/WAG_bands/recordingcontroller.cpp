@@ -13,10 +13,10 @@ RecordingController::RecordingController(Suit *newSuitObj) : QObject()
 void RecordingController::stopRecording() {
     // stop recording
     suitObj->startOrStopMode(STOP_RECORDING);
-    qDebug("Setting motion data");
+    qDebug("RecordingController: Setting motion data");
 
     activeMotion->setMotionData(currentMotionData);
-    qDebug()<<activeMotion->getFrameNums();
+    qDebug()<<"RecordingController: totalFrames"<<activeMotion->getFrameNums();
     recording = false;
 }
 
@@ -28,11 +28,9 @@ void RecordingController::startRecording() {
 
 void RecordingController::addSnapshotToMotion(qint32 snapTime, PositionSnapshot snap) {
     if (recording) {
-        qDebug()<<"Position snapshot contains "<<snap.getRecordedBands().size();
         qint32 newSnapTime = snapTime;
-        qDebug()<<newSnapTime<<"Adding snpashot to motion data";
+        qDebug()<<"RecordingController: at time "<<newSnapTime<<" Adding snpashot to motion data";
         currentMotionData[newSnapTime] = snap;
-        qDebug()<<currentMotionData.keys().size();
     }
 }
 
@@ -52,7 +50,7 @@ void RecordingController::setActiveMotion(WAGFile *motion) {
 
 void RecordingController::toggleVoiceControl(bool voiceControlOn) {
     voiceEnabled = voiceControlOn;
-    qDebug()<<"Voice control enabled: "<<voiceEnabled;
+    qDebug()<<"RecordingController:Voice control enabled: "<<voiceEnabled;
 }
 
 

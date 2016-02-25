@@ -292,5 +292,4 @@ void MainWindow::catchLowBatterySignal(BandType lowBatteryBand) {
         batteryStatus->setText(lowBatteryText);
         updateBatteryStatus();
     }
-    qDebug()<<"Low battery bands "<<lowBatteryBands;
 }

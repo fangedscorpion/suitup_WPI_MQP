@@ -54,7 +54,6 @@ void MotionViewer::displayNewTime(int newMillis) {
 }
 
 void MotionViewer::changeSliderRange(qint32 newSliderLen) {
-    qDebug()<<videoSlider;
-    qDebug()<<"NEW slider len: "<<newSliderLen/SLIDER_DIVIDE_FACTOR;
+    qDebug()<<"MotionViewer: NEW slider len: "<<newSliderLen/SLIDER_DIVIDE_FACTOR;
     //videoSlider->setMaximum(newSliderLen/SLIDER_DIVIDE_FACTOR);
 }

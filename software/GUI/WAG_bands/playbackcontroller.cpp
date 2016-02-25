@@ -33,18 +33,15 @@ PlaybackController::PlaybackController(Suit *newSuitObj) {
     connect(suitObj, SIGNAL(voiceControlCommandReady(MessageType)), this, SLOT(catchVoiceControlCommand(MessageType)));
     connect(this, SIGNAL(frameChanged(qint32)), this, SLOT(catchFrameUpdate(qint32)));
     connect(this, SIGNAL(toleranceChanged(int)), suitObj, SLOT(catchToleranceChange(int)));
-    qDebug("HERE     88888");
 }
 
 void PlaybackController::togglePlay() {
-    qDebug("Toggling play");
-    qDebug()<<"Playing: "<<playing;
-    qDebug()<<"Last frame num: "<<lastFrameNum;
-    qDebug()<<"Current frame num: "<<currentFrame;
+    qDebug("PlaybackController: Toggling play");
+    qDebug()<<"PlaybackController: Last frame num: "<<lastFrameNum;
+    qDebug()<<"PlaybackController: Current frame num: "<<currentFrame;
     if (!((!playing) && (currentFrame >= (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))))) {
         playing = !playing;
-        qDebug("toggle play");
-        qDebug()<<"Play status: "<<playing;
+        qDebug()<<"PlaybackController: Play status: "<<playing;
         if (playing) {
             startPlaying();
         }
@@ -84,7 +81,7 @@ void PlaybackController::toggleSuitActive(bool active) {
         }
     }
     suitActive = active;
-    qDebug()<<"Suit activated: "<<suitActive;
+    qDebug()<<"PlaybackController: Suit activated: "<<suitActive;
 }
 
 void PlaybackController::moveFramePointer(int newFrame) {
@@ -97,7 +94,7 @@ void PlaybackController::moveFramePointer(int newFrame) {
 void PlaybackController::modifyHoldTime(double holdSeconds) {
     // again, may have to add bounds checking here
     timeToHoldFrameMillis = holdSeconds*1000;
-    qDebug()<<"Holding last pose for "<<timeToHoldFrameMillis<<" milliseconds";
+    qDebug()<<"PlaybackController: Holding last pose for "<<timeToHoldFrameMillis<<" milliseconds";
 }
 
 void PlaybackController::setStepThroughInterval(int newInterval) {
@@ -108,14 +105,13 @@ void PlaybackController::setStepThroughInterval(int newInterval) {
 void PlaybackController::setStepThroughTolerance(float newTolerance) {
     // bounds checking
     stepThroughTolerance = newTolerance/10 + 1;
-    qDebug()<<"New tolerance "<<newTolerance;
+    qDebug()<<"PlaybackController: New tolerance "<<newTolerance;
     emit toleranceChanged(stepThroughTolerance);
 }
 
 // sliderPosition seems to be 0-99
 void PlaybackController::updateStepThroughTolerance(int sliderPosition) {
     // scale tolerance
-    qDebug()<<"Tolerance on slider: "<<sliderPosition;
     setStepThroughTolerance((float) sliderPosition);
 }
 
@@ -125,14 +121,13 @@ void PlaybackController::speedChanged(int sliderPosition) {
         float positionsToHoldPerSecond = pow(2, ((100.0 - sliderPosition)/25) - 1);
         // may want to round
         setStepThroughInterval(((float) RECORDING_RATE)/positionsToHoldPerSecond);
-        qDebug()<<"Step through interval "<<stepThroughInterval;
+        qDebug()<<"PlaybackController: Step through interval "<<stepThroughInterval;
     }
     else {
-        qDebug()<<"Slider pos "<<sliderPosition;
         float exponent = sliderPosition - 50.0;
         // may want to round this result somehow
         changeFrameRate(pow(2, (exponent/25)));
-        qDebug()<<"Playback speed is now "<<frameRate;
+        qDebug()<<"PlaybackController: Playback speed is now "<<frameRate;
     }
 }
 
@@ -140,10 +135,11 @@ void PlaybackController::startPlaying() {
     if (stepThrough) {        
         emit startPlayback();
         if (suitActive) {
-            qDebug("starting step through mode playback");
+            qDebug("PlaybackController: start stepping through");
             emit frameChanged(currentFrame);
         } else {
-            qDebug("starting timer");
+            qDebug("PlaybackController: starting timer");
+            // TODO: should probably slow this down
             int tempFrameRate = MILLISECONDS_PER_FRAME*stepThroughInterval;
             timerId = startTimer(tempFrameRate);
         }
@@ -160,10 +156,8 @@ void PlaybackController::timerEvent(QTimerEvent *event) {
         emit metPosition();
     } else {
         currentFrame += MILLISECONDS_PER_FRAME;
-        qDebug()<<"Current frame: "<<currentFrame;//<<", event: "<<event;
         if (currentFrame < (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {
-            qDebug("HERE2");
-            qDebug()<<"Current frame "<<currentFrame;
+            qDebug()<<"PlaybackController: Current frame "<<currentFrame;
             emit frameChanged(currentFrame);
         }
         else {
@@ -173,15 +167,14 @@ void PlaybackController::timerEvent(QTimerEvent *event) {
 }
 
 void PlaybackController::positionMet() {
-    qDebug("Position met in playback controller");
     if (playing && stepThrough) {
         currentFrame += stepThroughInterval*MILLISECONDS_PER_FRAME;
         if (currentFrame < std::min(lastFrameNum, lastFrameNum*endPointer/100)) {
-            qDebug()<<"Position met Frame: "<<currentFrame;
+            qDebug()<<"PlaybackController: Position met Frame: "<<currentFrame;
             emit frameChanged(currentFrame);
         }
         else {
-            qDebug()<<"Reached end of time range in step through mode";
+            qDebug()<<"PlaybackController: Reached end of time range in step through mode";
             reachedEndOfTimeRange();
         }
     }
@@ -211,7 +204,7 @@ void PlaybackController::setActiveMotion(WAGFile *newMotion) {
 }
 
 void PlaybackController::beginningSliderChanged(int sliderVal) {
-    qDebug()<<"playback mode, beginning slider val: "<<sliderVal;
+    qDebug()<<"PlaybackController: beginning slider val: "<<sliderVal;
     beginningPointer = sliderVal;
     if (currentFrame < (beginningPointer*lastFrameNum/100)) {
         currentFrame = beginningPointer *lastFrameNum/100;
@@ -220,7 +213,7 @@ void PlaybackController::beginningSliderChanged(int sliderVal) {
 }
 
 void PlaybackController::endSliderChanged(int sliderVal) {
-    qDebug()<<"playback mode, end slider val: "<<sliderVal;
+    qDebug()<<"PlaybackController: end slider val: "<<sliderVal;
     endPointer = sliderVal;
     if (currentFrame > (endPointer*lastFrameNum/100)) {
         currentFrame = endPointer *lastFrameNum/100;
@@ -230,9 +223,7 @@ void PlaybackController::endSliderChanged(int sliderVal) {
 
 void PlaybackController::catchFrameUpdate(qint32 newFrame) {
     emit changeSliderVal((newFrame * 100)/lastFrameNum);
-    qDebug()<<"snap length"<<activeMotion->getFrameNums();
     PositionSnapshot desiredPos = activeMotion->getSnapshot(newFrame, CLOSEST);
-    qDebug()<<"snapshot size "<<desiredPos.getSnapshot().keys().size();
     // should probably figure out how to handle null snapshots
     // TODO
     emit goToSnapshot(desiredPos);

@@ -9,19 +9,18 @@ EditingController::EditingController() : QObject()
 
 
 void EditingController::beginningSliderChanged(int sliderVal) {
-    qDebug()<<"editing mode, beginning slider val: "<<sliderVal;
+    qDebug()<<"EditingController: beginning slider val: "<<sliderVal;
 }
 
 void EditingController::endSliderChanged(int sliderVal) {
-
-    qDebug()<<"editing mode, end slider val: "<<sliderVal;
+    qDebug()<<"EditingController: end slider val: "<<sliderVal;
 }
 
 void EditingController::togglePlay() {
     playing = !playing;
     // play motion
 
-    qDebug()<<"editing mode, playing: "<<playing;
+    qDebug()<<"EditingController: playing: "<<playing;
     emit editingPlayStateChanged(playing);
 }
 

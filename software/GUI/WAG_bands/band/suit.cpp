@@ -52,7 +52,6 @@ Suit::Suit(WifiManager *comms):QObject() {
     }
 
     collectingData = true;
-    qDebug("Toggle collecting 1");
     toggleCollecting(false);
 }
 
@@ -61,14 +60,10 @@ void Suit::getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTime
 
     AbsBand *targetBand = getBand(band);
     // send data to target band
-    qDebug()<<band;
-
-    qDebug()<<data->getMessageType();
     qint64 elapsedTime = startTime.msecsTo(dataTimestamp);
     if (data->getMessageType() == VOICE_CONTROL) {
         processVoiceControlMessage(data);
     } else {
-        qDebug()<<"Elasped time "<<elapsedTime;
         targetBand->handleMessage((qint32) elapsedTime, data);
     }
 }
@@ -88,24 +83,23 @@ void Suit::sendData(BandType destBand, BandMessage* sendMsg) {
 void Suit::toggleCollecting(bool shouldCollectData) {
     if (collectingData != shouldCollectData) {
         collectingData = shouldCollectData;
-        qDebug()<<"Collecting data set to "<<collectingData;
         if (collectingData) {
             // stop timer
-            qDebug("Killing timer");
+            qDebug("Suit: Killing ping timer");
             killTimer(pingTimerID);
             activeSnapshot = PositionSnapshot();
             activeSnapTimes.clear();
         } else {
             // start timer
-            qDebug("Starting timer");
+            qDebug("Suit: Starting ping timer");
             pingTimerID = startTimer(PING_INTERVAL);
         }
     }
 }
 
 void Suit::timerEvent(QTimerEvent *event) {
-    BandMessage *newMsg = new BandMessage(COMPUTER_PING, QByteArray("HI"));
-    qDebug("Timer event");
+    BandMessage *newMsg = new BandMessage(COMPUTER_PING, QByteArray(""));
+    qDebug("Suit: Ping timer event");
     sendToConnectedBands(newMsg);
 }
 
@@ -124,8 +118,7 @@ void Suit::startOrStopMode(MessageType commandType) {
     BandMessage *newMsg;
     switch (commandType) {
     case START_RECORDING:
-        qDebug("Suit starting to drecord");
-        qDebug("Toggle collecting 2");
+        qDebug("Suit: starting record");
         toggleCollecting(true);
         startTime = QElapsedTimer();
         startTime.start();
@@ -135,14 +128,13 @@ void Suit::startOrStopMode(MessageType commandType) {
     case STOP_RECORDING:
         newMsg = new BandMessage(STOP_RECORDING, QByteArray());
         sendToConnectedBands(newMsg);
-        qDebug("toggleCollecting 3");
+        qDebug("Suit: Stopping record");
         toggleCollecting(false);
         break;
     case START_PLAYBACK:
-        qDebug("Starting playback");
+        qDebug("Suit: Starting playback");
         startTime = QElapsedTimer();
         startTime.start();
-        qDebug("Toggle collecting 4");
         toggleCollecting(true);
         newMsg = new BandMessage(START_PLAYBACK, QByteArray());
         sendToConnectedBands(newMsg);
@@ -150,8 +142,8 @@ void Suit::startOrStopMode(MessageType commandType) {
     case STOP_PLAYBACK:
         newMsg = new BandMessage(STOP_PLAYBACK, QByteArray());
         sendToConnectedBands(newMsg);
-        qDebug("Toggle collecting 5");
         toggleCollecting(false);
+        qDebug("Suit: stop playback");
         break;
     default:
         // shouldn't give any other message types
@@ -165,10 +157,8 @@ void Suit::catchStartPlayback() {
 }
 
 void Suit::playSnapshot(PositionSnapshot goToSnap) {
-    qDebug("Received snap to play\n");
-    qDebug()<<"Collecting data = "<<collectingData;
+    qDebug("Suit: Received snap to play\n");
     if (collectingData) {
-        qDebug("Trying to play snap\n");
         // TODO
         // probably want to set a snapshot to match, and then when we receive a full snapshot, we can compare
         // and send back error
@@ -177,24 +167,21 @@ void Suit::playSnapshot(PositionSnapshot goToSnap) {
         bool posWithinTol = true;
         for (int i = 0; i < connected.size(); i++){
             BandType getBand = connected[i];
-            qDebug()<<"Sending to band "<<getBand;
-            qDebug()<<"Num bands"<<snapshotData.keys().size();
-            qDebug()<<snapshotData;
             if (snapshotData.contains(getBand)) {
+                qDebug()<<"Suit: Sending error to band "<<getBand;
                 posWithinTol &= bands[getBand]->moveTo(snapshotData[getBand]);
-                qDebug()<<"Position within tolerance "<<posWithinTol;
+                qDebug()<<"Suit: Position for band "<<getBand<<" within tolerance "<<posWithinTol;
             }
         }
 
         if (posWithinTol) {
-            qDebug("Emitting position met");
+            qDebug("Suit: Emitting position met");
             emit positionMet();
         }
     }
 }
 
 void Suit::catchStopPlayback() {
-    qDebug("STOPPING PLAYBACK ------------------------");
     startOrStopMode(STOP_PLAYBACK);
 }
 
@@ -258,7 +245,7 @@ void Suit::propagateLowBattery(BandType chargeBand) {
 
 
 void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime) {
-    qDebug()<<"ADDING POSE from band "<<bandForPose;
+    qDebug()<<"Suit: adding pose to snapshot from band "<<bandForPose;
 
     /* AbsState *copiedPose = (AbsState*) malloc(newPose->objectSize()); // not sure if can do this for abs
     // TODO figure out where to free this
@@ -269,12 +256,10 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
     activeSnapshot.addMapping(bandForPose, newPose);
 
     activeSnapTimes.append(poseTime);
-    qDebug()<<"Pose time"<< poseTime;
+    qDebug()<<"Suit: Pose time"<< poseTime;
 
 
     // maybe just want to make it so it's all bands, not just the connected ones
-    qDebug()<<"connected bands: "<<getConnectedBands().toList();
-    qDebug()<<activeSnapshot.getRecordedBands().toList();
     if (getConnectedBands() == activeSnapshot.getRecordedBands()) {
         // full snapshot!
 
@@ -282,18 +267,16 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
 
         for (int i = 0; i < activeSnapTimes.length(); i++) {
             totalTime += activeSnapTimes[i];
-            qDebug()<<"total time"<<totalTime;
         }
         qint32 avgReadingTime;
         if (activeSnapTimes.length() != 0) {
-            qDebug()<<"calculating average reading time";
             avgReadingTime = (qint32) (totalTime/activeSnapTimes.length());
-            qDebug()<<avgReadingTime;
+            qDebug()<<"Suit: Snapshot time: "<<avgReadingTime;
         }
         else {
             avgReadingTime = 0;
         }
-        qDebug()<<"position snapshot ready";
+        qDebug()<<"Suit: position snapshot ready";
         emit positionSnapshotReady(avgReadingTime, activeSnapshot);
 
         activeSnapshot = PositionSnapshot();
