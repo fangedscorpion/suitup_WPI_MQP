@@ -274,7 +274,7 @@ void MainWindow::lockOnPlayOrRecord(bool suitRecording) {
 }
 
 void MainWindow::catchLowBatterySignal(BandType lowBatteryBand) {
-    static QSet<BandType> lowBatteryBands = new QSet<BandType>();
+    static QSet<BandType> lowBatteryBands = QSet<BandType>();
     if (!(lowBatteryBands.contains(lowBatteryBand))) {
         lowBatteryBands<<lowBatteryBand;
         QString lowBatteryText = "Low Battery in ";
