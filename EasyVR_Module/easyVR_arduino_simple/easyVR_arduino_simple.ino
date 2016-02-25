@@ -88,7 +88,7 @@ void setup() {
     EASYVR_SERIAL.begin(9600);
     
 
-    //Setup interrupt on interrupt pin from Teesny
+    // Setup interrupt on interrupt pin from Teesny
     // Set up comms to Teensy
     DEBUG_SERIAL.begin(115200);
     pinMode(ARDUINO_HAS_MAIL_PIN+2, INPUT);
@@ -99,10 +99,11 @@ void setup() {
         
     //pinMode(HW_JUMPER_FOR_SERIAL_OUTPUT, INPUT);
     //PRINT_FLUFF_FOR_TESTING = digitalRead(HW_JUMPER_FOR_SERIAL_OUTPUT); //Read jumper (This was to enable a hardware pin for testing, but not used)
-    PRINT_FLUFF_FOR_TESTING = false;
+    //PRINT_FLUFF_FOR_TESTING = false;
     
     //Setup the interrupt output to the Teensy
     pinMode(OUTPUT_INTERRUPT_PIN, OUTPUT);
+    digitalWrite(OUTPUT_INTERRUPT_PIN, HIGH); 
 
 ///////////////////////////////////////
     // All this crap is to setup the EasyVR
@@ -128,7 +129,7 @@ void setup() {
 /////////////////////////////////////////// 
 }
 
-//////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 bool checkMonitorInput() //From TestEasyVR code. Stripped down quite a bit
 {
   //PRINT_FLUFF_FOR_TESTING = digitalRead(HW_JUMPER_FOR_SERIAL_OUTPUT); //Read jumper
@@ -304,15 +305,15 @@ void loop() {
     // Then tells the Teensy to check for serial
     if(easyvr.getWord() == 6){ // STOP
       DEBUG_SERIAL.print(F("S")); //Put stop onto output
-      digitalWrite(OUTPUT_INTERRUPT_PIN, HIGH);
-      delay(1);
       digitalWrite(OUTPUT_INTERRUPT_PIN, LOW);
+      delay(1);
+      digitalWrite(OUTPUT_INTERRUPT_PIN, HIGH);
     }
     if(easyvr.getWord() == 3){ //RUN
       DEBUG_SERIAL.print(F("R")); //Put run onto output serial
-      digitalWrite(OUTPUT_INTERRUPT_PIN, HIGH);
-      delay(1);
       digitalWrite(OUTPUT_INTERRUPT_PIN, LOW);
+      delay(1);
+      digitalWrite(OUTPUT_INTERRUPT_PIN, HIGH);
     }
     //////////////////////////////////////////////////////////////////////
     

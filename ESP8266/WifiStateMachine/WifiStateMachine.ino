@@ -1,6 +1,7 @@
 #include <ESP8266WiFi.h> //The Arduino ESP8266 WiFi Core --> These guys are the real MVP
 #include <WiFiUDP.h>
 #define DEBUG //Debugging information printed to Serial. This clogs up the Teensy port
+#include "WiFiMsgTypes.h" //Lists all the message types for our communication link
 
 ////////////////////////////////////
 // States for the ESP8266 State machine
@@ -19,11 +20,6 @@
 int state; //Holds the state
 ///////////////////////////////////
 
-
-void GoToStatePowerOn(){ //Anything to be done while powering up --> Maybe talk to Teensy?
- Serial.begin(115200);
- Serial.println("Hello world!");
-}
 
 ///////////////////////////////////
 // Error conditions -- hopefully only a few
@@ -59,15 +55,27 @@ int timeoutCounter = 0;
 const char* ssid     = "modelbased";
 const char* password = "modelbased";
 
-const char* host_preprogrammed = "192.168.1.11"; 
-const char* streamId   = "WAGBND";
-#define UDP_BROADCAST_PORT 2016 //Used if a BAND doesn't know the HOST IP
-#define UDP_BROADCAST_SIZE 2
-
 char value = 0; //Test value to send
 boolean conn = false; //If connected to WiFi computer host
-WiFiClient client; 
-WiFiUDP hostFinder;
+IPAddress hostPCAddr; //determined from incoming TCP connection
+
+#define TCP_PORT 12941 //TCP connection to/from PC
+
+WiFiServer bandServerToPC(TCP_PORT);
+boolean hasHostPCIP = false;
+WiFiClient hostPC;
+
+#define POSITION_DATA_BYTES 12
+char positionalFBData[POSITION_DATA_BYTES];
+char msgDataNonPosition[NON_POSITION_DATA_BYTES_MAX];
+
+#define MPU_DATA_SIZE 14
+
+int incomingByte;
+boolean foundMPUDataStart = false;
+char incomingDataMsg[MPU_DATA_SIZE] = {0,0,0,0,0,0,0,0,0,0,0,0,'\r','\n'};    
+char recordingMsg[RECORDING_MSG_SIZE] = {0x0A, BAND_POSITION_UPDATE, 0,0,0,0,0,0,0,0,'\n'};
+
 ////////////////////////////////////
 //Returns true if could connect
 //FALSE if connection failed
@@ -75,6 +83,7 @@ boolean GoToStateConnection(){ //Connects to WiFi
   timeoutCounter = 0;
   delay(10);
   // We start by connecting to a WiFi network
+  Serial.println();
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
@@ -88,7 +97,7 @@ boolean GoToStateConnection(){ //Connects to WiFi
       return false;
     }
     else{
-      delay(250);
+      delay(250);     
       Serial.print(".");
       timeoutCounter++; 
     }
@@ -103,85 +112,194 @@ boolean GoToStateConnection(){ //Connects to WiFi
   Serial.println("WiFi connected");  
   Serial.println("BAND IP ADDR: ");
   Serial.println(WiFi.localIP());
-  #ifdef DEBUG
-    Serial.println("DEBUG MODE");
-  #endif
+
+  bandServerToPC.begin();
+  Serial.println("Listener started for PC");
+
   return true;
 }
 
-void GoToStateFindHost(){ //Info from: https://github.com/PaulStoffregen/Time/blob/master/examples/TimeNTP_ESP8266WiFi/TimeNTP_ESP8266WiFi.ino
-  hostFinder.begin(UDP_BROADCAST_PORT); //For any UDP connection info
-  #ifdef DEBUG
-      Serial.println("Sending ID msg for host");
-      hostFinder.beginPacket("255.255.255.255", UDP_BROADCAST_PORT); //Send out an ID msg
-      byte packetBuffer[UDP_BROADCAST_SIZE];
-      packetBuffer[0] = byte('H');
-      packetBuffer[1] = byte('I');
-
-      int j = 0;
-      while(j < 1000){
-          hostFinder.write(packetBuffer, UDP_BROADCAST_SIZE);
-          int success = hostFinder.endPacket();
-          Serial.print("Successfully sent packet: ");
-          Serial.println(success);
-
-          delay(100);
-          int noBytes = hostFinder.parsePacket();
-          String received_command = "";
-          
-          if ( noBytes ) {//See http://www.esp8266.com/viewtopic.php?f=29&t=2222
-            Serial.print(millis() / 1000);
-            Serial.print(":Packet of ");
-            Serial.print(noBytes);
-            Serial.print(" received from ");
-            Serial.print(hostFinder.remoteIP());
-            Serial.print(":");
-            Serial.println(hostFinder.remotePort());
-            // We've received a packet, read the data from it
-            hostFinder.read(packetBuffer,noBytes); // read the packet into the buffer
-        
-            // display the packet contents in HEX
-            for (int i=1;i<=noBytes;i++)
-            {
-              Serial.print(packetBuffer[i-1],HEX);
-              received_command = received_command + char(packetBuffer[i - 1]);
-              if (i % 32 == 0)
-              {
-                Serial.println();
+char printRXPacket(String msg){
+  char msgType = char(BROKEN_PACKET);
+  if(msg.length() >= 2){  //Normal message
+            int msgLength = int(msg[0]);
+            Serial.println(String("Received: ") + msgLength + " bytes");
+            
+            Serial.print("Message type: ");
+            msgType = msg[1];
+            switch(msgType){ //Comparing to the values from enum in header
+              case COMPUTER_INITIATE_CONNECTION:  Serial.println("COMPUTER_INITIATE_CONNECTION"); break;
+              case BAND_CONNECTING:  Serial.println("BAND_CONNECTING"); break;
+              case COMPUTER_PING:  Serial.println("COMPUTER_PING"); break;
+              case BAND_PING:  Serial.println("BAND_PING"); break;
+              case BAND_POSITION_UPDATE:  Serial.println("BAND_POSITION_UPDATE"); break;
+              case POSITION_ERROR:  Serial.println("POSITION_ERROR"); break;
+              case START_RECORDING:  Serial.println("START_RECORDING"); break;
+              case STOP_RECORDING:  Serial.println("STOP_RECORDING"); break;
+              case START_PLAYBACK:  Serial.println("START_PLAYBACK"); break;
+              case STOP_PLAYBACK:  Serial.println("STOP_PLAYBACK"); break;
+              case VOICE_CONTROL:  Serial.println("VOICE_CONTROL"); break;
+              case LOW_BATTERY_UPDATE: Serial.println("LOW_BATTERY_UPDATE"); break;
+              default: Serial.println("Unrecognized format"); break;
+            }
+            
+            if(msgLength > 2){ //Normal message
+              Serial.print("Data: ");
+              
+              memset(msgDataNonPosition, 0, sizeof(msgDataNonPosition)); //clear out non-position array
+              
+              for(int j = 2; j < (msgLength-1); j++){ //print data from msg
+                Serial.print(msg[j]);
+                
+                if(msgType == POSITION_ERROR){//copy into the proper feedback array  
+                    positionalFBData[j-2] = msg[j]; 
+                }
+                else{
+                  msgDataNonPosition[j-2] = msg[j];
+                }
+                
               }
-              else Serial.print(' ');
-            } // end for
+              Serial.println(msg[msgLength-1]);  
+            }
           }
-          Serial.println("End of Loop");
-         j++;
+  else{ //Broken packet thing
+    Serial.println(String("Received MALFORMED packet of size: ") + msg.length());
+  }
+  return msgType;
+}
+
+void replyToPCInitiation(){ //Reply to initiation packet
+   Serial.println("Sending response to COMPUTER_INITIATE_CONNECTION");
+   char msg[3] = {2,1,'\n'};
+   hostPC.flush(); // This might take a while
+   hostPC.print(msg);
+}
+
+void replyToPCPing(){
+   Serial.println("Sending response to COMPUTER_PING");
+   char msg[3] = {2,1,'\n'};
+   hostPC.flush(); // This might take a while
+   hostPC.print(msg);
+}
+
+void replyToRXPosError(){
+   Serial.println("Sending response to COMPUTER_PING");
+   char msg[3] = {2,1,'\n'};
+   hostPC.flush(); // This might take a while
+   hostPC.print(msg);
+}
+
+void giveMotorsFeedback(){
+  //Send the positional data to the Teensy
+//  
+//  for(int j = 0; j < POSITION_DATA_BYTES; j++){ //print data from msg
+//     Serial.print(positionalFBData[j]);               
+//   }
+}
+
+void readTeensySerialData(){
+  if (Serial.available() >= MPU_DATA_SIZE) {
+    if(Serial.peek() != '$'){
+        while(Serial.peek() != '$'){
+          Serial.read(); //clear to start of packet
+          if(Serial.peek() == -1){
+            foundMPUDataStart = false;
+            break; 
+          }
+          else if(Serial.peek() == '$'){
+            incomingDataMsg[0] = Serial.read();
+            if(Serial.peek() == 0x02){
+              incomingDataMsg[1] = Serial.read();
+              incomingDataMsg[2] = Serial.read(); //Probably reduce these in a loop to check values and avoid reading empty data --> avoid stace trace
+              incomingDataMsg[3] = Serial.read();
+              incomingDataMsg[4] = Serial.read();
+              incomingDataMsg[5] = Serial.read();
+              incomingDataMsg[6] = Serial.read();
+              incomingDataMsg[7] = Serial.read();
+              incomingDataMsg[8] = Serial.read();
+              incomingDataMsg[9] = Serial.read();
+              incomingDataMsg[10] = Serial.read();
+              incomingDataMsg[11] = Serial.read();
+              Serial.read();
+              Serial.read();
+              foundMPUDataStart = true;
+            }
+            else{ //Not start of msg
+              foundMPUDataStart = false;
+            }
+          }
+        }
+    }
+    else{
+      incomingDataMsg[0] = Serial.read();
+      if(Serial.peek() == 0x02){
+              incomingDataMsg[1] = Serial.read();
+              incomingDataMsg[2] = Serial.read(); 
+              incomingDataMsg[3] = Serial.read();
+              incomingDataMsg[4] = Serial.read();
+              incomingDataMsg[5] = Serial.read();
+              incomingDataMsg[6] = Serial.read();
+              incomingDataMsg[7] = Serial.read();
+              incomingDataMsg[8] = Serial.read();
+              incomingDataMsg[9] = Serial.read();
+              incomingDataMsg[10] = Serial.read();
+              incomingDataMsg[11] = Serial.read();
+              Serial.read();
+              Serial.read();
+              foundMPUDataStart = true;
       }
+      else{
+        foundMPUDataStart = false;
+      }
+    }
+    if(foundMPUDataStart){
+      Serial.write(incomingDataMsg,14);
+      delayMicroseconds(200);
+    }
+    else{
       
-      //SOMETHING HERE FROM THIS PAGE: https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/src/WiFiUdp.h
-  #endif
+    }
+  }
+}
 
-      
-
+void sendDataToComputer(){
+  for(int i = 2; i < 10; i ++){
+    recordingMsg[i] = incomingDataMsg[i]; 
+  }
   
-//      Serial.print("connecting to ");
-//        Serial.println(host);
-//       
-//        // Use WiFiClient class to create TCP connections
-//        
-//        const int httpPort = 81;
-//        if (!client.connect(host, httpPort)) {
-//          Serial.println("connection failed");
-//          conn = 0;
-//          return;
-//        }
-//        else{
-//          conn = 1;
-//        }
-   hostFinder.stop(); //End UDP stuff
+  hostPC.print(recordingMsg;);
+}
+
+void GoToStateFindHost(){
+    // Check if a client has connected
+    hostPC = bandServerToPC.available();
+    if (!hostPC) {
+      return;
+    }
+    int counter = 0;
+    // Wait until the client sends some data
+    Serial.println("Host PC available");
+    while(!hostPC.available()){
+      delay(1);
+      counter++;
+      if(counter > 1500){
+        Serial.println("No host data");
+        counter = 0;
+      }
+    }
+    Serial.print("hostPC IP: ");
+    hostPCAddr = hostPC.remoteIP();
+    Serial.println(hostPCAddr);
+    hasHostPCIP = true;
+    Serial.println("Connected to PC!");
+    state = IDLE_CONNECTED_TO_HOST;
 }
 
 void setup() {
   state = POWER_ON; 
-  GoToStatePowerOn(); 
+  Serial.begin(9600);
+  delay(10);
+  Serial.println("Hi!");
   
   state = CONNECTION;
   boolean goodConnect = GoToStateConnection();
@@ -192,6 +310,72 @@ void setup() {
   }
 
   state = IDLE_CONNECTED_TO_AP;
+}
+
+boolean listenForSpecificPacket(char specificPacket){
+      char msgTypeRXed = NOTHING_NEW;
+      if(hostPC.connected()){
+        
+        // Read all the lines of the reply from server and print them to Serial
+        while(hostPC.available()){
+          String line = hostPC.readStringUntil('\n');
+          msgTypeRXed = printRXPacket(line);
+        }
+
+        if(msgTypeRXed == specificPacket){
+          return true;
+        }
+      }
+      else{
+        Serial.println("HOST PC DISCONNECTED!");
+        state = FIND_HOST;
+      }
+      return false;
+}
+
+void listenForPackets(){
+      char msgTypeRXed = NOTHING_NEW;
+      if(hostPC.connected()){
+        
+        // Read all the lines of the reply from server and print them to Serial
+        while(hostPC.available()){
+          String line = hostPC.readStringUntil('\n');
+          msgTypeRXed = printRXPacket(line);
+        }
+
+        switch(msgTypeRXed){
+              case COMPUTER_INITIATE_CONNECTION:  replyToPCInitiation();  break;
+              case BAND_CONNECTING:  Serial.println("Doing nothing for BAND_CONNECTING"); break;
+              case COMPUTER_PING:  replyToPCPing(); break;
+              case BAND_PING:  Serial.println("Doing nothing for BAND_PING"); break;
+              case BAND_POSITION_UPDATE:  Serial.println("Doing nothing for BAND_POSITION_UPDATE"); break;
+              case POSITION_ERROR:  
+                    giveMotorsFeedback();
+                    replyToRXPosError();
+              break;
+              case START_RECORDING:  
+                    state = RECORDING;
+              break;
+              case STOP_RECORDING:
+                  state = IDLE_CONNECTED_TO_HOST;
+                    //tellTeensyStopRecording();
+              break;
+              case START_PLAYBACK:  
+                    //tellTeensyStartPlayback();
+              break;
+              case STOP_PLAYBACK: 
+                    //tellTeensyStopPlayback();
+              break;
+              case VOICE_CONTROL:  Serial.println("Doing nothing for VOICE_CONTROL"); break;
+              case LOW_BATTERY_UPDATE: Serial.println("Doing nothing for LOW_BATTERY_UPDATE"); break;
+              case NOTHING_NEW: break;
+              default: Serial.println("Unrecognized format: "); break;
+        }
+      }
+      else{
+        Serial.println("HOST PC DISCONNECTED!");
+        state = FIND_HOST;
+      }
 }
 
 
@@ -205,45 +389,21 @@ void loop() {
     case FIND_HOST:
         GoToStateFindHost();
     break;
+
+    case IDLE_CONNECTED_TO_HOST:
+        listenForPackets();
+    break;
+
+    case RECORDING:
+        boolean gotStopRecording = listenForSpecificPacket(STOP_RECORDING);
+        if(gotStopRecording){
+          state = IDLE_CONNECTED_TO_HOST;
+        }
+        else{
+          readTeensySerialData();
+          sendDataToComputer();
+        }
+    break;
   }
-//  #ifndef DEBUG
-//      delay(11);
-//      ++value % 100;
-//     
-//      if(conn == 0){
-//        Serial.print("connecting to ");
-//        Serial.println(host);
-//       
-//        // Use WiFiClient class to create TCP connections
-//        
-//        const int httpPort = 81;
-//        if (!client.connect(host, httpPort)) {
-//          Serial.println("connection failed");
-//          conn = 0;
-//          return;
-//        }
-//        else{
-//          conn = 1;
-//        }
-//      }
-//      
-//      // This will send the request to the server
-//      client.print(String("_mpudta_") + value + String("!"));
-//    //  client.print(String("GET ") + streamId + " HTTP/1.1\r\n" +
-//    //               "Host: " + host + "\r\n" + "Connection: Keep-Alive\r\n\r\n");
-//      delay(10);
-//      
-//      // Read all the lines of the reply from server and print them to Serial
-//      if(client.available()>=10){
-//        char buf[10];
-//        client.readBytes(buf,10);
-//        Serial.print(buf);
-//      }
-//    //  Serial.println();
-//      client.flush();
-//  #else
-//      Serial.println("HELLO WORLD!");
-//      delay(500);
-//  #endif
 }
 

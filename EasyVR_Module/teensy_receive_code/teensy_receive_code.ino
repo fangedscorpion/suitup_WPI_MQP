@@ -1,4 +1,4 @@
-#define INTERRUPT_FROM_ARDUINO 6
+#define INTERRUPT_FROM_ARDUINO 3
 #define ARDUINO_SERIAL Serial1
 #define SERIAL_TO_PC Serial
 
@@ -16,7 +16,8 @@ void listenToArduino(){
 
 void setup() {
   pinMode(INTERRUPT_FROM_ARDUINO, INPUT);
-  attachInterrupt(INTERRUPT_FROM_ARDUINO, listenToArduino, RISING);  
+  digitalWrite(INTERRUPT_FROM_ARDUINO, HIGH); //Pull-ups
+  attachInterrupt(INTERRUPT_FROM_ARDUINO, listenToArduino, FALLING);  
   ARDUINO_SERIAL.begin(115200);
   SERIAL_TO_PC.begin(115200);
   heardArduino = false;

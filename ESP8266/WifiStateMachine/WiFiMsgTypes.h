@@ -1,6 +1,8 @@
 #ifndef WiFiMsgTypes_h
 #define WiFiMsgTypes_h
 
+#include "WAGBandCommon.h"
+
 // #define COMPUTER_INITIATE_CONNECTION 0
 // #define BAND_CONNECTING 1
 // #define COMPUTER_PING 2
@@ -34,5 +36,6 @@ typedef enum MessageType {
 
 #define POSITION_DATA_BYTES 12
 #define NON_POSITION_DATA_BYTES_MAX 4
+#define RECORDING_MSG_SIZE 11
 
 #endif
