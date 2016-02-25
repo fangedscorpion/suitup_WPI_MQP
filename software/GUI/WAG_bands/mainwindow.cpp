@@ -71,6 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(indicateConnectionStatusChange(BandType, ConnectionStatus)));
     connect(this, SIGNAL(modeChanged(ACTION_TYPE)), fullSuit, SLOT(catchModeChanged(ACTION_TYPE)));
     connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(updateConnectionStatus(BandType, ConnectionStatus)));
+    connect(fullSuit, SIGNAL(bandHasLowBattery(BandType)), this, SLOT(catchLowBatterySignal(BandType)));
 }
 
 MainWindow::~MainWindow() {}

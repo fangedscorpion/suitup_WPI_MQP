@@ -277,7 +277,7 @@ void MainWindow::catchLowBatterySignal(BandType lowBatteryBand) {
     static QSet<BandType> lowBatteryBands = QSet<BandType>();
     if (!(lowBatteryBands.contains(lowBatteryBand))) {
         lowBatteryBands<<lowBatteryBand;
-        QString lowBatteryText = "Low Battery in ";
+        QString lowBatteryText = "Low Battery: ";
         QList<BandType> bandList = lowBatteryBands.toList();
         if (bandList.size() == 1) {
             lowBatteryText +=(AbsBand::bandTypeToString(bandList[0]));
@@ -290,6 +290,7 @@ void MainWindow::catchLowBatterySignal(BandType lowBatteryBand) {
             lowBatteryText += AbsBand::bandTypeToString(bandList[bandList.size() - 1]);
         }
         batteryStatus->setText(lowBatteryText);
+        updateBatteryStatus();
     }
     qDebug()<<"Low battery bands "<<lowBatteryBands;
 }

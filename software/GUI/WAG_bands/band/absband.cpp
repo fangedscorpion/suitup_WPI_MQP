@@ -137,34 +137,34 @@ void AbsBand::catchTolChange(int newTol) {
 QString AbsBand::bandTypeToString(BandType stringifyThis) {
     switch(stringifyThis) {
     case LEFT_HAND:
-        return QString("Left hand band");
+        return QString("left hand band");
         break;
     case RIGHT_HAND:
-        return QString("Right hand band");
+        return QString("right hand band");
         break;
     case LEFT_LOWER_ARM:
-        return QString("Left lower arm band");
+        return QString("left lower arm band");
         break;
     case RIGHT_LOWER_ARM:
-        return QString("Right lower arm band");
+        return QString("right lower arm band");
         break;
     case LEFT_UPPER_ARM:
-        return QString("Left upper arm band");
+        return QString("left upper arm band");
         break;
     case RIGHT_UPPER_ARM:
-        return QString("Right upper arm band");
+        return QString("right upper arm band");
         break;
     case LEFT_SHOULDER:
-        return QString("Left shoulder band");
+        return QString("left shoulder band");
         break;
     case RIGHT_SHOULDER:
-        return QString("Right shoulder band");
+        return QString("right shoulder band");
         break;
     case CHEST:
-        return QString ("Chest band");
+        return QString ("chest band");
         break;
     default:
-        return QString("Unknown band");
+        return QString("unknown band");
         break;
     }
 }
