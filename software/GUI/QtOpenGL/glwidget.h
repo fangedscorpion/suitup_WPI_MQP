@@ -36,8 +36,6 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
     private:
-//        void setupVertexAttribs();
-
         void createShaderProgram( QString vShader, QString fShader);
         void createBuffers();
         void createAttributes();
@@ -74,18 +72,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         int m_zRot;
         QPoint m_lastPos;
 
-
-//        Logo m_logo;
-//        QOpenGLVertexArrayObject m_vao;
-//        QOpenGLBuffer m_logoVbo;
-//        QOpenGLShaderProgram *m_program;
-//        int m_projMatrixLoc;
-//        int m_mvMatrixLoc;
-//        int m_normalMatrixLoc;
-//        int m_lightPosLoc;
-//        QMatrix4x4 m_proj;
-//        QMatrix4x4 m_camera;
-//        QMatrix4x4 m_world;
+        QVector3D m_cam_offset;
     };
 
     #endif

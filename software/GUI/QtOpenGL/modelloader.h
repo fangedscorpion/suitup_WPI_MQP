@@ -8,10 +8,9 @@
 #include <QSharedPointer>
 #include <QDir>
 
-struct aiScene;
-struct aiNode;
-struct aiMesh;
-struct aiMaterial;
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <assimp/Importer.hpp>
 
 struct MaterialInfo
 {
@@ -61,7 +60,7 @@ public:
         AbsolutePath
     };
 
-    ModelLoader(bool transformToUnitCoordinates = true);
+    ModelLoader();
     bool Load(QString filePath, PathType pathType);
     void getBufferData( QVector<float> **vertices, QVector<float> **normals,
                         QVector<unsigned int> **indices);
@@ -79,7 +78,6 @@ private:
     QSharedPointer<Mesh> processMesh(aiMesh *mesh);
     void processNode(const aiScene *scene, aiNode *node, Node *parentNode, Node &newNode);
 
-    void transformToUnitCoordinates();
     void findObjectDimensions(Node *node, QMatrix4x4 transformation, QVector3D &minDimension, QVector3D &maxDimension);
 
     QVector<float> m_vertices;
@@ -95,7 +93,6 @@ private:
     QVector<QSharedPointer<MaterialInfo> > m_materials;
     QVector<QSharedPointer<Mesh> > m_meshes;
     QSharedPointer<Node> m_rootNode;
-    bool m_transformToUnitCoordinates;
 };
 
 #endif // MODELLOADER_H

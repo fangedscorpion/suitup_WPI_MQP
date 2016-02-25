@@ -1,20 +1,12 @@
 #include "glwidget.h"
 #include "window.h"
-#include "mainwindow.h"
 #include <QSlider>
-#include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QKeyEvent>
-#include <QPushButton>
-#include <QDesktopWidget>
-#include <QApplication>
-#include <QMessageBox>
 
-Window::Window(MainWindow *mw) : mainWindow(mw) {
-    QString OpenGL_Model("/home/suitup/Documents/suitup_WPI_MQP/software/GUI/DisplayModel/biped/test/biped_rig.obj");
+Window::Window() {
+    QString modelFile = QString("biped/final/biped_rig.obj");
 
-
-    glWidget = new GLWidget(OpenGL_Model,ModelLoader::AbsolutePath);
+    glWidget = new GLWidget(modelFile,ModelLoader::RelativePath);
 
     xSlider = createSlider();
     zSlider = createSlider();
@@ -24,8 +16,8 @@ Window::Window(MainWindow *mw) : mainWindow(mw) {
     connect(zSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setZRotation(int)));
     connect(glWidget, SIGNAL(zRotationChanged(int)), zSlider, SLOT(setValue(int)));
 
-    xSlider->setValue(90 * 16);
-    zSlider->setValue(45 * 16);
+    xSlider->setValue(0);
+    zSlider->setValue(0);
 
     QHBoxLayout *container = new QHBoxLayout;
     container->addWidget(glWidget);

@@ -15,13 +15,11 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     glwidget.cpp \
-    logo.cpp \
     window.cpp \
     modelloader.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \
-    logo.h \
     window.h \
     modelloader.h
 

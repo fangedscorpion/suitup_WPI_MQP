@@ -1,26 +1,17 @@
 #include "modelloader.h"
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-#include <assimp/Importer.hpp>
-#include <QDebug>
 #include <limits>
 
 #define DEBUGOUTPUT_NORMALS(nodeIndex) (false)//( QList<int>{1}.contains(nodeIndex) )//(false)
 
-ModelLoader::ModelLoader(bool transformToUnitCoordinates) :
-    m_transformToUnitCoordinates(transformToUnitCoordinates)
-{
+ModelLoader::ModelLoader() {
 
 }
 
 // look for file using relative path
-QString findFile(QString relativeFilePath, int scanDepth)
-{
+QString findFile(QString relativeFilePath, int scanDepth) {
     QString str = relativeFilePath;
-    for(int ii=-1; ii<scanDepth; ++ii)
-    {
-        if(QFile::exists(str))
-        {
+    for(int ii=-1; ii<scanDepth; ++ii) {
+        if(QFile::exists(str)) {
             return str;
         }
         str.prepend("../");
@@ -28,8 +19,7 @@ QString findFile(QString relativeFilePath, int scanDepth)
     return "";
 }
 
-bool ModelLoader::Load(QString filePath, PathType pathType)
-{
+bool ModelLoader::Load(QString filePath, PathType pathType) {
     QString l_filePath;
     if (pathType == RelativePath)
         l_filePath = findFile(filePath, 5);
@@ -46,60 +36,46 @@ bool ModelLoader::Load(QString filePath, PathType pathType)
             aiProcess_SortByPType
                                               );
 
-    if( !scene)
-    {
+    if(!scene) {
         qDebug() << "Error loading file: (assimp:) " << importer.GetErrorString();
         return false;
     }
 
-    if(scene->HasMaterials())
-    {
-        for(unsigned int ii=0; ii<scene->mNumMaterials; ++ii)
-        {
+    if(scene->HasMaterials()) {
+        for(unsigned int ii=0; ii<scene->mNumMaterials; ++ii) {
             QSharedPointer<MaterialInfo> mater = processMaterial(scene->mMaterials[ii]);
             m_materials.push_back(mater);
         }
     }
 
-    if(scene->HasMeshes())
-    {
-        for(unsigned int ii=0; ii<scene->mNumMeshes; ++ii)
-        {
+    if(scene->HasMeshes()) {
+        for(unsigned int ii=0; ii<scene->mNumMeshes; ++ii) {
             m_meshes.push_back(processMesh(scene->mMeshes[ii]));
         }
     }
-    else
-    {
+    else {
         qDebug() << "Error: No meshes found";
         return false;
     }
 
-    if(scene->HasLights())
-    {
+    if(scene->HasLights()) {
         qDebug() << "Has Lights";
     }
 
-    if(scene->mRootNode != NULL)
-    {
+    if(scene->mRootNode != NULL) {
         Node *rootNode = new Node;
         processNode(scene, scene->mRootNode, 0, *rootNode);
         m_rootNode.reset(rootNode);
     }
-    else
-    {
+    else {
         qDebug() << "Error loading model";
         return false;
     }
 
-    // This will transform the model to unit coordinates, so a model of any size or shape will fit on screen
-    if (m_transformToUnitCoordinates)
-        transformToUnitCoordinates();
-
     return true;
 }
 
-void ModelLoader::getBufferData( QVector<float> **vertices, QVector<float> **normals, QVector<unsigned int> **indices)
-{
+void ModelLoader::getBufferData( QVector<float> **vertices, QVector<float> **normals, QVector<unsigned int> **indices) {
     if(vertices != 0)
         *vertices = &m_vertices;
 
@@ -110,8 +86,7 @@ void ModelLoader::getBufferData( QVector<float> **vertices, QVector<float> **nor
         *indices = &m_indices;
 }
 
-void ModelLoader::getTextureData(QVector<QVector<float> > **textureUV, QVector<float> **tangents, QVector<float> **bitangents)
-{
+void ModelLoader::getTextureData(QVector<QVector<float> > **textureUV, QVector<float> **tangents, QVector<float> **bitangents) {
     if(textureUV != 0)
         *textureUV = &m_textureUV;
 
@@ -122,8 +97,7 @@ void ModelLoader::getTextureData(QVector<QVector<float> > **textureUV, QVector<f
         *bitangents = &m_bitangents;
 }
 
-QSharedPointer<MaterialInfo> ModelLoader::processMaterial(aiMaterial *material)
-{
+QSharedPointer<MaterialInfo> ModelLoader::processMaterial(aiMaterial *material) {
     QSharedPointer<MaterialInfo> mater(new MaterialInfo);
 
     aiString mname;
@@ -135,13 +109,11 @@ QSharedPointer<MaterialInfo> ModelLoader::processMaterial(aiMaterial *material)
     int shadingModel;
     material->Get( AI_MATKEY_SHADING_MODEL, shadingModel );
 
-    if(shadingModel != aiShadingMode_Phong && shadingModel != aiShadingMode_Gouraud)
-    {
+    if(shadingModel != aiShadingMode_Phong && shadingModel != aiShadingMode_Gouraud) {
         qDebug() << "This mesh's shading model is not implemented in this loader, setting to default material";
         mater->Name = "DefaultMaterial";
     }
-    else
-    {
+    else {
         aiColor3D dif (0.f,0.f,0.f);
         aiColor3D amb (0.f,0.f,0.f);
         aiColor3D spec (0.f,0.f,0.f);
@@ -179,8 +151,7 @@ QSharedPointer<MaterialInfo> ModelLoader::processMaterial(aiMaterial *material)
     return mater;
 }
 
-QSharedPointer<Mesh> ModelLoader::processMesh(aiMesh *mesh)
-{
+QSharedPointer<Mesh> ModelLoader::processMesh(aiMesh *mesh) {
     QSharedPointer<Mesh> newMesh(new Mesh);
     newMesh->name = mesh->mName.length != 0 ? mesh->mName.C_Str() : "";
     newMesh->indexOffset = m_indices.size();
@@ -193,10 +164,8 @@ QSharedPointer<Mesh> ModelLoader::processMesh(aiMesh *mesh)
     newMesh->hasBones = mesh->HasBones();
 
     // Get Vertices
-    if(mesh->mNumVertices > 0)
-    {
-        for(uint ii=0; ii<mesh->mNumVertices; ++ii)
-        {
+    if(mesh->mNumVertices > 0) {
+        for(uint ii=0; ii<mesh->mNumVertices; ++ii) {
             aiVector3D &vec = mesh->mVertices[ii];
 
             m_vertices.push_back(vec.x);
@@ -206,14 +175,12 @@ QSharedPointer<Mesh> ModelLoader::processMesh(aiMesh *mesh)
     }
 
     // Get Normals
-    if(mesh->HasNormals())
-    {
+    if(mesh->HasNormals()) {
         m_normals.resize(m_vertices.size());
 
         int nind = vertindexoffset * 3;
 
-        for(uint ii=0; ii<mesh->mNumVertices; ++ii)
-        {
+        for(uint ii=0; ii<mesh->mNumVertices; ++ii) {
             aiVector3D &vec = mesh->mNormals[ii];
             m_normals[nind] = vec.x;
             m_normals[nind+1] = vec.y;
@@ -223,16 +190,13 @@ QSharedPointer<Mesh> ModelLoader::processMesh(aiMesh *mesh)
     }
 
     // Get Texture coordinates
-    if(mesh->GetNumUVChannels() > 0)
-    {
-        if((unsigned int)m_textureUV.size() < mesh->GetNumUVChannels()) // Caution, assumes all meshes in this model have same number of uv channels
-        {
+    if(mesh->GetNumUVChannels() > 0) {
+        if((unsigned int)m_textureUV.size() < mesh->GetNumUVChannels()) { // Caution, assumes all meshes in this model have same number of uv channels
             m_textureUV.resize(mesh->GetNumUVChannels());
             m_numUVComponents.resize(mesh->GetNumUVChannels());
         }
 
-        for( unsigned int mchanInd = 0; mchanInd < mesh->GetNumUVChannels(); ++mchanInd)
-        {
+        for( unsigned int mchanInd = 0; mchanInd < mesh->GetNumUVChannels(); ++mchanInd) {
             Q_ASSERT(mesh->mNumUVComponents[mchanInd] == 2 && "Error: Texture Mapping Component Count must be 2. Others not supported");
 
             m_numUVComponents[mchanInd] = mesh->mNumUVComponents[mchanInd];
@@ -240,16 +204,13 @@ QSharedPointer<Mesh> ModelLoader::processMesh(aiMesh *mesh)
 
             int uvind = vertindexoffset * m_numUVComponents[mchanInd];
 
-            for(uint iind = 0; iind<mesh->mNumVertices; ++iind)
-            {
+            for(uint iind = 0; iind<mesh->mNumVertices; ++iind) {
                 // U
                 m_textureUV[mchanInd][uvind] = mesh->mTextureCoords[mchanInd][iind].x;
-                if(mesh->mNumUVComponents[mchanInd] > 1)
-                {
+                if(mesh->mNumUVComponents[mchanInd] > 1) {
                     // V
                     m_textureUV[mchanInd][uvind+1] = mesh->mTextureCoords[mchanInd][iind].y;
-                    if(mesh->mNumUVComponents[mchanInd] > 2)
-                    {
+                    if(mesh->mNumUVComponents[mchanInd] > 2) {
                         // W
                         m_textureUV[mchanInd][uvind+2] = mesh->mTextureCoords[mchanInd][iind].z;
                     }
@@ -260,15 +221,13 @@ QSharedPointer<Mesh> ModelLoader::processMesh(aiMesh *mesh)
     }
 
     // Get Tangents and bitangents
-    if(mesh->HasTangentsAndBitangents())
-    {
+    if(mesh->HasTangentsAndBitangents()) {
         m_tangents.resize(m_vertices.size());
         m_bitangents.resize(m_vertices.size());
 
         int tind = vertindexoffset * 3;
 
-        for(uint ii=0; ii<mesh->mNumVertices; ++ii)
-        {
+        for(uint ii=0; ii<mesh->mNumVertices; ++ii) {
             aiVector3D &vec = mesh->mTangents[ii];
             m_tangents[tind] = vec.x;
             m_tangents[tind+1] = vec.y;
@@ -284,11 +243,9 @@ QSharedPointer<Mesh> ModelLoader::processMesh(aiMesh *mesh)
     }
 
     // Get mesh indexes
-    for(uint t = 0; t<mesh->mNumFaces; ++t)
-    {
+    for(uint t = 0; t<mesh->mNumFaces; ++t) {
         aiFace* face = &mesh->mFaces[t];
-        if(face->mNumIndices != 3)
-        {
+        if(face->mNumIndices != 3) {
             qDebug() << "Warning: Mesh face with not exactly 3 indices, ignoring this primitive." << face->mNumIndices;
             continue;
         }
@@ -304,8 +261,7 @@ QSharedPointer<Mesh> ModelLoader::processMesh(aiMesh *mesh)
     return newMesh;
 }
 
-void ModelLoader::processNode(const aiScene *scene, aiNode *node, Node *parentNode, Node &newNode)
-{
+void ModelLoader::processNode(const aiScene *scene, aiNode *node, Node *parentNode, Node &newNode) {
     static int nodeIndex = 0;
 
     newNode.name = node->mName.length != 0 ? node->mName.C_Str() : "";
@@ -313,8 +269,7 @@ void ModelLoader::processNode(const aiScene *scene, aiNode *node, Node *parentNo
     newNode.transformation = QMatrix4x4(node->mTransformation[0]);
 
     newNode.meshes.resize(node->mNumMeshes);
-    for(uint imesh = 0; imesh < node->mNumMeshes; ++imesh)
-    {
+    for(uint imesh = 0; imesh < node->mNumMeshes; ++imesh) {
         QSharedPointer<Mesh> mesh = m_meshes[node->mMeshes[imesh]];
         newNode.meshes[imesh] = mesh;
 
@@ -346,50 +301,19 @@ void ModelLoader::processNode(const aiScene *scene, aiNode *node, Node *parentNo
 
     ++nodeIndex;
 
-    for(uint ich = 0; ich < node->mNumChildren; ++ich)
-    {
+    for(uint ich = 0; ich < node->mNumChildren; ++ich) {
         newNode.nodes.push_back(Node());
         processNode(scene, node->mChildren[ich], parentNode, newNode.nodes[ich]);
     }
 }
 
-void ModelLoader::transformToUnitCoordinates()
-{
-    // This will transform the model to unit coordinates, so a model of any size or shape will fit on screen
-
-    double amin = std::numeric_limits<double>::max();
-    double amax = std::numeric_limits<double>::min();
-    QVector3D minDimension(amin,amin,amin);
-    QVector3D maxDimension(amax,amax,amax);
-
-    // Get the minimum and maximum x,y,z values for the model
-    findObjectDimensions(m_rootNode.data(), QMatrix4x4(), minDimension, maxDimension);
-
-    // Calculate scale and translation needed to center and fit on screen
-    float dist = qMax(maxDimension.x() - minDimension.x(), qMax(maxDimension.y()-minDimension.y(), maxDimension.z() - minDimension.z()));
-    float sc = 1.0/dist;
-    QVector3D center = (maxDimension - minDimension)/2;
-    QVector3D trans = -(maxDimension - center);
-
-    // Apply the scale and translation to a matrix
-    QMatrix4x4 transformation;
-    transformation.setToIdentity();
-    transformation.scale(sc);
-    transformation.translate(trans);
-
-    // Multiply the transformation to the root node transformation matrix
-    m_rootNode.data()->transformation = transformation * m_rootNode.data()->transformation;
-}
-
-void ModelLoader::findObjectDimensions(Node *node, QMatrix4x4 transformation, QVector3D &minDimension, QVector3D &maxDimension)
-{
+void ModelLoader::findObjectDimensions(Node *node, QMatrix4x4 transformation, QVector3D &minDimension, QVector3D &maxDimension) {
     transformation *= node->transformation;
 
     for (int ii=0; ii<node->meshes.size(); ++ii) {
         int start = node->meshes[ii]->indexOffset;
         int end = start + node->meshes[ii]->indexCount;
-        for(int ii=start; ii<end; ++ii)
-        {
+        for(int ii=start; ii<end; ++ii) {
             int ind = m_indices[ii] * 3;
             QVector4D vec(m_vertices[ind], m_vertices[ind+1], m_vertices[ind+2], 1.0);
             vec = transformation * vec;

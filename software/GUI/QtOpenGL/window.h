@@ -2,22 +2,15 @@
 #define WINDOW_H
 
 #include <QWidget>
-
-class QSlider;
-class QPushButton;
-
-class GLWidget;
-class MainWindow;
+#include <QSlider>
+#include "glwidget.h"
 
 class Window : public QWidget
 {
     Q_OBJECT
 
 public:
-    Window(MainWindow *mw);
-
-private slots:
-//    void dockUndock();
+    Window();
 
 private:
     QSlider *createSlider();
@@ -25,8 +18,6 @@ private:
     GLWidget *glWidget;
     QSlider *xSlider;
     QSlider *zSlider;
-    QPushButton *dockBtn;
-    MainWindow *mainWindow;
 };
 
 #endif
