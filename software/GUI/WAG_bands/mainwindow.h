@@ -146,6 +146,7 @@ private slots:
     // statusbar
     void updateConnectionStatus(BandType b, ConnectionStatus c);
     void updateBatteryStatus();
+    void catchLowBatterySignal(BandType lowBatteryBand);
 
 signals:
     void resizedWindow();

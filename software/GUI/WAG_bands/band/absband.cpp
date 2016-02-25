@@ -3,11 +3,11 @@
 #include <QDebug>
 
 QDataStream & operator>>(QDataStream & str, BandType & v) {
-  unsigned int type = 0;
-  str >> type;
-  if (type)
-    v = static_cast<BandType>(type);
-  return str;
+    unsigned int type = 0;
+    str >> type;
+    if (type)
+        v = static_cast<BandType>(type);
+    return str;
 }
 
 AbsBand::AbsBand(BandType bt):QObject() {
@@ -132,4 +132,39 @@ bool AbsBand::moveTo(AbsState* x) {
 
 void AbsBand::catchTolChange(int newTol) {
     tolerance = newTol;
+}
+
+QString AbsBand::bandTypeToString(BandType stringifyThis) {
+    switch(stringifyThis) {
+    case LEFT_HAND:
+        return QString("Left hand band");
+        break;
+    case RIGHT_HAND:
+        return QString("Right hand band");
+        break;
+    case LEFT_LOWER_ARM:
+        return QString("Left lower arm band");
+        break;
+    case RIGHT_LOWER_ARM:
+        return QString("Right lower arm band");
+        break;
+    case LEFT_UPPER_ARM:
+        return QString("Left upper arm band");
+        break;
+    case RIGHT_UPPER_ARM:
+        return QString("Right upper arm band");
+        break;
+    case LEFT_SHOULDER:
+        return QString("Left shoulder band");
+        break;
+    case RIGHT_SHOULDER:
+        return QString("Right shoulder band");
+        break;
+    case CHEST:
+        return QString ("Chest band");
+        break;
+    default:
+        return QString("Unknown band");
+        break;
+    }
 }
