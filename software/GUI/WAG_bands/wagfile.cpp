@@ -2,6 +2,8 @@
 #include <QDebug>
 #include <QFile>
 
+#include <fstream>
+
 QDataStream & operator>>(QDataStream & str, SAVE_LOCATION & v) {
   unsigned int loc = 0;
   str >> loc;
@@ -73,16 +75,13 @@ void WAGFile::setFilenameAndPath(QString filename) {
             path = newPath;
         }
     } else {
-        QFile file("./.WAGConfig");
-        file.open(QIODevice::ReadOnly);
-        QDataStream in(&file);
-//        in.setVersion(QDataStream::Qt_5_5);
-        QString library;
-        in >> library;
-        file.close();
-        qDebug() << "library file: " << library;
+        std::ifstream myfile;
+        myfile.open ("../WAG_bands/.WAGConfig");
+        std::string library;
+        std::getline(myfile, library);
+        myfile.close();
 
-        boost::filesystem::path newPath = boost::filesystem::path(library.toStdString());
+        boost::filesystem::path newPath = boost::filesystem::path(library.c_str());
         newPath += "/";
         newPath += path;
         path = newPath;
