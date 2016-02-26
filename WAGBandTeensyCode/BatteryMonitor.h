@@ -7,20 +7,21 @@
 
 */
 #include <Arduino.h>
-#include "WAGBandCommon.h"
-	
+//#include "WAGBandCommon.h"
+
+#define NUM_LOW_BATT_CYCLES 15
+#define LOW_BATT_PIN_ACTIVE_LOW 12
+
 class BatteryMonitor
 {
 public:
 
-	#define LOW_BATT_PIN_ACTIVE_LOW 12
-	int low_batt_sum = 0;
-	int lowBatIndex = 0;
-	#define NUM_LOW_BATT_CYCLES 15
-
 	BatteryMonitor();
 	~BatteryMonitor();
-
+	
+	int low_batt_sum = 0;
+	int lowBatIndex = 0;
+	
 	void initLowBatteryInfo();
 
 	void checkBattery();

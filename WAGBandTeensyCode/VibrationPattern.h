@@ -48,6 +48,9 @@ public:
 	VibrationPattern();
 	~VibrationPattern();
 
+	// Updates the trans_angle, err_trans and err_rot
+	void updateErrors(float t_angle, float err_trns, float err_rotat);
+
 	// sets up pins and zeros stuff out for model
 	void setupMotorFunction(); 
 

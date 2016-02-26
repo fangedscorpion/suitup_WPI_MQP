@@ -1,6 +1,6 @@
-Teensy3_2_Code.ino.o: \
- C:\Users\Chas\AppData\Local\Temp\build1512e5198cfb601e1c02844764b0a8e4.tmp\sketch\Teensy3_2_Code.ino.cpp \
- C:\Users\Chas\AppData\Local\Temp\build1512e5198cfb601e1c02844764b0a8e4.tmp\sketch\I2Cdev.h \
+WAGBandTeensyCode.ino.o: \
+ C:\Users\Chas\AppData\Local\Temp\build893bf8ff1bdb6d07d88845eaa65d81ea.tmp\sketch\WAGBandTeensyCode.ino.cpp \
+ C:\Users\Chas\AppData\Local\Temp\build893bf8ff1bdb6d07d88845eaa65d81ea.tmp\sketch\ESP8266Comms.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\cores\teensy3/Arduino.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\cores\teensy3/WProgram.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\cores\teensy3/avr/pgmspace.h \
@@ -34,8 +34,10 @@ Teensy3_2_Code.ino.o: \
  C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\cores\teensy3/elapsedMillis.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\cores\teensy3/Arduino.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\cores\teensy3/IntervalTimer.h \
+ C:\Users\Chas\AppData\Local\Temp\build893bf8ff1bdb6d07d88845eaa65d81ea.tmp\sketch\WAGBandCommon.h \
+ C:\Users\Chas\AppData\Local\Temp\build893bf8ff1bdb6d07d88845eaa65d81ea.tmp\sketch\VibrationPattern.h \
+ C:\Users\Chas\AppData\Local\Temp\build893bf8ff1bdb6d07d88845eaa65d81ea.tmp\sketch\BatteryMonitor.h \
+ C:\Users\Chas\AppData\Local\Temp\build893bf8ff1bdb6d07d88845eaa65d81ea.tmp\sketch\MPU6050WAGWrapper.h \
+ C:\Users\Chas\AppData\Local\Temp\build893bf8ff1bdb6d07d88845eaa65d81ea.tmp\sketch\I2Cdev.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\libraries\i2c_t3/i2c_t3.h \
- C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\cores\teensy3/DMAChannel.h \
- C:\Users\Chas\AppData\Local\Temp\build1512e5198cfb601e1c02844764b0a8e4.tmp\sketch\MPU6050_6Axis_MotionApps20.h \
- C:\Users\Chas\AppData\Local\Temp\build1512e5198cfb601e1c02844764b0a8e4.tmp\sketch\helper_3dmath.h \
- C:\Users\Chas\AppData\Local\Temp\build1512e5198cfb601e1c02844764b0a8e4.tmp\sketch\MPU6050.h
+ C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\cores\teensy3/DMAChannel.h

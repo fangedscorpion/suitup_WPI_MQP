@@ -2,7 +2,7 @@
 
 
 VibrationPattern::VibrationPattern(){
-    assignZeros(transKernelOutput,NUM_MOTORS);
+  assignZeros(transKernelOutput,NUM_MOTORS);
   assignZeros(waveKernelOutput,NUM_MOTORS);
   assignZeros(motorSpeeds,NUM_MOTORS);
   assignLinear(motorLoc,NUM_MOTORS,-PI,PI);
@@ -32,6 +32,14 @@ VibrationPattern::~VibrationPattern(){
     FUNCTIONS
 
 */
+
+void VibrationPattern::updateErrors(float t_angle, float err_trns, float err_rotat){
+  cli();
+  this->trans_angle = t_angle;
+  this->err_trans = err_trns;
+  this->err_rot = err_rotat;
+  sei();
+}
 
 //sets up pins and zeros stuff out for model    
 void VibrationPattern::setupMotorFunction(){

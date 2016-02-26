@@ -2,10 +2,11 @@
 // Written by Team Suit Up!
 // 2015-2016 for MQP
 
-//#include "WAGBandCommon.h"
+
 #include "ESP8266Comms.h" //All the listener code for the ESP8266
 #include "VibrationPattern.h" //Everything to run the motors for haptics
 #include "BatteryMonitor.h" //Low battery averaging code
+
 #include "MPU6050WAGWrapper.h" //All the boring MPU6050 stuff
 
 ESP8266Comms esp8266; //Setup comms to ESP8266 module
@@ -29,15 +30,15 @@ void setup() {
     DEBUG_SERIAL.begin(115200);
     ESP8266_SERIAL.begin(9600); //ESP8266 breaks down at higher speeds?!?!
 
-////////////////////////
-// Stupid MPU6050 crap because ISRs inside a class are janky
+    ////////////////////////
+    // Stupid MPU6050 crap because ISRs inside a class are janky
     int devStatus = mpu6050Jawn.beginConfigureMPU6050();
     if(devStatus == 0){
       // enable Arduino interrupt detection
       DEBUG_SERIAL.println(F("Enabling interrupt detection (Arduino external interrupt 0)..."));
       pinMode(TEENSY_MPU_INTERRUPT_PIN,INPUT);
       attachInterrupt(TEENSY_MPU_INTERRUPT_PIN, ISR_MPU6050, RISING); //actually attaches the MPU6050 interrupt
-
+    
       mpu6050Jawn.finishMPU6050Setup();
     }
     else{
@@ -46,7 +47,7 @@ void setup() {
         DEBUG_SERIAL.println(F(")   QUITTING!!!!!"));
         exit(0);
     }
-////////////////////////
+    ////////////////////////
     
     battMonitor.initLowBatteryInfo();
 
@@ -68,6 +69,7 @@ void loop() {
     boolean readValues = esp8266.readFromESP8266(); 
 
     if(readValues){
-      
+      motorController.updateErrors(esp8266.RX_trans_angle, esp8266.RX_err_trans, esp8266.RX_err_rot);
     }
+    motorController.performMotorCalculationsAndRunMotors();
 }

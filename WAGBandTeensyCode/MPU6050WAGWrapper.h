@@ -60,7 +60,6 @@
 #define TEENSY_MPU_INTERRUPT_PIN 17
 #define LED_PIN 13 // (Arduino is 13, Teensy is 13, Teensy++ is 6)
 
-
 class MPU6050WAGWrapper{
 public:
 	MPU6050WAGWrapper();
@@ -87,6 +86,7 @@ public:
 	uint16_t fifoCount;     // count of all bytes currently in FIFO
 	uint8_t fifoBuffer[64]; // FIFO storage buffer
 	// packet structure for InvenSense teapot demo
+	
 	uint8_t teapotPacket[14] = { '$', 0x02, 0,0, 0,0, 0,0, 0,0, 0x00, 0x00, '\r', '\n' };
 
 	// ================================================================

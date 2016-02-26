@@ -4,6 +4,7 @@
 
 */
 #include "BatteryMonitor.h"
+#include "WAGBandCommon.h"
 
     BatteryMonitor::BatteryMonitor(){
         pinMode(LOW_BATT_PIN_ACTIVE_LOW, INPUT);
@@ -12,9 +13,6 @@
     }
 
     BatteryMonitor::~BatteryMonitor(){
-        pinMode(LOW_BATT_PIN_ACTIVE_LOW, INPUT);
-        low_batt_sum = 0;
-        lowBatIndex = 0;  
     }
 
     void BatteryMonitor::initLowBatteryInfo(){
