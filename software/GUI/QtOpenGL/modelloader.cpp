@@ -187,11 +187,6 @@ void ModelLoader::processNode(const aiScene *scene, aiNode *node, Node *parentNo
     newNode.head = jsonArr3toQVec3(pointsJson.value(newNode.name).toObject().value("head").toArray());
 
     newNode.transformation = QMatrix4x4(node->mTransformation[0]);
-    if (newNode.name.contains(QString("Forearm"))){
-        newNode.transformation.translate(newNode.head);
-        newNode.transformation.rotate(30.0f,0,0,1);
-        newNode.transformation.translate(-newNode.head);
-    }
 
     newNode.meshes.resize(node->mNumMeshes);
     for(uint imesh = 0; imesh < node->mNumMeshes; ++imesh) {
@@ -223,6 +218,7 @@ QVector3D ModelLoader::jsonArr3toQVec3(QJsonArray jsonArr3){
         qDebug() << "ModelLoader::jsonArr3toQVec3: requires 3-element QJsonArray, but the actual size was " << jsonArr3.size();
         return QVector3D(0,0,0);
     }
+    // convert from blender axes to opengl axes
     return QVector3D(jsonArr3[0].toDouble(),
             jsonArr3[2].toDouble(),
             -jsonArr3[1].toDouble());

@@ -209,6 +209,12 @@ void GLWidget::resizeGL(int w, int h){
 void GLWidget::drawNode(const Node *node, QMatrix4x4 objectMatrix){
     // Prepare matrices
     objectMatrix *= node->transformation;
+    if (node->name.contains(QString("Forearm"))){
+        objectMatrix.translate(node->head);
+        objectMatrix.rotate(30.0f,0,0,1);
+        objectMatrix.translate(-node->head);
+    }
+
     QMatrix4x4 modelMatrix = m_model * objectMatrix;
     QMatrix4x4 modelViewMatrix = m_view * modelMatrix;
     QMatrix3x3 normalMatrix = modelViewMatrix.normalMatrix();
