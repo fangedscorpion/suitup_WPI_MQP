@@ -12,4 +12,4 @@ bdict = {
 with open("pts.out",'w') as f:
     json.dump(bdict,f,indent="  ",sort_keys=True)
 
-
+bpy.ops.export_scene.obj(filepath="biped_rig.obj")
