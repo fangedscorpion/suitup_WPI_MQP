@@ -21,7 +21,7 @@ public slots: // some of these might be better as normal functions
     void setStepThroughMode(bool steppingThrough);
     void toggleVoiceControl();
     void toggleSuitActive(bool active);
-    void moveFramePointer(int newFrame);
+    void currentFrameChanged(int currentFrameSliderPos);
     void modifyHoldTime(double holdSeconds);
     void updateStepThroughTolerance(int sliderValue);
     void speedChanged(int sliderValue);
@@ -75,6 +75,7 @@ private:
     void startPlaying();
     void stopPlaying();
     void reachedEndOfTimeRange();
+    void updateFrameWithoutSuitNotification(int newFrame);
 };
 
 #endif // PLAYBACKCONTROLLER_H

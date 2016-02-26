@@ -107,6 +107,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     connect(playbackMotionViewer->getPlayPauseBtn(), SIGNAL(released()), playbackControls, SLOT (togglePlay()));
     connect(playbackMotionViewer->getSlider(), SIGNAL(alt_valueChanged(int)), playbackControls, SLOT(beginningSliderChanged(int)));
     connect(playbackMotionViewer->getSlider(), SIGNAL(valueChanged(int)), playbackControls, SLOT(endSliderChanged(int)));
+    connect(playbackMotionViewer->getSlider(), SIGNAL(timebarChanged(int)), playbackControls, SLOT(currentFrameChanged(int)));
     connect(playbackControls, SIGNAL(changeSliderVal(int)), playbackMotionViewer->getSlider(), SLOT(catchCurrentFrameChange(int)));
 
     initializePlaybackSettings();

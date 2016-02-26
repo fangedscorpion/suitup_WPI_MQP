@@ -84,11 +84,11 @@ void PlaybackController::toggleSuitActive(bool active) {
     qDebug()<<"PlaybackController: Suit activated: "<<suitActive;
 }
 
-void PlaybackController::moveFramePointer(int newFrame) {
+// currentFrameSliderPos ranges from 0 to 1000
+void PlaybackController::currentFrameChanged(int currentFrameSliderPos) {
     // may have to check here to see if frame in bounds (not sure where we want those checks)
-    if (newFrame >=0) {
-        currentFrame = newFrame;
-    }
+    qDebug()<<"PlaybackController: currentFrame slider moved to "<<currentFrameSliderPos;
+    updateFrameWithoutSuitNotification(currentFrameSliderPos*lastFrameNum/1000);
 }
 
 void PlaybackController::modifyHoldTime(double holdSeconds) {
@@ -132,7 +132,7 @@ void PlaybackController::speedChanged(int sliderPosition) {
 }
 
 void PlaybackController::startPlaying() {
-    if (stepThrough) {        
+    if (stepThrough) {
         emit startPlayback();
         if (suitActive) {
             qDebug("PlaybackController: start stepping through");
@@ -157,7 +157,7 @@ void PlaybackController::timerEvent(QTimerEvent *event) {
     } else {
         currentFrame += MILLISECONDS_PER_FRAME;
         if (currentFrame < (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {
-            qDebug()<<"PlaybackController: Current frame "<<currentFrame;
+            //qDebug()<<"PlaybackController: Current frame "<<currentFrame;
             emit frameChanged(currentFrame);
         }
         else {
@@ -191,7 +191,6 @@ void PlaybackController::stopPlaying() {
     else {
         killTimer(timerId);
     }
-    currentFrame = 0;
     emit stopPlayback();
 }
 
@@ -207,8 +206,7 @@ void PlaybackController::beginningSliderChanged(int sliderVal) {
     qDebug()<<"PlaybackController: beginning slider val: "<<sliderVal;
     beginningPointer = sliderVal;
     if (currentFrame < (beginningPointer*lastFrameNum/100)) {
-        currentFrame = beginningPointer *lastFrameNum/100;
-        emit frameChanged(currentFrame);
+        updateFrameWithoutSuitNotification(beginningPointer *lastFrameNum/100);
     }
 }
 
@@ -216,13 +214,17 @@ void PlaybackController::endSliderChanged(int sliderVal) {
     qDebug()<<"PlaybackController: end slider val: "<<sliderVal;
     endPointer = sliderVal;
     if (currentFrame > (endPointer*lastFrameNum/100)) {
-        currentFrame = endPointer *lastFrameNum/100;
-        emit frameChanged(currentFrame);
+        updateFrameWithoutSuitNotification(endPointer *lastFrameNum/100);
     }
 }
 
 void PlaybackController::catchFrameUpdate(qint32 newFrame) {
-    emit changeSliderVal((newFrame * 100)/lastFrameNum);
+    if (lastFrameNum == 0) {
+        emit changeSliderVal(0);
+    } else {
+        int newCurrentFrame = newFrame * 1000/lastFrameNum;
+        emit changeSliderVal(newCurrentFrame);
+    }
     PositionSnapshot desiredPos = activeMotion->getSnapshot(newFrame, CLOSEST);
     // should probably figure out how to handle null snapshots
     // TODO
@@ -248,6 +250,18 @@ void PlaybackController::catchFrameNumsChanged(qint32 newLastNum) {
 }
 
 void PlaybackController::reachedEndOfTimeRange() {
-    currentFrame = beginningPointer*lastFrameNum/100;
+    updateFrameWithoutSuitNotification(beginningPointer*lastFrameNum/100);
     emit endOfTimeRange();
+}
+
+void PlaybackController::updateFrameWithoutSuitNotification(int newFrame) {
+    bool actualSuitActive = suitActive;
+
+    // if the suit is on, don't send this last frame update (which resets to the beginning)
+    toggleSuitActive(false);
+    // reset the pointer and the visualization to the beginning
+    currentFrame = newFrame;
+    emit frameChanged(currentFrame);
+    // restore the suit's active state to what it was before we manually toggled it
+    toggleSuitActive(actualSuitActive);
 }
