@@ -35,6 +35,7 @@ public:
     QString getAuthor() {return author;}
     QString getPathWithoutFile() {return QString(path.parent_path().c_str()); }
     QVector<QString> getTagStrings() {return tags;}
+    QString getTagString() {return getTagStrings().toList().join(", ");}
     QVector<ClosableLabel*> getTagLabels();
     SAVE_LOCATION getSaveLocation() {return loc;}
     qint32 getFrameNums();
