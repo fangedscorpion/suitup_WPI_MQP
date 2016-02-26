@@ -10,7 +10,7 @@ OverlayWidget::OverlayWidget(QWidget *parent, std::string title) : Overlay(paren
     lbl->setFont(titleFont);
     lbl->setAlignment(Qt::AlignCenter);
     layout->addWidget(lbl);
-    layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding));
     this->setLayout(layout);
 
     // drop shadow

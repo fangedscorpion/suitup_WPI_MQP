@@ -4,6 +4,15 @@
 #include "visualization/glwidget.h"
 #include "playbackcontroller.h"
 #include "band/absband.h"
+#include <QTableWidget>
+#include <QHeaderView>
+
+#include <dirent.h>
+#include <fstream>
+#include <errno.h>
+//#include <unistd.h>
+#include <sys/stat.h>
+//#include <sys/types.h>
 
 #include "customWidgets/smartpushbutton.h"
 
@@ -369,6 +378,67 @@ void MainWindow::createOpenFromLib(USER u) {
     openFromLibWidget = new OverlayWidget(this, "Load Motion From Library");
     QVBoxLayout *layout = openFromLibWidget->getLayout();
 
+    // read all files from motion lib
+    // get motion lib directory
+    std::vector<WAGFile*> libraryFiles;
+    std::ifstream myfile;
+    myfile.open ("../WAG_bands/.WAGConfig");
+    std::string library;
+    std::getline(myfile, library);
+    myfile.close();
+
+    std::string filepath;
+    DIR *dp;
+    struct dirent *dirp;
+    struct stat filestat;
+
+    dp = opendir( library.c_str() );
+    if (dp == NULL) {
+        qDebug() << "Error(" << errno << ") opening " << library.c_str();
+        return;
+    }
+
+    while ((dirp = readdir( dp ))) {
+        filepath = library + "/" + dirp->d_name;
+
+        // If the file is a directory (or is in some way invalid) we'll skip it
+        if (stat( filepath.c_str(), &filestat )) continue;
+        if (S_ISDIR( filestat.st_mode ))         continue;
+
+        // TODO: have constructor that 'peeks' doesn't read data, just metadata
+        libraryFiles.push_back(new WAGFile(filepath.c_str()));
+    }
+    closedir( dp );
+
+    QTableWidget *t = new QTableWidget();
+    t->setColumnCount(3); // name, desc, tags
+    t->setRowCount(libraryFiles.size());
+    t->setMinimumHeight(400);
+    QStringList s;
+    s<<"Name"<<"Description" << "Tags";
+    QHeaderView *headerView = new QHeaderView(Qt::Horizontal, t);
+    t->setHorizontalHeader(headerView);
+    headerView->setSectionResizeMode(QHeaderView::Stretch);
+    headerView->setStyleSheet("QHeaderView { font-weight: bold; }");
+
+    t->setHorizontalHeaderLabels(s);
+    t->verticalHeader()->setVisible(false);
+    t->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    t->setSelectionBehavior(QAbstractItemView::SelectRows);
+    t->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    for (int i=0; i < libraryFiles.size(); i++) {
+        WAGFile *curFile = libraryFiles[i];
+        t->setItem(i,0, new QTableWidgetItem(curFile->getName()));
+        t->setItem(i,1, new QTableWidgetItem(curFile->getDescription()));
+        t->setItem(i,2, new QTableWidgetItem(curFile->getTagString()));
+    }
+
+
+
+    layout->addWidget(t);
+    layout->addSpacing(20);
+
     QHBoxLayout *btns = new QHBoxLayout;
     smartPushButton *open = new smartPushButton("Load", u);
     QPushButton *cancel = new QPushButton("Cancel");
@@ -382,8 +452,6 @@ void MainWindow::createOpenFromLib(USER u) {
         connect(open, SIGNAL(released(USER)), this, SLOT(handleUserOptions(USER)));
     connect(open, SIGNAL(released(USER)), this, SLOT(openFromLibrary(USER)));
     connect(cancel, SIGNAL(released()), this, SLOT(closeOpenFromLibrary()));
-    //    connect(this, SIGNAL(resizedWindow()), openFromLibWidget, SLOT(resizeWindow()));
-    //    emit this->resizedWindow();
 }
 
 // event for when the main window is resized

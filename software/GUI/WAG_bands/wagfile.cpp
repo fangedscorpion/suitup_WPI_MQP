@@ -73,16 +73,18 @@ void WAGFile::setFilenameAndPath(QString filename) {
             path = newPath;
         }
     } else {
-        std::ifstream myfile;
-        myfile.open ("../WAG_bands/.WAGConfig");
-        std::string library;
-        std::getline(myfile, library);
-        myfile.close();
+        if (!path.has_parent_path()) {
+            std::ifstream myfile;
+            myfile.open ("../WAG_bands/.WAGConfig");
+            std::string library;
+            std::getline(myfile, library);
+            myfile.close();
 
-        boost::filesystem::path newPath = boost::filesystem::path(library.c_str());
-        newPath += "/";
-        newPath += path;
-        path = newPath;
+            boost::filesystem::path newPath = boost::filesystem::path(library.c_str());
+            newPath += "/";
+            newPath += path;
+            path = newPath;
+        }
     }
     name = path.filename().c_str();
 }
