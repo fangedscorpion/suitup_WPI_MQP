@@ -272,3 +272,24 @@ void MainWindow::lockOnPlayOrRecord(bool suitRecording) {
     }
 
 }
+
+void MainWindow::catchLowBatterySignal(BandType lowBatteryBand) {
+    static QSet<BandType> lowBatteryBands = QSet<BandType>();
+    if (!(lowBatteryBands.contains(lowBatteryBand))) {
+        lowBatteryBands<<lowBatteryBand;
+        QString lowBatteryText = "Low Battery: ";
+        QList<BandType> bandList = lowBatteryBands.toList();
+        if (bandList.size() == 1) {
+            lowBatteryText +=(AbsBand::bandTypeToString(bandList[0]));
+        } else {
+            for (int i = 0; i < bandList.size() - 1; i++) {
+                lowBatteryText += AbsBand::bandTypeToString(bandList[i]);
+                lowBatteryText += ", ";
+            }
+            lowBatteryText += "and ";
+            lowBatteryText += AbsBand::bandTypeToString(bandList[bandList.size() - 1]);
+        }
+        batteryStatus->setText(lowBatteryText);
+        updateBatteryStatus();
+    }
+}

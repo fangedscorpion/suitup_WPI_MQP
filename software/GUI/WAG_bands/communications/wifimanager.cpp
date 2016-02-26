@@ -8,7 +8,7 @@ WifiManager::WifiManager():QObject()
     recvdMapper = new QSignalMapper(this);
 
     QList<QHostAddress> addrlist = QNetworkInterface::allAddresses();
-    qDebug()<<addrlist;
+    qDebug()<<"WifiManager: address list"<<addrlist;
 
     QHostAddress myIp;
 
@@ -21,7 +21,7 @@ WifiManager::WifiManager():QObject()
         }
     }
 
-    qDebug()<<myIp;
+    qDebug()<<"WifiManager: my IP "<<myIp;
     // TODO check if no IP found
     QString ipString = myIp.toString();
     int lastPd = ipString.lastIndexOf(".");
@@ -61,11 +61,11 @@ void WifiManager::initiateConnection(QList<BandType> bandsToConnect)
     // Don't know if we want to do this
     closeAllConnections();
 
-    qDebug("Initiating conection");
+    qDebug("WifiManager: Initiating conection");
 
     // need to check for duplicates (don't know why there would be)
     for (int i = 0; i < bandsToConnect.length(); i++) {
-        qDebug()<<"connecting"<<bandsToConnect[i];
+        qDebug()<<"WifiManager: connecting band "<<bandsToConnect[i];
         startSingleConnection(bandsToConnect[i]);
     }
 
@@ -74,9 +74,9 @@ void WifiManager::initiateConnection(QList<BandType> bandsToConnect)
 
 void WifiManager::startSingleConnection(BandType bandToConnect) {
     QString ipAddr = ipMap[bandToConnect];
-    qDebug()<<"Connecting to "<<ipAddr;
+    qDebug()<<"WifiManager: Connecting to "<<ipAddr;
     quint16 portNum = portMap[bandToConnect];
-    qDebug()<<portNum;
+    qDebug()<<"WifiManager: portNumber: "<<portNum;
 
     // TODO: make sure portnum and ip addr actually exist
     QTcpSocket *newSocket = new QTcpSocket();
@@ -103,7 +103,7 @@ void WifiManager::startSingleConnection(BandType bandToConnect) {
 
 void WifiManager::socketConnected(int connectedBand) {
     BandType bandEnum = (BandType) connectedBand;
-    qDebug()<<"Socket conencted: "<<bandEnum;
+    qDebug()<<"WifiManager: Socket conencted: "<<bandEnum;
 
     emit connectionStatusChanged(bandEnum, CONNECTED);
 
@@ -113,7 +113,7 @@ void WifiManager::socketConnected(int connectedBand) {
 void WifiManager::socketError(int bandWithError) {
 
     BandType bandEnum = (BandType) bandWithError;
-    qDebug("Socket error");
+    qDebug("WifiManager: Socket error");
 }
 
 void WifiManager::socketDisconnected(int disconnectedBand) {
@@ -137,23 +137,19 @@ void WifiManager::checkForData(int checkBand) {
 void WifiManager::sendRawDataToBand(BandType destBand, QByteArray bandData) {
     // write to socket
     if (socketMap.contains(destBand)) {
-        qDebug("Sending");
         QTcpSocket *bandSocket = socketMap[destBand];
 
-        qDebug("Socket retrieved");
         if (bandSocket->bytesAvailable() != 0) {
             // read data from bandSocket
-            qDebug("Bytes available before send");
             routeToBandObject(destBand);
         }
 
-        qDebug("writing data");
 
         if (bandSocket->write(bandData) < bandData.length()) {
-            qDebug("ERROR SENDING");
+            qDebug("WifiManager: ERROR SENDING");
         }
     } else {
-        qDebug()<<"Band "<<destBand<<" is not connected ";
+        qDebug()<<"WifiManager: Band "<<destBand<<" is not connected ";
     }
 
 }
@@ -188,7 +184,7 @@ void WifiManager::routeToBandObject(BandType bandWithData) {
     if (readData.length() == 0) {
         // Error probably occured
     } else {
-        qDebug()<<"READ " <<readData<<" from band number " <<bandWithData;
+        qDebug()<<"WifiManager: READ " <<readData<<" from band number " <<bandWithData;
 
         // consider timestamping (get current time and pass with data)
         BandMessage *msg = new BandMessage(readData);

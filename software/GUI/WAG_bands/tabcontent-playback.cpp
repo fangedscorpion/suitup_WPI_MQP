@@ -132,14 +132,12 @@ void TabContent::updateSpeedSliderText(QString playbackModeString) {
 
 void TabContent::switchStepThroughMode(bool steppingThrough) {
     if (steppingThrough) {
-        qDebug("stepThroughMode");
         sfi->setText("Frame Interval");
         // this is motions to hold per second of recording
         minSpeed->setText("8 fpm"); // I feel like we should have something more descriptive than this, but 4x didn't really make sense
         midSpeed->setText("2 fpm");
         maxSpeed->setText("1/2 fpm");
     } else {
-        qDebug("Timed mode");
         sfi->setText("Playback Speed");
         minSpeed->setText("1/4x");
         midSpeed->setText("1x");
@@ -195,7 +193,7 @@ void TabContent::playbackResetCountDownTimer() {
 
 
 void TabContent::catchCurrentFrameChange(int newSliderPos) {
-    qDebug()<<"New slider pos "<<newSliderPos;
+    qDebug()<<"TabContent: New slider pos "<<newSliderPos;
     const SuperSlider *slider = playbackMotionViewer->getSlider();
     //slider->setTimebarPosition(newSliderPos);
 }

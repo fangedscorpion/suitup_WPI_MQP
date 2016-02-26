@@ -14,8 +14,8 @@ BandMessage::BandMessage(QByteArray fullMsg) {
     data.remove(data.length() -1, 1);
     if (data.length()  != (expectedLen -2)) {
         // error of some sort
-        qDebug()<<"Expected length: "<<expectedLen;
-        qDebug()<<"Actual length: "<<data.length();
+        qDebug()<<"BandMessage: Expected length: "<<expectedLen;
+        qDebug()<<"BandMessage: Actual length: "<<data.length();
     }
     this->msgData = data;
 }

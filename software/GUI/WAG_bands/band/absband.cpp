@@ -3,11 +3,11 @@
 #include <QDebug>
 
 QDataStream & operator>>(QDataStream & str, BandType & v) {
-  unsigned int type = 0;
-  str >> type;
-  if (type)
-    v = static_cast<BandType>(type);
-  return str;
+    unsigned int type = 0;
+    str >> type;
+    if (type)
+        v = static_cast<BandType>(type);
+    return str;
 }
 
 AbsBand::AbsBand(BandType bt):QObject() {
@@ -20,8 +20,8 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
     if (newStatus == CONNECTED) {
         // send hi there message
         BandMessage *newMsg = new BandMessage(COMPUTER_INITIATE_CONNECTION, QByteArray());
-        qDebug()<<"SENDING CONNECT MSG";
-        qDebug()<<"BandT type: "<<type;
+        qDebug()<<"AbsBand: SENDING CONNECT MSG";
+        qDebug()<<"AbsBand: Band type: "<<type;
         emit dataToSend(type, newMsg);
     }
     else {
@@ -31,25 +31,25 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
 }
 
 void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
-    qDebug("Handling message\n");
-    qDebug()<<recvdMessage->getMessageType();
+    qDebug("AbsBand: Handling message\n");
+    qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType();
     AbsState *newState;
     switch(recvdMessage->getMessageType()) {
     case BAND_CONNECTING:
         if (!commsSetUp) {
             commsSetUp = true;
         }
-        qDebug("recvd band connecting");
+        qDebug("AbsBand: recvd band connecting");
         break;
     case BAND_PING:
         if (pendingBandPing) {
             pendingBandPing = false;
         }
-        qDebug("Recvd band ping");
+        qDebug("AbsBand: Recvd band ping");
         break;
     case BAND_POSITION_UPDATE:
         // parse into absstate
-        qDebug()<<"BAND POSITION RECEIVED FROM"<<type<<" at "<<msgTimestamp;
+        qDebug()<<"AbsBand: BAND POSITION RECEIVED FROM"<<type<<" at "<<msgTimestamp;
         newState = deserialize(recvdMessage->getMessageData(), this->getPositionRepresentation());
         updateState(newState, msgTimestamp);
         // should probably handle in subclass
@@ -67,14 +67,14 @@ void AbsBand::sendIfConnected(BandMessage *sendMsg) {
     if (commsSetUp) {
         if (sendMsg->getMessageType() == COMPUTER_PING) {
             pendingBandPing = true;
-            qDebug("Sending band ping");
+            qDebug("AbsBand: Sending band ping");
         }
         emit dataToSend(type, sendMsg);
     }
 }
 
 void AbsBand::updateState(AbsState* state, qint32 msgTime){
-    qDebug()<<"Message time"<<msgTime;
+    qDebug()<<"AbsBand: Message time"<<msgTime;
     poseRecvdTime = msgTime;
     pose->update(state);
 
@@ -132,4 +132,39 @@ bool AbsBand::moveTo(AbsState* x) {
 
 void AbsBand::catchTolChange(int newTol) {
     tolerance = newTol;
+}
+
+QString AbsBand::bandTypeToString(BandType stringifyThis) {
+    switch(stringifyThis) {
+    case LEFT_HAND:
+        return QString("left hand band");
+        break;
+    case RIGHT_HAND:
+        return QString("right hand band");
+        break;
+    case LEFT_LOWER_ARM:
+        return QString("left lower arm band");
+        break;
+    case RIGHT_LOWER_ARM:
+        return QString("right lower arm band");
+        break;
+    case LEFT_UPPER_ARM:
+        return QString("left upper arm band");
+        break;
+    case RIGHT_UPPER_ARM:
+        return QString("right upper arm band");
+        break;
+    case LEFT_SHOULDER:
+        return QString("left shoulder band");
+        break;
+    case RIGHT_SHOULDER:
+        return QString("right shoulder band");
+        break;
+    case CHEST:
+        return QString ("chest band");
+        break;
+    default:
+        return QString("unknown band");
+        break;
+    }
 }

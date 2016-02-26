@@ -18,7 +18,6 @@ WAGFile::WAGFile(QString filename, QString in_description, QString author,
                  author(author), tags(in_tags), loc(saveLoc), QObject() {
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot>();
-    qDebug()<<motionData.isEmpty();
 }
 
 WAGFile::WAGFile(QString filename, QString in_description, QString author,
@@ -28,7 +27,6 @@ WAGFile::WAGFile(QString filename, QString in_description, QString author,
     replaceTags(container);
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot>();
-    qDebug()<<motionData.isEmpty();
 }
 
 WAGFile::WAGFile(QString filename) {
@@ -95,7 +93,6 @@ qint32 WAGFile::getFrameNums() {
     // if time, need to convert to frames and then return
 
     QList<qint32> keys = motionData.keys();
-    qDebug("GETTIG KEYS\n\nasdfas\n\n");
     if (keys.size() == 0) {
         return 0;
     }
@@ -107,7 +104,6 @@ qint32 WAGFile::getFrameNums() {
 
 PositionSnapshot WAGFile::getSnapshot(qint32 snapTime, SNAP_CLOSENESS retrieveType) {
     if (motionData.contains(snapTime)) {
-        qDebug("HERE238");
         return motionData[snapTime];
     }
     QList<qint32> keys = motionData.keys();
