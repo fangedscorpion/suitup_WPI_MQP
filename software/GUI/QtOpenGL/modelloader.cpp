@@ -1,10 +1,20 @@
 #include "modelloader.h"
 #include <limits>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 #define DEBUGOUTPUT_NORMALS(nodeIndex) (false)//( QList<int>{1}.contains(nodeIndex) )//(false)
 
 ModelLoader::ModelLoader() {
+    QFile file("../biped/final/pts.out");
+    file.open(QFile::ReadOnly);
+    QByteArray blob = file.readAll();
+    pointsJson = QJsonDocument::fromJson(blob).object();
 
+    QJsonArray headArr = pointsJson.value("Mid").toObject().value("tail").toArray();
+    QJsonArray tailArr = pointsJson.value("Mid").toObject().value("head").toArray();
+    rootTail = jsonArr3toQVec3(tailArr);
+    rootHead = jsonArr3toQVec3(headArr);
 }
 
 // look for file using relative path
@@ -29,11 +39,10 @@ bool ModelLoader::Load(QString filePath, PathType pathType) {
     Assimp::Importer importer;
 
     const aiScene* scene = importer.ReadFile( l_filePath.toStdString(),
-            aiProcess_GenSmoothNormals      |
-            aiProcess_CalcTangentSpace       |
-            aiProcess_Triangulate       |
-            aiProcess_JoinIdenticalVertices  |
-            aiProcess_SortByPType
+            aiProcess_Triangulate |
+            aiProcess_JoinIdenticalVertices |
+            aiProcess_SortByPType |
+            0
                                               );
 
     if(!scene) {
@@ -41,25 +50,13 @@ bool ModelLoader::Load(QString filePath, PathType pathType) {
         return false;
     }
 
-    if(scene->HasMaterials()) {
-        for(unsigned int ii=0; ii<scene->mNumMaterials; ++ii) {
-            QSharedPointer<MaterialInfo> mater = processMaterial(scene->mMaterials[ii]);
-            m_materials.push_back(mater);
-        }
+    for(unsigned int ii=0; ii<scene->mNumMaterials; ++ii) {
+        QSharedPointer<MaterialInfo> mater = processMaterial(scene->mMaterials[ii]);
+        m_materials.push_back(mater);
     }
 
-    if(scene->HasMeshes()) {
-        for(unsigned int ii=0; ii<scene->mNumMeshes; ++ii) {
-            m_meshes.push_back(processMesh(scene->mMeshes[ii]));
-        }
-    }
-    else {
-        qDebug() << "Error: No meshes found";
-        return false;
-    }
-
-    if(scene->HasLights()) {
-        qDebug() << "Has Lights";
+    for(unsigned int ii=0; ii<scene->mNumMeshes; ++ii) {
+        m_meshes.push_back(processMesh(scene->mMeshes[ii]));
     }
 
     if(scene->mRootNode != NULL) {
@@ -84,17 +81,6 @@ void ModelLoader::getBufferData( QVector<float> **vertices, QVector<float> **nor
 
     if(indices != 0)
         *indices = &m_indices;
-}
-
-void ModelLoader::getTextureData(QVector<QVector<float> > **textureUV, QVector<float> **tangents, QVector<float> **bitangents) {
-    if(textureUV != 0)
-        *textureUV = &m_textureUV;
-
-    if(tangents != 0)
-        *tangents = &m_tangents;
-
-    if(bitangents != 0)
-        *bitangents = &m_bitangents;
 }
 
 QSharedPointer<MaterialInfo> ModelLoader::processMaterial(aiMaterial *material) {
@@ -153,102 +139,33 @@ QSharedPointer<MaterialInfo> ModelLoader::processMaterial(aiMaterial *material) 
 
 QSharedPointer<Mesh> ModelLoader::processMesh(aiMesh *mesh) {
     QSharedPointer<Mesh> newMesh(new Mesh);
-    newMesh->name = mesh->mName.length != 0 ? mesh->mName.C_Str() : "";
     newMesh->indexOffset = m_indices.size();
     unsigned int indexCountBefore = m_indices.size();
     int vertindexoffset = m_vertices.size()/3;
 
-    newMesh->numUVChannels = mesh->GetNumUVChannels();
-    newMesh->hasTangentsAndBitangents = mesh->HasTangentsAndBitangents();
-    newMesh->hasNormals = mesh->HasNormals();
-    newMesh->hasBones = mesh->HasBones();
-
     // Get Vertices
-    if(mesh->mNumVertices > 0) {
-        for(uint ii=0; ii<mesh->mNumVertices; ++ii) {
-            aiVector3D &vec = mesh->mVertices[ii];
-
-            m_vertices.push_back(vec.x);
-            m_vertices.push_back(vec.y);
-            m_vertices.push_back(vec.z);
-        }
+    for(uint ii=0; ii<mesh->mNumVertices; ++ii) {
+        aiVector3D &vec = mesh->mVertices[ii];
+        m_vertices.push_back(vec.x);
+        m_vertices.push_back(vec.y);
+        m_vertices.push_back(vec.z);
     }
 
     // Get Normals
-    if(mesh->HasNormals()) {
-        m_normals.resize(m_vertices.size());
+    m_normals.resize(m_vertices.size());
+    int nind = vertindexoffset * 3;
 
-        int nind = vertindexoffset * 3;
-
-        for(uint ii=0; ii<mesh->mNumVertices; ++ii) {
-            aiVector3D &vec = mesh->mNormals[ii];
-            m_normals[nind] = vec.x;
-            m_normals[nind+1] = vec.y;
-            m_normals[nind+2] = vec.z;
-            nind += 3;
-        };
-    }
-
-    // Get Texture coordinates
-    if(mesh->GetNumUVChannels() > 0) {
-        if((unsigned int)m_textureUV.size() < mesh->GetNumUVChannels()) { // Caution, assumes all meshes in this model have same number of uv channels
-            m_textureUV.resize(mesh->GetNumUVChannels());
-            m_numUVComponents.resize(mesh->GetNumUVChannels());
-        }
-
-        for( unsigned int mchanInd = 0; mchanInd < mesh->GetNumUVChannels(); ++mchanInd) {
-            Q_ASSERT(mesh->mNumUVComponents[mchanInd] == 2 && "Error: Texture Mapping Component Count must be 2. Others not supported");
-
-            m_numUVComponents[mchanInd] = mesh->mNumUVComponents[mchanInd];
-            m_textureUV[mchanInd].resize((m_vertices.size()/3)*2);
-
-            int uvind = vertindexoffset * m_numUVComponents[mchanInd];
-
-            for(uint iind = 0; iind<mesh->mNumVertices; ++iind) {
-                // U
-                m_textureUV[mchanInd][uvind] = mesh->mTextureCoords[mchanInd][iind].x;
-                if(mesh->mNumUVComponents[mchanInd] > 1) {
-                    // V
-                    m_textureUV[mchanInd][uvind+1] = mesh->mTextureCoords[mchanInd][iind].y;
-                    if(mesh->mNumUVComponents[mchanInd] > 2) {
-                        // W
-                        m_textureUV[mchanInd][uvind+2] = mesh->mTextureCoords[mchanInd][iind].z;
-                    }
-                }
-                uvind += m_numUVComponents[mchanInd];
-            }
-        }
-    }
-
-    // Get Tangents and bitangents
-    if(mesh->HasTangentsAndBitangents()) {
-        m_tangents.resize(m_vertices.size());
-        m_bitangents.resize(m_vertices.size());
-
-        int tind = vertindexoffset * 3;
-
-        for(uint ii=0; ii<mesh->mNumVertices; ++ii) {
-            aiVector3D &vec = mesh->mTangents[ii];
-            m_tangents[tind] = vec.x;
-            m_tangents[tind+1] = vec.y;
-            m_tangents[tind+2] = vec.z;
-
-            aiVector3D &vec2 = mesh->mBitangents[ii];
-            m_bitangents[tind] = vec2.x;
-            m_bitangents[tind+1] = vec2.y;
-            m_bitangents[tind+2] = vec2.z;
-
-            tind += 3;
-        };
-    }
+    for(uint ii=0; ii<mesh->mNumVertices; ++ii) {
+        aiVector3D &vec = mesh->mNormals[ii];
+        m_normals[nind] = vec.x;
+        m_normals[nind+1] = vec.y;
+        m_normals[nind+2] = vec.z;
+        nind += 3;
+    };
 
     // Get mesh indexes
     for(uint t = 0; t<mesh->mNumFaces; ++t) {
         aiFace* face = &mesh->mFaces[t];
-        if(face->mNumIndices != 3) {
-            qDebug() << "Warning: Mesh face with not exactly 3 indices, ignoring this primitive." << face->mNumIndices;
-            continue;
-        }
 
         m_indices.push_back(face->mIndices[0]+vertindexoffset);
         m_indices.push_back(face->mIndices[1]+vertindexoffset);
@@ -266,37 +183,31 @@ void ModelLoader::processNode(const aiScene *scene, aiNode *node, Node *parentNo
 
     newNode.name = node->mName.length != 0 ? node->mName.C_Str() : "";
 
+    newNode.tail = jsonArr3toQVec3(pointsJson.value(newNode.name).toObject().value("tail").toArray());
+    newNode.head = jsonArr3toQVec3(pointsJson.value(newNode.name).toObject().value("head").toArray());
+
     newNode.transformation = QMatrix4x4(node->mTransformation[0]);
+    if (newNode.name.contains(QString("Forearm"))){
+        newNode.transformation.translate(newNode.head);
+        newNode.transformation.rotate(30.0f,0,0,1);
+        newNode.transformation.translate(-newNode.head);
+    }
 
     newNode.meshes.resize(node->mNumMeshes);
     for(uint imesh = 0; imesh < node->mNumMeshes; ++imesh) {
         QSharedPointer<Mesh> mesh = m_meshes[node->mMeshes[imesh]];
         newNode.meshes[imesh] = mesh;
-
-        if (DEBUGOUTPUT_NORMALS(nodeIndex)) {
-            qDebug() << "Start Print Normals for nodeIndex:" << nodeIndex << ". MeshIndex:" << imesh << ". NodeName" <<newNode.name;
-            for (quint32 ii=newNode.meshes[imesh]->indexOffset;
-                 ii<newNode.meshes[imesh]->indexCount+newNode.meshes[imesh]->indexOffset;
-                 ++ii) {
-                int ind = m_indices[ii] * 3;
-                qDebug() << (m_normals[ind]) << (m_normals[ind]+1) << (m_normals[ind]+2);
-            }
-            qDebug() << "End Print Normals for nodeIndex:" << nodeIndex << ". MeshIndex:" << imesh << ". NodeName" <<newNode.name;
-        }
     }
 
     qDebug() << "NodeName" << newNode.name;
     qDebug() << "  NodeIndex" << nodeIndex;
+    qDebug() << "  Tail" << newNode.tail;
+    qDebug() << "  Head" << newNode.head;
     qDebug() << "  NumChildren" << node->mNumChildren;
     qDebug() << "  NumMeshes" << newNode.meshes.size();
     for (int ii=0; ii<newNode.meshes.size(); ++ii) {
-        qDebug() << "    MeshName" << newNode.meshes[ii]->name;
         qDebug() << "    MaterialName" << newNode.meshes[ii]->material->Name;
         qDebug() << "    MeshVertices" << newNode.meshes[ii]->indexCount;
-        qDebug() << "    numUVChannels" << newNode.meshes[ii]->numUVChannels;
-        qDebug() << "    hasTangAndBit" << newNode.meshes[ii]->hasTangentsAndBitangents;
-        qDebug() << "    hasNormals" << newNode.meshes[ii]->hasNormals;
-        qDebug() << "    hasBones" << newNode.meshes[ii]->hasBones;
     }
 
     ++nodeIndex;
@@ -307,33 +218,23 @@ void ModelLoader::processNode(const aiScene *scene, aiNode *node, Node *parentNo
     }
 }
 
-void ModelLoader::findObjectDimensions(Node *node, QMatrix4x4 transformation, QVector3D &minDimension, QVector3D &maxDimension) {
-    transformation *= node->transformation;
-
-    for (int ii=0; ii<node->meshes.size(); ++ii) {
-        int start = node->meshes[ii]->indexOffset;
-        int end = start + node->meshes[ii]->indexCount;
-        for(int ii=start; ii<end; ++ii) {
-            int ind = m_indices[ii] * 3;
-            QVector4D vec(m_vertices[ind], m_vertices[ind+1], m_vertices[ind+2], 1.0);
-            vec = transformation * vec;
-
-            if(vec.x() < minDimension.x())
-                minDimension.setX(vec.x());
-            if(vec.y() < minDimension.y())
-                minDimension.setY(vec.y());
-            if(vec.z() < minDimension.z())
-                minDimension.setZ(vec.z());
-            if(vec.x() > maxDimension.x())
-                maxDimension.setX(vec.x());
-            if(vec.y() > maxDimension.y())
-                maxDimension.setY(vec.y());
-            if(vec.z() > maxDimension.z())
-                maxDimension.setZ(vec.z());
-        }
+QVector3D ModelLoader::jsonArr3toQVec3(QJsonArray jsonArr3){
+    if (jsonArr3.size() != 3){
+        qDebug() << "ModelLoader::jsonArr3toQVec3: requires 3-element QJsonArray, but the actual size was " << jsonArr3.size();
+        return QVector3D(0,0,0);
     }
+    return QVector3D(jsonArr3[0].toDouble(),
+            jsonArr3[2].toDouble(),
+            -jsonArr3[1].toDouble());
+}
 
-    for (int ii=0; ii<node->nodes.size(); ++ii) {
-        findObjectDimensions(&(node->nodes[ii]), transformation, minDimension, maxDimension);
+Node ModelLoader::getNodeByName(QString name){
+    QVector<Node> nodes = m_rootNode.data()->nodes;
+    for (int i = 0; i < nodes.size(); i++){
+        if (nodes[i].name == name)
+            return nodes[i];
     }
+    qDebug() << "ModelLoader::getNodeByName: given name not found in node list - returning empty node";
+    Node n;
+    return n;
 }

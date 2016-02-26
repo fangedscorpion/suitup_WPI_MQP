@@ -1,6 +1,7 @@
 #include <QApplication>
-#include <QDesktopWidget>
-#include <QSurfaceFormat>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 
 #include "mainwindow.h"
 

@@ -16,7 +16,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         Q_OBJECT
 
     public:
-        GLWidget(QString filepath, ModelLoader::PathType pathType /*QString texturePath, QWidget *parent = 0*/);
+        GLWidget();
         ~GLWidget();
 
     public slots:
@@ -51,7 +51,6 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 
         QOpenGLBuffer m_vertexBuffer;
         QOpenGLBuffer m_normalBuffer;
-        QOpenGLBuffer m_textureUVBuffer;
         QOpenGLBuffer m_indexBuffer;
 
         QSharedPointer<Node> m_rootNode;
@@ -63,7 +62,8 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         QString m_texturePath;
 
         LightInfo m_lightInfo;
-        MaterialInfo m_materialInfo;
+
+        ModelLoader modelLoader;
 
         bool m_error;
 

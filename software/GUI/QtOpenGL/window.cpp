@@ -4,9 +4,7 @@
 #include <QHBoxLayout>
 
 Window::Window() {
-    QString modelFile = QString("biped/test/purple_hoser.obj");
-
-    glWidget = new GLWidget(modelFile,ModelLoader::RelativePath);
+    glWidget = new GLWidget();
 
     xSlider = createSlider();
     zSlider = createSlider();

@@ -1,16 +1,18 @@
 #include "glwidget.h"
 #include <QMouseEvent>
 
-GLWidget::GLWidget(QString filepath, ModelLoader::PathType pathType) : QOpenGLWidget(0),
+GLWidget::GLWidget() :
+    QOpenGLWidget(0),
     m_indexBuffer(QOpenGLBuffer::IndexBuffer),
-    m_filepath(filepath),
-    m_pathType(pathType),
+    m_filepath(QString("biped/final/biped_rig.obj")),
+    m_pathType(ModelLoader::RelativePath),
     m_texturePath(QString("")),
+    modelLoader(ModelLoader()),
     m_error(false),
     m_xRot(0),
     m_yRot(0),
     m_zRot(0),
-    m_cam_offset(QVector3D(0,1,0)) {
+    m_cam_offset(QVector3D(0,1,0)){
 
     QSurfaceFormat format;
     format.setDepthBufferSize(24);
@@ -88,20 +90,16 @@ void GLWidget::createBuffers(){
     if(m_error)
         return;
 
-    ModelLoader model;
-
-    if(!model.Load(m_filepath, m_pathType)){
+    if(!modelLoader.Load(m_filepath, m_pathType)){
         m_error = true;
         return;
     }
 
     QVector<float> *vertices;
     QVector<float> *normals;
-    QVector<QVector<float> > *textureUV;
     QVector<unsigned int> *indices;
 
-    model.getBufferData(&vertices, &normals, &indices);
-    model.getTextureData(&textureUV, 0, 0);
+    modelLoader.getBufferData(&vertices, &normals, &indices);
 
     // Create a vertex array object
     m_vao.create();
@@ -109,35 +107,23 @@ void GLWidget::createBuffers(){
 
     // Create a buffer and copy the vertex data to it
     m_vertexBuffer.create();
-    m_vertexBuffer.setUsagePattern( QOpenGLBuffer::StaticDraw );
+    m_vertexBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
     m_vertexBuffer.bind();
     m_vertexBuffer.allocate( &(*vertices)[0], vertices->size() * sizeof( float ) );
 
     // Create a buffer and copy the vertex data to it
     m_normalBuffer.create();
-    m_normalBuffer.setUsagePattern( QOpenGLBuffer::StaticDraw );
+    m_normalBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
     m_normalBuffer.bind();
     m_normalBuffer.allocate( &(*normals)[0], normals->size() * sizeof( float ) );
 
-    if(textureUV != 0 && textureUV->size() != 0){
-        // Create a buffer and copy the vertex data to it
-        m_textureUVBuffer.create();
-        m_textureUVBuffer.setUsagePattern( QOpenGLBuffer::StaticDraw );
-        m_textureUVBuffer.bind();
-        int texSize = 0;
-        for(int ii=0; ii<textureUV->size(); ++ii)
-            texSize += textureUV->at(ii).size();
-
-        m_textureUVBuffer.allocate( &(*textureUV)[0][0], texSize * sizeof( float ) );
-    }
-
     // Create a buffer and copy the index data to it
     m_indexBuffer.create();
-    m_indexBuffer.setUsagePattern( QOpenGLBuffer::StaticDraw );
+    m_indexBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
     m_indexBuffer.bind();
     m_indexBuffer.allocate( &(*indices)[0], indices->size() * sizeof( unsigned int ) );
 
-    m_rootNode = model.getNodeData();
+    m_rootNode = modelLoader.getNodeData();
 }
 
 void GLWidget::createAttributes(){
@@ -163,18 +149,9 @@ void GLWidget::createAttributes(){
                                         0,          // Offset to data in buffer
                                         3);         // number of components (3 for x,y,z)
 
-    if(m_textureUVBuffer.isCreated()) {
-        m_textureUVBuffer.bind();
-        m_shaderProgram.enableAttributeArray( 2 );      // layout location
-        m_shaderProgram.setAttributeBuffer( 2,          // layout location
-                                            GL_FLOAT,   // data's type
-                                            0,          // Offset to data in buffer
-                                            2);         // number of components (2 for u,v)
-    }
 }
 
-void GLWidget::setupLightingAndMatrices()
-{
+void GLWidget::setupLightingAndMatrices() {
     m_view.setToIdentity();
     m_view.lookAt(
                 QVector3D(m_cam_offset + QVector3D(0,0,2.4f)),    // Camera Position
@@ -191,11 +168,6 @@ void GLWidget::setupLightingAndMatrices()
 
     m_lightInfo.Position = QVector4D( -1.0f, 1.0f, 1.0f, 1.0f );
     m_lightInfo.Intensity = QVector3D( 1.0f, 1.0f, 1.0f);
-
-    m_materialInfo.Ambient = QVector3D( 0.05f, 0.2f, 0.05f );
-    m_materialInfo.Diffuse = QVector3D( 0.3f, 0.5f, 0.3f );
-    m_materialInfo.Specular = QVector3D( 0.6f, 0.6f, 0.6f );
-    m_materialInfo.Shininess = 50.0f;
 }
 
 void GLWidget::paintGL() {
@@ -229,7 +201,6 @@ void GLWidget::paintGL() {
 
 void GLWidget::resizeGL(int w, int h){
     glViewport( 0, 0, w, h );
-
     m_projection.setToIdentity();
     m_projection.perspective(60.0f, (float)w/h, .3f, 1000);
 }
@@ -243,18 +214,20 @@ void GLWidget::drawNode(const Node *node, QMatrix4x4 objectMatrix){
     QMatrix3x3 normalMatrix = modelViewMatrix.normalMatrix();
     QMatrix4x4 mvp = m_projection * modelViewMatrix;
 
-    m_shaderProgram.setUniformValue( "MV", modelViewMatrix );// Transforming to eye space
-    m_shaderProgram.setUniformValue( "N", normalMatrix );    // Transform normal to Eye space
-    m_shaderProgram.setUniformValue( "MVP", mvp );           // Matrix for transforming to Clip space
+    m_shaderProgram.setUniformValue("MV", modelViewMatrix);// Transforming to eye space
+    m_shaderProgram.setUniformValue("N", normalMatrix);    // Transform normal to Eye space
+    m_shaderProgram.setUniformValue("MVP", mvp);           // Matrix for transforming to Clip space
 
     // Draw each mesh in this node
     for(int imm = 0; imm<node->meshes.size(); ++imm) {
-        if(node->meshes[imm]->material->Name == QString("DefaultMaterial"))
-            setMaterialUniforms(m_materialInfo);
+        if (node->name.contains(QString("Forearm")))
+            setMaterialUniforms(*(modelLoader.getMaterial(1)));
         else
-            setMaterialUniforms(*node->meshes[imm]->material);
+            setMaterialUniforms(*(modelLoader.getMaterial(0)));
 
-        glDrawElements(GL_TRIANGLES, node->meshes[imm]->indexCount, GL_UNSIGNED_INT,
+        glDrawElements(GL_TRIANGLES,
+                       node->meshes[imm]->indexCount,
+                       GL_UNSIGNED_INT,
                        (const void*)(node->meshes[imm]->indexOffset * sizeof(unsigned int)) );
     }
 
