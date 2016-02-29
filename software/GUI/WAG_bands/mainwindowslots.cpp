@@ -303,14 +303,20 @@ void MainWindow::handleOpenFromLibBtn(int, int) {
 }
 
 void MainWindow::handleOpenFromLibFilter(QString) {
-    QString filter = openFromLibFilterBar->text().trimmed().toLower();
+    QRegExp rx("(\\ |\\,)");
+    QStringList filterByList = openFromLibFilterBar->text().trimmed().toLower().split(rx);
     int col = openFromLibFilterOpts->currentIndex();
     for( int i = 0; i < openFromLibTable->rowCount(); ++i ) {
-        bool match = false;
+        bool match = true;
         QTableWidgetItem *item = openFromLibTable->item( i, col );
-        if( item->text().toLower().contains(filter) ) {
-            match = true;
+        for (int j=0; j < filterByList.size(); j++) {
+            qDebug() << "does " << item->text().toLower() << " contain " << filterByList[j];
+            if(!item->text().toLower().contains(filterByList[j]) ) {
+                match = false;
+                break;
+            }
         }
+
         if (!match)
             openFromLibTable->hideRow(i);
         else
