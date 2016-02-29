@@ -125,7 +125,6 @@ void WifiManager::socketDisconnected(int disconnectedBand) {
 void WifiManager::checkForData(int checkBand) {
     BandType bandWithData= (BandType) checkBand;
     if (socketMap[bandWithData]->bytesAvailable() >= 0) {
-
         routeToBandObject(bandWithData);
     } else {
         // error most likely

@@ -46,12 +46,14 @@ public slots:
 
     void catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime);
     void catchToleranceChange(int);
+    void catchConnectionProblem(BandType bandWithProblem);
 signals:
     void positionSnapshotReady(qint32, PositionSnapshot);
     void voiceControlCommandReady(MessageType);
     void bandHasLowBattery(BandType);
     void toleranceChanged(int);
     void positionMet();
+    void bandConnectionStatusChanged(BandType, ConnectionStatus);
 protected:
     void timerEvent(QTimerEvent *);
 
