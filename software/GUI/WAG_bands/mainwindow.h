@@ -91,11 +91,13 @@ private:
     QLabel *saveAsTagsLabel;
     QLineEdit *saveAsTagsTextEdit;
     QTextEdit *saveAsDescription;
-    // open
+    // open (from lib)
     OverlayWidget *openFromLibWidget;
     OverlayWidget *openWidget;
     QTableWidget *openFromLibTable;
     smartPushButton *openFromLibBtn;
+    QLineEdit *openFromLibFilterBar;
+    QComboBox *openFromLibFilterOpts;
     void createOpenFromLib(USER u);
     void createOpenMotionOptions(USER u) ;
     // create new file
@@ -126,6 +128,7 @@ private slots:
     void closeOpenMotionOptions();
     void openFromLibrary(USER u);
     void handleOpenFromLibBtn(int, int);
+    void handleOpenFromLibFilter(QString = "");
     // settings
     void launchSettings();
     void closeSettings();

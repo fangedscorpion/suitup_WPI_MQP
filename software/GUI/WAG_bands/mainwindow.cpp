@@ -378,7 +378,25 @@ void MainWindow::createOpenFromLib(USER u) {
     openFromLibWidget = new OverlayWidget(this, "Load Motion From Library");
     QVBoxLayout *layout = openFromLibWidget->getLayout();
 
-    // read all files from motion lib
+    // Search bar
+    QHBoxLayout *s = new QHBoxLayout;
+    s->setAlignment(Qt::AlignRight);
+    // choose a category
+    openFromLibFilterOpts = new QComboBox;
+    openFromLibFilterOpts->setMaximumWidth(120);
+    openFromLibFilterOpts->addItem("Name");
+    openFromLibFilterOpts->addItem("Description");
+    openFromLibFilterOpts->addItem("Tags");
+    s->addWidget(openFromLibFilterOpts);
+    // search box
+    openFromLibFilterBar = new QLineEdit;
+    openFromLibFilterBar->setStyleSheet(textInputStyleWhite);
+    openFromLibFilterBar->setMaximumWidth(300);
+    openFromLibFilterBar->setPlaceholderText("Filter motions by text");
+    s->addWidget(openFromLibFilterBar);
+    layout->addLayout(s, -1);
+    layout->addSpacing(15);
+
     // get motion lib directory
     std::vector<WAGFile*> libraryFiles;
     std::ifstream myfile;
@@ -386,18 +404,16 @@ void MainWindow::createOpenFromLib(USER u) {
     std::string library;
     std::getline(myfile, library);
     myfile.close();
-
+    // open all motion files
     std::string filepath;
     DIR *dp;
     struct dirent *dirp;
     struct stat filestat;
-
     dp = opendir( library.c_str() );
     if (dp == NULL) {
         qDebug() << "Error(" << errno << ") opening " << library.c_str();
         return;
     }
-
     while ((dirp = readdir( dp ))) {
         filepath = library + "/" + dirp->d_name;
 
@@ -405,8 +421,8 @@ void MainWindow::createOpenFromLib(USER u) {
         if (stat( filepath.c_str(), &filestat )) continue;
         if (S_ISDIR( filestat.st_mode ))         continue;
 
-        // TODO: have constructor that 'peeks' doesn't read data, just metadata
-        libraryFiles.push_back(new WAGFile(filepath.c_str()));
+        // TODO: check that this works... catch error
+        libraryFiles.push_back(new WAGFile(filepath.c_str(), true));
     }
     closedir( dp );
 
@@ -415,19 +431,19 @@ void MainWindow::createOpenFromLib(USER u) {
     openFromLibTable->setRowCount(libraryFiles.size());
     openFromLibTable->setMinimumHeight(400);
     openFromLibTable->verticalHeader()->setVisible(false);
-    QStringList s;
-    s<<"Name"<<"Description" << "Tags";
+    QStringList tableHeader;
+    tableHeader<<"Name"<<"Description" << "Tags";
     QHeaderView *headerView = new QHeaderView(Qt::Horizontal, openFromLibTable);
     openFromLibTable->setHorizontalHeader(headerView);
     headerView->setSectionResizeMode(QHeaderView::Stretch);
     headerView->setStyleSheet("QHeaderView { font-weight: bold; }");
 
-    openFromLibTable->setHorizontalHeaderLabels(s);
+    openFromLibTable->setHorizontalHeaderLabels(tableHeader);
     openFromLibTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     openFromLibTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     openFromLibTable->setSelectionMode(QAbstractItemView::SingleSelection);
 
-    for (int i=0; i < libraryFiles.size(); i++) {
+    for (int i=0; i < (int)libraryFiles.size(); i++) {
         WAGFile *curFile = libraryFiles[i];
         openFromLibTable->setItem(i,0, new QTableWidgetItem(curFile->getName()));
         openFromLibTable->setItem(i,1, new QTableWidgetItem(curFile->getDescription()));
@@ -455,6 +471,8 @@ void MainWindow::createOpenFromLib(USER u) {
     connect(openFromLibBtn, SIGNAL(released(USER)), this, SLOT(openFromLibrary(USER)));
     connect(cancel, SIGNAL(released()), this, SLOT(closeOpenFromLibrary()));
     connect(openFromLibTable, SIGNAL(cellClicked(int,int)), this, SLOT(handleOpenFromLibBtn(int,int)));
+    connect(openFromLibFilterBar, SIGNAL(textChanged(QString)), this, SLOT(handleOpenFromLibFilter(QString)));
+    connect(openFromLibFilterOpts, SIGNAL(currentIndexChanged(QString)), this, SLOT(handleOpenFromLibFilter(QString)));
 }
 
 // event for when the main window is resized

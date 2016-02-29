@@ -301,3 +301,19 @@ void MainWindow::catchLowBatterySignal(BandType lowBatteryBand) {
 void MainWindow::handleOpenFromLibBtn(int, int) {
     openFromLibBtn->setEnabled(!openFromLibTable->selectedItems().isEmpty());
 }
+
+void MainWindow::handleOpenFromLibFilter(QString) {
+    QString filter = openFromLibFilterBar->text().trimmed().toLower();
+    int col = openFromLibFilterOpts->currentIndex();
+    for( int i = 0; i < openFromLibTable->rowCount(); ++i ) {
+        bool match = false;
+        QTableWidgetItem *item = openFromLibTable->item( i, col );
+        if( item->text().toLower().contains(filter) ) {
+            match = true;
+        }
+        if (!match)
+            openFromLibTable->hideRow(i);
+        else
+            openFromLibTable->showRow(i);
+    }
+}

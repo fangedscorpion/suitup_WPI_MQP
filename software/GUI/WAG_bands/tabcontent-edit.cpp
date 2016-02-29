@@ -33,11 +33,6 @@ QWidget* TabContent::createEditOptionsAndControls() {
     MotionInfoBtn->setIconSize(QSize(62,25));
     MotionInfoBtn->setMinimumHeight(buttonHeight);
     MotionInfoBtn->setText("Edit Motion Information");
-    QPushButton *saveBtn = new QPushButton;
-//    saveBtn->setIcon(cropIcon);
-//    saveBtn->setIconSize(QSize(49,25));
-    saveBtn->setMinimumHeight(buttonHeight);
-    saveBtn->setText("Save");
     QVBoxLayout *recordPlaybackLayout = new QVBoxLayout;
     QVBoxLayout *buttons = new QVBoxLayout;
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -45,13 +40,11 @@ QWidget* TabContent::createEditOptionsAndControls() {
     buttons->addWidget(cropBtn);
     buttons->addWidget(splitBtn);
     buttons->addWidget(MotionInfoBtn);
-    buttons->addWidget(saveBtn);
     recordPlaybackLayout->addLayout(buttons, 1);
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     editOptions->setLayout(recordPlaybackLayout);
 
     connect(MotionInfoBtn, SIGNAL(released()), this, SLOT(launchMotionInfo()));
-    connect(saveBtn, SIGNAL(released()), this, SLOT(saveMotion()));
     // add connections to crop and split and undo
     connect(editingControls, SIGNAL(editingPlayStateChanged(bool)), editMotionViewer, SLOT(playToggled(bool)));
     connect(editMotionViewer->getPlayPauseBtn(), SIGNAL(released()), editingControls, SLOT (togglePlay()));
@@ -78,7 +71,7 @@ void TabContent::createMotionInfoWindow() {
     f->addWidget(l1, -1);
     infoMotionNameTextEdit = new QLineEdit;
     infoMotionNameTextEdit->setStyleSheet(textInputStyleWhite);
-    infoMotionNameTextEdit->setText(motion->getName().mid(0, motion->getName().length()-5));
+    infoMotionNameTextEdit->setText(motion->getName().mid(0, motion->getName().length()));
     infoMotionNameTextEdit->selectAll();
     infoMotionNameTextEdit->setFocus();
     infoMotionNameTextEdit->setMaximumWidth(inputMaxWidth);
