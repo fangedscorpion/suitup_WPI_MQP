@@ -211,7 +211,6 @@ void PlaybackController::beginningSliderChanged(int sliderVal) {
 }
 
 void PlaybackController::endSliderChanged(int sliderVal) {
-    qDebug()<<"PlaybackController: end slider val: "<<sliderVal;
     endPointer = sliderVal;
     if (currentFrame > (endPointer*lastFrameNum/100)) {
         updateFrameWithoutSuitNotification(endPointer *lastFrameNum/100);

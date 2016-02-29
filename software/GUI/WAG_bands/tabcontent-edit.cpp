@@ -57,6 +57,8 @@ QWidget* TabContent::createEditOptionsAndControls() {
     connect(editMotionViewer->getPlayPauseBtn(), SIGNAL(released()), editingControls, SLOT (togglePlay()));
     connect(editMotionViewer->getSlider(), SIGNAL(alt_valueChanged(int)), editingControls, SLOT(beginningSliderChanged(int)));
     connect(editMotionViewer->getSlider(), SIGNAL(valueChanged(int)), editingControls, SLOT(endSliderChanged(int)));
+    connect(editMotionViewer->getSlider(), SIGNAL(timebarChanged(int)), editingControls, SLOT(currentFrameChanged(int)));
+    connect(editingControls, SIGNAL(changeSliderVal(int)), editMotionViewer->getSlider(), SLOT(catchCurrentFrameChange(int)));
 
     return editOptions;
 }
