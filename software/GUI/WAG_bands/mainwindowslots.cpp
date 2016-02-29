@@ -98,12 +98,14 @@ void MainWindow::launchOpenFromComputer(USER u) {
 
 // opens the user determined file
 void MainWindow::openFromLibrary(USER u) {
-    // TODO: open file somehow...
     // based on file, open and get metadata
-    QList<QTableWidgetItem*> motionInfo = openFromLibTable->selectedItems();
-//    WAGFile* w = new WAGFile(motionInfo[0]->text(), motionInfo, QString("author"), QVector<QString>(), LIBRARY);
-    WAGFile* w = new WAGFile(motionInfo[3]->text());
-    addTab(u, w, EDIT);
+    QModelIndexList selection = openFromLibTable->selectionModel()->selectedRows();
+    if (selection.count() != 1) {
+        // throw error
+        return;
+    }
+    QTableWidgetItem* motionInfo = openFromLibTable->item(selection.at(0).row(), 3);
+    addTab(u, new WAGFile(motionInfo->text()), EDIT);
     closeOpenFromLibrary();
     closeOpenMotionOptions();
 }
@@ -310,7 +312,6 @@ void MainWindow::handleOpenFromLibFilter(QString) {
         bool match = true;
         QTableWidgetItem *item = openFromLibTable->item( i, col );
         for (int j=0; j < filterByList.size(); j++) {
-            qDebug() << "does " << item->text().toLower() << " contain " << filterByList[j];
             if(!item->text().toLower().contains(filterByList[j]) ) {
                 match = false;
                 break;
