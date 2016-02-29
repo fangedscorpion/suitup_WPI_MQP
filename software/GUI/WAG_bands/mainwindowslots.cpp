@@ -3,6 +3,7 @@
 #include "tabcontent.h"
 #include "customWidgets/closablelabel.h"
 #include <sstream>
+#include <QTableWidgetItem>
 
 // Launch window with user's options based on which type of user was selected
 void MainWindow::launchUserOptions(USER u) {
@@ -99,7 +100,9 @@ void MainWindow::launchOpenFromComputer(USER u) {
 void MainWindow::openFromLibrary(USER u) {
     // TODO: open file somehow...
     // based on file, open and get metadata
-    WAGFile* w = new WAGFile(QString("filename"), QString("desc"), QString("author"), QVector<QString>(), LIBRARY);
+    QList<QTableWidgetItem*> motionInfo = openFromLibTable->selectedItems();
+//    WAGFile* w = new WAGFile(motionInfo[0]->text(), motionInfo, QString("author"), QVector<QString>(), LIBRARY);
+    WAGFile* w = new WAGFile(motionInfo[3]->text());
     addTab(u, w, EDIT);
     closeOpenFromLibrary();
     closeOpenMotionOptions();
@@ -292,4 +295,9 @@ void MainWindow::catchLowBatterySignal(BandType lowBatteryBand) {
         batteryStatus->setText(lowBatteryText);
         updateBatteryStatus();
     }
+}
+
+// enables the "load" button on the openFromLib widget if one of the motions is selected.
+void MainWindow::handleOpenFromLibBtn(int, int) {
+    openFromLibBtn->setEnabled(!openFromLibTable->selectedItems().isEmpty());
 }
