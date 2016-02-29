@@ -49,6 +49,7 @@ Suit::Suit(WifiManager *comms):QObject() {
         connect(bands[allBands[i]], SIGNAL(dataToSend(BandType,BandMessage*)), this, SLOT(sendData(BandType, BandMessage*)));
         connect(bands[allBands[i]], SIGNAL(poseRecvd(AbsState *,BandType,qint32)), this, SLOT(catchNewPose(AbsState *, BandType, qint32)));
         connect(this, SIGNAL(toleranceChanged(int)), bands[allBands[i]], SLOT(catchTolChange(int)));
+        connect(bands[allBands[i]], SIGNAL(connectionProblem(BandType)), this, SLOT(catchConnectionProblem(BandType)));
     }
 
     collectingData = true;
@@ -299,4 +300,9 @@ QSet<BandType> Suit::getConnectedBands() {
 
 void Suit::catchToleranceChange(int newTol) {
     emit toleranceChanged(newTol);
+}
+
+void Suit::catchConnectionProblem(BandType bandWithProblem) {
+    bands[bandWithProblem]->handleConnectionStatusChange(DISCONNECTED);
+    emit bandConnectionStatusChanged(bandWithProblem, DISCONNECTED);
 }

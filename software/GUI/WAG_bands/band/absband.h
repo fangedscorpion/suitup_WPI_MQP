@@ -73,6 +73,7 @@ signals:
     void lowBattery(BandType);
     void poseRecvd(AbsState *, BandType, qint32);
     void withinTolerance(BandType);
+    void connectionProblem(BandType);
 };
 
 

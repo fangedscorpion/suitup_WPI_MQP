@@ -39,16 +39,22 @@ public:
 
   /** Used to update the position of the alternate handle through the use of an event filter */
   void alt_update();
+  bool didHandleInitiateEvent();
+  void setHandleInitiatedEvent(bool);
+  void timebarUpdate();
 
-  void setTimebarPosition(int newPos);
+  void moveTimebar(int newPos);
+
 protected:
   bool eventFilter(QObject* obj, QEvent* event);
 private:
   bool pressed;
   int getOffset();
+  bool handleInitiatedEvent;
 signals:
   /** Constructor */
   void alt_valueChanged(int);
+  void timebarChanged(int);
 public slots:
   void update();
   void resized();
@@ -115,15 +121,19 @@ public:
   /** Returns the value of this handle with respect to the slider */
   int value();
 
-  /** Maps mouse coordinates to slider values */
-  int mapValue();
-
   /** Store the parent as a slider so that you don't have to keep casting it  */
   SuperSlider *parent;
 
   /** Store a bool to determine if the alternate handle has been activated  */
   bool handleActivated;
+
+  /** An overloaded mousePressevent so that we can start grabbing the cursor and using it's position for the value */
+  void mousePressEvent(QMouseEvent *event);
+
 public slots:
   /** Sets the value of the handle with respect to the slider */
-  void setValue(double value);
+  void setValue(int newVal);
+private:
+  SliderEventFilter *filter;
+  int timebarVal;
 };

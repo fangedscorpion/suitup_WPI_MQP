@@ -66,6 +66,11 @@ void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
 void AbsBand::sendIfConnected(BandMessage *sendMsg) {
     if (commsSetUp) {
         if (sendMsg->getMessageType() == COMPUTER_PING) {
+            if (pendingBandPing) {
+                // should've already sent back a band ping
+                emit connectionProblem(type);
+                return;
+            }
             pendingBandPing = true;
             qDebug("AbsBand: Sending band ping");
         }
