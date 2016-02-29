@@ -34,6 +34,7 @@ public:
     QString getDescription() {return description;}
     QString getAuthor() {return author;}
     QString getPathWithoutFile() {return QString(path.parent_path().c_str()); }
+    QString getPathString() {return QString(path.c_str());}
     QVector<QString> getTagStrings() {return tags;}
     QString getTagString() {return getTagStrings().toList().join(", ");}
     QVector<ClosableLabel*> getTagLabels();

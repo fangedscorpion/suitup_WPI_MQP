@@ -410,48 +410,51 @@ void MainWindow::createOpenFromLib(USER u) {
     }
     closedir( dp );
 
-    QTableWidget *t = new QTableWidget();
-    t->setColumnCount(3); // name, desc, tags
-    t->setRowCount(libraryFiles.size());
-    t->setMinimumHeight(400);
+    openFromLibTable = new QTableWidget();
+    openFromLibTable->setColumnCount(4); // name, desc, tags
+    openFromLibTable->setRowCount(libraryFiles.size());
+    openFromLibTable->setMinimumHeight(400);
+    openFromLibTable->verticalHeader()->setVisible(false);
     QStringList s;
     s<<"Name"<<"Description" << "Tags";
-    QHeaderView *headerView = new QHeaderView(Qt::Horizontal, t);
-    t->setHorizontalHeader(headerView);
+    QHeaderView *headerView = new QHeaderView(Qt::Horizontal, openFromLibTable);
+    openFromLibTable->setHorizontalHeader(headerView);
     headerView->setSectionResizeMode(QHeaderView::Stretch);
     headerView->setStyleSheet("QHeaderView { font-weight: bold; }");
 
-    t->setHorizontalHeaderLabels(s);
-    t->verticalHeader()->setVisible(false);
-    t->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    t->setSelectionBehavior(QAbstractItemView::SelectRows);
-    t->setSelectionMode(QAbstractItemView::SingleSelection);
+    openFromLibTable->setHorizontalHeaderLabels(s);
+    openFromLibTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    openFromLibTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    openFromLibTable->setSelectionMode(QAbstractItemView::SingleSelection);
 
     for (int i=0; i < libraryFiles.size(); i++) {
         WAGFile *curFile = libraryFiles[i];
-        t->setItem(i,0, new QTableWidgetItem(curFile->getName()));
-        t->setItem(i,1, new QTableWidgetItem(curFile->getDescription()));
-        t->setItem(i,2, new QTableWidgetItem(curFile->getTagString()));
+        openFromLibTable->setItem(i,0, new QTableWidgetItem(curFile->getName()));
+        openFromLibTable->setItem(i,1, new QTableWidgetItem(curFile->getDescription()));
+        openFromLibTable->setItem(i,2, new QTableWidgetItem(curFile->getTagString()));
+        openFromLibTable->setItem(i,3, new QTableWidgetItem(curFile->getPathString()));
     }
 
+    openFromLibTable->hideColumn(3);
 
-
-    layout->addWidget(t);
+    layout->addWidget(openFromLibTable);
     layout->addSpacing(20);
 
     QHBoxLayout *btns = new QHBoxLayout;
-    smartPushButton *open = new smartPushButton("Load", u);
+    openFromLibBtn = new smartPushButton("Load", u);
+    openFromLibBtn->setEnabled(false);
     QPushButton *cancel = new QPushButton("Cancel");
     cancel->setMinimumHeight(buttonHeight);
     btns->addWidget(cancel);
-    btns->addWidget(open);
+    btns->addWidget(openFromLibBtn);
     layout->addLayout(btns);
 
     // only connect handleUserOptions when the user selection window is visible to user
     if (userOptionsWidget != NULL)
-        connect(open, SIGNAL(released(USER)), this, SLOT(handleUserOptions(USER)));
-    connect(open, SIGNAL(released(USER)), this, SLOT(openFromLibrary(USER)));
+        connect(openFromLibBtn, SIGNAL(released(USER)), this, SLOT(handleUserOptions(USER)));
+    connect(openFromLibBtn, SIGNAL(released(USER)), this, SLOT(openFromLibrary(USER)));
     connect(cancel, SIGNAL(released()), this, SLOT(closeOpenFromLibrary()));
+    connect(openFromLibTable, SIGNAL(cellClicked(int,int)), this, SLOT(handleOpenFromLibBtn(int,int)));
 }
 
 // event for when the main window is resized

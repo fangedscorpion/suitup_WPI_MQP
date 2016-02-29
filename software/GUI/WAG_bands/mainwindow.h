@@ -28,6 +28,7 @@
 #include "customWidgets/smartpushbutton.h"
 #include "wagfile.h"
 #include <set>
+#include <QTableWidget>
 
 #include "communications/wifimanager.h"
 #include "band/suit.h"
@@ -93,6 +94,8 @@ private:
     // open
     OverlayWidget *openFromLibWidget;
     OverlayWidget *openWidget;
+    QTableWidget *openFromLibTable;
+    smartPushButton *openFromLibBtn;
     void createOpenFromLib(USER u);
     void createOpenMotionOptions(USER u) ;
     // create new file
@@ -122,6 +125,7 @@ private slots:
     void closeOpenFromLibrary();
     void closeOpenMotionOptions();
     void openFromLibrary(USER u);
+    void handleOpenFromLibBtn(int, int);
     // settings
     void launchSettings();
     void closeSettings();
