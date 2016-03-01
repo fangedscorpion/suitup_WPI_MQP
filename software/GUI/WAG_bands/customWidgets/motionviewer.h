@@ -32,11 +32,13 @@ private:
     QLabel *handle2Time;
 
     QPushButton *playPause;
+    QString convertTimeToString(qint32 convertTime);
 
 
 public slots:
     void playToggled(bool playing);
-    void displayNewTime(int newMillis);
+    void updateFirstLabel(qint32 newTime);
+    void updateLastLabel(qint32 newTime);
     void changeSliderRange(qint32 newSliderLen);
 
 };

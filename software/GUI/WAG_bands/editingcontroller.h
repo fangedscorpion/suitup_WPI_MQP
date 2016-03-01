@@ -14,6 +14,11 @@ signals:
     void editingPlayStateChanged(bool);
     void changeSliderMax(qint32);
     void frameChanged(qint32);
+    void beginningTimeChanged(qint32 beginTime);
+    void endTimeChanged(qint32 endTime);
+    void totalTimeChanged(qint32 totalTime);
+
+
     void stopPlayback();
     void startPlayback();
     void endOfTimeRange();
@@ -26,6 +31,7 @@ public slots:
     void togglePlay();
     void catchFrameNumsChanged(qint32 newLastNum);
     void catchFrameUpdate(qint32 newFrame);
+    void currentFrameChanged(int currentFrameSliderPos);
 
 private:
     bool playing;

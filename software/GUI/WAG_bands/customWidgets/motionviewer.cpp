@@ -40,20 +40,32 @@ void MotionViewer::playToggled(bool playing) {
     }
 }
 
-// display stopwatch timer time
-void MotionViewer::displayNewTime(int newMillis) {
-    int numSeconds = newMillis/1000;
-    int hundredths = (newMillis - numSeconds*1000)/10;
-    int numMinutes = numSeconds/60;
-    numSeconds = numSeconds - numMinutes*60;
-    // set label
-    QString minNum = QString("%1").arg(numMinutes, 2, 10, QChar('0'));
-    QString secNum = QString("%1").arg(numSeconds, 2, 10, QChar('0'));
-    QString hundNum = QString("%1").arg(hundredths, 2, 10, QChar('0'));
-    handle1Time->setText(minNum + ":" + secNum + "." + hundNum);
-}
-
 void MotionViewer::changeSliderRange(qint32 newSliderLen) {
     qDebug()<<"MotionViewer: NEW slider len: "<<newSliderLen/SLIDER_DIVIDE_FACTOR;
     //videoSlider->setMaximum(newSliderLen/SLIDER_DIVIDE_FACTOR);
+}
+
+QString MotionViewer::convertTimeToString(qint32 convertTime) {
+    // round number to nearest 10th of millisecond
+    int modVal = convertTime%10;
+    if (modVal >= 5) {
+        convertTime += (10-modVal);
+    } else {
+        convertTime  -= modVal;
+    }
+
+    QTime time = QTime(0, 0, 0, 0);
+    time = time.addMSecs(convertTime);
+
+    QString timeString = time.toString("mm:ss.zzz");
+    timeString.remove(timeString.length() - 1, 1);
+    return timeString;
+}
+
+void MotionViewer::updateFirstLabel(qint32 newTime) {
+    handle1Time->setText(convertTimeToString(newTime));
+}
+
+void MotionViewer::updateLastLabel(qint32 newTime) {
+    handle2Time->setText(convertTimeToString(newTime));
 }

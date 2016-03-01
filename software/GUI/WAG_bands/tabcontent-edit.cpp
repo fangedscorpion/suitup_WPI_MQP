@@ -59,6 +59,9 @@ QWidget* TabContent::createEditOptionsAndControls() {
     connect(editMotionViewer->getSlider(), SIGNAL(valueChanged(int)), editingControls, SLOT(endSliderChanged(int)));
     connect(editMotionViewer->getSlider(), SIGNAL(timebarChanged(int)), editingControls, SLOT(currentFrameChanged(int)));
     connect(editingControls, SIGNAL(changeSliderVal(int)), editMotionViewer->getSlider(), SLOT(catchCurrentFrameChange(int)));
+    connect(editingControls, SIGNAL(frameChanged(qint32)), editMotionViewer, SLOT(updateFirstLabel(qint32)));
+    connect(editingControls, SIGNAL(totalTimeChanged(qint32)), editMotionViewer, SLOT(updateLastLabel(qint32)));
+
 
     return editOptions;
 }
@@ -199,6 +202,7 @@ void TabContent::createMotionInfoWindow() {
     connect(infoMotionCompRadio, SIGNAL(released()), this, SLOT(handleInfoMotionRequiredInput()));
     connect(infoMotionLibRadio, SIGNAL(released()), this, SLOT(handleInfoMotionRequiredInput()));
     connect(infoMotionCompRadio, SIGNAL(toggled(bool)), infoMotionSaveLocation, SLOT(setVisible(bool)));
+
     emit this->resizedWindow();
 }
 

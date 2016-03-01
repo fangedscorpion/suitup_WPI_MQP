@@ -68,6 +68,7 @@ void AbsBand::sendIfConnected(BandMessage *sendMsg) {
         if (sendMsg->getMessageType() == COMPUTER_PING) {
             if (pendingBandPing) {
                 // should've already sent back a band ping
+                qDebug()<<"AbsBand:: Connection problem for band "<<type;
                 emit connectionProblem(type);
                 return;
             }
