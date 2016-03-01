@@ -14,6 +14,7 @@ AbsBand::AbsBand(BandType bt):QObject() {
     type = bt;
     active = true;
     commsSetUp = false;
+    pingProblems = 0;
 }
 
 void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
@@ -67,13 +68,18 @@ void AbsBand::sendIfConnected(BandMessage *sendMsg) {
     if (commsSetUp) {
         if (sendMsg->getMessageType() == COMPUTER_PING) {
             if (pendingBandPing) {
-                // should've already sent back a band ping
-                qDebug()<<"AbsBand:: Connection problem for band "<<type;
-                emit connectionProblem(type);
-                pendingBandPing = false;
-                return;
+                pingProblems++;
+                if (pingProblems >= PING_PROBLEMS_THRESHOLD) {
+                    // should've already sent back a band ping
+                    qDebug()<<"AbsBand:: Connection problem for band "<<type;
+                    emit connectionProblem(type);
+                    pendingBandPing = false;
+                    pingProblems = 0;
+                    return;
+                }
             }
             pendingBandPing = true;
+            pingProblems = 0;
             qDebug("AbsBand: Sending band ping");
         }
         emit dataToSend(type, sendMsg);
@@ -81,7 +87,7 @@ void AbsBand::sendIfConnected(BandMessage *sendMsg) {
 }
 
 void AbsBand::updateState(AbsState* state, qint32 msgTime){
-    qDebug()<<"AbsBand: Message time"<<msgTime;
+    //qDebug()<<"AbsBand: Message time"<<msgTime;
     poseRecvdTime = msgTime;
     pose->update(state);
 

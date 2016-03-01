@@ -86,13 +86,13 @@ void Suit::toggleCollecting(bool shouldCollectData) {
         collectingData = shouldCollectData;
         if (collectingData) {
             // stop timer
-            qDebug("Suit: Killing ping timer");
+            //qDebug("Suit: Killing ping timer");
             killTimer(pingTimerID);
             activeSnapshot = PositionSnapshot();
             activeSnapTimes.clear();
         } else {
             // start timer
-            qDebug("Suit: Starting ping timer");
+            //qDebug("Suit: Starting ping timer");
             pingTimerID = startTimer(PING_INTERVAL);
         }
     }
