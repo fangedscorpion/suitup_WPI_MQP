@@ -31,8 +31,8 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
 }
 
 void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
-    qDebug("AbsBand: Handling message\n");
-    qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType();
+    //qDebug("AbsBand: Handling message\n");
+    //qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType();
     AbsState *newState;
     switch(recvdMessage->getMessageType()) {
     case BAND_CONNECTING:
@@ -45,7 +45,7 @@ void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
         if (pendingBandPing) {
             pendingBandPing = false;
         }
-        qDebug("AbsBand: Recvd band ping");
+        //qDebug("AbsBand: Recvd band ping");
         break;
     case BAND_POSITION_UPDATE:
         // parse into absstate
@@ -70,6 +70,7 @@ void AbsBand::sendIfConnected(BandMessage *sendMsg) {
                 // should've already sent back a band ping
                 qDebug()<<"AbsBand:: Connection problem for band "<<type;
                 emit connectionProblem(type);
+                pendingBandPing = false;
                 return;
             }
             pendingBandPing = true;
