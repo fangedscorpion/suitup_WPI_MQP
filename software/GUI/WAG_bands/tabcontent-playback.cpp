@@ -101,6 +101,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     connect(seconds, SIGNAL(valueChanged(double)), playbackControls, SLOT(modifyHoldTime(double)));
 //    connect(playbackControls, SIGNAL(timeChanged(int)), playbackMotionViewer, SLOT(displayNewTime(int)));
     connect(playbackControls, SIGNAL(playbackStateChanged(bool)), playbackMotionViewer, SLOT(playToggled(bool)));
+    connect(playbackControls, SIGNAL(playbackStateChanged(bool)), this, SLOT(playToggled(bool)));
     connect(playbackControls, SIGNAL(playingOnSuit(bool)), this, SLOT(lockOnSuitPlayback(bool)));
     connect(playbackCountDownSpinner, SIGNAL(valueChanged(double)), this, SLOT(playbackSetCountDownTimer(double)));
     // viewer controls
@@ -211,4 +212,8 @@ void TabContent::lockOnSuitPlayback(bool playingOnSuit) {
     } else {
 
     }
+}
+
+void TabContent::playToggled(bool playing) {
+    playOnSuit->setEnabled(!playing);
 }
