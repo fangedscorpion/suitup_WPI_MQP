@@ -235,8 +235,10 @@ static int disconnectedBands = 7;
 void MainWindow::updateConnectionStatus(BandType b, ConnectionStatus c) {
     if (c == CONNECTED) {
         disconnectedBands--;
+        connectedBands.insert(b);
     } else {
         disconnectedBands++;
+        connectedBands.remove(b);
     }
 
     if ((disconnectedBands > 7) || (disconnectedBands < 0)) {
@@ -245,7 +247,7 @@ void MainWindow::updateConnectionStatus(BandType b, ConnectionStatus c) {
 
     if (disconnectedBands > 0) {
         settingsBtn->setStyleSheet("QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }");
-        connectionStatus->setText(QString::number(disconnectedBands) + " Bands Disconnected");
+        connectionStatus->setText(QString::number(7 - connectedBands.size()) + " Bands Disconnected");
         connectionStatus->setStyleSheet("QLabel { color : red; }");
     } else {
         settingsBtn->setStyleSheet("QPushButton { }");

@@ -36,12 +36,12 @@ PlaybackController::PlaybackController(Suit *newSuitObj) {
 }
 
 void PlaybackController::togglePlay() {
-    qDebug("PlaybackController: Toggling play");
-    qDebug()<<"PlaybackController: Last frame num: "<<lastFrameNum;
-    qDebug()<<"PlaybackController: Current frame num: "<<currentFrame;
+    //qDebug("PlaybackController: Toggling play");
+    //qDebug()<<"PlaybackController: Last frame num: "<<lastFrameNum;
+    //qDebug()<<"PlaybackController: Current frame num: "<<currentFrame;
     if (!((!playing) && (currentFrame >= (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))))) {
         playing = !playing;
-        qDebug()<<"PlaybackController: Play status: "<<playing;
+        //qDebug()<<"PlaybackController: Play status: "<<playing;
         if (playing) {
             startPlaying();
         }
@@ -81,13 +81,13 @@ void PlaybackController::toggleSuitActive(bool active) {
         }
     }
     suitActive = active;
-    qDebug()<<"PlaybackController: Suit activated: "<<suitActive;
+    //qDebug()<<"PlaybackController: Suit activated: "<<suitActive;
 }
 
 // currentFrameSliderPos ranges from 0 to 1000
 void PlaybackController::currentFrameChanged(int currentFrameSliderPos) {
     // may have to check here to see if frame in bounds (not sure where we want those checks)
-    qDebug()<<"PlaybackController: currentFrame slider moved to "<<currentFrameSliderPos;
+    //qDebug()<<"PlaybackController: currentFrame slider moved to "<<currentFrameSliderPos;
     updateFrameWithoutSuitNotification(currentFrameSliderPos*lastFrameNum/1000);
 }
 
@@ -127,7 +127,7 @@ void PlaybackController::speedChanged(int sliderPosition) {
         float exponent = sliderPosition - 50.0;
         // may want to round this result somehow
         changeFrameRate(pow(2, (exponent/25)));
-        qDebug()<<"PlaybackController: Playback speed is now "<<frameRate;
+        //qDebug()<<"PlaybackController: Playback speed is now "<<frameRate;
     }
 }
 

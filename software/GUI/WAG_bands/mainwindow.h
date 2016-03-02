@@ -118,6 +118,7 @@ private:
     // move to wherever we initialize the suit object
     WifiManager *wifiMan;
     Suit *fullSuit;
+    QSet<BandType> connectedBands;
 
 private slots:
     // open
