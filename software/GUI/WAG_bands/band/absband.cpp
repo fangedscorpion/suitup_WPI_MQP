@@ -33,7 +33,7 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
 
 void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     //qDebug("AbsBand: Handling message\n");
-    //qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType();
+    qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType();
     AbsState *newState;
     switch(recvdMessage->getMessageType()) {
     case BAND_CONNECTING:
@@ -50,7 +50,9 @@ void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
         break;
     case BAND_POSITION_UPDATE:
         // parse into absstate
-        qDebug()<<"AbsBand: BAND POSITION RECEIVED FROM"<<type<<" at "<<msgTimestamp;
+
+        // this print line is necessary or the program will crash. cannot figure out why
+        //qDebug()<<"AbsBand: BAND POSITION RECEIVED FROM"<<type<<" at "<<msgTimestamp;
         newState = deserialize(recvdMessage->getMessageData(), this->getPositionRepresentation());
         updateState(newState, msgTimestamp);
         // should probably handle in subclass
@@ -87,7 +89,6 @@ void AbsBand::sendIfConnected(BandMessage *sendMsg) {
 }
 
 void AbsBand::updateState(AbsState* state, qint32 msgTime){
-    //qDebug()<<"AbsBand: Message time"<<msgTime;
     poseRecvdTime = msgTime;
     pose->update(state);
 

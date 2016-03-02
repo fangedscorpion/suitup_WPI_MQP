@@ -158,7 +158,7 @@ void Suit::catchStartPlayback() {
 }
 
 void Suit::playSnapshot(PositionSnapshot goToSnap) {
-    qDebug("Suit: Received snap to play\n");
+    //qDebug("Suit: Received snap to play\n");
     if (collectingData) {
         // TODO
         // probably want to set a snapshot to match, and then when we receive a full snapshot, we can compare
@@ -169,14 +169,14 @@ void Suit::playSnapshot(PositionSnapshot goToSnap) {
         for (int i = 0; i < connected.size(); i++){
             BandType getBand = connected[i];
             if (snapshotData.contains(getBand)) {
-                qDebug()<<"Suit: Sending error to band "<<getBand;
+                //qDebug()<<"Suit: Sending error to band "<<getBand;
                 posWithinTol &= bands[getBand]->moveTo(snapshotData[getBand]);
-                qDebug()<<"Suit: Position for band "<<getBand<<" within tolerance "<<posWithinTol;
+                //qDebug()<<"Suit: Position for band "<<getBand<<" within tolerance "<<posWithinTol;
             }
         }
 
         if (posWithinTol) {
-            qDebug("Suit: Emitting position met");
+            //qDebug("Suit: Emitting position met");
             emit positionMet();
         }
     }
@@ -246,7 +246,7 @@ void Suit::propagateLowBattery(BandType chargeBand) {
 
 
 void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime) {
-    qDebug()<<"Suit: adding pose to snapshot from band "<<bandForPose;
+    //qDebug()<<"Suit: adding pose to snapshot from band "<<bandForPose;
 
     /* AbsState *copiedPose = (AbsState*) malloc(newPose->objectSize()); // not sure if can do this for abs
     // TODO figure out where to free this
@@ -257,7 +257,7 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
     activeSnapshot.addMapping(bandForPose, newPose);
 
     activeSnapTimes.append(poseTime);
-    qDebug()<<"Suit: Pose time"<< poseTime;
+    //qDebug()<<"Suit: Pose time"<< poseTime;
 
 
     // maybe just want to make it so it's all bands, not just the connected ones
@@ -272,12 +272,12 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
         qint32 avgReadingTime;
         if (activeSnapTimes.length() != 0) {
             avgReadingTime = (qint32) (totalTime/activeSnapTimes.length());
-            qDebug()<<"Suit: Snapshot time: "<<avgReadingTime;
+            //qDebug()<<"Suit: Snapshot time: "<<avgReadingTime;
         }
         else {
             avgReadingTime = 0;
         }
-        qDebug()<<"Suit: position snapshot ready";
+        //qDebug()<<"Suit: position snapshot ready";
         emit positionSnapshotReady(avgReadingTime, activeSnapshot);
 
         activeSnapshot = PositionSnapshot();

@@ -29,7 +29,7 @@ void RecordingController::startRecording() {
 void RecordingController::addSnapshotToMotion(qint32 snapTime, PositionSnapshot snap) {
     if (recording) {
         qint32 newSnapTime = snapTime;
-        qDebug()<<"RecordingController: at time "<<newSnapTime<<" Adding snpashot to motion data";
+        //qDebug()<<"RecordingController: at time "<<newSnapTime<<" Adding snpashot to motion data";
         currentMotionData[newSnapTime] = snap;
     }
 }
