@@ -6,18 +6,23 @@ BandMessage::BandMessage(MessageType msgType, QByteArray msgData){
     this->msgData = msgData;
 }
 
-BandMessage::BandMessage(QByteArray fullMsg) {
+BandMessage::BandMessage() {}
+
+void BandMessage::parseFromByteArray(QByteArray fullMsg) {
     int expectedLen = (int) fullMsg[0];
     this->msgType = (MessageType) fullMsg.at(1);
     QByteArray data = fullMsg.remove(0, 2);
     // remove new line
     data.remove(data.length() -1, 1);
+
+    this->msgData = data;
     if (data.length()  != (expectedLen -2)) {
         // error of some sort
         qDebug()<<"BandMessage: Expected length: "<<expectedLen;
         qDebug()<<"BandMessage: Actual length: "<<data.length();
+        IncorrectDataLengthException *newException = new IncorrectDataLengthException(expectedLen);
+        throw newException;
     }
-    this->msgData = data;
 }
 
 MessageType BandMessage::getMessageType() {
@@ -58,4 +63,16 @@ VoiceControlMsgType BandMessage::parseVoiceControlMsg() {
         // ERROR
         return OTHER;
     }
+}
+
+QByteArray BandMessage::handleException(IncorrectDataLengthException *e) {
+    int intendedLength = e->getIntendedLength();
+    if (intendedLength > this->getMessageLength()) {
+        return QByteArray();
+    }
+    QByteArray extraPacketData = this->getMessageData().right(this->getMessageLength() - intendedLength);
+    qDebug()<<"extraPacketData"<<extraPacketData;
+    this->msgData = this->getMessageData().left(intendedLength);
+
+    return extraPacketData;
 }

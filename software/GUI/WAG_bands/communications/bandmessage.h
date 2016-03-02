@@ -2,6 +2,7 @@
 #define BANDMESSAGE_H
 
 #include <QObject>
+#include "incorrectdatalengthexception.h"
 
 #define VOICE_CONTROL_START 67
 #define VOICE_CONTROL_STOP 15
@@ -39,7 +40,10 @@ class BandMessage : public QObject
 public:
    // BandMessage();
     BandMessage(MessageType msgType, QByteArray msgData);
-    BandMessage(QByteArray fullMsg);
+    BandMessage();
+    void parseFromByteArray(QByteArray fullMsg);
+    QByteArray handleException(IncorrectDataLengthException *e);
+
 
     int getMessageLength();
     MessageType getMessageType();

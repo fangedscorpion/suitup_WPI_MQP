@@ -20,7 +20,7 @@
 #define TRUE 1
 #define FALSE 0
 #define RECV 7
-#define ALARM_INTERVAL 25000
+#define ALARM_INTERVAL 50000
 #define SEC_TIMEOUT 0
 #define USEC_TIMEOUT 1000
 
