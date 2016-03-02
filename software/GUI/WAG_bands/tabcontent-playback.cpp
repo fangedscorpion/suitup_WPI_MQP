@@ -103,6 +103,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     connect(playbackControls, SIGNAL(playbackStateChanged(bool)), playbackMotionViewer, SLOT(playToggled(bool)));
     connect(playbackControls, SIGNAL(playbackStateChanged(bool)), this, SLOT(playToggled(bool)));
     connect(playbackControls, SIGNAL(playingOnSuit(bool)), this, SLOT(lockOnSuitPlayback(bool)));
+    connect(playbackControls, SIGNAL(playingOnSuit(bool)), playbackMotionViewer->getSlider(), SLOT(lockSliders(bool)));
     connect(playbackCountDownSpinner, SIGNAL(valueChanged(double)), this, SLOT(playbackSetCountDownTimer(double)));
     // viewer controls
     connect(playbackMotionViewer->getPlayPauseBtn(), SIGNAL(released()), playbackControls, SLOT (togglePlay()));
@@ -206,12 +207,6 @@ void TabContent::catchCurrentFrameChange(int newSliderPos) {
 void TabContent::lockOnSuitPlayback(bool playingOnSuit) {
     parent->lockOnPlayOrRecord(playingOnSuit);
     lockOnPlayback(playingOnSuit);
-    // prevent user from moving slider bars in motion viewer...probably
-    if (playingOnSuit) {
-
-    } else {
-
-    }
 }
 
 void TabContent::playToggled(bool playing) {

@@ -292,3 +292,8 @@ void SuperSlider::timebarUpdate() {
     emit timebarChanged(time_bar->value());
 }
 
+void SuperSlider::lockSliders(bool shouldLock) {
+    time_bar->setEnabled(!shouldLock);
+    alt_handle->setEnabled(!shouldLock);
+    this->setEnabled(!shouldLock);
+}
