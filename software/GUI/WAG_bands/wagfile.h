@@ -28,7 +28,7 @@ public:
             QVector<QString> in_tags, SAVE_LOCATION saveLoc);
     WAGFile(QString filename, QString description, QString author,
             QHBoxLayout* container, SAVE_LOCATION saveLoc);
-    WAGFile(QString filename); // Loads WAGFile content from the given filename.
+    WAGFile(QString filename, bool peek = false); // Loads WAGFile content from the given filename.
     // getters
     QString getName() {return name;}
     QString getDescription() {return description;}
@@ -44,7 +44,8 @@ public:
     PositionSnapshot getSnapshot(float approxPercentThroughFile, qint32 snapTime, SNAP_CLOSENESS retrieveType);
     QHash<qint32, PositionSnapshot> getChunkInRange(qint32 startTime, qint32 endTime);
     // setters
-    void updateFilename(QString newName) { name = newName;}
+    // If you need vvv, make sure it removes the '.wagz' first
+//    void updateFilename(QString newName) { name = newName;}
     void updateDescription(QString desc) {description = desc;}
     void replaceTags(QHBoxLayout* container);
     void updateSaveLocation(SAVE_LOCATION l) {loc = l;}
@@ -71,4 +72,5 @@ private:
 
     void setFilenameAndPath(QString filename);
     void loadFromFile(QString f);
+    void loadMetadataFromFile(QString f);
 };

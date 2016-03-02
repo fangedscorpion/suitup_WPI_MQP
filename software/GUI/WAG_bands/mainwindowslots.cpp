@@ -98,12 +98,14 @@ void MainWindow::launchOpenFromComputer(USER u) {
 
 // opens the user determined file
 void MainWindow::openFromLibrary(USER u) {
-    // TODO: open file somehow...
     // based on file, open and get metadata
-    QList<QTableWidgetItem*> motionInfo = openFromLibTable->selectedItems();
-//    WAGFile* w = new WAGFile(motionInfo[0]->text(), motionInfo, QString("author"), QVector<QString>(), LIBRARY);
-    WAGFile* w = new WAGFile(motionInfo[3]->text());
-    addTab(u, w, EDIT);
+    QModelIndexList selection = openFromLibTable->selectionModel()->selectedRows();
+    if (selection.count() != 1) {
+        // throw error
+        return;
+    }
+    QTableWidgetItem* motionInfo = openFromLibTable->item(selection.at(0).row(), 3);
+    addTab(u, new WAGFile(motionInfo->text()), EDIT);
     closeOpenFromLibrary();
     closeOpenMotionOptions();
 }
@@ -300,4 +302,25 @@ void MainWindow::catchLowBatterySignal(BandType lowBatteryBand) {
 // enables the "load" button on the openFromLib widget if one of the motions is selected.
 void MainWindow::handleOpenFromLibBtn(int, int) {
     openFromLibBtn->setEnabled(!openFromLibTable->selectedItems().isEmpty());
+}
+
+void MainWindow::handleOpenFromLibFilter(QString) {
+    QRegExp rx("(\\ |\\,)");
+    QStringList filterByList = openFromLibFilterBar->text().trimmed().toLower().split(rx);
+    int col = openFromLibFilterOpts->currentIndex();
+    for( int i = 0; i < openFromLibTable->rowCount(); ++i ) {
+        bool match = true;
+        QTableWidgetItem *item = openFromLibTable->item( i, col );
+        for (int j=0; j < filterByList.size(); j++) {
+            if(!item->text().toLower().contains(filterByList[j]) ) {
+                match = false;
+                break;
+            }
+        }
+
+        if (!match)
+            openFromLibTable->hideRow(i);
+        else
+            openFromLibTable->showRow(i);
+    }
 }

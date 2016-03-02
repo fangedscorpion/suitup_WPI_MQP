@@ -31,13 +31,18 @@ WAGFile::WAGFile(QString filename, QString in_description, QString author,
     keys = QList<qint32>();
 }
 
-WAGFile::WAGFile(QString filename) {
+// If peek is true, this loads only the metadata, not the whole file.
+WAGFile::WAGFile(QString filename, bool peek) {
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot>();
     keys = QList<qint32>();
     tags = QVector<QString>();
     loc = LOCALLY;
-    loadFromFile(filename);
+
+    if (peek)
+        loadMetadataFromFile(filename);
+    else
+        loadFromFile(filename);
 }
 
 void WAGFile::replaceTags(QHBoxLayout* c) {
@@ -89,7 +94,7 @@ void WAGFile::setFilenameAndPath(QString filename) {
             path = newPath;
         }
     }
-    name = path.filename().c_str();
+    name = path.filename().replace_extension("").c_str();
 }
 
 qint32 WAGFile::getFrameNums() {
@@ -233,6 +238,19 @@ void WAGFile::loadFromFile(QString f) {
     qDebug() << "author: " << author.toStdString().c_str();
     qDebug() << "loc: " << loc;
     qDebug() << "tags: " << tags;
+
+    file.close();
+}
+
+void WAGFile::loadMetadataFromFile(QString f) {
+    QFile file(f);
+    file.open(QIODevice::ReadOnly);
+    QDataStream in(&file);
+    in.setVersion(QDataStream::Qt_5_5);
+    in >> description;
+    in >> author;
+    in >> tags;
+    in >> loc;
 
     file.close();
 }
