@@ -183,31 +183,29 @@ void WifiManager::routeToBandObject(BandType bandWithData) {
     if (readData.length() == 0) {
         // Error probably occured
     } else {
-        qDebug()<<"WifiManager: READ " <<readData<<" from band number " <<bandWithData;
+        //qDebug()<<"WifiManager: READ " <<readData<<" from band number " <<bandWithData;
         bool keepParsing = true;
         int iterations = 1;
         while (keepParsing) {
-            qDebug()<<"WifiManager:: message parsing iterations "<<iterations;
+            if (iterations > 1) {
+                qDebug()<<"WifiManager:: message parsing iterations "<<iterations;
+            }
             iterations++;
 
             BandMessage *msg;
             QElapsedTimer msgTimer;
             try {
-
                 msg = new BandMessage();
                 msgTimer = QElapsedTimer();
                 msgTimer.start();
                 msg->parseFromByteArray(readData);
-                qDebug("Setting keep parsing to false");
                 keepParsing = false;
             } catch(IncorrectDataLengthException *e) {
-                qDebug("Exception thrown");
                 readData = msg->handleException(e);
                 // would need new line, length, and message type to be real packet
-                qDebug()<<readData;
+                //qDebug()<<readData;
                 if (readData.length() < 3) {
                     keepParsing = false;
-                    qDebug("Setting keep parsing to false in exception");
                 }
             }
 

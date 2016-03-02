@@ -12,16 +12,21 @@ void BandMessage::parseFromByteArray(QByteArray fullMsg) {
     int expectedLen = (int) fullMsg[0];
     this->msgType = (MessageType) fullMsg.at(1);
     QByteArray data = fullMsg.remove(0, 2);
-    // remove new line
-    data.remove(data.length() -1, 1);
 
     this->msgData = data;
-    if (data.length()  != (expectedLen -2)) {
+    // data.length -1 (full packet (not including first two bytes) minus new line)
+    // should equal the expected length embedded in the packet (which is the data length + 2)
+    if ((data.length() - 1) != (expectedLen -2)) {
         // error of some sort
-        qDebug()<<"BandMessage: Expected length: "<<expectedLen;
+        qDebug()<<"BandMessage: Expected length: "<<expectedLen -2;
         qDebug()<<"BandMessage: Actual length: "<<data.length();
-        IncorrectDataLengthException *newException = new IncorrectDataLengthException(expectedLen);
+        // theintended length for the dat of this message is the expected length field in the message (first byte)
+        // minus 2 (message type field and length field are both 1 byte)
+        IncorrectDataLengthException *newException = new IncorrectDataLengthException(expectedLen - 2);
         throw newException;
+    } else {
+        // this message is it's own message, so we should remove the new line
+        data.remove(data.length() -1, 1);
     }
 }
 
@@ -65,13 +70,18 @@ VoiceControlMsgType BandMessage::parseVoiceControlMsg() {
     }
 }
 
+/*
+ * Call this if an IncorrectDataLengthException is thrown trying to parse a MessageType
+ * this repairs the initial message and pulls out the extra bytes so that they can be parsed into another Message
+ */
 QByteArray BandMessage::handleException(IncorrectDataLengthException *e) {
     int intendedLength = e->getIntendedLength();
     if (intendedLength > this->getMessageLength()) {
         return QByteArray();
     }
-    QByteArray extraPacketData = this->getMessageData().right(this->getMessageLength() - intendedLength);
-    qDebug()<<"extraPacketData"<<extraPacketData;
+    // get the next packet that was lumped in with this message (intended length + 1 so we remove the new line that went with the first message)
+    QByteArray extraPacketData = this->getMessageData().right(this->getMessageLength() - (intendedLength + 1));
+    // shorten the data to what was actually supposed to be int heis message
     this->msgData = this->getMessageData().left(intendedLength);
 
     return extraPacketData;
