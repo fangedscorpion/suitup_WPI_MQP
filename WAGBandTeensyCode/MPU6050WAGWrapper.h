@@ -87,7 +87,7 @@ public:
 	uint8_t fifoBuffer[64]; // FIFO storage buffer
 	// packet structure for InvenSense teapot demo
 	
-	uint8_t teapotPacket[14] = { '$', 0x02, 0,0, 0,0, 0,0, 0,0, 0x00, 0x00, '\r', '\n' };
+	uint8_t teapotPacket[14] = { '$', 0x02, 0,0, 0,0, 0,0, 0,0, 0x00, 0x00, '\r', '\n' }; // The original packet
 
 	// ================================================================
 	// ===               INTERRUPT DETECTION ROUTINE                ===
@@ -98,7 +98,9 @@ public:
 
 	void finishMPU6050Setup();
 
-	void extractMPU6050ValsAndSendToESP8266();
+	void extractMPU6050Vals();
+
+	uint8_t* getTeapotPkt(); //Gives the packet out to other function calls
 
 };
 

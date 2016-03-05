@@ -29,6 +29,10 @@
 #define ESP8266_ALIGN_BYTES 4
 #define ESP8266_MSG_SIZE 12
 
+#define MSG_TO_ESP8266_ALIGN_BYTES 4
+#define MSG_TO_ESP8266_MSG_SIZE 8 //For sending back to the ESP8266
+#define MSG_TO_ESP8266_TOTAL_SIZE (MSG_TO_ESP8266_ALIGN_BYTES + MSG_TO_ESP8266_MSG_SIZE)
+
 #define ESP8266_START_BYTE 254
 
 #define ESP8266_MIN_CMD_BYTE 192 //Minimum number to be sent to complete the packet
@@ -40,6 +44,10 @@
 #define ESP8266_CMD_START_PLAYBACK 196
 #define ESP8266_CMD_CONTINUE_PLAYBACK 197
 #define ESP8266_CMD_STOP_PLAYBACK 198
+
+#define ESP8266_CMD_MPU6050_NO_DATA 205 //Sent to the ESP8266 from the teensy if there is no data
+#define ESP8266_CMD_MPU6050_DATA 206 //Sent if there is data following
+
 
 class ESP8266Comms{
 	public:
@@ -67,6 +75,9 @@ class ESP8266Comms{
 		} RotatErrorUnion;
 		float RX_err_rot;
 
+		//	Data to be sent to the ESP8266
+		uint8_t msgToESP8266[MSG_TO_ESP8266_TOTAL_SIZE] = {ESP8266_START_BYTE, ESP8266_START_BYTE, ESP8266_START_BYTE, ESP8266_CMD_NO_AXN, 0,0,0,0, 0,0,0,0};
+
 		/*
 
 			FUNCTIONS
@@ -86,6 +97,12 @@ class ESP8266Comms{
 
 		//Returns a true or false to indicate it received data properly or not
 		int readFromESP8266();
+
+		void setCommand(char cmd); //Sets the command within the pkt
+
+		void sendMsgToESP8266(char cmd, uint8_t* teaPkt); //Sends the msgToESP8266 bytes to the ESP with or without data
+
+		void copyMPU6050DataIntoMsg(uint8_t* teapotPkt); //Copies in the array of data to the teapotPkt
 };
 
 

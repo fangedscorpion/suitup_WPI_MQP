@@ -35,17 +35,20 @@ void setup() {
     int devStatus = mpu6050Jawn.beginConfigureMPU6050();
     if(devStatus == 0){
       // enable Arduino interrupt detection
-      DEBUG_SERIAL.println(F("Enabling interrupt detection (Arduino external interrupt 0)..."));
+      DEBUG_SERIAL.println("Enabling interrupt detection (Teensy Pin 17)...");
       pinMode(TEENSY_MPU_INTERRUPT_PIN,INPUT);
       attachInterrupt(TEENSY_MPU_INTERRUPT_PIN, ISR_MPU6050, RISING); //actually attaches the MPU6050 interrupt
     
       mpu6050Jawn.finishMPU6050Setup();
     }
     else{
-        DEBUG_SERIAL.print(F("DMP Initialization failed (code "));
+        DEBUG_SERIAL.print("DMP Initialization failed (code ");
         DEBUG_SERIAL.print(devStatus);
-        DEBUG_SERIAL.println(F(")   QUITTING!!!!!"));
-        exit(0);
+        while(1){
+          DEBUG_SERIAL.println("DMP failed");
+        }
+//        DEBUG_SERIAL.println(F(")   QUITTING!!!!!"));
+//        exit(0);
     }
     ////////////////////////
     
@@ -62,14 +65,18 @@ void setup() {
 
 void loop() {
 
-    battMonitor.checkBattery();
+    battMonitor.checkBattery(); //TO DO: INTEGRATE SENDING TO WIFI!!!!
 
-    mpu6050Jawn.extractMPU6050ValsAndSendToESP8266();
-    
-    boolean readValues = esp8266.readFromESP8266(); 
+    mpu6050Jawn.extractMPU6050Vals();
 
-    if(readValues){
-      motorController.updateErrors(esp8266.RX_trans_angle, esp8266.RX_err_trans, esp8266.RX_err_rot);
-    }
-    motorController.performMotorCalculationsAndRunMotors();
+    esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA, mpu6050Jawn.getTeapotPkt());
+
+    //    
+//    boolean readValues = esp8266.readFromESP8266(); 
+//
+//    if(readValues){
+//      motorController.updateErrors(esp8266.RX_trans_angle, esp8266.RX_err_trans, esp8266.RX_err_rot);
+//    }
+//    motorController.performMotorCalculationsAndRunMotors();
+
 }

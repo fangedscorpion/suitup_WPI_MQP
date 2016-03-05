@@ -1,7 +1,7 @@
 #ifndef WiFiMsgTypes_h
 #define WiFiMsgTypes_h
 
-#include "WAGBandCommon.h"
+//#include "WAGBandCommon.h"
 
 // #define COMPUTER_INITIATE_CONNECTION 0
 // #define BAND_CONNECTING 1

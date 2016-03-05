@@ -100,7 +100,7 @@ void MPU6050WAGWrapper::finishMPU6050Setup(){ //Only called if works on MPU6050
 }
 
 
-void MPU6050WAGWrapper::extractMPU6050ValsAndSendToESP8266(){
+void MPU6050WAGWrapper::extractMPU6050Vals(){
   
     // if programming failed, don't try to do anything
     if (!dmpReady) return;
@@ -142,14 +142,17 @@ void MPU6050WAGWrapper::extractMPU6050ValsAndSendToESP8266(){
         teapotPacket[6] = fifoBuffer[8];
         teapotPacket[7] = fifoBuffer[9];
         teapotPacket[8] = fifoBuffer[12];
-        teapotPacket[9] = fifoBuffer[13];
-        //DEBUG_SERIAL.write(teapotPacket, 14);
-        ESP8266_SERIAL.write(teapotPacket,14);
+        teapotPacket[9] = fifoBuffer[13];        
         teapotPacket[11]++; // packetCount, loops at 0xFF on purpose
-        delayMicroseconds(100);//Trying to make this robust here as the ESP8266 chip can die
+
+        //delayMicroseconds(100);
 
         // blink LED to indicate activity
         blinkState = !blinkState;
         digitalWrite(LED_PIN, blinkState);
     }
+}
+
+uint8_t* MPU6050WAGWrapper::getTeapotPkt(){
+    return teapotPacket;
 }
