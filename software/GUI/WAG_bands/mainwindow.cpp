@@ -165,45 +165,6 @@ void MainWindow::createSettings() {
     QString redBtn = "QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }";
 
     QHBoxLayout *h = new QHBoxLayout;
-    QVBoxLayout *o = new QVBoxLayout;
-    // Add user input here
-    o->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
-    QLabel *info = new QLabel("Trainer Information");
-    info->setAlignment(Qt::AlignCenter);
-    o->addWidget(info);
-    o->addSpacing(15);
-    QHBoxLayout *hAuthor = new QHBoxLayout;
-    settingsAuthorTextEdit = new QLineEdit;
-    settingsAuthorTextEdit->setStyleSheet(textInputStyleWhite);
-    QLabel *n = new QLabel("Name: ");
-    n->setMinimumWidth(56);
-    hAuthor->addWidget(n);
-    hAuthor->addWidget(settingsAuthorTextEdit);
-    o->addLayout(hAuthor);
-
-    QHBoxLayout *hHeight = new QHBoxLayout;
-    hHeight->addWidget(new QLabel("Height: "));
-    settingsHeightFtTextEdit = new QLineEdit;
-    settingsHeightFtTextEdit->setStyleSheet(textInputStyleWhite);
-    settingsHeightInchTextEdit = new QLineEdit;
-    settingsHeightInchTextEdit->setStyleSheet(textInputStyleWhite);
-    hHeight->addWidget(settingsHeightFtTextEdit);
-    hHeight->addWidget(new QLabel("ft "), -1);
-    hHeight->addWidget(settingsHeightInchTextEdit);
-    hHeight->addWidget(new QLabel("in"), -1);
-    o->addLayout(hHeight);
-    o->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
-
-    h->addLayout(o, -1);
-    // verticle line between voice control and active bands
-    QFrame *vLine = new QFrame();
-    vLine->setObjectName(QString::fromUtf8("line"));
-    vLine->setGeometry(QRect(3, 3, 3, 3));
-    vLine->setFrameShape(QFrame::VLine);
-    vLine->setFrameShadow(QFrame::Raised);
-    h->addSpacing(10);
-    h->addWidget(vLine);
-    h->addSpacing(10);
     // Graphic of bands
     view = new QGraphicsView;
     view->setMinimumHeight(250);
