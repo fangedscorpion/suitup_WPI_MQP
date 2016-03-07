@@ -207,11 +207,11 @@ void MainWindow::createSettings() {
     right->addWidget(rightLowerArm);
     // Buttons on bottom of settings
     QHBoxLayout *settingsButtons = new QHBoxLayout;
-    QPushButton *calibrate = new QPushButton("Calibrate");
+    QPushButton *calibrate = new QPushButton("Calibrate Bands");
     calibrate->setMinimumHeight(buttonHeight);
     connectBands = new QPushButton("Connect Bands");
     connectBands->setMinimumHeight(buttonHeight);
-    QPushButton *ok = new QPushButton("OK");
+    QPushButton *ok = new QPushButton("Save Settings");
     ok->setMinimumHeight(buttonHeight);
     QPushButton *cancel = new QPushButton("Cancel");
     cancel->setMinimumHeight(buttonHeight);
