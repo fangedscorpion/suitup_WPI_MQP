@@ -124,7 +124,6 @@ void TabContent::handleRecordingWindowButtons() {
             recordResetCountDownTimer();
             // automatically reset
             handleRecordingWindowButtons();
-            modeRadiosGroup->setEnabled(true);
             return;
         } else {
             recordingControls->stopRecording();
@@ -153,6 +152,8 @@ void TabContent::handleRecordingWindowButtons() {
         // enable options and modes
         recordVoiceControl->setEnabled(true);
         recordCountDownSpinner->setEnabled(true);
+        // disable other modes since there is no longer a motion
+        modeRadiosGroup->setEnabled(false);
     }
 }
 

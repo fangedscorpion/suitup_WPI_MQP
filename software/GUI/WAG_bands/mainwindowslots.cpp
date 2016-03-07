@@ -173,8 +173,9 @@ void MainWindow::saveNewMotion(USER u) {
     if (newMotionCompRadio->isChecked()) {
         s = LOCALLY;
         filename = newMotionSaveLocation->text() + "/" + filename;
-    } else
+    } else {
         s = LIBRARY;
+    }
     WAGFile* w = new WAGFile(filename, newMotionDescription->toPlainText(),
                              QString("author"), newMotionTagsLayout, s);
     addTab(u, w, RECORD);
@@ -207,7 +208,7 @@ void MainWindow::handleNewMotionRequiredInput() {
     // makes the add tags button only enabled when there is text in the tags box
     addTagBtn->setEnabled(!newMotionTagsTextEdit->text().isEmpty());
     if (newMotionCompRadio->isChecked() && newMotionSaveLocation->text().isEmpty()) {
-        newMotionBrowseBtn->setStyleSheet("QPushButton { border-radius: 2px; border-style: outset; border-width: 1px; border-color: red; padding-left: 9px; padding-right: 9px; padding-top: 4px; padding-bottom: 4px;}");
+        newMotionBrowseBtn->setStyleSheet("QPushButton { border-radius: 2px; border-style: outset; border-width: 2px; border-color: red; padding-left: 9px; padding-right: 9px; padding-top: 4px; padding-bottom: 4px;}");
     } else {
         newMotionBrowseBtn->setStyleSheet("QPushButton { }");
     }
@@ -231,24 +232,31 @@ void MainWindow::handleNewMotionRadios() {
 }
 
 // updates the band connection status label
-static int disconnectedBands = 7;
+static int connectedBands = 0;
 void MainWindow::updateConnectionStatus(BandType b, ConnectionStatus c) {
     if (c == CONNECTED) {
-        disconnectedBands--;
+        connectedBands++;
     } else {
-        disconnectedBands++;
+        connectedBands--;
     }
 
-    if ((disconnectedBands > 7) || (disconnectedBands < 0)) {
+    // count intended bands
+    int totalActiveBands = rightLowerArm->isChecked() + rightUpperArm->isChecked() + rightShoulder->isChecked();
+    totalActiveBands += leftLowerArm->isChecked() + leftUpperArm->isChecked() + leftShoulder->isChecked();
+
+    if ((connectedBands > totalActiveBands) || (connectedBands < 0)) {
         // throw error
     }
 
-    if (disconnectedBands > 0) {
-        settingsBtn->setStyleSheet("QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }");
-        connectionStatus->setText(QString::number(disconnectedBands) + " Bands Disconnected");
+    if (connectedBands < totalActiveBands) {
+        QString redBtn = "QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }";
+        settingsBtn->setStyleSheet(redBtn);
+        connectBands->setStyleSheet(redBtn);
+        connectionStatus->setText(QString::number(totalActiveBands - connectedBands) + " Bands Disconnected");
         connectionStatus->setStyleSheet("QLabel { color : red; }");
     } else {
         settingsBtn->setStyleSheet("QPushButton { }");
+        connectBands->setStyleSheet("QPushButton { }");
         connectionStatus->setText("All Bands Connected");
         connectionStatus->setStyleSheet("QLabel { color : green; }");
     }

@@ -38,7 +38,7 @@ public:
     QVector<QString> getTagStrings() {return tags;}
     QString getTagString() {return getTagStrings().toList().join(", ");}
     QVector<ClosableLabel*> getTagLabels();
-    SAVE_LOCATION getSaveLocation() {return loc;}
+    SAVE_LOCATION getSaveLocation() {return saveLoc;}
     qint32 getFrameNums();
     QHash<qint32, PositionSnapshot> getMotionData();
     PositionSnapshot getSnapshot(qint32 snapTime, SNAP_CLOSENESS retrieveType);
@@ -48,7 +48,7 @@ public:
 //    void updateFilename(QString newName) { name = newName;}
     void updateDescription(QString desc) {description = desc;}
     void replaceTags(QHBoxLayout* container);
-    void updateSaveLocation(SAVE_LOCATION l) {loc = l;}
+//    void updateSaveLocation(SAVE_LOCATION l) {saveLoc = l;}
     void setMotionData(QHash<qint32, PositionSnapshot> newMotionData);
 
     void saveToFile();
@@ -64,7 +64,7 @@ private:
     QString description;
     QString author;
     QVector<QString> tags;
-    SAVE_LOCATION loc;
+    SAVE_LOCATION saveLoc;
     QHash<qint32, PositionSnapshot> motionData;
 
     void setFilenameAndPath(QString filename);

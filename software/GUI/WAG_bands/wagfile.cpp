@@ -12,17 +12,29 @@ QDataStream & operator>>(QDataStream & str, SAVE_LOCATION & v) {
   return str;
 }
 
+QDataStream & operator<<(QDataStream & str, const PositionSnapshot & v) {
+    str << v.getSnapshot();
+    return str;
+}
+
+QDataStream & operator>>(QDataStream & str, PositionSnapshot & v) {
+    QHash<BandType, AbsState *> t;
+    str >> t;
+    v.setSnapshot(t);
+    return str;
+}
+
 
 WAGFile::WAGFile(QString filename, QString in_description, QString author,
                  QVector<QString> in_tags, SAVE_LOCATION saveLoc) : description(in_description),
-                 author(author), tags(in_tags), loc(saveLoc), QObject() {
+                 author(author), tags(in_tags), saveLoc(saveLoc), QObject() {
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot>();
 }
 
 WAGFile::WAGFile(QString filename, QString in_description, QString author,
                  QHBoxLayout* container, SAVE_LOCATION saveLoc) : description(in_description),
-                 author(author), loc(saveLoc) {
+                 author(author), saveLoc(saveLoc) {
     tags = QVector<QString>();
     replaceTags(container);
     setFilenameAndPath(filename);
@@ -34,7 +46,6 @@ WAGFile::WAGFile(QString filename, bool peek) {
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot>();
     tags = QVector<QString>();
-    loc = LOCALLY;
 
     if (peek)
         loadMetadataFromFile(filename);
@@ -62,8 +73,11 @@ void WAGFile::setFilenameAndPath(QString filename) {
     path = boost::filesystem::path(filename.toStdString());
     if (!path.has_extension())
         path += ".wagz";
+//    else if (path.extension() != ".wagz")
+        // not a wag file!
+        // throw error
 
-    if (loc == LOCALLY) {
+    if (saveLoc == LOCALLY) {
         // if filename does not include the full path, add the current working directory
         if (!path.has_parent_path()) {
             qDebug() << "creating parent path";
@@ -185,14 +199,14 @@ void WAGFile::saveToFile() {
     out << description;
     out << author;
     out << tags;
-    out << loc;
-//    out << motionData;
+    out << saveLoc;
+    out << motionData;
 
     qDebug() << "path: " << path.c_str();
     qDebug() << "name: " << name.toStdString().c_str();
     qDebug() << "desc: " << description.toStdString().c_str();
     qDebug() << "author: " << author.toStdString().c_str();
-    qDebug() << "loc: " << loc;
+    qDebug() << "loc: " << saveLoc;
     qDebug() << "tags: " << tags;
 
 
@@ -208,14 +222,14 @@ void WAGFile::loadFromFile(QString f) {
     in >> description;
     in >> author;
     in >> tags;
-    in >> loc;
-//    in >> motionData;
+    in >> saveLoc;
+    in >> motionData;
 
     qDebug() << "path: " << path.c_str();
     qDebug() << "name: " << name.toStdString().c_str();
     qDebug() << "desc: " << description.toStdString().c_str();
     qDebug() << "author: " << author.toStdString().c_str();
-    qDebug() << "loc: " << loc;
+    qDebug() << "loc: " << saveLoc;
     qDebug() << "tags: " << tags;
 
     file.close();
@@ -229,7 +243,11 @@ void WAGFile::loadMetadataFromFile(QString f) {
     in >> description;
     in >> author;
     in >> tags;
-    in >> loc;
+    in >> saveLoc;
 
     file.close();
+
+//    if (description.isEmpty())
+        // not a real wag file!
+        // throw error
 }

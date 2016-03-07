@@ -387,7 +387,7 @@ void MainWindow::createOpenFromLib(USER u) {
     openFromLibFilterOpts->setMaximumWidth(120);
     openFromLibFilterOpts->addItem("Name");
     openFromLibFilterOpts->addItem("Description");
-    openFromLibFilterOpts->addItem("Tags");
+    openFromLibFilterOpts->addItem("Keywords");
     s->addWidget(openFromLibFilterOpts);
     // search box
     openFromLibFilterBar = new QLineEdit;
@@ -433,7 +433,7 @@ void MainWindow::createOpenFromLib(USER u) {
     openFromLibTable->setMinimumHeight(400);
     openFromLibTable->verticalHeader()->setVisible(false);
     QStringList tableHeader;
-    tableHeader<<"Name"<<"Description" << "Tags";
+    tableHeader<<"Name"<<"Description" << "Keywords";
     QHeaderView *headerView = new QHeaderView(Qt::Horizontal, openFromLibTable);
     openFromLibTable->setHorizontalHeader(headerView);
     headerView->setSectionResizeMode(QHeaderView::Stretch);

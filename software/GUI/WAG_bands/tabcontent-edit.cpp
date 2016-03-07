@@ -144,10 +144,12 @@ void TabContent::createMotionInfoWindow() {
     infoMotionBrowseBtn = new QPushButton("Select Save Location");
     infoMotionSaveLocation = new QLabel("");
     if (motion->getSaveLocation() == LOCALLY) {
+        qDebug() << "tabContent-edit locally";
         infoMotionLibRadio->setChecked(false);
         infoMotionCompRadio->setChecked(true);
         infoMotionSaveLocation->setText(motion->getPathWithoutFile());
     } else {
+        qDebug() << "tabContent-edit library";
         infoMotionLibRadio->setChecked(true);
         infoMotionCompRadio->setChecked(false);
         infoMotionBrowseBtn->setEnabled(false);
@@ -201,9 +203,17 @@ void TabContent::launchMotionInfo() {
 }
 
 void TabContent::saveMotionInfo() {
-    // UPDATE THIS LATER. vvv LOCALLY needs to be based on user input
-    WAGFile* w = new WAGFile(infoMotionNameTextEdit->text(), infoMotionDescription->toPlainText(),
-                             motion->getAuthor(), infoMotionTagsLayout, LOCALLY);
+    SAVE_LOCATION s;
+    QString filename = infoMotionNameTextEdit->text();
+    if (infoMotionCompRadio->isChecked()) {
+        s = LOCALLY;
+        filename = infoMotionSaveLocation->text() + "/" + filename;
+    } else {
+        s = LIBRARY;
+    }
+
+    WAGFile* w = new WAGFile(filename, infoMotionDescription->toPlainText(),
+                             motion->getAuthor(), infoMotionTagsLayout, s);
     // new motion info
     delete motion;
     motion = w;

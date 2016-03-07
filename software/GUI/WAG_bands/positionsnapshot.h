@@ -12,7 +12,7 @@ class PositionSnapshot
 public:
     PositionSnapshot();
     void setSnapshot(QHash<BandType, AbsState *> s) {snapshotData = s;}
-    QHash<BandType, AbsState *> getSnapshot() { return snapshotData; }
+    QHash<BandType, AbsState *> getSnapshot() const { return snapshotData; }
     //Pose getPositionOf(BandType b) { return snapshot[b]; }
     void addMapping(BandType band, AbsState *pose);
     QSet<BandType> getRecordedBands();

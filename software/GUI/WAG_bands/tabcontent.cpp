@@ -43,6 +43,8 @@ TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION
     vl->addWidget(optionsStack);
     vl->addWidget(createModeRadios(u));
     this->show(initiallyShow);
+    if (initiallyShow == RECORD)
+        modeRadiosGroup->setEnabled(false);
 
     splitPanes->addLayout(vl, 1);
     splitPanes->addWidget(viewerStack, 2);
