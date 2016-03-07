@@ -18,8 +18,6 @@ public:
     ~TabContent();
 
     QString getFilename() { return motion->getName();}
-    bool isVoiceControlOn() { return recordVoiceControl->isChecked(); }
-    void setVoiceControl(bool b) { recordVoiceControl->setChecked(b); }
 
     ACTION_TYPE getCurrentMode();
 
@@ -51,15 +49,9 @@ private:
     QCheckBox *playOnSuit;
     QComboBox *stepThrough;
     QSlider *speedSlider;
-    QSpinBox *secondsToHold;
-    QSlider *toleranceSlider;
     QGroupBox *playbackOptions;
     QTimer *playbackCountdownTimer;
     QLabel *playbackCountdownTime;
-    QDoubleSpinBox *playbackCountDownSpinner;
-    QLabel *playbackCountDownTitleLabel;
-    QLabel *playbackCountdownSecondsTitleLabel;
-    QCheckBox* playbackVoiceControl;
     void playbackResetCountDownTimer();
     // playback viewer and controls
     QWidget* createViewer(ACTION_TYPE t);
@@ -69,20 +61,18 @@ private:
     QLabel *midSpeed;
     QLabel *maxSpeed;
     QStackedWidget *viewerStack;
-    QLabel *currentLoadedFilename;
     MotionViewer* playbackMotionViewer;
     PlaybackController *playbackControls;
     EditingController *editingControls;
     RecordingController *recordingControls;
+    QDoubleSpinBox *playbackCountDownSpinner;
     void lockOnPlayback(bool playing);
     void switchStepThroughMode(bool steppingThrough);
     void initializePlaybackSettings();
     // recording
     QGroupBox *recordGroup;
-    QLabel *recordMessage;
     QIcon stopIcon;
     QIcon recordIcon;
-    QCheckBox* recordVoiceControl;
     QDoubleSpinBox *recordCountDownSpinner;
     QWidget* createRecordOptionsAndController();
     QWidget* createRecordingWindow();
@@ -112,7 +102,6 @@ private:
     void createMotionInfoWindow();
     QPushButton* addTagBtn;
     smartPushButton* saveMotionInfoBtn;
-    QLabel* newFileTagsLabel;
     QLineEdit* infoMotionNameTextEdit;
     QTextEdit* infoMotionDescription;
     QLineEdit* infoMotionTagsTextEdit;
@@ -150,7 +139,5 @@ public slots:
 
 signals:
     void stepThroughChanged(bool steppingThrough);
-    void countDownChanged(double d);
-    void resizedWindow();
     void modeChanged(ACTION_TYPE);
 };

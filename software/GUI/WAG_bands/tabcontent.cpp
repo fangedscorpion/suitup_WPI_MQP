@@ -53,7 +53,6 @@ TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION
     overlay = new Overlay(this);
     overlay->makeSemiTransparent();
     overlay->hide();
-    connect(this, SIGNAL(resizedWindow()), overlay, SLOT(resizeWindow()));
 
     // timers
     recordCountdownTimer = new QTimer(this);
@@ -83,7 +82,6 @@ void TabContent::resizeEvent(QResizeEvent* r) {
     QWidget::resizeEvent(r);
     // resize the overlay to cover the whole window
     overlay->resize(this->width(), this->height());
-    emit resizedWindow();
 }
 
 void TabContent::show(ACTION_TYPE a) {

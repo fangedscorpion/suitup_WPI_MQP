@@ -190,14 +190,11 @@ void TabContent::createMotionInfoWindow() {
     connect(infoMotionNameTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleInfoMotionRequiredInput(QString)));
     connect(infoMotionDescription, SIGNAL(textChanged()), this, SLOT(handleInfoMotionRequiredInput()));
     connect(infoMotionTagsTextEdit, SIGNAL(textChanged(QString)), this, SLOT(handleInfoMotionRequiredInput(QString)));
-    connect(this, SIGNAL(resizedWindow()), motionInfoWidget, SLOT(resizeWindow()));
     connect(infoMotionBrowseBtn, SIGNAL(released()), this, SLOT(handleinfoMotionRadios()));
     connect(infoMotionCompRadio, SIGNAL(toggled(bool)), infoMotionBrowseBtn, SLOT(setEnabled(bool)));
     connect(infoMotionCompRadio, SIGNAL(released()), this, SLOT(handleInfoMotionRequiredInput()));
     connect(infoMotionLibRadio, SIGNAL(released()), this, SLOT(handleInfoMotionRequiredInput()));
     connect(infoMotionCompRadio, SIGNAL(toggled(bool)), infoMotionSaveLocation, SLOT(setVisible(bool)));
-
-    emit this->resizedWindow();
 }
 
 void TabContent::launchMotionInfo() {

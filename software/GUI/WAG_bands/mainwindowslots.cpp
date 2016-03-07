@@ -44,7 +44,6 @@ void MainWindow::launchUserOptions(USER u) {
 
     overlay->show();
     userOptionsWidget->show();
-    emit this->resizedWindow();
 }
 
 void MainWindow::closeUserOptions() {
@@ -149,12 +148,6 @@ void MainWindow::closeSettings() {
     overlay->hide();
     settingsWidget->hide();
     // TODO: show message box if user has not calibrated the suit yet
-}
-
-// saves the new user settings
-void MainWindow::saveSettings() {
-    // TODO: save user settings here...
-    closeSettings();
 }
 
 // launch the new file overlay

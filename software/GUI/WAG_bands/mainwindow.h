@@ -54,7 +54,6 @@ private:
     void addTab(USER u, WAGFile *w, ACTION_TYPE a);
     QWidget *getCurrentTabcontent() { return tabs->currentWidget(); }
 
-    QWidget *applicationWidget;
     QTabWidget *tabs;
     Overlay *overlay;
 
@@ -68,17 +67,12 @@ private:
     smartPushButton *newBtn;
     smartPushButton *openBtn;
     smartPushButton *settingsBtn;
-    smartPushButton *helpBtn;
     QHBoxLayout* createMenuButtons();
     // statusbar
     QLabel *connectionStatus;
     QLabel *batteryStatus;
     QHBoxLayout* createStatusBar();
     // settings overlay
-    QLineEdit *settingsAuthorTextEdit;
-    QLineEdit *settingsHeightFtTextEdit;
-    QLineEdit *settingsHeightInchTextEdit;
-    QGraphicsView *view;
     QCheckBox *leftShoulder;
     QCheckBox *leftUpperArm;
     QCheckBox *leftLowerArm;
@@ -88,12 +82,6 @@ private:
     QPushButton *connectBands;
     OverlayWidget *settingsWidget;
     void createSettings();
-    // save as overlay
-    OverlayWidget *saveAsWidget;
-    QLineEdit *saveAsFilenameTextEdit;
-    QLabel *saveAsTagsLabel;
-    QLineEdit *saveAsTagsTextEdit;
-    QTextEdit *saveAsDescription;
     // open (from lib)
     OverlayWidget *openFromLibWidget;
     OverlayWidget *openWidget;
@@ -136,7 +124,6 @@ private slots:
     // settings
     void launchSettings();
     void closeSettings();
-    void saveSettings();
     void handleConnectedBands();
     // new file
     void saveNewMotion(USER u);
@@ -161,6 +148,5 @@ private slots:
     void catchLowBatterySignal(BandType lowBatteryBand);
 
 signals:
-    void resizedWindow();
     void modeChanged(ACTION_TYPE);
 };

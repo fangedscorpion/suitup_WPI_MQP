@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
     // application
-    applicationWidget = new QWidget;
+    QWidget *applicationWidget = new QWidget;
     setCentralWidget(applicationWidget);
     QVBoxLayout *applicationLayout = new QVBoxLayout;
     applicationWidget->setLayout(applicationLayout);
@@ -66,10 +66,6 @@ MainWindow::MainWindow(QWidget *parent) :
     overlay->hide();
     createSettings();
 
-    // connections for window resizing
-    connect(this, SIGNAL(resizedWindow()), settingsWidget, SLOT(resizeWindow()));
-    connect(this, SIGNAL(resizedWindow()), overlay, SLOT(resizeWindow()));
-
     applicationLayout->setMargin(5);
     applicationLayout->addLayout(createMenuButtons());
     applicationLayout->addLayout(createStatusBar());
@@ -108,7 +104,7 @@ QHBoxLayout* MainWindow::createMenuButtons() {
     openBtn->hide();
     settingsBtn = new smartPushButton("Settings");
     connect(settingsBtn, SIGNAL(released()), this, SLOT(launchSettings()));
-    helpBtn = new smartPushButton("Help");
+    smartPushButton *helpBtn = new smartPushButton("Help");
     //    connect(helpAct, SIGNAL(triggered()), this, SLOT(help()));
 
     QHBoxLayout* menuLayout = new QHBoxLayout;
@@ -166,7 +162,7 @@ void MainWindow::createSettings() {
 
     QHBoxLayout *h = new QHBoxLayout;
     // Graphic of bands
-    view = new QGraphicsView;
+    QGraphicsView *view = new QGraphicsView;
     view->setMinimumHeight(250);
     view->setMinimumWidth(350);
     QVBoxLayout *left = new QVBoxLayout;
@@ -212,7 +208,7 @@ void MainWindow::createSettings() {
     settingsButtons->addWidget(done);
     settingsLayout->addLayout(settingsButtons);
 
-    connect(done, SIGNAL(released()), this, SLOT(saveSettings()));
+    connect(done, SIGNAL(released()), this, SLOT(closeSettings()));
     connect(done, SIGNAL(released()), this, SLOT(handleConnectedBands()));
     connect(leftLowerArm, SIGNAL(released()), this, SLOT(handleConnectedBands()));
     connect(leftUpperArm, SIGNAL(released()), this, SLOT(handleConnectedBands()));
@@ -478,7 +474,6 @@ void MainWindow::resizeEvent(QResizeEvent* r) {
     QMainWindow::resizeEvent(r);
     // resize the overlay to cover the whole window
     overlay->resize(this->width(), this->height());
-    emit resizedWindow();
 }
 
 void MainWindow::connectCheckedBands() {

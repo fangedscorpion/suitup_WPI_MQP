@@ -49,7 +49,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     QLabel *pmt = new QLabel("Position matching tolerance");
     pmt->setAlignment(Qt::AlignCenter);
     positionToleranceLayout->addWidget(pmt);
-    toleranceSlider = new QSlider(Qt::Horizontal);
+    QSlider *toleranceSlider = new QSlider(Qt::Horizontal);
     positionToleranceLayout->addWidget(toleranceSlider);
     QHBoxLayout *tolerance = new QHBoxLayout;
     tolerance->addWidget(new QLabel("close"));
@@ -73,7 +73,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     h->addWidget(playbackCountDownSpinner);
     h->addWidget(countDownMessage);
     // voice control
-    playbackVoiceControl = new QCheckBox("Voice Control");
+    QCheckBox *playbackVoiceControl = new QCheckBox("Voice Control");
     // add everything
     options->addWidget(playOnSuit);
     options->addWidget(playbackVoiceControl);
@@ -187,7 +187,7 @@ void TabContent::playbackSetCountDownTimer(double d) {
 
 // resets the count down label to the user chosen number of seconds
 void TabContent::playbackResetCountDownTimer() {
-    playbackCountdownTime->setText(QString::number(recordCountDownSpinner->value(), 'f', 1));
+    playbackCountdownTime->setText(QString::number(playbackCountDownSpinner->value(), 'f', 1));
 }
 
 // When play button is pressed.

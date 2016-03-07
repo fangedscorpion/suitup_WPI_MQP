@@ -21,7 +21,7 @@ QWidget* TabContent::createRecordOptionsAndController() {
     h->addWidget(recordCountDownSpinner);
     h->addWidget(countDownMessage);
 
-    recordVoiceControl = new QCheckBox("Voice Control");
+    QCheckBox *recordVoiceControl = new QCheckBox("Voice Control");
 
     QVBoxLayout *buttons = new QVBoxLayout;
     buttons->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -103,8 +103,7 @@ void TabContent::handleRecordingWindowButtons() {
     // pressed "start recording"
     if (recordButton->text() == QString("Start Recording")) {
         // disable options when recording
-        recordVoiceControl->setEnabled(false);
-        recordCountDownSpinner->setEnabled(false);
+        recordGroup->setEnabled(false);
         modeRadiosGroup->setEnabled(false);
         // update button
         recordButton->setText("Stop Recording");
@@ -150,8 +149,7 @@ void TabContent::handleRecordingWindowButtons() {
         recordStopwatchMinutesTitleLabel->hide();
         recordResetCountDownTimer();
         // enable options and modes
-        recordVoiceControl->setEnabled(true);
-        recordCountDownSpinner->setEnabled(true);
+        recordGroup->setEnabled(true);
         // disable other modes since there is no longer a motion
         modeRadiosGroup->setEnabled(false);
     }
