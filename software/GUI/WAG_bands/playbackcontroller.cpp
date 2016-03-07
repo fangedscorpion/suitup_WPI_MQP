@@ -12,7 +12,7 @@
 #define DEFAULT_TOLERANCE 1 // how are we expressing tolerance
 #define RECORDING_RATE 60 // 60 fps
 
-#define MILLISECONDS_PER_FRAME 25
+#define MILLISECONDS_PER_FRAME 75
 
 
 PlaybackController::PlaybackController(Suit *newSuitObj) {
@@ -36,12 +36,12 @@ PlaybackController::PlaybackController(Suit *newSuitObj) {
 }
 
 void PlaybackController::togglePlay() {
-    qDebug("PlaybackController: Toggling play");
-    qDebug()<<"PlaybackController: Last frame num: "<<lastFrameNum;
-    qDebug()<<"PlaybackController: Current frame num: "<<currentFrame;
+    //qDebug("PlaybackController: Toggling play");
+    //qDebug()<<"PlaybackController: Last frame num: "<<lastFrameNum;
+    //qDebug()<<"PlaybackController: Current frame num: "<<currentFrame;
     if (!((!playing) && (currentFrame >= (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))))) {
         playing = !playing;
-        qDebug()<<"PlaybackController: Play status: "<<playing;
+        //qDebug()<<"PlaybackController: Play status: "<<playing;
         if (playing) {
             startPlaying();
         }
@@ -81,13 +81,13 @@ void PlaybackController::toggleSuitActive(bool active) {
         }
     }
     suitActive = active;
-    qDebug()<<"PlaybackController: Suit activated: "<<suitActive;
+    //qDebug()<<"PlaybackController: Suit activated: "<<suitActive;
 }
 
 // currentFrameSliderPos ranges from 0 to 1000
 void PlaybackController::currentFrameChanged(int currentFrameSliderPos) {
     // may have to check here to see if frame in bounds (not sure where we want those checks)
-    qDebug()<<"PlaybackController: currentFrame slider moved to "<<currentFrameSliderPos;
+    //qDebug()<<"PlaybackController: currentFrame slider moved to "<<currentFrameSliderPos;
     updateFrameWithoutSuitNotification(currentFrameSliderPos*lastFrameNum/1000);
 }
 
@@ -127,7 +127,7 @@ void PlaybackController::speedChanged(int sliderPosition) {
         float exponent = sliderPosition - 50.0;
         // may want to round this result somehow
         changeFrameRate(pow(2, (exponent/25)));
-        qDebug()<<"PlaybackController: Playback speed is now "<<frameRate;
+        //qDebug()<<"PlaybackController: Playback speed is now "<<frameRate;
     }
 }
 
@@ -198,6 +198,7 @@ void PlaybackController::setActiveMotion(WAGFile *newMotion) {
     activeMotion = newMotion;
     qint32 sliderMax = activeMotion->getFrameNums();
     lastFrameNum = sliderMax;
+    emit totalTimeChanged(lastFrameNum);
     emit changeSliderMax(sliderMax);
     connect(newMotion, SIGNAL(framesChanged(qint32)), this, SLOT(catchFrameNumsChanged(qint32)));
 }
@@ -208,6 +209,7 @@ void PlaybackController::beginningSliderChanged(int sliderVal) {
     if (currentFrame < (beginningPointer*lastFrameNum/100)) {
         updateFrameWithoutSuitNotification(beginningPointer *lastFrameNum/100);
     }
+    emit beginningTimeChanged(beginningPointer*lastFrameNum/100);
 }
 
 void PlaybackController::endSliderChanged(int sliderVal) {
@@ -215,6 +217,7 @@ void PlaybackController::endSliderChanged(int sliderVal) {
     if (currentFrame > (endPointer*lastFrameNum/100)) {
         updateFrameWithoutSuitNotification(endPointer *lastFrameNum/100);
     }
+    emit endTimeChanged(endPointer*lastFrameNum/100);
 }
 
 void PlaybackController::catchFrameUpdate(qint32 newFrame) {
@@ -224,7 +227,11 @@ void PlaybackController::catchFrameUpdate(qint32 newFrame) {
         int newCurrentFrame = newFrame * 1000/lastFrameNum;
         emit changeSliderVal(newCurrentFrame);
     }
-    PositionSnapshot desiredPos = activeMotion->getSnapshot(newFrame, CLOSEST);
+    float approxPercentThroughFile = 0;
+    if (lastFrameNum != 0) {
+        approxPercentThroughFile = ((float) newFrame)/lastFrameNum;
+    }
+    PositionSnapshot desiredPos = activeMotion->getSnapshot(approxPercentThroughFile, newFrame, CLOSEST);
     // should probably figure out how to handle null snapshots
     // TODO
     emit goToSnapshot(desiredPos);
@@ -246,6 +253,7 @@ void PlaybackController::catchVoiceControlCommand(MessageType vcCommandInstructi
 
 void PlaybackController::catchFrameNumsChanged(qint32 newLastNum) {
     lastFrameNum = newLastNum;
+    emit totalTimeChanged(lastFrameNum);
 }
 
 void PlaybackController::reachedEndOfTimeRange() {

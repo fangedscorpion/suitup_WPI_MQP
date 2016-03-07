@@ -101,7 +101,9 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     connect(seconds, SIGNAL(valueChanged(double)), playbackControls, SLOT(modifyHoldTime(double)));
 //    connect(playbackControls, SIGNAL(timeChanged(int)), playbackMotionViewer, SLOT(displayNewTime(int)));
     connect(playbackControls, SIGNAL(playbackStateChanged(bool)), playbackMotionViewer, SLOT(playToggled(bool)));
+    connect(playbackControls, SIGNAL(playbackStateChanged(bool)), this, SLOT(playToggled(bool)));
     connect(playbackControls, SIGNAL(playingOnSuit(bool)), this, SLOT(lockOnSuitPlayback(bool)));
+    connect(playbackControls, SIGNAL(playingOnSuit(bool)), playbackMotionViewer->getSlider(), SLOT(lockSliders(bool)));
     connect(playbackCountDownSpinner, SIGNAL(valueChanged(double)), this, SLOT(playbackSetCountDownTimer(double)));
     // viewer controls
     connect(playbackMotionViewer->getPlayPauseBtn(), SIGNAL(released()), playbackControls, SLOT (togglePlay()));
@@ -109,6 +111,9 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     connect(playbackMotionViewer->getSlider(), SIGNAL(valueChanged(int)), playbackControls, SLOT(endSliderChanged(int)));
     connect(playbackMotionViewer->getSlider(), SIGNAL(timebarChanged(int)), playbackControls, SLOT(currentFrameChanged(int)));
     connect(playbackControls, SIGNAL(changeSliderVal(int)), playbackMotionViewer->getSlider(), SLOT(catchCurrentFrameChange(int)));
+    connect(playbackControls, SIGNAL(frameChanged(qint32)), playbackMotionViewer, SLOT(updateFirstLabel(qint32)));
+    connect(playbackControls, SIGNAL(totalTimeChanged(qint32)), playbackMotionViewer, SLOT(updateLastLabel(qint32)));
+
 
     initializePlaybackSettings();
 
@@ -202,10 +207,8 @@ void TabContent::catchCurrentFrameChange(int newSliderPos) {
 void TabContent::lockOnSuitPlayback(bool playingOnSuit) {
     parent->lockOnPlayOrRecord(playingOnSuit);
     lockOnPlayback(playingOnSuit);
-    // prevent user from moving slider bars in motion viewer...probably
-    if (playingOnSuit) {
+}
 
-    } else {
-
-    }
+void TabContent::playToggled(bool playing) {
+    playOnSuit->setEnabled(!playing);
 }

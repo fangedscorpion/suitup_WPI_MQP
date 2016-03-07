@@ -146,6 +146,7 @@ public slots:
     void handleInfoMotionRadios();
     void catchCurrentFrameChange(int newSliderPos);
     void lockOnSuitPlayback(bool playingOnSuit);
+    void playToggled(bool playing);
 
 signals:
     void stepThroughChanged(bool steppingThrough);

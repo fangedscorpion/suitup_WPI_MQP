@@ -49,7 +49,7 @@ SuperSlider::SuperSlider(QWidget *parent)
     //set up timebar slider thing
     time_bar = new SuperSliderTimeBar(this);
     addAction(new QWidgetAction(time_bar));
-    moveTimebar(0);
+    time_bar->setValue(alt_handle->value());
 
     handleInitiatedEvent = false;
 }
@@ -292,3 +292,8 @@ void SuperSlider::timebarUpdate() {
     emit timebarChanged(time_bar->value());
 }
 
+void SuperSlider::lockSliders(bool shouldLock) {
+    time_bar->setEnabled(!shouldLock);
+    alt_handle->setEnabled(!shouldLock);
+    this->setEnabled(!shouldLock);
+}

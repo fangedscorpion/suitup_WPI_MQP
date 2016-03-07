@@ -41,7 +41,7 @@ public:
     SAVE_LOCATION getSaveLocation() {return saveLoc;}
     qint32 getFrameNums();
     QHash<qint32, PositionSnapshot> getMotionData();
-    PositionSnapshot getSnapshot(qint32 snapTime, SNAP_CLOSENESS retrieveType);
+    PositionSnapshot getSnapshot(float approxPercentThroughFile, qint32 snapTime, SNAP_CLOSENESS retrieveType);
     QHash<qint32, PositionSnapshot> getChunkInRange(qint32 startTime, qint32 endTime);
     // setters
     // If you need vvv, make sure it removes the '.wagz' first
@@ -66,6 +66,9 @@ private:
     QVector<QString> tags;
     SAVE_LOCATION saveLoc;
     QHash<qint32, PositionSnapshot> motionData;
+    QList<qint32> keys;
+
+    qint32 pickValue(qint32 target, SNAP_CLOSENESS retrType, qint32 beforeTarget, qint32 afterTarget);
 
     void setFilenameAndPath(QString filename);
     void loadFromFile(QString f);

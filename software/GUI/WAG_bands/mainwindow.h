@@ -75,6 +75,9 @@ private:
     QLabel *batteryStatus;
     QHBoxLayout* createStatusBar();
     // settings overlay
+    QLineEdit *settingsAuthorTextEdit;
+    QLineEdit *settingsHeightFtTextEdit;
+    QLineEdit *settingsHeightInchTextEdit;
     QGraphicsView *view;
     QCheckBox *leftShoulder;
     QCheckBox *leftUpperArm;
@@ -118,6 +121,7 @@ private:
     // move to wherever we initialize the suit object
     WifiManager *wifiMan;
     Suit *fullSuit;
+    QSet<BandType> connectedBands;
 
 private slots:
     // open
@@ -133,6 +137,7 @@ private slots:
     void launchSettings();
     void closeSettings();
     void saveSettings();
+    void handleConnectedBands();
     // new file
     void saveNewMotion(USER u);
     void closeNewMotion();

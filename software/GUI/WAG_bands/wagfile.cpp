@@ -5,11 +5,11 @@
 #include <fstream>
 
 QDataStream & operator>>(QDataStream & str, SAVE_LOCATION & v) {
-  unsigned int loc = 0;
-  str >> loc;
-  if (loc)
-    v = static_cast<SAVE_LOCATION>(loc);
-  return str;
+    unsigned int loc = 0;
+    str >> loc;
+    if (loc)
+        v = static_cast<SAVE_LOCATION>(loc);
+    return str;
 }
 
 QDataStream & operator<<(QDataStream & str, const PositionSnapshot & v) {
@@ -30,6 +30,7 @@ WAGFile::WAGFile(QString filename, QString in_description, QString author,
                  author(author), tags(in_tags), saveLoc(saveLoc), QObject() {
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot>();
+    keys = QList<qint32>();
 }
 
 WAGFile::WAGFile(QString filename, QString in_description, QString author,
@@ -39,12 +40,14 @@ WAGFile::WAGFile(QString filename, QString in_description, QString author,
     replaceTags(container);
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot>();
+    keys = QList<qint32>();
 }
 
 // If peek is true, this loads only the metadata, not the whole file.
 WAGFile::WAGFile(QString filename, bool peek) {
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot>();
+    keys = QList<qint32>();
     tags = QVector<QString>();
 
     if (peek)
@@ -123,55 +126,74 @@ qint32 WAGFile::getFrameNums() {
     return maxKey; // TODO fix this
 }
 
-PositionSnapshot WAGFile::getSnapshot(qint32 snapTime, SNAP_CLOSENESS retrieveType) {
+PositionSnapshot WAGFile::getSnapshot(float approxPercentThroughFile, qint32 snapTime, SNAP_CLOSENESS retrieveType) {
     if (motionData.contains(snapTime)) {
         return motionData[snapTime];
     }
-    QList<qint32> keys = motionData.keys();
     if (keys.size() == 0) {
         return PositionSnapshot();
         // not sure what to do here....
+    } else if (keys.size() == 1) {
+        return motionData[keys[0]];
     }
-    qSort(keys);
 
-    qint32 closestKey = 0;
+    int checkIndex = keys.size() * approxPercentThroughFile;
+    int incVal;
+    qint32 closestKey = keys[checkIndex];
+    if (keys[checkIndex] < snapTime) {
+        incVal = 1;
+    }
+    else {
+        incVal = -1;
+    }
 
-    for (int i = 0; i < keys.size(); i++) {
-        if (keys[i] > snapTime) {
-            if (retrieveType == AFTER) {
-                closestKey = keys[i];
-                break;
-            }
-            else if (retrieveType == BEFORE) {
-                if (i == 0) {
-                    closestKey = keys[i];
-                } else {
-                    closestKey = keys[i-1];
-                }
-                break;
+    bool found = false;
+    int keySize = keys.size();
+    while (!found) {
+        if ((checkIndex == 0) && (incVal < 0)) {
+            closestKey = pickValue(snapTime, retrieveType, keys[checkIndex], keys[checkIndex + incVal]);
+            found = true;
+        } else if ((checkIndex == (keySize - 1)) && (incVal > 0)) {
+            closestKey = pickValue(snapTime, retrieveType, keys[checkIndex + incVal], keys[checkIndex]);
+            found = true;
+        } else {
+            // both greater than snaptime or both less than snaptime
+            if (((keys[checkIndex] - snapTime) < 0) == ((keys[checkIndex + incVal] - snapTime) < 0)) {
+                checkIndex += incVal;
             } else {
-                if (i == 0) {
-                    closestKey = keys[i];
+                if (incVal < 0) {
+                    closestKey = pickValue(snapTime, retrieveType, keys[checkIndex + incVal], keys[checkIndex]);
                 } else {
-                    qint32 afterKey = keys[i];
-                    qint32 beforeKey = keys[i - 1];
-                    if ((afterKey - snapTime) < (snapTime - beforeKey)) {
-                        closestKey = afterKey;
-                    } else {
-                        closestKey = beforeKey;
-                    }
-                    break;
+                    closestKey = pickValue(snapTime, retrieveType, keys[checkIndex], keys[checkIndex + incVal]);
                 }
+                found = true;
             }
-        } else if (i == (keys.size() - 1)) {
-            closestKey = keys[i];
         }
     }
     return motionData[closestKey];
 }
 
+qint32 WAGFile::pickValue(qint32 target, SNAP_CLOSENESS retrType, qint32 beforeTarget, qint32 afterTarget) {
+    if (retrType == BEFORE)    {
+        return beforeTarget;
+    }
+    if (retrType == AFTER) {
+        return afterTarget;
+    }
+    if ((afterTarget - target) < (target - beforeTarget)) {
+        return afterTarget;
+    }
+    return beforeTarget;
+}
+
+
+
+
 void WAGFile::setMotionData(QHash<qint32, PositionSnapshot> newMotionData) {
     motionData = newMotionData;
+    keys = motionData.keys();
+    qDebug()<<"WAGFile: Motion data size: "<<keys.size();
+    qSort(keys);
     emit framesChanged(this->getFrameNums());
 }
 
@@ -181,7 +203,6 @@ QHash<qint32, PositionSnapshot> WAGFile::getMotionData() {
 
 QHash<qint32, PositionSnapshot> WAGFile::getChunkInRange(qint32 startTime, qint32 endTime) {
     QHash<qint32, PositionSnapshot> motionDataCopy = QHash<qint32, PositionSnapshot>(motionData);
-    QList<qint32> keys = motionDataCopy.keys();
     for (int i = 0; i < keys.length(); i++) {
         if ((keys[i] < startTime) || (keys[i] > endTime)) {
             motionDataCopy.remove(keys[i]);

@@ -23,6 +23,7 @@ void EditingController::beginningSliderChanged(int sliderVal) {
         currentFrame = beginningPointer *lastFrameNum/100;
         emit frameChanged(currentFrame);
     }
+    emit beginningTimeChanged(beginningPointer*lastFrameNum/100);
 }
 
 void EditingController::endSliderChanged(int sliderVal) {
@@ -32,6 +33,7 @@ void EditingController::endSliderChanged(int sliderVal) {
         currentFrame = endPointer *lastFrameNum/100;
         emit frameChanged(currentFrame);
     }
+    emit endTimeChanged(endPointer*lastFrameNum/100);
 }
 
 void EditingController::togglePlay() {
@@ -56,6 +58,7 @@ void EditingController::setActiveMotion(WAGFile *newMotion) {
     activeMotion = newMotion;
     qint32 sliderMax = activeMotion->getFrameNums();
     lastFrameNum = sliderMax;
+    emit totalTimeChanged(lastFrameNum);
     emit changeSliderMax(sliderMax);
     connect(newMotion, SIGNAL(framesChanged(qint32)), this, SLOT(catchFrameNumsChanged(qint32)));
 }
@@ -83,6 +86,7 @@ void EditingController::stopPlaying() {
 
 void EditingController::catchFrameNumsChanged(qint32 newLastNum) {
     lastFrameNum = newLastNum;
+    emit totalTimeChanged(lastFrameNum);
 }
 
 void EditingController::reachedEndOfTimeRange() {
@@ -99,8 +103,20 @@ void EditingController::catchFrameUpdate(qint32 newFrame) {
         int newCurrentFrame = newFrame * 1000/lastFrameNum;
         emit changeSliderVal(newCurrentFrame);
     }
-    PositionSnapshot desiredPos = activeMotion->getSnapshot(newFrame, CLOSEST);
+    float approxPercentThroughFile = 0;
+    if (lastFrameNum != 0) {
+        approxPercentThroughFile = ((float) newFrame)/lastFrameNum;
+    }
+    PositionSnapshot desiredPos = activeMotion->getSnapshot(approxPercentThroughFile, newFrame, CLOSEST);
     // should probably figure out how to handle null snapshots
     // TODO
     emit goToSnapshot(desiredPos);
+}
+
+// currentFrameSliderPos ranges from 0 to 1000
+void EditingController::currentFrameChanged(int currentFrameSliderPos) {
+    // may have to check here to see if frame in bounds (not sure where we want those checks)
+    qDebug()<<"PlaybackController: currentFrame slider moved to "<<currentFrameSliderPos;
+    currentFrame = currentFrameSliderPos*lastFrameNum/1000;
+    emit frameChanged(currentFrame);
 }

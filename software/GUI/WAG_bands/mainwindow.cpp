@@ -77,11 +77,13 @@ MainWindow::MainWindow(QWidget *parent) :
     applicationLayout->addWidget(tabs, 1);
     wifiMan = new WifiManager();
     fullSuit = new Suit(wifiMan);
+    connectedBands = QSet<BandType>();
     connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(indicateConnectionStatusChange(BandType, ConnectionStatus)));
     connect(this, SIGNAL(modeChanged(ACTION_TYPE)), fullSuit, SLOT(catchModeChanged(ACTION_TYPE)));
     connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(updateConnectionStatus(BandType, ConnectionStatus)));
     connect(fullSuit, SIGNAL(bandHasLowBattery(BandType)), this, SLOT(catchLowBatterySignal(BandType)));
     connect(fullSuit, SIGNAL(bandConnectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(updateConnectionStatus(BandType,ConnectionStatus)));
+
 }
 
 MainWindow::~MainWindow() {}
@@ -119,7 +121,7 @@ QHBoxLayout* MainWindow::createMenuButtons() {
 
 QHBoxLayout* MainWindow::createStatusBar() {
     QHBoxLayout *l = new QHBoxLayout;
-    connectionStatus = new QLabel("All Bands Disconnected");
+    connectionStatus = new QLabel("7 Bands Disconnected");
     connectionStatus->setStyleSheet("QLabel { color : red; }");
     settingsBtn->setStyleSheet("QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }");
     connectionStatus->setAlignment(Qt::AlignLeft);
@@ -155,17 +157,43 @@ QWidget* MainWindow::createUserSelectionWindow(std::vector<USER> u) {
 // settings overlay
 // TODO: add a person
 // TODO: add a connected bands indicator
-// TODO: add a profile section where we ask for username, gender, height
 // TODO: add pop up if they did not calibrate or connect bands
 void MainWindow::createSettings() {
     // Settings widget
     settingsWidget = new OverlayWidget(this, "Settings");
     QVBoxLayout *settingsLayout = settingsWidget->getLayout();
+    QString redBtn = "QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }";
 
     QHBoxLayout *h = new QHBoxLayout;
     QVBoxLayout *o = new QVBoxLayout;
     // Add user input here
-    //    o->addWidget(voiceControl);
+    o->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    QLabel *info = new QLabel("Trainer Information");
+    info->setAlignment(Qt::AlignCenter);
+    o->addWidget(info);
+    o->addSpacing(15);
+    QHBoxLayout *hAuthor = new QHBoxLayout;
+    settingsAuthorTextEdit = new QLineEdit;
+    settingsAuthorTextEdit->setStyleSheet(textInputStyleWhite);
+    QLabel *n = new QLabel("Name: ");
+    n->setMinimumWidth(56);
+    hAuthor->addWidget(n);
+    hAuthor->addWidget(settingsAuthorTextEdit);
+    o->addLayout(hAuthor);
+
+    QHBoxLayout *hHeight = new QHBoxLayout;
+    hHeight->addWidget(new QLabel("Height: "));
+    settingsHeightFtTextEdit = new QLineEdit;
+    settingsHeightFtTextEdit->setStyleSheet(textInputStyleWhite);
+    settingsHeightInchTextEdit = new QLineEdit;
+    settingsHeightInchTextEdit->setStyleSheet(textInputStyleWhite);
+    hHeight->addWidget(settingsHeightFtTextEdit);
+    hHeight->addWidget(new QLabel("ft "), -1);
+    hHeight->addWidget(settingsHeightInchTextEdit);
+    hHeight->addWidget(new QLabel("in"), -1);
+    o->addLayout(hHeight);
+    o->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+
     h->addLayout(o, -1);
     // verticle line between voice control and active bands
     QFrame *vLine = new QFrame();
@@ -173,10 +201,13 @@ void MainWindow::createSettings() {
     vLine->setGeometry(QRect(3, 3, 3, 3));
     vLine->setFrameShape(QFrame::VLine);
     vLine->setFrameShadow(QFrame::Raised);
+    h->addSpacing(10);
     h->addWidget(vLine);
+    h->addSpacing(10);
     // Graphic of bands
     view = new QGraphicsView;
     view->setMinimumHeight(250);
+    view->setMinimumWidth(350);
     QVBoxLayout *left = new QVBoxLayout;
     QVBoxLayout *right = new QVBoxLayout;
     right->setAlignment(Qt::AlignLeft);
@@ -209,22 +240,27 @@ void MainWindow::createSettings() {
     QHBoxLayout *settingsButtons = new QHBoxLayout;
     QPushButton *calibrate = new QPushButton("Calibrate Bands");
     calibrate->setMinimumHeight(buttonHeight);
+    calibrate->setStyleSheet(redBtn);
     connectBands = new QPushButton("Connect Bands");
     connectBands->setMinimumHeight(buttonHeight);
-    QPushButton *ok = new QPushButton("Save Settings");
-    ok->setMinimumHeight(buttonHeight);
-    QPushButton *cancel = new QPushButton("Cancel");
-    cancel->setMinimumHeight(buttonHeight);
+    connectBands->setStyleSheet(redBtn);
+    QPushButton *done = new QPushButton("Done");
+    done->setMinimumHeight(buttonHeight);
     settingsButtons->addWidget(connectBands);
     settingsButtons->addWidget(calibrate);
-    settingsButtons->addWidget(cancel);
-    settingsButtons->addWidget(ok);
+    settingsButtons->addWidget(done);
     settingsLayout->addLayout(settingsButtons);
 
-    connect(ok, SIGNAL(released()), this, SLOT(saveSettings()));
-    connect(cancel, SIGNAL(released()), this, SLOT(closeSettings()));
+    connect(done, SIGNAL(released()), this, SLOT(saveSettings()));
+    connect(done, SIGNAL(released()), this, SLOT(handleConnectedBands()));
+    connect(leftLowerArm, SIGNAL(released()), this, SLOT(handleConnectedBands()));
+    connect(leftUpperArm, SIGNAL(released()), this, SLOT(handleConnectedBands()));
+    connect(leftShoulder, SIGNAL(released()), this, SLOT(handleConnectedBands()));
+    connect(rightLowerArm, SIGNAL(released()), this, SLOT(handleConnectedBands()));
+    connect(rightUpperArm, SIGNAL(released()), this, SLOT(handleConnectedBands()));
+    connect(rightShoulder, SIGNAL(released()), this, SLOT(handleConnectedBands()));
     connect(connectBands, SIGNAL(released()), this, SLOT(connectCheckedBands()));
-    // TODO: connect calibrate and connectBands
+    // TODO: connect calibrate
 }
 
 // create new file overlay

@@ -6,6 +6,7 @@
 // for using with command line, or if we revert from static IPs
 
 #include "localtesting.h"
+#include "incorrectdatalengthexception.h"
 
 #ifdef TESTING
 #define CHEST_BAND_PORT 12930

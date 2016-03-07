@@ -232,27 +232,28 @@ void MainWindow::handleNewMotionRadios() {
 }
 
 // updates the band connection status label
-static int connectedBands = 0;
 void MainWindow::updateConnectionStatus(BandType b, ConnectionStatus c) {
-    if (c == CONNECTED) {
-        connectedBands++;
-    } else {
-        connectedBands--;
-    }
+    if (c == CONNECTED)
+        connectedBands.insert(b);
+    else
+        connectedBands.remove(b);
+    handleConnectedBands();
+}
 
-    // count intended bands
+void MainWindow::handleConnectedBands() {
+    // count active bands
     int totalActiveBands = rightLowerArm->isChecked() + rightUpperArm->isChecked() + rightShoulder->isChecked();
-    totalActiveBands += leftLowerArm->isChecked() + leftUpperArm->isChecked() + leftShoulder->isChecked();
+    totalActiveBands += leftLowerArm->isChecked() + leftUpperArm->isChecked() + leftShoulder->isChecked() + 1;
 
-    if ((connectedBands > totalActiveBands) || (connectedBands < 0)) {
+    if ((connectedBands.size() > totalActiveBands) || (connectedBands.size() < 0)) {
         // throw error
     }
 
-    if (connectedBands < totalActiveBands) {
+    if (connectedBands.size() < totalActiveBands) {
         QString redBtn = "QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }";
         settingsBtn->setStyleSheet(redBtn);
         connectBands->setStyleSheet(redBtn);
-        connectionStatus->setText(QString::number(totalActiveBands - connectedBands) + " Bands Disconnected");
+        connectionStatus->setText(QString::number(totalActiveBands - connectedBands.size()) + " Bands Disconnected");
         connectionStatus->setStyleSheet("QLabel { color : red; }");
     } else {
         settingsBtn->setStyleSheet("QPushButton { }");
@@ -260,7 +261,6 @@ void MainWindow::updateConnectionStatus(BandType b, ConnectionStatus c) {
         connectionStatus->setText("All Bands Connected");
         connectionStatus->setStyleSheet("QLabel { color : green; }");
     }
-
 }
 
 // updates the band battery level label

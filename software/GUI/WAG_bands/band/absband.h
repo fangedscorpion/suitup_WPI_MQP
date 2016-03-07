@@ -8,6 +8,8 @@
 #include <QObject>
 #include "abserror.h"
 
+#define PING_PROBLEMS_THRESHOLD 5
+
 
 enum BandType {LEFT_HAND, RIGHT_HAND, LEFT_LOWER_ARM, RIGHT_LOWER_ARM,
                 LEFT_UPPER_ARM, RIGHT_UPPER_ARM, LEFT_SHOULDER, RIGHT_SHOULDER,
@@ -68,6 +70,7 @@ private:
     bool commsSetUp;
     bool pendingBandPing;
     int tolerance;
+    int pingProblems;
 signals:
     void dataToSend(BandType, BandMessage *);
     void lowBattery(BandType);

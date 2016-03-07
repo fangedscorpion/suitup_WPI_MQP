@@ -53,7 +53,8 @@ SOURCES += main.cpp\
     test/testquatpose.cpp \
     customWidgets/closablelabel.cpp \
     test/testquatstate.cpp \
-    test/testquaterror.cpp
+    test/testquaterror.cpp \
+    communications/incorrectdatalengthexception.cpp
 
 HEADERS  += mainwindow.h \
     positionsnapshot.h \
@@ -90,7 +91,8 @@ HEADERS  += mainwindow.h \
     test/testquaterror.h \
     test/testband.h \
     customWidgets/closablelabel.h \
-    localtesting.h
+    localtesting.h \
+    communications/incorrectdatalengthexception.h
 
 FORMS    +=
 

@@ -20,13 +20,13 @@
 #define TRUE 1
 #define FALSE 0
 #define RECV 7
-#define ALARM_INTERVAL 25000
+#define ALARM_INTERVAL 50000
 #define SEC_TIMEOUT 0
 #define USEC_TIMEOUT 1000
 
 void DieWithError(char *errorMessage);/* error handling function */
 void HandleTCPClient(int clntSocket); /* TCP client handling function */
-int constructMsg(char *sendBuff, char *dataBuf, char msgType);
+int constructMsg(char *sendBuff, char *dataBuf, int length, char msgType);
 int processReply(char *recvdBuffer, char* sendBuff);
 
 void reverseString(char *stringToReverse);
@@ -204,8 +204,8 @@ void DieWithError(char *errorString) {
   close(clntSocket);
 }
 
-int constructMsg(char *sendBuff, char *dataBuf, char msgType) {
-  int len = strlen(dataBuf);
+int constructMsg(char *sendBuff, char *dataBuf, int length, char msgType) {
+  int len = length; //strlen(dataBuf);
   sendBuff[0] = (char) (len+2);
   sendBuff[1] = msgType;
 
@@ -296,7 +296,7 @@ int processReply(char *recvdBuffer, char *sendBuff) {
     int recvdLen = strlen(recvdBuffer);
     recvdBuffer[recvdLen - 1] = '\0';
     reverseString(recvdBuffer + 2);
-    dataLen = constructMsg(sendBuff, recvdBuffer + 2, (char) recvdBuffer[1]);
+    dataLen = constructMsg(sendBuff, recvdBuffer + 2, recvdLen - 2, (char) recvdBuffer[1]);
       // this shouldn't happen
     break;
   }
@@ -316,13 +316,13 @@ void reverseString(char *stringToReverse) {
 int constructPositionMsg(char *dataBuf, char *sendBuff) {
   // replace dataBuff buff
   for (int i = 0; i < 4; i++) {
-    float serializeNum = 1;
+    int serializeNum = 1;
     char *serailizeNumPointer = (char *) &serializeNum;
-    dataBuf[i] = serializeNum;
-    dataBuf[i+1] = serializeNum + 1;
+    dataBuf[2*i] = serializeNum;
+    dataBuf[2*i+1] = serializeNum + 1;
   }
   dataBuf[8] = '\0';
-  return constructMsg(sendBuff, dataBuf, BAND_POSITION_UPDATE);
+  return constructMsg(sendBuff, dataBuf, 8, BAND_POSITION_UPDATE);
 }
 
 
