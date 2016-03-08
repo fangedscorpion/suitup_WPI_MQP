@@ -3,7 +3,7 @@
 QWidget* TabContent::createRecordOptionsAndController() {
     recordingControls = new RecordingController(suitObj);
     recordingControls->setActiveMotion(motion);
-    QGroupBox *recordOptionsGroup = new QGroupBox("Recording Options");
+    recordOptionsGroup = new QGroupBox("Recording Options");
     recordOptionsGroup->setStyleSheet(groupboxStyleSheet);
     recordOptionsGroup->setFont(titleFont);
 
@@ -103,7 +103,7 @@ void TabContent::handleRecordingWindowButtons() {
     // pressed "start recording"
     if (recordButton->text() == QString("Start Recording")) {
         // disable options when recording
-        recordGroup->setEnabled(false);
+        recordOptionsGroup->setEnabled(false);
         modeRadiosGroup->setEnabled(false);
         // update button
         recordButton->setText("Stop Recording");
@@ -149,7 +149,7 @@ void TabContent::handleRecordingWindowButtons() {
         recordStopwatchMinutesTitleLabel->hide();
         recordResetCountDownTimer();
         // enable options and modes
-        recordGroup->setEnabled(true);
+        recordOptionsGroup->setEnabled(true);
         // disable other modes since there is no longer a motion
         modeRadiosGroup->setEnabled(false);
     }

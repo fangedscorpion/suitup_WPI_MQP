@@ -74,6 +74,7 @@ private:
     QIcon stopIcon;
     QIcon recordIcon;
     QDoubleSpinBox *recordCountDownSpinner;
+    QGroupBox *recordOptionsGroup;
     QWidget* createRecordOptionsAndController();
     QWidget* createRecordingWindow();
     // recording viewer
