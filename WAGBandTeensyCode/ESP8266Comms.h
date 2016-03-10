@@ -103,6 +103,8 @@ class ESP8266Comms{
 
 		void sendMsgToESP8266(char cmd, uint8_t* teaPkt); //Sends the msgToESP8266 bytes to the ESP with or without data
 
+		void sendMsgToESP8266(char cmd); //Sends the msgToESP8266 bytes to the ESP with or without data
+
 		void copyMPU6050DataIntoMsg(uint8_t* teapotPkt); //Copies in the array of data to the teapotPkt
 };
 

@@ -99,15 +99,68 @@ void MPU6050WAGWrapper::finishMPU6050Setup(){ //Only called if works on MPU6050
     digitalWrite(LED_PIN, HIGH);
 }
 
-
 void MPU6050WAGWrapper::extractMPU6050Vals(){
   
     // if programming failed, don't try to do anything
     if (!dmpReady) return;
 
     // wait for MPU interrupt or extra packet(s) available
-    while (!mpuInterrupt && fifoCount < packetSize) {
+    // while (!mpuInterrupt && fifoCount < packetSize) {
+    // }
+
+    // reset interrupt flag and get INT_STATUS byte
+    mpuInterrupt = false;
+    mpuIntStatus = mpu->getIntStatus();
+
+    // get current FIFO count
+    fifoCount = mpu->getFIFOCount();
+
+    // check for overflow (this should never happen unless our code is too inefficient)
+    if ((mpuIntStatus & 0x10) || fifoCount == 1024) {
+        // reset so we can continue cleanly
+        mpu->resetFIFO();
+        DEBUG_SERIAL.println(F("FIFO overflow!"));
+
+    // otherwise, check for DMP data ready interrupt (this should happen frequently)
+    } else if (mpuIntStatus & 0x02) {
+        // wait for correct available data length, should be a VERY short wait
+        while (fifoCount < packetSize) fifoCount = mpu->getFIFOCount();
+
+        // read a packet from FIFO
+        mpu->getFIFOBytes(fifoBuffer, packetSize);
+        
+        // track FIFO count here in case there is > 1 packet available
+        // (this lets us immediately read more without waiting for an interrupt)
+        fifoCount -= packetSize;
+        
+        // display quaternion values in InvenSense Teapot demo format:      
+        teapotPacket[2] = fifoBuffer[0];
+        teapotPacket[3] = fifoBuffer[1];
+        teapotPacket[4] = fifoBuffer[4];
+        teapotPacket[5] = fifoBuffer[5];
+        teapotPacket[6] = fifoBuffer[8];
+        teapotPacket[7] = fifoBuffer[9];
+        teapotPacket[8] = fifoBuffer[12];
+        teapotPacket[9] = fifoBuffer[13];        
+        teapotPacket[11]++; // packetCount, loops at 0xFF on purpose
+
+        //delayMicroseconds(100);
+
+        // blink LED to indicate activity
+        blinkState = !blinkState;
+        digitalWrite(LED_PIN, blinkState);
     }
+}
+
+
+void MPU6050WAGWrapper::extractMPU6050Vals(uint8_t* espPkt){
+  
+    // if programming failed, don't try to do anything
+    if (!dmpReady) return;
+
+    // wait for MPU interrupt or extra packet(s) available
+    // while (!mpuInterrupt && fifoCount < packetSize) {
+    // }
 
     // reset interrupt flag and get INT_STATUS byte
     mpuInterrupt = false;
@@ -135,15 +188,24 @@ void MPU6050WAGWrapper::extractMPU6050Vals(){
         fifoCount -= packetSize;
         
         // display quaternion values in InvenSense Teapot demo format:
-        teapotPacket[2] = fifoBuffer[0];
-        teapotPacket[3] = fifoBuffer[1];
-        teapotPacket[4] = fifoBuffer[4];
-        teapotPacket[5] = fifoBuffer[5];
-        teapotPacket[6] = fifoBuffer[8];
-        teapotPacket[7] = fifoBuffer[9];
-        teapotPacket[8] = fifoBuffer[12];
-        teapotPacket[9] = fifoBuffer[13];        
-        teapotPacket[11]++; // packetCount, loops at 0xFF on purpose
+        espPkt[4] = fifoBuffer[0];
+        espPkt[5] = fifoBuffer[1];
+        espPkt[6] = fifoBuffer[4];
+        espPkt[7] = fifoBuffer[5];
+        espPkt[8] = fifoBuffer[8];
+        espPkt[9] = fifoBuffer[9];
+        espPkt[10] = fifoBuffer[12];
+        espPkt[11] = fifoBuffer[13]; 
+        
+        // teapotPacket[2] = fifoBuffer[0];
+        // teapotPacket[3] = fifoBuffer[1];
+        // teapotPacket[4] = fifoBuffer[4];
+        // teapotPacket[5] = fifoBuffer[5];
+        // teapotPacket[6] = fifoBuffer[8];
+        // teapotPacket[7] = fifoBuffer[9];
+        // teapotPacket[8] = fifoBuffer[12];
+        // teapotPacket[9] = fifoBuffer[13];        
+        // teapotPacket[11]++; // packetCount, loops at 0xFF on purpose
 
         //delayMicroseconds(100);
 

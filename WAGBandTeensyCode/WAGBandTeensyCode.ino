@@ -1,3 +1,5 @@
+#include <TimerThree.h>
+
 // The main code for the Teensy running on the WAG Band PCBs
 // Written by Team Suit Up!
 // 2015-2016 for MQP
@@ -64,24 +66,28 @@ void setup() {
 // ================================================================
 
 void loop() {
-
+    unsigned long time1 = millis();
     battMonitor.checkBattery(); 
 
-    mpu6050Jawn.extractMPU6050Vals();
+    //mpu6050Jawn.extractMPU6050Vals();
+    mpu6050Jawn.extractMPU6050Vals(esp8266.msgToESP8266);
 
     if(battMonitor.hasLowBat()){
-      esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA_LOW_BATT, mpu6050Jawn.getTeapotPkt());
+      //esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA_LOW_BATT, mpu6050Jawn.getTeapotPkt());
+      esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA_LOW_BATT);
     }
     else{
-      esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA, mpu6050Jawn.getTeapotPkt());
+      //esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA, mpu6050Jawn.getTeapotPkt());
+      esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA);
     }
-
+    DEBUG_SERIAL.println(String("Tm:")+(millis()-time1));
     //    
 //    boolean readValues = esp8266.readFromESP8266(); 
 //
-//    if(readValues){
-//      motorController.updateErrors(esp8266.RX_trans_angle, esp8266.RX_err_trans, esp8266.RX_err_rot);
-//    }
-//    motorController.performMotorCalculationsAndRunMotors();
+    boolean readValues = true;
+    if(readValues){
+      motorController.updateErrors(esp8266.RX_trans_angle, esp8266.RX_err_trans, esp8266.RX_err_rot);
+    }
+    motorController.performMotorCalculationsAndRunMotors();
 
 }
