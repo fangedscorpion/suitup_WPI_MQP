@@ -47,7 +47,8 @@
 
 #define ESP8266_CMD_MPU6050_NO_DATA 205 //Sent to the ESP8266 from the teensy if there is no data
 #define ESP8266_CMD_MPU6050_DATA 206 //Sent if there is data following
-
+#define ESP8266_CMD_MPU6050_DATA_LOW_BATT	207 //Send if low battery
+#define ESP8266_CMD_MPU6050_NO_DATA_LOW_BATT	208 //Send if low battery
 
 class ESP8266Comms{
 	public:

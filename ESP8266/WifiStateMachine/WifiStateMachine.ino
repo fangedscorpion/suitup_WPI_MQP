@@ -61,7 +61,23 @@ void GoToErrorState(int error_num){ // Does anything involving errors
 //Commands are defined as follows (anything above the minimum value up to 253)
 #define ESP8266_CMD_MPU6050_NO_DATA 205 //Sent to the ESP8266 from the teensy if there is no data
 #define ESP8266_CMD_MPU6050_DATA 206 //Sent if there is data following
+#define ESP8266_CMD_MPU6050_DATA_LOW_BATT  207 //Send if low battery
+#define ESP8266_CMD_MPU6050_NO_DATA_LOW_BATT  208 //Send if low battery
 #define COULD_NOT_ALIGN_START_BYTE 0x00
+
+#define POSITION_DATA_BYTES 12
+char positionalFBData[POSITION_DATA_BYTES];
+char msgDataNonPosition[NON_POSITION_DATA_BYTES_MAX];
+
+#define MPU_DATA_SIZE 14
+
+int incomingByte;
+boolean foundMPUDataStart = false;
+char incomingDataMsg[MPU_DATA_SIZE] = {0,0,0,0,0,0,0,0,0,0,0,0,'\r','\n'};
+#define RECORDING_MSG_TYPE_POS 1    
+char recordingMsg[RECORDING_MSG_SIZE] = {0x0A, BAND_POSITION_UPDATE, 0,0,0,0,0,0,0,0,'\n'};
+
+boolean lowBattery = false;
 
 char mpu6050Data[MSG_TO_ESP8266_MSG_SIZE] = {0,0,0,0,0,0,0,0};
 
@@ -109,8 +125,10 @@ int readFromTeensy(){
    else { //Found the beginning! :D 
       switch(foundBeginningCMD){
         case ESP8266_CMD_NO_AXN: DEBUG_SERIAL.println("NO ACTION WAS FOUND IN readFromTeensy() FUNC"); return true; break;
-        case ESP8266_CMD_MPU6050_NO_DATA: DEBUG_SERIAL.println("No data CMD from Teensy"); return true; break;
-        case ESP8266_CMD_MPU6050_DATA: DEBUG_SERIAL.println("Data"); break;
+        case ESP8266_CMD_MPU6050_NO_DATA: DEBUG_SERIAL.println("No data CMD from Teensy"); lowBattery = false; return true; break;
+        case ESP8266_CMD_MPU6050_DATA: DEBUG_SERIAL.println("Data"); lowBattery = false; break;
+        case ESP8266_CMD_MPU6050_DATA_LOW_BATT: DEBUG_SERIAL.println("Data & Low Batt"); lowBattery = true; break;
+        case ESP8266_CMD_MPU6050_NO_DATA_LOW_BATT: DEBUG_SERIAL.println("No data & Low Batt"); lowBattery = true; return true; break;
         default: DEBUG_SERIAL.println("Unknown CMD"); return true; break;
       }
    }
@@ -122,6 +140,7 @@ int readFromTeensy(){
    DEBUG_SERIAL.print("Data: ");
    for(int i = 0; i < MSG_TO_ESP8266_MSG_SIZE; i++){
       mpu6050Data[i] = ESP8266_SERIAL.read();
+      recordingMsg[i+2] = mpu6050Data[i];
       DEBUG_SERIAL.print(char(mpu6050Data[i]));
    }
     DEBUG_SERIAL.println();
@@ -150,16 +169,7 @@ WiFiServer bandServerToPC(TCP_PORT);
 boolean hasHostPCIP = false;
 WiFiClient hostPC;
 
-#define POSITION_DATA_BYTES 12
-char positionalFBData[POSITION_DATA_BYTES];
-char msgDataNonPosition[NON_POSITION_DATA_BYTES_MAX];
 
-#define MPU_DATA_SIZE 14
-
-int incomingByte;
-boolean foundMPUDataStart = false;
-char incomingDataMsg[MPU_DATA_SIZE] = {0,0,0,0,0,0,0,0,0,0,0,0,'\r','\n'};    
-char recordingMsg[RECORDING_MSG_SIZE] = {0x0A, BAND_POSITION_UPDATE, 0,0,0,0,0,0,0,0,'\n'};
 
 ////////////////////////////////////
 //Returns true if could connect
@@ -255,21 +265,27 @@ char printRXPacket(String msg){
 
 void replyToPCInitiation(){ //Reply to initiation packet
    Serial.println("Sending response to COMPUTER_INITIATE_CONNECTION");
-   char msg[3] = {2,1,'\n'};
-   hostPC.flush(); // This might take a while
+   char msg[3] = {2,BAND_CONNECTING,'\n'};
+   if(lowBattery){
+      msg[1] = BAND_CONNECTING_LOW_BATT;
+   }
+   //hostPC.flush(); // This might take a while
    hostPC.print(msg);
 }
 
 void replyToPCPing(){
    Serial.println("Sending response to COMPUTER_PING");
-   char msg[3] = {2,1,'\n'};
-   hostPC.flush(); // This might take a while
+   char msg[3] = {2,BAND_PING,'\n'};
+    if(lowBattery){
+      msg[1] = BAND_PING_LOW_BATT;
+   }
+   //hostPC.flush(); // This might take a while
    hostPC.print(msg);
 }
 
 void replyToRXPosError(){
-   Serial.println("Sending response to COMPUTER_PING");
-   char msg[3] = {2,1,'\n'};
+   Serial.println("Sending response to RXED_POS");
+   char msg[3] = {2,BAND_PING,'\n'};
    hostPC.flush(); // This might take a while
    hostPC.print(msg);
 }
@@ -284,8 +300,13 @@ void giveMotorsFeedback(){
 
 
 void sendDataToComputer(){
- 
-  hostPC.print(mpu6050Data);
+  if(lowBattery){
+    recordingMsg[RECORDING_MSG_TYPE_POS] = BAND_POSITION_UPDATE_LOW_BATT;
+  }
+  else{
+    recordingMsg[RECORDING_MSG_TYPE_POS] = BAND_POSITION_UPDATE;
+  }
+  hostPC.print(recordingMsg);
 }
 
 void GoToStateFindHost(){
@@ -317,7 +338,8 @@ void setup() {
   state = POWER_ON;
   Serial.begin(9600);
   delay(10);
-  Serial.println("Hi!");
+
+  lowBattery = false;
   
   state = CONNECTION;
   boolean goodConnect = GoToStateConnection();

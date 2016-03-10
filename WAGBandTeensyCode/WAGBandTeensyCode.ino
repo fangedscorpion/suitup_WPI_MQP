@@ -65,11 +65,16 @@ void setup() {
 
 void loop() {
 
-    battMonitor.checkBattery(); //TO DO: INTEGRATE SENDING TO WIFI!!!!
+    battMonitor.checkBattery(); 
 
     mpu6050Jawn.extractMPU6050Vals();
 
-    esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA, mpu6050Jawn.getTeapotPkt());
+    if(battMonitor.hasLowBat()){
+      esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA_LOW_BATT, mpu6050Jawn.getTeapotPkt());
+    }
+    else{
+      esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA, mpu6050Jawn.getTeapotPkt());
+    }
 
     //    
 //    boolean readValues = esp8266.readFromESP8266(); 

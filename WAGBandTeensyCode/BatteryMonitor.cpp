@@ -28,8 +28,17 @@
         lowBatIndex = 0;
 
         if(low_batt_sum == NUM_LOW_BATT_CYCLES){
-          DEBUG_SERIAL.println("Low batt achieved");
-      }
+          //DEBUG_SERIAL.println("Low batt achieved");
+          this->hasLowBatVar = 1;
+        }
+        else{
+          //DEBUG_SERIAL.println("Chrged batt");
+          this->hasLowBatVar = 0;
+        }
       low_batt_sum = 0;
-    }  
-}
+      }
+    }
+
+    int BatteryMonitor::hasLowBat(){
+      return this->hasLowBatVar;
+    } 

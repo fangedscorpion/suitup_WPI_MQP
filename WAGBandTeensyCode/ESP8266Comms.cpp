@@ -123,7 +123,7 @@ void ESP8266Comms::setCommand(char cmd){ //Try to enforce that commands should b
 void ESP8266Comms::sendMsgToESP8266(char cmd, uint8_t* teaPkt){
     this->setCommand(cmd); //Set the proper cmd in our pkt
 
-    if(cmd == ESP8266_CMD_MPU6050_DATA){
+    if(cmd == ESP8266_CMD_MPU6050_DATA || cmd == ESP8266_CMD_MPU6050_DATA_LOW_BATT){
       
       //this->copyMPU6050DataIntoMsg(teaPkt);
 

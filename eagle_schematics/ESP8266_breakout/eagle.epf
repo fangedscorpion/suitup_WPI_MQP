@@ -351,8 +351,8 @@ UsedLibrary="C:/Users/Chas/suitup_WPI_MQP/eagle_schematics/custom_libraries/Texa
 
 [Win_1]
 Type="Control Panel"
-Loc="953 0 1910 1007"
-State=2
+Loc="0 0 1919 1016"
+State=1
 Number=0
 
 [Desktop]

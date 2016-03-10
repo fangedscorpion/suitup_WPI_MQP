@@ -21,10 +21,14 @@ public:
 	
 	int low_batt_sum = 0;
 	int lowBatIndex = 0;
+
+	int hasLowBatVar = 0;
 	
 	void initLowBatteryInfo();
 
 	void checkBattery();
+
+	int hasLowBat();
 };
 
 
