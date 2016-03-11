@@ -1,6 +1,6 @@
 WAGBandTeensyCode.ino.o: \
  C:\Users\Chas\AppData\Local\Temp\build893bf8ff1bdb6d07d88845eaa65d81ea.tmp\sketch\WAGBandTeensyCode.ino.cpp \
- C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\libraries\TimerThree/TimerThree.h \
+ C:\Users\Chas\AppData\Local\Temp\build893bf8ff1bdb6d07d88845eaa65d81ea.tmp\sketch\ESP8266Comms.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\cores\teensy3/Arduino.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\cores\teensy3/WProgram.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\cores\teensy3/avr/pgmspace.h \
@@ -34,8 +34,6 @@ WAGBandTeensyCode.ino.o: \
  C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\cores\teensy3/elapsedMillis.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\cores\teensy3/Arduino.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\cores\teensy3/IntervalTimer.h \
- C:\Program\ Files\ (x86)\Arduino\hardware\teensy\avr\libraries\TimerThree/config/known_16bit_timers.h \
- C:\Users\Chas\AppData\Local\Temp\build893bf8ff1bdb6d07d88845eaa65d81ea.tmp\sketch\ESP8266Comms.h \
  C:\Users\Chas\AppData\Local\Temp\build893bf8ff1bdb6d07d88845eaa65d81ea.tmp\sketch\WAGBandCommon.h \
  C:\Users\Chas\AppData\Local\Temp\build893bf8ff1bdb6d07d88845eaa65d81ea.tmp\sketch\VibrationPattern.h \
  C:\Users\Chas\AppData\Local\Temp\build893bf8ff1bdb6d07d88845eaa65d81ea.tmp\sketch\BatteryMonitor.h \

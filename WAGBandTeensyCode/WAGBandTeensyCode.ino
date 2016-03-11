@@ -1,5 +1,3 @@
-#include <TimerThree.h>
-
 // The main code for the Teensy running on the WAG Band PCBs
 // Written by Team Suit Up!
 // 2015-2016 for MQP
@@ -30,16 +28,16 @@ void ISR_MPU6050(){
 void setup() {
     // initialize serial communication
     DEBUG_SERIAL.begin(115200);
-    ESP8266_SERIAL.begin(9600); //ESP8266 breaks down at higher speeds?!?!
+    ESP8266_SERIAL.begin(115200); //ESP8266 breaks down at higher speeds?!?!
 
     ////////////////////////
     // Stupid MPU6050 crap because ISRs inside a class are janky
     int devStatus = mpu6050Jawn.beginConfigureMPU6050();
     if(devStatus == 0){
       // enable Arduino interrupt detection
-      DEBUG_SERIAL.println("Enabling interrupt detection (Teensy Pin 17)...");
-      pinMode(TEENSY_MPU_INTERRUPT_PIN,INPUT);
-      attachInterrupt(TEENSY_MPU_INTERRUPT_PIN, ISR_MPU6050, RISING); //actually attaches the MPU6050 interrupt
+      //DEBUG_SERIAL.println("Enabling interrupt detection (Teensy Pin 17)...");
+      //pinMode(TEENSY_MPU_INTERRUPT_PIN,INPUT);
+      //attachInterrupt(TEENSY_MPU_INTERRUPT_PIN, ISR_MPU6050, RISING); //actually attaches the MPU6050 interrupt
     
       mpu6050Jawn.finishMPU6050Setup();
     }
@@ -49,8 +47,6 @@ void setup() {
         while(1){
           DEBUG_SERIAL.println("DMP failed");
         }
-//        DEBUG_SERIAL.println(F(")   QUITTING!!!!!"));
-//        exit(0);
     }
     ////////////////////////
     
@@ -84,6 +80,7 @@ void loop() {
     //    
 //    boolean readValues = esp8266.readFromESP8266(); 
 //
+    delayMicroseconds(1);
     boolean readValues = true;
     if(readValues){
       motorController.updateErrors(esp8266.RX_trans_angle, esp8266.RX_err_trans, esp8266.RX_err_rot);

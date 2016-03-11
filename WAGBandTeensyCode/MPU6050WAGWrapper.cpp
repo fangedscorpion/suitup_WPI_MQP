@@ -88,7 +88,7 @@ void MPU6050WAGWrapper::finishMPU6050Setup(){ //Only called if works on MPU6050
 	mpuIntStatus = mpu->getIntStatus();
 
     // set our DMP Ready flag so the main loop() function knows it's okay to use it
-    DEBUG_SERIAL.println(F("DMP ready! Waiting for first interrupt..."));
+    DEBUG_SERIAL.println(F("DMP ready!"));
     dmpReady = true;
 
     // get expected DMP packet size for later comparison
@@ -163,7 +163,7 @@ void MPU6050WAGWrapper::extractMPU6050Vals(uint8_t* espPkt){
     // }
 
     // reset interrupt flag and get INT_STATUS byte
-    mpuInterrupt = false;
+    //mpuInterrupt = false;
     mpuIntStatus = mpu->getIntStatus();
 
     // get current FIFO count

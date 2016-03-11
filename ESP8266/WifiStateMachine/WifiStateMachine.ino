@@ -86,6 +86,7 @@ char synchronizeSerialBeginning(){
 
   while(ESP8266_SERIAL.peek() != ESP8266_START_BYTE && ESP8266_SERIAL.peek() != -1){
       DEBUG_SERIAL.print(ESP8266_SERIAL.read()); //Throw out character
+      DEBUG_SERIAL.print(" "); //Throw out character
   }
   DEBUG_SERIAL.println();
   if(ESP8266_SERIAL.peek() == -1){

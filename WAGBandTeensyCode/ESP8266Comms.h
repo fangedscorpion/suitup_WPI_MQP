@@ -33,7 +33,7 @@
 #define MSG_TO_ESP8266_MSG_SIZE 8 //For sending back to the ESP8266
 #define MSG_TO_ESP8266_TOTAL_SIZE (MSG_TO_ESP8266_ALIGN_BYTES + MSG_TO_ESP8266_MSG_SIZE)
 
-#define ESP8266_START_BYTE 254
+#define ESP8266_START_BYTE 253
 
 #define ESP8266_MIN_CMD_BYTE 192 //Minimum number to be sent to complete the packet
 //Commands are defined as follows (anything above the minimum value up to 253)
