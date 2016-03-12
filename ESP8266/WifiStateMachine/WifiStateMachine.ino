@@ -1,5 +1,8 @@
-#include <ESP8266WiFi.h> //The Arduino ESP8266 WiFi Core --> These guys are the real MVP
-#include <WiFiUDP.h>
+#include <pfodESP8266BufferedClient.h>
+#include <pfodESP8266WiFi.h>
+
+//#include <ESP8266WiFi.h> //The Arduino ESP8266 WiFi Core --> These guys are the real MVP
+
 #define DEBUG //Debugging information printed to Serial. This clogs up the Teensy port
 #include "WiFiMsgTypes.h" //Lists all the message types for our communication link
 
@@ -45,110 +48,6 @@ void GoToErrorState(int error_num){ // Does anything involving errors
   }
 }
 
-//////////////////////
-// This section is for serial stuff
-#define ESP8266_SERIAL Serial
-#define DEBUG_SERIAL Serial
-
-#define MSG_TO_ESP8266_ALIGN_BYTES 4
-#define MSG_TO_ESP8266_MSG_SIZE 8 //For sending back to the ESP8266
-#define MSG_TO_ESP8266_TOTAL_SIZE (MSG_TO_ESP8266_ALIGN_BYTES + MSG_TO_ESP8266_MSG_SIZE)
-
-#define ESP8266_START_BYTE 254
-
-#define ESP8266_MIN_CMD_BYTE 192 //Minimum number to be sent to complete the packet
-#define ESP8266_CMD_NO_AXN ESP8266_MIN_CMD_BYTE
-//Commands are defined as follows (anything above the minimum value up to 253)
-#define ESP8266_CMD_MPU6050_NO_DATA 205 //Sent to the ESP8266 from the teensy if there is no data
-#define ESP8266_CMD_MPU6050_DATA 206 //Sent if there is data following
-#define ESP8266_CMD_MPU6050_DATA_LOW_BATT  207 //Send if low battery
-#define ESP8266_CMD_MPU6050_NO_DATA_LOW_BATT  208 //Send if low battery
-#define COULD_NOT_ALIGN_START_BYTE 0x00
-
-#define POSITION_DATA_BYTES 12
-char positionalFBData[POSITION_DATA_BYTES];
-char msgDataNonPosition[NON_POSITION_DATA_BYTES_MAX];
-
-#define MPU_DATA_SIZE 14
-
-int incomingByte;
-boolean foundMPUDataStart = false;
-char incomingDataMsg[MPU_DATA_SIZE] = {0,0,0,0,0,0,0,0,0,0,0,0,'\r','\n'};
-#define RECORDING_MSG_TYPE_POS 1    
-char recordingMsg[RECORDING_MSG_SIZE] = {0x0A, BAND_POSITION_UPDATE, 0,0,0,0,0,0,0,0,'\n'};
-
-boolean lowBattery = false;
-
-char mpu6050Data[MSG_TO_ESP8266_MSG_SIZE] = {0,0,0,0,0,0,0,0};
-
-char synchronizeSerialBeginning(){
-  char foundCMD = COULD_NOT_ALIGN_START_BYTE;
-
-  while(ESP8266_SERIAL.peek() != ESP8266_START_BYTE && ESP8266_SERIAL.peek() != -1){
-      DEBUG_SERIAL.print(ESP8266_SERIAL.read()); //Throw out character
-      DEBUG_SERIAL.print(" "); //Throw out character
-  }
-  DEBUG_SERIAL.println();
-  if(ESP8266_SERIAL.peek() == -1){
-    return COULD_NOT_ALIGN_START_BYTE;
-  }
-
-  for(int i = 1; i <= 3; i++){
-    if(ESP8266_SERIAL.peek() != ESP8266_START_BYTE){
-      return COULD_NOT_ALIGN_START_BYTE;
-    }
-    DEBUG_SERIAL.print(ESP8266_SERIAL.read()); //Throw out char
-  }
-  DEBUG_SERIAL.println();
-  
-  if(ESP8266_SERIAL.peek() < ESP8266_MIN_CMD_BYTE){
-    return COULD_NOT_ALIGN_START_BYTE;
-  }
-
-  foundCMD = ESP8266_SERIAL.read();
-  DEBUG_SERIAL.println(String("CMD: ") + foundCMD);
-  
-  return foundCMD;
-}
-
-//Returns a true or false to indicate it received data properly or not
-int readFromTeensy(){ 
-    
-    while(ESP8266_SERIAL.available() < MSG_TO_ESP8266_TOTAL_SIZE){
-      delayMicroseconds(1);
-    }
-    
-   char foundBeginningCMD = synchronizeSerialBeginning();
-   if(foundBeginningCMD == COULD_NOT_ALIGN_START_BYTE){
-      DEBUG_SERIAL.println("Could not find beginning");
-      return false;
-   }
-   else { //Found the beginning! :D 
-      switch(foundBeginningCMD){
-        case ESP8266_CMD_NO_AXN: DEBUG_SERIAL.println("NO ACTION WAS FOUND IN readFromTeensy() FUNC"); return true; break;
-        case ESP8266_CMD_MPU6050_NO_DATA: DEBUG_SERIAL.println("No data CMD from Teensy"); lowBattery = false; return true; break;
-        case ESP8266_CMD_MPU6050_DATA: DEBUG_SERIAL.println("Data"); lowBattery = false; break;
-        case ESP8266_CMD_MPU6050_DATA_LOW_BATT: DEBUG_SERIAL.println("Data & Low Batt"); lowBattery = true; break;
-        case ESP8266_CMD_MPU6050_NO_DATA_LOW_BATT: DEBUG_SERIAL.println("No data & Low Batt"); lowBattery = true; return true; break;
-        default: DEBUG_SERIAL.println("Unknown CMD"); return true; break;
-      }
-   }
-   //Read the data! 
-   while(ESP8266_SERIAL.available() < MSG_TO_ESP8266_MSG_SIZE){
-      delayMicroseconds(1);
-   }
-   //Read bytes for plaback! 
-   DEBUG_SERIAL.print("Data: ");
-   for(int i = 0; i < MSG_TO_ESP8266_MSG_SIZE; i++){
-      mpu6050Data[i] = ESP8266_SERIAL.read();
-      recordingMsg[i+2] = mpu6050Data[i];
-      DEBUG_SERIAL.print(char(mpu6050Data[i]));
-   }
-    DEBUG_SERIAL.println();
-    
-    return true;
-}
-//////////////////////
 
 ///////////////////////////////////
 // Time out information for WiFi Connection
@@ -169,6 +68,86 @@ IPAddress hostPCAddr; //determined from incoming TCP connection
 WiFiServer bandServerToPC(TCP_PORT);
 boolean hasHostPCIP = false;
 WiFiClient hostPC;
+pfodESP8266BufferedClient bufferedClient; // http://www.forward.com.au/pfod/pfodParserLibraries/index.html
+
+//////////////////////
+// This section is for serial stuff
+#define ESP8266_SERIAL Serial
+#define DEBUG_SERIAL Serial
+
+#define MSG_TO_ESP8266_ALIGN_BYTES 4
+#define MSG_TO_ESP8266_DATA_BYTES 8 //For sending back to the ESP8266
+#define MSG_TO_ESP8266_TOTAL_SIZE (MSG_TO_ESP8266_ALIGN_BYTES + MSG_TO_ESP8266_DATA_BYTES)
+
+#define ESP8266_START_BYTE 254
+
+#define ESP8266_MIN_CMD_BYTE 192 //Minimum number to be sent to complete the packet
+#define ESP8266_CMD_NO_AXN ESP8266_MIN_CMD_BYTE
+//Commands are defined as follows (anything above the minimum value up to 253)
+#define ESP8266_CMD_MPU6050_DATA 206 //Sent if there is data following
+#define ESP8266_CMD_MPU6050_DATA_LOW_BATT  207 //Send if low battery
+
+#define CMD_SLOT 1
+#define RECORDING_MSG_SIZE 11
+#define MSG_TO_ESP8266_MSG_SIZE 8
+static const size_t bufferSize = 128;
+static uint8_t sbuf[bufferSize];
+char recordingMsg[RECORDING_MSG_SIZE] = {0x0A, BAND_POSITION_UPDATE, 0,0,0,0,0,0,0,0,'\n'};
+uint8_t count = 0;
+
+void readTeensySerialSendPkt(){
+
+  if (ESP8266_SERIAL.available() > (MSG_TO_ESP8266_TOTAL_SIZE-1)) {
+    size_t len = Serial.available();
+    ESP8266_SERIAL.print(len);
+    while (len > 0) { // size_t is an unsigned type so >0 is actually redundent
+      size_t will_copy = (len < bufferSize) ? len : bufferSize;
+      ESP8266_SERIAL.readBytes(sbuf, will_copy);
+      
+      if(sbuf[0] == ESP8266_START_BYTE && sbuf[1] == ESP8266_START_BYTE && sbuf[2] == ESP8266_START_BYTE){ //Check for our packet from Teensy
+        
+        ESP8266_SERIAL.print("CMD:");
+        ESP8266_SERIAL.print(char(sbuf[MSG_TO_ESP8266_ALIGN_BYTES-1]));
+        
+        boolean sendToPC = true;
+        
+        switch(sbuf[MSG_TO_ESP8266_ALIGN_BYTES-1]){ //Tell what type of cmd to add
+            case ESP8266_CMD_MPU6050_DATA: 
+                recordingMsg[CMD_SLOT] = 0x04;
+                break;
+            case ESP8266_CMD_MPU6050_DATA_LOW_BATT: 
+                recordingMsg[CMD_SLOT] = 0x0E;
+                break;
+            default:
+                sendToPC = false;
+            break;
+         }
+         //ESP8266_SERIAL.flush();
+        
+        ESP8266_SERIAL.write(0x09);
+        memcpy( &recordingMsg[CMD_SLOT+1], &sbuf[MSG_TO_ESP8266_ALIGN_BYTES], MSG_TO_ESP8266_DATA_BYTES); //Only copy over the data bytes
+        
+        for(int i = 0; i < RECORDING_MSG_SIZE; i++){
+          ESP8266_SERIAL.write(recordingMsg[i]);  //Write the packet to the PC
+          
+        }
+        if(state == RECORDING){ //Check that in proper state to send data!!!
+          if(count == 10){
+           bufferedClient.write((const uint8_t *)recordingMsg, RECORDING_MSG_SIZE);
+           count = 0;
+          }
+          count++;
+        }
+        
+        
+      }
+      len -= will_copy;
+    }
+  }
+}
+//////////////////////
+
+
 
 
 
@@ -239,24 +218,24 @@ char printRXPacket(String msg){
               default: Serial.println("Unrecognized format"); break;
             }
             
-            if(msgLength > 2){ //Normal message
-              Serial.print("Data: ");
-              
-              memset(msgDataNonPosition, 0, sizeof(msgDataNonPosition)); //clear out non-position array
-              
-              for(int j = 2; j < (msgLength-1); j++){ //print data from msg
-                Serial.print(msg[j]);
-                
-                if(msgType == POSITION_ERROR){//copy into the proper feedback array  
-                    positionalFBData[j-2] = msg[j]; 
-                }
-                else{
-                  msgDataNonPosition[j-2] = msg[j];
-                }
-                
-              }
-              Serial.println(msg[msgLength-1]);  
-            }
+//            if(msgLength > 2){ //Normal message
+//              Serial.print("Data: ");
+//              
+//              memset(msgDataNonPosition, 0, sizeof(msgDataNonPosition)); //clear out non-position array
+//              
+//              for(int j = 2; j < (msgLength-1); j++){ //print data from msg
+//                Serial.print(msg[j]);
+//                
+//                if(msgType == POSITION_ERROR){//copy into the proper feedback array  
+//                    positionalFBData[j-2] = msg[j]; 
+//                }
+//                else{
+//                  msgDataNonPosition[j-2] = msg[j];
+//                }
+//                
+//              }
+//              Serial.println(msg[msgLength-1]);  
+//            }
           }
   else{ //Broken packet thing
     Serial.println(String("Received MALFORMED packet of size: ") + msg.length());
@@ -266,29 +245,16 @@ char printRXPacket(String msg){
 
 void replyToPCInitiation(){ //Reply to initiation packet
    Serial.println("Sending response to COMPUTER_INITIATE_CONNECTION");
-   char msg[3] = {2,BAND_CONNECTING,'\n'};
-   if(lowBattery){
-      msg[1] = BAND_CONNECTING_LOW_BATT;
-   }
-   //hostPC.flush(); // This might take a while
-   hostPC.print(msg);
+   uint8_t msg[3] = {2,BAND_CONNECTING,'\n'};
+   
+   bufferedClient.write((const uint8_t *)msg, 3); //Non blocking :D ?
 }
 
 void replyToPCPing(){
    Serial.println("Sending response to COMPUTER_PING");
-   char msg[3] = {2,BAND_PING,'\n'};
-    if(lowBattery){
-      msg[1] = BAND_PING_LOW_BATT;
-   }
-   //hostPC.flush(); // This might take a while
-   hostPC.print(msg);
-}
-
-void replyToRXPosError(){
-   Serial.println("Sending response to RXED_POS");
-   char msg[3] = {2,BAND_PING,'\n'};
-   hostPC.flush(); // This might take a while
-   hostPC.print(msg);
+   uint8_t msg[3] = {2,BAND_PING,'\n'};
+   
+    bufferedClient.write((const uint8_t *)msg, 3); //Non blocking :D ?
 }
 
 void giveMotorsFeedback(){
@@ -297,17 +263,6 @@ void giveMotorsFeedback(){
 //  for(int j = 0; j < POSITION_DATA_BYTES; j++){ //print data from msg
 //     Serial.print(positionalFBData[j]);               
 //   }
-}
-
-
-void sendDataToComputer(){
-  if(lowBattery){
-    recordingMsg[RECORDING_MSG_TYPE_POS] = BAND_POSITION_UPDATE_LOW_BATT;
-  }
-  else{
-    recordingMsg[RECORDING_MSG_TYPE_POS] = BAND_POSITION_UPDATE;
-  }
-  hostPC.print(recordingMsg);
 }
 
 void GoToStateFindHost(){
@@ -327,6 +282,9 @@ void GoToStateFindHost(){
         counter = 0;
       }
     }
+    
+    bufferedClient.connect(&hostPC); //Buffer this like in the SimplifiedUARTtoWiFiBridge library
+    
     Serial.print("hostPC IP: ");
     hostPCAddr = hostPC.remoteIP();
     Serial.println(hostPCAddr);
@@ -337,10 +295,8 @@ void GoToStateFindHost(){
 
 void setup() {
   state = POWER_ON;
-  Serial.begin(9600);
+  Serial.begin(115200);
   delay(10);
-
-  lowBattery = false;
   
   state = CONNECTION;
   boolean goodConnect = GoToStateConnection();
@@ -355,11 +311,11 @@ void setup() {
 
 boolean listenForSpecificPacket(char specificPacket){
       char msgTypeRXed = NOTHING_NEW;
-      if(hostPC.connected()){
+      if(bufferedClient.connected()){
         
         // Read all the lines of the reply from server and print them to Serial
-        while(hostPC.available()){
-          String line = hostPC.readStringUntil('\n');
+        if(bufferedClient.available()){
+          String line = bufferedClient.readStringUntil('\n');
           msgTypeRXed = printRXPacket(line);
         }
 
@@ -369,6 +325,8 @@ boolean listenForSpecificPacket(char specificPacket){
       }
       else{
         Serial.println("HOST PC DISCONNECTED!");
+        bufferedClient.stop(); // Close out old TCP stuff?
+        
         state = FIND_HOST;
       }
       return false;
@@ -376,11 +334,11 @@ boolean listenForSpecificPacket(char specificPacket){
 
 void listenForPackets(){
       char msgTypeRXed = NOTHING_NEW;
-      if(hostPC.connected()){
+      if(bufferedClient.connected()){
         
         // Read all the lines of the reply from server and print them to Serial
-        while(hostPC.available()){
-          String line = hostPC.readStringUntil('\n');
+        while(bufferedClient.available()){
+          String line = bufferedClient.readStringUntil('\n');
           msgTypeRXed = printRXPacket(line);
         }
 
@@ -392,7 +350,8 @@ void listenForPackets(){
               case BAND_POSITION_UPDATE:  Serial.println("Doing nothing for BAND_POSITION_UPDATE"); break;
               case POSITION_ERROR:  
                     giveMotorsFeedback();
-                    replyToRXPosError();
+                    
+                    //replyToRXPosError();
               break;
               case START_RECORDING:  
                     state = RECORDING;
@@ -419,8 +378,6 @@ void listenForPackets(){
       }
 }
 
-
-
 void loop() {
   switch(state){
     case IDLE_CONNECTED_TO_AP:
@@ -436,15 +393,14 @@ void loop() {
     break;
 
     case RECORDING:
+        
         boolean gotStopRecording = listenForSpecificPacket(STOP_RECORDING);
         if(gotStopRecording){
           state = IDLE_CONNECTED_TO_HOST;
         }
         else{
-          boolean worked = readFromTeensy();
-          if(worked){
-            sendDataToComputer();
-          }
+          readTeensySerialSendPkt();
+
         }
     break;
   }

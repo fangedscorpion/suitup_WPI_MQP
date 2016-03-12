@@ -80,7 +80,7 @@ void loop() {
     //    
 //    boolean readValues = esp8266.readFromESP8266(); 
 //
-    delayMicroseconds(1);
+    //delayMicroseconds(300);
     boolean readValues = true;
     if(readValues){
       motorController.updateErrors(esp8266.RX_trans_angle, esp8266.RX_err_trans, esp8266.RX_err_rot);

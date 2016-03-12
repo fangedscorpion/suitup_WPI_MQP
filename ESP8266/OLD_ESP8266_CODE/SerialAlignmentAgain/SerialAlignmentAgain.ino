@@ -2,7 +2,7 @@
 #define MSG_TO_ESP8266_MSG_SIZE 8 //For sending back to the ESP8266
 #define MSG_TO_ESP8266_TOTAL_SIZE (MSG_TO_ESP8266_ALIGN_BYTES + MSG_TO_ESP8266_MSG_SIZE)
 
-#define ESP8266_START_BYTE 253
+#define ESP8266_START_BYTE 254
 
 #define ESP8266_SERIAL Serial
 #define DEBUG_SERIAL Serial
@@ -116,7 +116,7 @@
 #define ESP8266_CMD_MPU6050_DATA_LOW_BATT  207 //Send if low battery
 #define CMD_SLOT 1
 #define RECORDING_MSG_SIZE 11
-#define MSG_TO_ESP8266_MSG_SIZE 8
+#define MSG_TO_ESP8266_DATA_BYTES 8
 static const size_t bufferSize = 128;
 static uint8_t sbuf[bufferSize];
 static uint8_t recordingMsg[RECORDING_MSG_SIZE] = {0x0A, 0x00, 0,0,0,0,0,0,0,0,'\n'};
@@ -149,9 +149,9 @@ void readTeensySerial(){
          }
         
         ESP8266_SERIAL.write(0x09);
-        memcpy( &recordingMsg[CMD_SLOT+1], &sbuf[MSG_TO_ESP8266_ALIGN_BYTES], MSG_TO_ESP8266_MSG_SIZE); //Only copy over the data bytes
+        memcpy( &recordingMsg[CMD_SLOT+1], &sbuf[MSG_TO_ESP8266_ALIGN_BYTES], MSG_TO_ESP8266_DATA_BYTES); //Only copy over the data bytes
         
-        for(int i = 0; i < MSG_TO_ESP8266_TOTAL_SIZE; i++){
+        for(int i = 0; i < RECORDING_MSG_SIZE; i++){
           ESP8266_SERIAL.write(recordingMsg[i]);  //Write the packet to the PC  
         }
         
@@ -170,7 +170,9 @@ void setup() {
 
 
 void loop() {
+  //unsigned long tm = millis();
   readTeensySerial();
+  //Serial.println(millis()-tm);
 }
 
 
