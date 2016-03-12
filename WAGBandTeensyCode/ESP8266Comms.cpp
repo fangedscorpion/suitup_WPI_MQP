@@ -152,21 +152,10 @@ void ESP8266Comms::sendMsgToESP8266(char cmd, uint8_t* teaPkt){
 //This draws from the ESP8266 msg which should be prefilled from the extractMPU6050Vals(uint8_t* espMsg)
 void ESP8266Comms::sendMsgToESP8266(char cmd){
     this->setCommand(cmd); //Set the proper cmd in our pkt
-
-    if(cmd == ESP8266_CMD_MPU6050_DATA || cmd == ESP8266_CMD_MPU6050_DATA_LOW_BATT){
-      
-      for(int i = 0; i < MSG_TO_ESP8266_TOTAL_SIZE; i++){
+   
+    for(int i = 0; i < MSG_TO_ESP8266_TOTAL_SIZE; i++){
 
           ESP8266_SERIAL.write(this->msgToESP8266[i]);
           DEBUG_SERIAL.print(char(this->msgToESP8266[i]));
       }
-    }
-    else{
-
-      for(int i = 0; i < MSG_TO_ESP8266_ALIGN_BYTES; i++){
-          ESP8266_SERIAL.print(char(this->msgToESP8266[i]));
-      }   
-
-    }
-
 }  

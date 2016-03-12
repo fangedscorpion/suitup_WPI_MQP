@@ -14,7 +14,7 @@
 #define IDLE_CONNECTED_TO_AP 3
 #define LOST_CONNECTION 4
 #define RECORDING 5
-#define FEEDBACK 6
+#define PLAYBACK 6
 #define ERROR_STATE -1
 #define CONNECTING_TO_HOST 8
 #define IDLE_CONNECTED_TO_HOST 9
@@ -75,17 +75,20 @@ pfodESP8266BufferedClient bufferedClient; // http://www.forward.com.au/pfod/pfod
 #define ESP8266_SERIAL Serial
 #define DEBUG_SERIAL Serial
 
+//Coming from the Teensy!
 #define MSG_TO_ESP8266_ALIGN_BYTES 4
 #define MSG_TO_ESP8266_DATA_BYTES 8 //For sending back to the ESP8266
 #define MSG_TO_ESP8266_TOTAL_SIZE (MSG_TO_ESP8266_ALIGN_BYTES + MSG_TO_ESP8266_DATA_BYTES)
-
 #define ESP8266_START_BYTE 254
-
 #define ESP8266_MIN_CMD_BYTE 192 //Minimum number to be sent to complete the packet
 #define ESP8266_CMD_NO_AXN ESP8266_MIN_CMD_BYTE
 //Commands are defined as follows (anything above the minimum value up to 253)
 #define ESP8266_CMD_MPU6050_DATA 206 //Sent if there is data following
 #define ESP8266_CMD_MPU6050_DATA_LOW_BATT  207 //Send if low battery
+#define ESP8266_CMD_VOICE_START 210
+#define ESP8266_CMD_VOICE_START_LOW_BATT 211
+#define ESP8266_CMD_VOICE_STOP 212
+#define ESP8266_CMD_VOICE_STOP_LOW_BATT 213
 
 #define CMD_SLOT 1
 #define RECORDING_MSG_SIZE 11
@@ -93,12 +96,27 @@ pfodESP8266BufferedClient bufferedClient; // http://www.forward.com.au/pfod/pfod
 static const size_t bufferSize = 128;
 static uint8_t sbuf[bufferSize];
 char recordingMsg[RECORDING_MSG_SIZE] = {0x0A, BAND_POSITION_UPDATE, 0,0,0,0,0,0,0,0,'\n'};
-uint8_t count = 0;
+uint8_t count = 0; //For delaying how many WiFi packets get sent
+
+//Voice control information to PC
+#define VOICE_CONTROL_START 67 //bandmessage.h
+#define VOICE_CONTROL_STOP 15 //bandmesssage.h
+#define VOICE_CONTROL_CMD_BYTE 1
+#define VOICE_CONTROL_DATA_BTYE 2
+#define VOICE_CONTROL_LENGTH 4
+char voiceControlMsg[VOICE_CONTROL_LENGTH] = {0x03, VOICE_CONTROL, VOICE_CONTROL_STOP, '\n'};  
+
+//#define FEEDBACK_MSG_ALIGN_BYTES 4
+//#define FEEDBACK_MSG_DATA_BYTES 12
+//#define FEEDBACK_MSG_SIZE (FEEDBACK_MSG_ALIGN_BYTES + FEEDBACK_MSG_DATA_BYTES)
+//#define ESP8266_CMD_CONTINUE_PLAYBACK 197
+//
+//uint8_t feedbackToTeensyMsg[FEEDBACK_MSG_SIZE] = {ESP8266_START_BYTE, ESP8266_START_BYTE, ESP8266_START_BYTE, ESP8266_CMD_CONTINUE_PLAYBACK, 0,0,0,0,0,0,0,0,0,0,0,0}; 
 
 void readTeensySerialSendPkt(){
 
-  if (ESP8266_SERIAL.available() > (MSG_TO_ESP8266_TOTAL_SIZE-1)) {
-    size_t len = Serial.available();
+  if (ESP8266_SERIAL.available() >= (MSG_TO_ESP8266_TOTAL_SIZE)) {
+    size_t len = ESP8266_SERIAL.available();
     ESP8266_SERIAL.print(len);
     while (len > 0) { // size_t is an unsigned type so >0 is actually redundent
       size_t will_copy = (len < bufferSize) ? len : bufferSize;
@@ -108,37 +126,63 @@ void readTeensySerialSendPkt(){
         
         ESP8266_SERIAL.print("CMD:");
         ESP8266_SERIAL.print(char(sbuf[MSG_TO_ESP8266_ALIGN_BYTES-1]));
-        
-        boolean sendToPC = true;
+
+        uint8_t voiceCmd = false;
         
         switch(sbuf[MSG_TO_ESP8266_ALIGN_BYTES-1]){ //Tell what type of cmd to add
             case ESP8266_CMD_MPU6050_DATA: 
-                recordingMsg[CMD_SLOT] = 0x04;
+                recordingMsg[CMD_SLOT] = BAND_POSITION_UPDATE;
                 break;
             case ESP8266_CMD_MPU6050_DATA_LOW_BATT: 
-                recordingMsg[CMD_SLOT] = 0x0E;
+                recordingMsg[CMD_SLOT] = BAND_POSITION_UPDATE_LOW_BATT;
                 break;
+            case ESP8266_CMD_VOICE_START:
+                voiceControlMsg[VOICE_CONTROL_CMD_BYTE] = VOICE_CONTROL;
+                voiceControlMsg[VOICE_CONTROL_DATA_BTYE] = VOICE_CONTROL_START;
+                voiceCmd = true;
+            break;
+            case ESP8266_CMD_VOICE_START_LOW_BATT:
+                voiceControlMsg[VOICE_CONTROL_CMD_BYTE] = VOICE_CONTROL_LOW_BATT;
+                voiceControlMsg[VOICE_CONTROL_DATA_BTYE] = VOICE_CONTROL_START;
+                voiceCmd = true;
+            break;
+            case ESP8266_CMD_VOICE_STOP:
+                voiceControlMsg[VOICE_CONTROL_CMD_BYTE] = VOICE_CONTROL;
+                voiceControlMsg[VOICE_CONTROL_DATA_BTYE] = VOICE_CONTROL_STOP;
+                voiceCmd = true;
+            break;
+            case ESP8266_CMD_VOICE_STOP_LOW_BATT:
+                voiceControlMsg[VOICE_CONTROL_CMD_BYTE] = VOICE_CONTROL_LOW_BATT;
+                voiceControlMsg[VOICE_CONTROL_DATA_BTYE] = VOICE_CONTROL_STOP;
+                voiceCmd = true;
+            break;            
             default:
-                sendToPC = false;
+                
             break;
          }
-         //ESP8266_SERIAL.flush();
+        
         
         ESP8266_SERIAL.write(0x09);
-        memcpy( &recordingMsg[CMD_SLOT+1], &sbuf[MSG_TO_ESP8266_ALIGN_BYTES], MSG_TO_ESP8266_DATA_BYTES); //Only copy over the data bytes
-        
-        for(int i = 0; i < RECORDING_MSG_SIZE; i++){
-          ESP8266_SERIAL.write(recordingMsg[i]);  //Write the packet to the PC
+        if(!voiceCmd){
+          memcpy( &recordingMsg[CMD_SLOT+1], &sbuf[MSG_TO_ESP8266_ALIGN_BYTES], MSG_TO_ESP8266_DATA_BYTES); //Only copy over the data bytes
           
+          for(int i = 0; i < RECORDING_MSG_SIZE; i++){
+            ESP8266_SERIAL.write(recordingMsg[i]);  //Write the packet to the PC
+            
+          }
         }
         if(state == RECORDING){ //Check that in proper state to send data!!!
-          if(count == 10){
+          if(count == 12){
            bufferedClient.write((const uint8_t *)recordingMsg, RECORDING_MSG_SIZE);
            count = 0;
           }
           count++;
         }
         
+        if(voiceCmd){ //Voice control packet 
+          ESP8266_SERIAL.write(voiceControlMsg, VOICE_CONTROL_LENGTH);  //Write the packet to the PC
+          bufferedClient.write((const uint8_t *)voiceControlMsg, VOICE_CONTROL_LENGTH);
+        }
         
       }
       len -= will_copy;
@@ -295,7 +339,7 @@ void GoToStateFindHost(){
 
 void setup() {
   state = POWER_ON;
-  Serial.begin(115200);
+  ESP8266_SERIAL.begin(115200);
   delay(10);
   
   state = CONNECTION;
@@ -324,7 +368,7 @@ boolean listenForSpecificPacket(char specificPacket){
         }
       }
       else{
-        Serial.println("HOST PC DISCONNECTED!");
+        ESP8266_SERIAL.println("HOST PC DISCONNECTED!");
         bufferedClient.stop(); // Close out old TCP stuff?
         
         state = FIND_HOST;
@@ -354,17 +398,16 @@ void listenForPackets(){
                     //replyToRXPosError();
               break;
               case START_RECORDING:  
-                    state = RECORDING;
+                  state = RECORDING;
               break;
               case STOP_RECORDING:
                   state = IDLE_CONNECTED_TO_HOST;
-                    //tellTeensyStopRecording();
               break;
               case START_PLAYBACK:  
-                    //tellTeensyStartPlayback();
+                  state = PLAYBACK;
               break;
               case STOP_PLAYBACK: 
-                    //tellTeensyStopPlayback();
+                  state = IDLE_CONNECTED_TO_HOST;
               break;
               case VOICE_CONTROL:  Serial.println("Doing nothing for VOICE_CONTROL"); break;
               case LOW_BATTERY_UPDATE: Serial.println("Doing nothing for LOW_BATTERY_UPDATE"); break;
@@ -390,18 +433,41 @@ void loop() {
 
     case IDLE_CONNECTED_TO_HOST:
         listenForPackets();
+        readTeensySerialSendPkt();
     break;
 
     case RECORDING:
-        
+    {
         boolean gotStopRecording = listenForSpecificPacket(STOP_RECORDING);
         if(gotStopRecording){
           state = IDLE_CONNECTED_TO_HOST;
         }
         else{
           readTeensySerialSendPkt();
-
         }
+    }
+    break;
+
+    case PLAYBACK:
+    {
+        
+        boolean gotStopPlayback = listenForSpecificPacket(STOP_PLAYBACK);
+        if(gotStopPlayback){
+          state = IDLE_CONNECTED_TO_HOST;
+        }
+        else{
+          readTeensySerialSendPkt();
+          if (bufferedClient.connected()) {
+            ESP8266_SERIAL.print((bufferedClient.available() > 0));
+            while ((bufferedClient.available() > 0) &&  (ESP8266_SERIAL.availableForWrite() > 0)) { //This is borrowed from the SimplifiedUARTtoWiFiBridge example
+              // use Serial.availableForWrite to prevent loosing incoming data
+              ESP8266_SERIAL.print(bufferedClient.read());
+              //feedbackToTeensyMsg[FEEDBACK_MSG_ALIGN_BYTES] 
+              //ESP8266_SERIAL.write(bufferedClient.read());
+            }
+          }
+        }
+    }
     break;
   }
 }

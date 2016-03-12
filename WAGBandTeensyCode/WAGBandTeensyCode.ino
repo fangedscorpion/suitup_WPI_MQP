@@ -60,31 +60,47 @@ void setup() {
 // ================================================================
 // ===                    MAIN PROGRAM LOOP                     ===
 // ================================================================
-
+uint8_t voiceTestCnt = 0;//PURELY FOR TESTING!!!!!
 void loop() {
     unsigned long time1 = millis();
     battMonitor.checkBattery(); 
 
-    //mpu6050Jawn.extractMPU6050Vals();
-    mpu6050Jawn.extractMPU6050Vals(esp8266.msgToESP8266);
+    mpu6050Jawn.extractMPU6050Vals(esp8266.msgToESP8266); //Extracts and packs them all in 1
 
     if(battMonitor.hasLowBat()){
-      //esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA_LOW_BATT, mpu6050Jawn.getTeapotPkt());
-      esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA_LOW_BATT);
+      if(voiceTestCnt == 100){//PURELY FOR TESTING!!!!!
+        DEBUG_SERIAL.print("\t\tLOW_BATT_START: ");
+        esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_START_LOW_BATT);
+      }
+      else if(voiceTestCnt == 200){//PURELY FOR TESTING!!!!!
+        DEBUG_SERIAL.print("\t\tLOW_BATT_STOP: ");
+        esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_STOP_LOW_BATT);
+      }
+      else{
+        esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA_LOW_BATT);  
+      }
     }
     else{
-      //esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA, mpu6050Jawn.getTeapotPkt());
-      esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA);
+      if(voiceTestCnt == 100){//PURELY FOR TESTING!!!!!
+        DEBUG_SERIAL.print("\t\tSTART: ");
+        esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_START);
+      }
+//      else if(voiceTestCnt == 200){ //PURELY FOR TESTING!!!!!
+//        DEBUG_SERIAL.print("\t\tSTOP: ");
+//        esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_STOP);
+//      }
+      else{
+        esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA);  
+      }
     }
-    DEBUG_SERIAL.println(String("Tm:")+(millis()-time1));
-    //    
-//    boolean readValues = esp8266.readFromESP8266(); 
-//
-    //delayMicroseconds(300);
+    voiceTestCnt++;
+    
+
+//    boolean readValues = esp8266.readFromESP8266();     
     boolean readValues = true;
     if(readValues){
       motorController.updateErrors(esp8266.RX_trans_angle, esp8266.RX_err_trans, esp8266.RX_err_rot);
     }
     motorController.performMotorCalculationsAndRunMotors();
-
+    DEBUG_SERIAL.println(String("Tm:")+(millis()-time1));
 }
