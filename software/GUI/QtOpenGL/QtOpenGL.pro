@@ -16,21 +16,24 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     glwidget.cpp \
     window.cpp \
-    modelloader.cpp
+    modelloader.cpp \
+    model.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \
     window.h \
-    modelloader.h
+    modelloader.h \
+    model.h
 
 FORMS    += mainwindow.ui
 
 LIBS += -L/usr/lib/ -lassimp
 
-OTHER_FILES += ads_fragment.vert \
-    ads_fragment.frag \
-    es_ads_fragment.frag \
-    es_ads_fragment.vert
+OTHER_FILES += ads_fragment.vert
 
 RESOURCES += \
     resources.qrc
+
+DISTFILES += \
+    ads_fragment.frag \
+    ads_fragment.vert

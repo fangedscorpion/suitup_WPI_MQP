@@ -42,7 +42,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         void setupLightingAndMatrices();
 
         void draw();
-        void drawNode(const Node *node, QMatrix4x4 objectMatrix);
+        void drawNodes();
         void setMaterialUniforms(MaterialInfo &mater);
 
         QOpenGLShaderProgram m_shaderProgram;
@@ -53,17 +53,14 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         QOpenGLBuffer m_normalBuffer;
         QOpenGLBuffer m_indexBuffer;
 
-        QSharedPointer<Node> m_rootNode;
+        QVector<QSharedPointer<Node> > m_nodes;
 
         QMatrix4x4 m_projection, m_view, m_model;
 
         QString m_filepath;
         ModelLoader::PathType m_pathType;
-        QString m_texturePath;
 
         LightInfo m_lightInfo;
-
-        ModelLoader modelLoader;
 
         bool m_error;
 
@@ -73,6 +70,8 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         QPoint m_lastPos;
 
         QVector3D m_cam_offset;
+
+        Model model;
     };
 
     #endif

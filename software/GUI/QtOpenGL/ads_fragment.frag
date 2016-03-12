@@ -1,38 +1,36 @@
-#version 330 core
+#version 120
 
 // Light information
-uniform vec4 lightPosition;
-uniform vec3 lightIntensity;
+uniform highp vec4 lightPosition;
+uniform highp vec3 lightIntensity;
 
 // Material information
-uniform vec3 Ka;
-uniform vec3 Kd;
-uniform vec3 Ks;
-uniform float shininess;
+uniform lowp vec3 Ka;
+uniform lowp vec3 Kd;
+uniform lowp vec3 Ks;
+uniform lowp float shininess;
 
 // Input variables coming from vertex shader, interpolated to this fragment
-in vec3 interpolatedPosition;
-in vec3 interpolatedNormal;
-
-out vec4 fragmentColor;
+varying highp vec3 interpolatedPosition;
+varying highp vec3 interpolatedNormal;
 
 void main()
 {
     // normal has been interpolated, so we need to normalize it
-    vec3 normalVector = normalize(interpolatedNormal);
+    highp vec3 normalVector = normalize(interpolatedNormal);
 
     // Calculate light source vector
-    vec3 lightSourceVector = normalize( lightPosition.xyz - interpolatedPosition);
+    highp vec3 lightSourceVector = normalize( lightPosition.xyz - interpolatedPosition);
 
     // Calculate the view vector
-    vec3 viewVector = normalize( -interpolatedPosition.xyz );
+    highp vec3 viewVector = normalize( -interpolatedPosition.xyz );
 
     // Ambient contribution
-    vec3 ambientContribution = Ka;
+    highp vec3 ambientContribution = Ka;
 
     // Default black diffuse and specular contributions
-    vec3 diffuseContribution = vec3(0.0);
-    vec3 specularContribution = vec3(0.0);
+    highp vec3 diffuseContribution = highp vec3(0.0);
+    highp vec3 specularContribution = highp vec3(0.0);
 
     // Dot product of two normalized vectors gives us a value
     // indicating how close they are to each other,
@@ -48,12 +46,12 @@ void main()
 
         // halfway vector, reduces the need for calculating a reflected vector,
         // which improvies performance slightly
-        vec3 halfwayVector = normalize( viewVector + lightSourceVector);
+        highp vec3 halfwayVector = normalize( viewVector + lightSourceVector);
 
         // Specular contribution
         specularContribution = Ks * pow( dot(halfwayVector, normalVector), shininess);
     }
 
     // Calculate final color
-    fragmentColor = vec4(lightIntensity * (ambientContribution + diffuseContribution + specularContribution), 1.0);
+    gl_FragColor = highp vec4(lightIntensity * (ambientContribution + diffuseContribution + specularContribution), 1.0);
 }

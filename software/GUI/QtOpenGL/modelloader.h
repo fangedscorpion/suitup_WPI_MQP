@@ -9,43 +9,11 @@
 #include <QDir>
 #include <QJsonObject>
 #include <QJsonArray>
+#include "model.h"
 
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <assimp/Importer.hpp>
-
-struct MaterialInfo {
-    QString Name;
-    QVector3D Ambient;
-    QVector3D Diffuse;
-    QVector3D Specular;
-    float Shininess;
-
-    bool isTexture;
-    QString textureName;
-};
-
-struct LightInfo {
-    QVector4D Position;
-    QVector3D Intensity;
-};
-
-struct Mesh {
-    unsigned int indexCount;
-    unsigned int indexOffset;
-    QSharedPointer<MaterialInfo> material;
-};
-
-struct Node {
-    QString name;
-
-    QMatrix4x4 transformation;
-    QVector3D tail;
-    QVector3D head;
-
-    QVector<QSharedPointer<Mesh> > meshes;
-    QVector<Node> nodes;
-};
 
 class ModelLoader {
 public:
@@ -59,15 +27,19 @@ public:
     void getBufferData(QVector<float> **vertices, QVector<float> **normals,
                        QVector<unsigned int> **indices);
 
-    QSharedPointer<Node> getNodeData() { return m_rootNode; }
+    QSharedPointer<Node> getNodeData(int index) { return m_nodes[index];}
+    QVector<QSharedPointer<Node> > getAllNodes() {return m_nodes;}
     QSharedPointer<MaterialInfo> getMaterial(int index) {return m_materials[index];}
-    Node getNodeByName(QString name);
+    QSharedPointer<Node> getNodeByName(QString name);
+
+    Model toModel();
 
 private:
     QSharedPointer<MaterialInfo> processMaterial(aiMaterial *mater);
     QSharedPointer<Mesh> processMesh(aiMesh *mesh);
-    void processNode(const aiScene *scene, aiNode *node, Node *parentNode, Node &newNode);
+    void processNode(aiNode *node);
     QVector3D jsonArr3toQVec3(QJsonArray jsonArr3);
+    CoordinateFrame jsonXYZtoFrame(QJsonObject jsonFrame);
 
     QVector<float> m_vertices;
     QVector<float> m_normals;
@@ -75,7 +47,7 @@ private:
 
     QVector<QSharedPointer<MaterialInfo> > m_materials;
     QVector<QSharedPointer<Mesh> > m_meshes;
-    QSharedPointer<Node> m_rootNode;
+    QVector<QSharedPointer<Node> > m_nodes;
 
     QJsonObject pointsJson;
     QVector3D rootTail;

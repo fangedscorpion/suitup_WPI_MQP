@@ -6,13 +6,11 @@ GLWidget::GLWidget() :
     m_indexBuffer(QOpenGLBuffer::IndexBuffer),
     m_filepath(QString("biped/final/biped_rig.obj")),
     m_pathType(ModelLoader::RelativePath),
-    m_texturePath(QString("")),
-    modelLoader(ModelLoader()),
     m_error(false),
     m_xRot(0),
     m_yRot(0),
     m_zRot(0),
-    m_cam_offset(QVector3D(0,1,0)){
+    m_cam_offset(QVector3D(0,-1,0)){
 
     QSurfaceFormat format;
     format.setDepthBufferSize(24);
@@ -55,7 +53,7 @@ void GLWidget::cleanup() {
 void GLWidget::initializeGL() {
     initializeOpenGLFunctions();
 
-    createShaderProgram(":/es_ads_fragment.vert", ":/es_ads_fragment.frag");
+    createShaderProgram(":/ads_fragment.vert", ":/ads_fragment.frag");
 
     createBuffers();
     createAttributes();
@@ -90,6 +88,7 @@ void GLWidget::createBuffers(){
     if(m_error)
         return;
 
+    ModelLoader modelLoader;
     if(!modelLoader.Load(m_filepath, m_pathType)){
         m_error = true;
         return;
@@ -109,21 +108,22 @@ void GLWidget::createBuffers(){
     m_vertexBuffer.create();
     m_vertexBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
     m_vertexBuffer.bind();
-    m_vertexBuffer.allocate( &(*vertices)[0], vertices->size() * sizeof( float ) );
+    m_vertexBuffer.allocate(&(*vertices)[0], vertices->size()*sizeof(float));
 
     // Create a buffer and copy the vertex data to it
     m_normalBuffer.create();
     m_normalBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
     m_normalBuffer.bind();
-    m_normalBuffer.allocate( &(*normals)[0], normals->size() * sizeof( float ) );
+    m_normalBuffer.allocate(&(*normals)[0], normals->size()*sizeof(float));
 
     // Create a buffer and copy the index data to it
     m_indexBuffer.create();
     m_indexBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
     m_indexBuffer.bind();
-    m_indexBuffer.allocate( &(*indices)[0], indices->size() * sizeof( unsigned int ) );
+    m_indexBuffer.allocate(&(*indices)[0], indices->size()*sizeof(unsigned int));
 
-    m_rootNode = modelLoader.getNodeData();
+//    m_nodes = modelLoader.getAllNodes();
+    model = modelLoader.toModel();
 }
 
 void GLWidget::createAttributes(){
@@ -135,27 +135,32 @@ void GLWidget::createAttributes(){
 
     // Map vertex data to the vertex shader's layout location '0'
     m_vertexBuffer.bind();
-    m_shaderProgram.enableAttributeArray( 0 );      // layout location
-    m_shaderProgram.setAttributeBuffer( 0,          // layout location
-                                        GL_FLOAT,   // data's type
-                                        0,          // Offset to data in buffer
-                                        3);         // number of components (3 for x,y,z)
+    m_shaderProgram.enableAttributeArray(0);      // layout location
+    m_shaderProgram.setAttributeBuffer(0,          // layout location
+                                       GL_FLOAT,   // data's type
+                                       0,          // Offset to data in buffer
+                                       3);         // number of components (3 for x,y,z)
 
     // Map normal data to the vertex shader's layout location '1'
     m_normalBuffer.bind();
-    m_shaderProgram.enableAttributeArray( 1 );      // layout location
-    m_shaderProgram.setAttributeBuffer( 1,          // layout location
-                                        GL_FLOAT,   // data's type
-                                        0,          // Offset to data in buffer
-                                        3);         // number of components (3 for x,y,z)
+    m_shaderProgram.enableAttributeArray(1);      // layout location
+    m_shaderProgram.setAttributeBuffer(1,          // layout location
+                                       GL_FLOAT,   // data's type
+                                       0,          // Offset to data in buffer
+                                       3);         // number of components (3 for x,y,z)
 
 }
 
 void GLWidget::setupLightingAndMatrices() {
-    m_view.setToIdentity();
+//    m_view.setToIdentity();
+    float vals[16] = {1,0,0,0,
+                      0,1,0,0,
+                      0,0,1,0,
+                      0,0,0,1};
+    m_view = QMatrix4x4(vals);
     m_view.lookAt(
-                QVector3D(m_cam_offset + QVector3D(0,0,2.4f)),    // Camera Position
-                QVector3D(m_cam_offset),    // Point camera looks towards
+                QVector3D(-m_cam_offset + QVector3D(0,0,2.4f)),    // Camera Position
+                QVector3D(-m_cam_offset),    // Point camera looks towards
                 QVector3D(0.0f, 1.0f, 0.0f));   // Up vector
 
     float aspect = 4.0f/3.0f;
@@ -166,8 +171,8 @@ void GLWidget::setupLightingAndMatrices() {
                 0.3f,           // near clipping plane
                 1000.0f);       // far clipping plane
 
-    m_lightInfo.Position = QVector4D( -1.0f, 1.0f, 1.0f, 1.0f );
-    m_lightInfo.Intensity = QVector3D( 1.0f, 1.0f, 1.0f);
+    m_lightInfo.Position = QVector4D(-1.0f, 1.0f, 1.0f, 1.0f);
+    m_lightInfo.Intensity = QVector3D(1.0f, 1.0f, 1.0f);
 }
 
 void GLWidget::paintGL() {
@@ -183,70 +188,62 @@ void GLWidget::paintGL() {
     // Set the model matrix
     // Translate and rotate it a bit to get a better view of the model
     m_model.setToIdentity();
-    m_model.translate(m_cam_offset);
+    m_model.translate(-m_cam_offset);
     m_model.rotate(m_xRot/16, 1.0f, 0.0f, 0.0f);
     m_model.rotate(m_zRot/16, 0.0f, 1.0f, 0.0f);
-    m_model.translate(-m_cam_offset);
+    m_model.translate(m_cam_offset);
 
     // Set shader uniforms for light information
-    m_shaderProgram.setUniformValue( "lightPosition", m_lightInfo.Position );
-    m_shaderProgram.setUniformValue( "lightIntensity", m_lightInfo.Intensity );
+    m_shaderProgram.setUniformValue("lightPosition", m_lightInfo.Position);
+    m_shaderProgram.setUniformValue("lightIntensity", m_lightInfo.Intensity);
 
     // Bind VAO and draw everything
     m_vao.bind();
-    drawNode(m_rootNode.data(), QMatrix4x4());
+    drawNodes();
     m_vao.release();
 }
 
 
 void GLWidget::resizeGL(int w, int h){
-    glViewport( 0, 0, w, h );
+    glViewport(0, 0, w, h);
     m_projection.setToIdentity();
     m_projection.perspective(60.0f, (float)w/h, .3f, 1000);
 }
 
 
-void GLWidget::drawNode(const Node *node, QMatrix4x4 objectMatrix){
-    // Prepare matrices
-    objectMatrix *= node->transformation;
-    if (node->name.contains(QString("Forearm"))){
-        objectMatrix.translate(node->head);
-        objectMatrix.rotate(30.0f,0,0,1);
-        objectMatrix.translate(-node->head);
+void GLWidget::drawNodes(){
+    QVector<QSharedPointer<Node> > nodes = model.getNodes();
+    for(int inn = 0; inn < nodes.size(); ++inn){
+        // Prepare matrices
+        QMatrix4x4 modelMatrix = m_model * nodes[inn]->getTransformation();// * nodes[inn]->getDefaultPose();
+        QMatrix4x4 modelViewMatrix = m_view * modelMatrix;
+        QMatrix3x3 normalMatrix = modelViewMatrix.normalMatrix();
+        QMatrix4x4 mvp = m_projection * modelViewMatrix;
+
+        m_shaderProgram.setUniformValue("MV", modelViewMatrix);// Transforming to eye space
+        m_shaderProgram.setUniformValue("N", normalMatrix);    // Transform normal to Eye space
+        m_shaderProgram.setUniformValue("MVP", mvp);           // Matrix for transforming to Clip space
+
+        // Draw each mesh in this node
+        for(int imm = 0; imm < nodes[inn]->getMeshes().size(); ++imm) {
+            if (nodes[inn]->getName().contains(QString("UpperArm")))
+                setMaterialUniforms(*(model.getMaterialByIndex(2)));
+            else
+                setMaterialUniforms(*(model.getMaterialByIndex(0)));
+
+            glDrawElements(GL_TRIANGLES,
+                           nodes[inn]->getMeshes()[imm]->indexCount,
+                           GL_UNSIGNED_INT,
+                           (const void*)(nodes[inn]->getMeshes()[imm]->indexOffset*sizeof(unsigned int)));
+        }
     }
-
-    QMatrix4x4 modelMatrix = m_model * objectMatrix;
-    QMatrix4x4 modelViewMatrix = m_view * modelMatrix;
-    QMatrix3x3 normalMatrix = modelViewMatrix.normalMatrix();
-    QMatrix4x4 mvp = m_projection * modelViewMatrix;
-
-    m_shaderProgram.setUniformValue("MV", modelViewMatrix);// Transforming to eye space
-    m_shaderProgram.setUniformValue("N", normalMatrix);    // Transform normal to Eye space
-    m_shaderProgram.setUniformValue("MVP", mvp);           // Matrix for transforming to Clip space
-
-    // Draw each mesh in this node
-    for(int imm = 0; imm<node->meshes.size(); ++imm) {
-        if (node->name.contains(QString("Forearm")))
-            setMaterialUniforms(*(modelLoader.getMaterial(1)));
-        else
-            setMaterialUniforms(*(modelLoader.getMaterial(0)));
-
-        glDrawElements(GL_TRIANGLES,
-                       node->meshes[imm]->indexCount,
-                       GL_UNSIGNED_INT,
-                       (const void*)(node->meshes[imm]->indexOffset * sizeof(unsigned int)) );
-    }
-
-    // Recursively draw this nodes children nodes
-    for(int inn = 0; inn<node->nodes.size(); ++inn)
-        drawNode(&node->nodes[inn], objectMatrix);
 }
 
 void GLWidget::setMaterialUniforms(MaterialInfo &mater) {
-    m_shaderProgram.setUniformValue( "Ka", mater.Ambient );
-    m_shaderProgram.setUniformValue( "Kd", mater.Diffuse );
-    m_shaderProgram.setUniformValue( "Ks", mater.Specular );
-    m_shaderProgram.setUniformValue( "shininess", mater.Shininess );
+    m_shaderProgram.setUniformValue("Ka", mater.Ambient);
+    m_shaderProgram.setUniformValue("Kd", mater.Diffuse);
+    m_shaderProgram.setUniformValue("Ks", mater.Specular);
+    m_shaderProgram.setUniformValue("shininess", mater.Shininess);
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event) {

@@ -2,6 +2,7 @@
 #include <limits>
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <stdexcept>
 
 #define DEBUGOUTPUT_NORMALS(nodeIndex) (false)//( QList<int>{1}.contains(nodeIndex) )//(false)
 
@@ -38,31 +39,28 @@ bool ModelLoader::Load(QString filePath, PathType pathType) {
 
     Assimp::Importer importer;
 
-    const aiScene* scene = importer.ReadFile( l_filePath.toStdString(),
+    const aiScene* scene = importer.ReadFile(l_filePath.toStdString(),
             aiProcess_Triangulate |
             aiProcess_JoinIdenticalVertices |
             aiProcess_SortByPType |
-            0
-                                              );
+            0);
 
     if(!scene) {
         qDebug() << "Error loading file: (assimp:) " << importer.GetErrorString();
         return false;
     }
 
-    for(unsigned int ii=0; ii<scene->mNumMaterials; ++ii) {
+    for(unsigned int ii=0; ii < scene->mNumMaterials; ++ii) {
         QSharedPointer<MaterialInfo> mater = processMaterial(scene->mMaterials[ii]);
         m_materials.push_back(mater);
     }
 
-    for(unsigned int ii=0; ii<scene->mNumMeshes; ++ii) {
+    for(unsigned int ii=0; ii < scene->mNumMeshes; ++ii) {
         m_meshes.push_back(processMesh(scene->mMeshes[ii]));
     }
 
     if(scene->mRootNode != NULL) {
-        Node *rootNode = new Node;
-        processNode(scene, scene->mRootNode, 0, *rootNode);
-        m_rootNode.reset(rootNode);
+        processNode(scene->mRootNode);
     }
     else {
         qDebug() << "Error loading model";
@@ -72,7 +70,7 @@ bool ModelLoader::Load(QString filePath, PathType pathType) {
     return true;
 }
 
-void ModelLoader::getBufferData( QVector<float> **vertices, QVector<float> **normals, QVector<unsigned int> **indices) {
+void ModelLoader::getBufferData(QVector<float> **vertices, QVector<float> **normals, QVector<unsigned int> **indices) {
     if(vertices != 0)
         *vertices = &m_vertices;
 
@@ -87,28 +85,25 @@ QSharedPointer<MaterialInfo> ModelLoader::processMaterial(aiMaterial *material) 
     QSharedPointer<MaterialInfo> mater(new MaterialInfo);
 
     aiString mname;
-    material->Get( AI_MATKEY_NAME, mname);
-    if(mname.length > 0)
-        mater->Name = mname.C_Str();
-    mater->isTexture = false;
+    material->Get(AI_MATKEY_NAME, mname);
 
     int shadingModel;
-    material->Get( AI_MATKEY_SHADING_MODEL, shadingModel );
+    material->Get(AI_MATKEY_SHADING_MODEL, shadingModel);
 
     if(shadingModel != aiShadingMode_Phong && shadingModel != aiShadingMode_Gouraud) {
         qDebug() << "This mesh's shading model is not implemented in this loader, setting to default material";
         mater->Name = "DefaultMaterial";
     }
     else {
-        aiColor3D dif (0.f,0.f,0.f);
-        aiColor3D amb (0.f,0.f,0.f);
-        aiColor3D spec (0.f,0.f,0.f);
+        aiColor3D dif(0.f,0.f,0.f);
+        aiColor3D amb(0.f,0.f,0.f);
+        aiColor3D spec(0.f,0.f,0.f);
         float shine = 0.0;
 
-        material->Get( AI_MATKEY_COLOR_AMBIENT, amb);
-        material->Get( AI_MATKEY_COLOR_DIFFUSE, dif); //->Get(<material-key>,<where-to-store>))
-        material->Get( AI_MATKEY_COLOR_SPECULAR, spec);
-        material->Get( AI_MATKEY_SHININESS, shine);
+        material->Get(AI_MATKEY_COLOR_AMBIENT, amb);
+        material->Get(AI_MATKEY_COLOR_DIFFUSE, dif); //->Get(<material-key>,<where-to-store>))
+        material->Get(AI_MATKEY_COLOR_SPECULAR, spec);
+        material->Get(AI_MATKEY_SHININESS, shine);
 
         mater->Ambient = QVector3D(amb.r, amb.g, amb.b);
         mater->Diffuse = QVector3D(dif.r, dif.g, dif.b);
@@ -116,22 +111,7 @@ QSharedPointer<MaterialInfo> ModelLoader::processMaterial(aiMaterial *material) 
         mater->Shininess = shine;
 
         mater->Ambient *= .2f;
-        if( mater->Shininess == 0.0) mater->Shininess = 30;
-
-        if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
-            qDebug() << "Diffuse Texture(s) Found:" << material->GetTextureCount(aiTextureType_DIFFUSE)
-                     << "for Material:" << mater->Name;
-            aiString texPath;
-
-            if (material->GetTexture(aiTextureType_DIFFUSE, 0, &texPath, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
-                QString texturePath = texPath.data;
-                mater->isTexture = true;
-                mater->textureName = texturePath;
-                qDebug() << "  Texture path" << texturePath;
-            }
-            else
-                qDebug() << "  Failed to get texture for material";
-        }
+        if(mater->Shininess == 0.0) mater->Shininess = 30;
     }
 
     return mater;
@@ -144,7 +124,7 @@ QSharedPointer<Mesh> ModelLoader::processMesh(aiMesh *mesh) {
     int vertindexoffset = m_vertices.size()/3;
 
     // Get Vertices
-    for(uint ii=0; ii<mesh->mNumVertices; ++ii) {
+    for(uint ii=0; ii < mesh->mNumVertices; ++ii) {
         aiVector3D &vec = mesh->mVertices[ii];
         m_vertices.push_back(vec.x);
         m_vertices.push_back(vec.y);
@@ -155,7 +135,7 @@ QSharedPointer<Mesh> ModelLoader::processMesh(aiMesh *mesh) {
     m_normals.resize(m_vertices.size());
     int nind = vertindexoffset * 3;
 
-    for(uint ii=0; ii<mesh->mNumVertices; ++ii) {
+    for(uint ii=0; ii < mesh->mNumVertices; ++ii) {
         aiVector3D &vec = mesh->mNormals[ii];
         m_normals[nind] = vec.x;
         m_normals[nind+1] = vec.y;
@@ -164,7 +144,7 @@ QSharedPointer<Mesh> ModelLoader::processMesh(aiMesh *mesh) {
     };
 
     // Get mesh indexes
-    for(uint t = 0; t<mesh->mNumFaces; ++t) {
+    for(uint t = 0; t < mesh->mNumFaces; ++t) {
         aiFace* face = &mesh->mFaces[t];
 
         m_indices.push_back(face->mIndices[0]+vertindexoffset);
@@ -178,45 +158,61 @@ QSharedPointer<Mesh> ModelLoader::processMesh(aiMesh *mesh) {
     return newMesh;
 }
 
-void ModelLoader::processNode(const aiScene *scene, aiNode *node, Node *parentNode, Node &newNode) {
-    static int nodeIndex = 0;
-
-    newNode.name = node->mName.length != 0 ? node->mName.C_Str() : "";
-
-    newNode.tail = jsonArr3toQVec3(pointsJson.value(newNode.name).toObject().value("tail").toArray());
-    newNode.head = jsonArr3toQVec3(pointsJson.value(newNode.name).toObject().value("head").toArray());
-
-    newNode.transformation = QMatrix4x4(node->mTransformation[0]);
-
-    newNode.meshes.resize(node->mNumMeshes);
-    for(uint imesh = 0; imesh < node->mNumMeshes; ++imesh) {
-        QSharedPointer<Mesh> mesh = m_meshes[node->mMeshes[imesh]];
-        newNode.meshes[imesh] = mesh;
-    }
-
-    qDebug() << "NodeName" << newNode.name;
-    qDebug() << "  NodeIndex" << nodeIndex;
-    qDebug() << "  Tail" << newNode.tail;
-    qDebug() << "  Head" << newNode.head;
-    qDebug() << "  NumChildren" << node->mNumChildren;
-    qDebug() << "  NumMeshes" << newNode.meshes.size();
-    for (int ii=0; ii<newNode.meshes.size(); ++ii) {
-        qDebug() << "    MaterialName" << newNode.meshes[ii]->material->Name;
-        qDebug() << "    MeshVertices" << newNode.meshes[ii]->indexCount;
-    }
-
-    ++nodeIndex;
+void ModelLoader::processNode(aiNode *node) {
 
     for(uint ich = 0; ich < node->mNumChildren; ++ich) {
-        newNode.nodes.push_back(Node());
-        processNode(scene, node->mChildren[ich], parentNode, newNode.nodes[ich]);
+        QSharedPointer<Node> n(new Node());
+
+        aiNode* thisNode = node->mChildren[ich];
+        n->setName(thisNode->mName.length != 0 ? thisNode->mName.C_Str() : "");
+        n->setTail(jsonArr3toQVec3(pointsJson.value(n->getName()).toObject().value("tail").toArray()));
+        n->setHead(jsonArr3toQVec3(pointsJson.value(n->getName()).toObject().value("head").toArray()));
+        n->setTailLocal(jsonArr3toQVec3(pointsJson.value(n->getName()).toObject().value("tail_local").toArray()));
+        n->setHeadLocal(jsonArr3toQVec3(pointsJson.value(n->getName()).toObject().value("head_local").toArray()));
+        n->setFrame(jsonXYZtoFrame(pointsJson.value(n->getName()).toObject().value("frame").toObject()));
+        n->setTransformation(QMatrix4x4(thisNode->mTransformation[0]));
+
+        for(uint imesh = 0; imesh < thisNode->mNumMeshes; ++imesh) {
+            QSharedPointer<Mesh> mesh = m_meshes[thisNode->mMeshes[imesh]];
+            n->addMesh(mesh);
+        }
+
+        qDebug() << "NodeName" << n->getName();
+//        qDebug() << "  NodeIndex" << ich;
+//        qDebug() << "  Tail" << n->getTail();
+//        qDebug() << "  Head" << n->getHead();
+//        for (int ii=0; ii < n->getMeshes().size(); ++ii) {
+//            qDebug() << "    MaterialName" << n->getMeshes()[ii]->material->Name;
+//            qDebug() << "    MeshVertices" << n->getMeshes()[ii]->indexCount;
+//        }
+
+        m_nodes.push_back(n);
     }
+
+    QSharedPointer<Node> rootNode;
+    // assign parents
+    for (int i = 0; i < m_nodes.size(); ++i){
+        QString parentName = pointsJson.value(m_nodes[i]->getName()).toObject().value("parent_name").toString();
+        if (parentName == ""){
+            rootNode = m_nodes[i];
+            m_nodes[i]->root(true);
+            m_nodes[i]->findRotationFromParent();
+        }
+        else {
+            m_nodes[i]->setParent(getNodeByName(parentName));
+            getNodeByName(parentName)->addChild(m_nodes[i]);
+        }
+    }
+    for (int i = 0; i < m_nodes.size(); ++i){
+        m_nodes[i]->init();
+    }
+    rootNode->setAllRotIdentity();
 }
 
 QVector3D ModelLoader::jsonArr3toQVec3(QJsonArray jsonArr3){
     if (jsonArr3.size() != 3){
-        qDebug() << "ModelLoader::jsonArr3toQVec3: requires 3-element QJsonArray, but the actual size was " << jsonArr3.size();
-        return QVector3D(0,0,0);
+//        qDebug() << "ModelLoader::jsonArr3toQVec3: requires 3-element QJsonArray, but the actual size was " << jsonArr3.size();
+        throw std::invalid_argument("requires 3-element QJsonArray");
     }
     // convert from blender axes to opengl axes
     return QVector3D(jsonArr3[0].toDouble(),
@@ -224,13 +220,21 @@ QVector3D ModelLoader::jsonArr3toQVec3(QJsonArray jsonArr3){
             -jsonArr3[1].toDouble());
 }
 
-Node ModelLoader::getNodeByName(QString name){
-    QVector<Node> nodes = m_rootNode.data()->nodes;
-    for (int i = 0; i < nodes.size(); i++){
-        if (nodes[i].name == name)
-            return nodes[i];
+CoordinateFrame ModelLoader::jsonXYZtoFrame(QJsonObject jsonFrame){
+    return CoordinateFrame(
+                jsonArr3toQVec3(jsonFrame.value("x").toArray()),
+                jsonArr3toQVec3(jsonFrame.value("y").toArray()),
+                jsonArr3toQVec3(jsonFrame.value("z").toArray()));
+}
+
+QSharedPointer<Node> ModelLoader::getNodeByName(QString name){
+    for (int i = 0; i < m_nodes.size(); i++){
+        if (m_nodes[i]->getName() == name)
+            return m_nodes[i];
     }
-    qDebug() << "ModelLoader::getNodeByName: given name not found in node list - returning empty node";
-    Node n;
-    return n;
+    throw std::invalid_argument("given name not found in node list");
+}
+
+Model ModelLoader::toModel(){
+    return Model(m_nodes,m_materials);
 }
