@@ -18,11 +18,6 @@ SOURCES += main.cpp\
     positionsnapshot.cpp \
     tabcontent.cpp \
     wagfile.cpp \
-    visualization/suitsimulation.cpp \
-    visualization/glcamera.cpp \
-    visualization/glwidget.cpp \
-    visualization/visualization.cpp \
-    visualization/vertextranslator.cpp\
     mainwindowslots.cpp \
     band/absband.cpp \
     band/abspose.cpp \
@@ -54,17 +49,15 @@ SOURCES += main.cpp\
     customWidgets/closablelabel.cpp \
     test/testquatstate.cpp \
     test/testquaterror.cpp \
-    communications/incorrectdatalengthexception.cpp
+    communications/incorrectdatalengthexception.cpp \
+    visualization/model.cpp \
+    visualization/modelloader.cpp \
+    visualization/glwidget.cpp
 
 HEADERS  += mainwindow.h \
     positionsnapshot.h \
     tabcontent.h \
     wagfile.h \
-    visualization/suitsimulation.h \
-    visualization/glcamera.h \
-    visualization/glwidget.h \
-    visualization/visualization.h \
-    visualization/vertextranslator.h \
     user.h \
     band/absband.h \
     band/abspose.h \
@@ -92,16 +85,23 @@ HEADERS  += mainwindow.h \
     test/testband.h \
     customWidgets/closablelabel.h \
     localtesting.h \
-    communications/incorrectdatalengthexception.h
+    communications/incorrectdatalengthexception.h \
+    band/absstate.h \
+    visualization/model.h \
+    visualization/modelloader.h \
+    visualization/glwidget.h
 
 FORMS    +=
 
 RESOURCES += \
-    icons.qrc
+    icons.qrc \
+    visualization/resources.qrc
 
 CONFIG += console
 
-LIBS += -L/usr/lib/ -lboost_filesystem -lboost_system
+LIBS += -L/usr/lib/ -lboost_filesystem -lboost_system -lassimp
 
 DISTFILES += \
-    README.txt
+    README.txt \
+    visualization/ads_fragment.frag \
+    visualization/ads_fragment.vert

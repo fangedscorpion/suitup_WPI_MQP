@@ -33,6 +33,7 @@ void GLWidget::setXRotation(int angle) {
     qNormalizeAngle(angle);
     if (angle != m_xRot) {
         m_xRot = angle;
+//        emit xRotationChanged(angle);
         update();
     }
 }
@@ -41,6 +42,7 @@ void GLWidget::setZRotation(int angle) {
     qNormalizeAngle(angle);
     if (angle != m_zRot) {
         m_zRot = angle;
+//        emit zRotationChanged(angle);
         update();
     }
 }
@@ -148,7 +150,12 @@ void GLWidget::createAttributes(){
 }
 
 void GLWidget::setupLightingAndMatrices() {
-    m_view.setToIdentity();
+//    m_view.setToIdentity();
+    float vals[16] = {1,0,0,0,
+                      0,1,0,0,
+                      0,0,1,0,
+                      0,0,0,1};
+    m_view = QMatrix4x4(vals);
     m_view.lookAt(
                 QVector3D(-m_cam_offset + QVector3D(0,0,2.4f)),    // Camera Position
                 QVector3D(-m_cam_offset),    // Point camera looks towards
