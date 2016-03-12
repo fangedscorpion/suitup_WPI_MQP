@@ -1,6 +1,19 @@
 #include "model.h"
 #include <stdexcept>
 
+Model::Model(QVector<QSharedPointer<Node> > nodes, QVector<QSharedPointer<MaterialInfo> > materials):
+    nodes(nodes),
+    materials(materials){
+    for (int i = 0; i < nodes.size(); ++i){
+        if (nodes[i]->isRoot()){
+            rootNode = nodes[i];
+            break;
+        }
+    }
+    if (!rootNode)
+        throw std::exception();
+}
+
 QSharedPointer<Node> Model::getNodeByName(QString name) const {
     for (int i = 0; i < nodes.size(); ++i){
         if (nodes[i]->getName() == name){
@@ -19,44 +32,32 @@ QSharedPointer<MaterialInfo> Model::getMaterialByName(QString name) const {
     throw std::invalid_argument("Material with given name not found.");
 }
 
-QSharedPointer<Node> Node::getParent() const {
-    if (!isRootNode)
-        return parent;
-    else
-        throw std::exception();
-}
-
 void Node::setParent(QSharedPointer<Node> parent) {
     this->parent = parent;
     root(false);
-    findRotationFromParent();
 }
 
-void Node::findRotationFromParent() {
-    rotationFromParent = QQuaternion::fromRotationMatrix(frame.toRotationMatrix());
-}
-
-void Node::init(){
+void Node::init() {
     Node n = *this;
     QQuaternion worldToThis;
+    QQuaternion rotationFromParent = QQuaternion::fromRotationMatrix(n.frame.toRotationMatrix());
 
     while (!n.isRoot()) {
-        worldToThis = n.rotationFromParent * worldToThis;
+        worldToThis = rotationFromParent * worldToThis;
         n = *(n.parent);
+        rotationFromParent = QQuaternion::fromRotationMatrix(n.frame.toRotationMatrix());
     }
-    worldToThis =  n.rotationFromParent * worldToThis;
+    worldToThis =  rotationFromParent * worldToThis;
 
     // TODO FIXXXXXXXXXXXXX
     float test[9] = {1,0,0,
                       0,0,-1,
                       0,1,0};
 
-    rotToOrigin = QQuaternion();
-    rotToOrigin = rotToOrigin * QQuaternion::fromRotationMatrix(QMatrix3x3(test)) * worldToThis.conjugated();
+    rotToOrigin = QQuaternion::fromRotationMatrix(QMatrix3x3(test)) * worldToThis.conjugated();
     transformationToOrigin.rotate(rotToOrigin);
     transformationToOrigin.translate(-head);
     defaultPose = transformationToOrigin.inverted();
-//    transformation = transformationToOrigin;
 }
 
 void Node::setWorldRotation(QQuaternion worldRotation) {
@@ -69,15 +70,19 @@ void Node::setWorldRotation(QQuaternion worldRotation) {
     transformation.rotate(worldRotation);
 
     transformation *= transformationToOrigin;
+
+    for (int i = 0; i < children.size(); ++i){
+        children[i]->setWorldRotation(children[i]->getWorldRotation());
+    }
 }
 
 void Node::setAllRotIdentity() {
+    if (isRootNode){
+        transformation.translate(-tail);
+    }
     for (int i = 0; i < children.size(); ++i){
         children[i]->setWorldRotation(QQuaternion(1,0,0,0));
         children[i]->setAllRotIdentity();
-    }
-    if (name == "Mid"){
-        transformation.translate(-1000,-1000,-1000);
     }
 }
 
@@ -85,7 +90,6 @@ QMatrix3x3 CoordinateFrame::toRotationMatrix() const {
     float vectors[9] = {xv.x(), yv.x(), zv.x(),
                         xv.y(), yv.y(), zv.y(),
                         xv.z(), yv.z(), zv.z()};
-
     // TODO FIX THIS LOL
     // (comes from blender and opengl having different frame orientations - see jsonArrToQVec3 in modelloader.cpp)
     float test[9] = {1,0,0,

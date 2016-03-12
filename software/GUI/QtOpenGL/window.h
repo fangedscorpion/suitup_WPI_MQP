@@ -13,11 +13,7 @@ public:
     Window();
 
 private:
-    QSlider *createSlider();
-
     GLWidget *glWidget;
-    QSlider *xSlider;
-    QSlider *zSlider;
 };
 
 #endif

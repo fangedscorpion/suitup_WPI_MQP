@@ -12,10 +12,8 @@ ModelLoader::ModelLoader() {
     QByteArray blob = file.readAll();
     pointsJson = QJsonDocument::fromJson(blob).object();
 
-    QJsonArray headArr = pointsJson.value("Mid").toObject().value("tail").toArray();
-    QJsonArray tailArr = pointsJson.value("Mid").toObject().value("head").toArray();
-    rootTail = jsonArr3toQVec3(tailArr);
-    rootHead = jsonArr3toQVec3(headArr);
+    float blend2openglarr[9] = {1,0,0,0,0,1,0,-1,0};
+    rotateBlenderToOpenGL = QQuaternion::fromRotationMatrix(QMatrix3x3(blend2openglarr));
 }
 
 // look for file using relative path
@@ -165,10 +163,8 @@ void ModelLoader::processNode(aiNode *node) {
 
         aiNode* thisNode = node->mChildren[ich];
         n->setName(thisNode->mName.length != 0 ? thisNode->mName.C_Str() : "");
-        n->setTail(jsonArr3toQVec3(pointsJson.value(n->getName()).toObject().value("tail").toArray()));
-        n->setHead(jsonArr3toQVec3(pointsJson.value(n->getName()).toObject().value("head").toArray()));
-        n->setTailLocal(jsonArr3toQVec3(pointsJson.value(n->getName()).toObject().value("tail_local").toArray()));
-        n->setHeadLocal(jsonArr3toQVec3(pointsJson.value(n->getName()).toObject().value("head_local").toArray()));
+        n->setTail(jsonArr3toQVec3(pointsJson.value(n->getName()).toObject().value("tail").toArray(),rotateBlenderToOpenGL));
+        n->setHead(jsonArr3toQVec3(pointsJson.value(n->getName()).toObject().value("head").toArray(),rotateBlenderToOpenGL));
         n->setFrame(jsonXYZtoFrame(pointsJson.value(n->getName()).toObject().value("frame").toObject()));
         n->setTransformation(QMatrix4x4(thisNode->mTransformation[0]));
 
@@ -179,8 +175,6 @@ void ModelLoader::processNode(aiNode *node) {
 
         qDebug() << "NodeName" << n->getName();
 //        qDebug() << "  NodeIndex" << ich;
-//        qDebug() << "  Tail" << n->getTail();
-//        qDebug() << "  Head" << n->getHead();
 //        for (int ii=0; ii < n->getMeshes().size(); ++ii) {
 //            qDebug() << "    MaterialName" << n->getMeshes()[ii]->material->Name;
 //            qDebug() << "    MeshVertices" << n->getMeshes()[ii]->indexCount;
@@ -196,7 +190,6 @@ void ModelLoader::processNode(aiNode *node) {
         if (parentName == ""){
             rootNode = m_nodes[i];
             m_nodes[i]->root(true);
-            m_nodes[i]->findRotationFromParent();
         }
         else {
             m_nodes[i]->setParent(getNodeByName(parentName));
@@ -209,22 +202,22 @@ void ModelLoader::processNode(aiNode *node) {
     rootNode->setAllRotIdentity();
 }
 
-QVector3D ModelLoader::jsonArr3toQVec3(QJsonArray jsonArr3){
+QVector3D ModelLoader::jsonArr3toQVec3(QJsonArray jsonArr3, QQuaternion rotation){
     if (jsonArr3.size() != 3){
-//        qDebug() << "ModelLoader::jsonArr3toQVec3: requires 3-element QJsonArray, but the actual size was " << jsonArr3.size();
         throw std::invalid_argument("requires 3-element QJsonArray");
     }
     // convert from blender axes to opengl axes
-    return QVector3D(jsonArr3[0].toDouble(),
-            jsonArr3[2].toDouble(),
-            -jsonArr3[1].toDouble());
+    return rotation.rotatedVector(QVector3D(
+                                    jsonArr3[0].toDouble(),
+                                    jsonArr3[1].toDouble(),
+                                    jsonArr3[2].toDouble()));
 }
 
 CoordinateFrame ModelLoader::jsonXYZtoFrame(QJsonObject jsonFrame){
     return CoordinateFrame(
-                jsonArr3toQVec3(jsonFrame.value("x").toArray()),
-                jsonArr3toQVec3(jsonFrame.value("y").toArray()),
-                jsonArr3toQVec3(jsonFrame.value("z").toArray()));
+                jsonArr3toQVec3(jsonFrame.value("x").toArray(),rotateBlenderToOpenGL),
+                jsonArr3toQVec3(jsonFrame.value("y").toArray(),rotateBlenderToOpenGL),
+                jsonArr3toQVec3(jsonFrame.value("z").toArray(),rotateBlenderToOpenGL));
 }
 
 QSharedPointer<Node> ModelLoader::getNodeByName(QString name){

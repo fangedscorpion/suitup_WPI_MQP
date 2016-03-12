@@ -53,8 +53,6 @@ public:
     void setTransformation(QMatrix4x4 transformation) {this->transformation = transformation;}
     void setTail(QVector3D tail) {this->tail = tail;}
     void setHead(QVector3D head) {this->head = head;}
-    void setTailLocal(QVector3D tailLocal) {tail_local = tailLocal;}
-    void setHeadLocal(QVector3D headLocal) {head_local = headLocal;}
     void setFrame(CoordinateFrame frame) {this->frame = frame;}
     void setParent(QSharedPointer<Node> parent);
     void addMesh(QSharedPointer<Mesh> mesh) {this->meshes.push_back(mesh);}
@@ -64,14 +62,9 @@ public:
     // getters
     QString getName() const {return name;}
     QMatrix4x4 getTransformation() const {return transformation;}
-    QVector3D getTail() const {return tail;}
-    QVector3D getHead() const {return head;}
-    QVector3D getTailLocal() const {return tail_local;}
-    QVector3D getHeadLocal() const {return head_local;}
-    CoordinateFrame getCoordinateFrame() const {return frame;}
-    QSharedPointer<Node> getParent() const;
     QVector<QSharedPointer<Mesh> > getMeshes() const {return meshes;}
     QMatrix4x4 getDefaultPose() const {return defaultPose;}
+    QQuaternion getWorldRotation() const {return worldRotation;}
     bool isRoot() const {return isRootNode;}
 
     // other
@@ -82,15 +75,12 @@ public:
 
 private:
     QString name;
-    QQuaternion rotationFromParent;
     QMatrix4x4 transformationToOrigin;
     QQuaternion rotToOrigin;
     QMatrix4x4 defaultPose;
     QMatrix4x4 transformation;
     QVector3D tail;
     QVector3D head;
-    QVector3D tail_local;
-    QVector3D head_local;
     CoordinateFrame frame;
     bool isRootNode;
 
@@ -107,10 +97,7 @@ private:
 class Model {
 public:
     Model() {}
-    Model(QVector<QSharedPointer<Node> > nodes, QVector<QSharedPointer<MaterialInfo> > materials) :
-        nodes(nodes),
-        materials(materials){
-        }
+    Model(QVector<QSharedPointer<Node> > nodes, QVector<QSharedPointer<MaterialInfo> > materials);
     QVector<QSharedPointer<Node> > getNodes() const {return nodes;}
     QSharedPointer<Node> getNodeByName(QString name) const;
 

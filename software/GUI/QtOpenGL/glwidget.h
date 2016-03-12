@@ -19,15 +19,6 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         GLWidget();
         ~GLWidget();
 
-    public slots:
-        void setXRotation(int angle);
-        void setZRotation(int angle);
-        void cleanup();
-
-    signals:
-        void xRotationChanged(int angle);
-        void zRotationChanged(int angle);
-
     protected:
         void initializeGL() Q_DECL_OVERRIDE;
         void paintGL() Q_DECL_OVERRIDE;
@@ -40,6 +31,9 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         void createBuffers();
         void createAttributes();
         void setupLightingAndMatrices();
+
+        void setXRotation(int angle);
+        void setZRotation(int angle);
 
         void draw();
         void drawNodes();

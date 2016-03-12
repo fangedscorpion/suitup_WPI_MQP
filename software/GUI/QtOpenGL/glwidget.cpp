@@ -10,7 +10,7 @@ GLWidget::GLWidget() :
     m_xRot(0),
     m_yRot(0),
     m_zRot(0),
-    m_cam_offset(QVector3D(0,-1,0)){
+    m_cam_offset(QVector3D(0,0,0)){
 
     QSurfaceFormat format;
     format.setDepthBufferSize(24);
@@ -33,7 +33,7 @@ void GLWidget::setXRotation(int angle) {
     qNormalizeAngle(angle);
     if (angle != m_xRot) {
         m_xRot = angle;
-        emit xRotationChanged(angle);
+//        emit xRotationChanged(angle);
         update();
     }
 }
@@ -42,13 +42,11 @@ void GLWidget::setZRotation(int angle) {
     qNormalizeAngle(angle);
     if (angle != m_zRot) {
         m_zRot = angle;
-        emit zRotationChanged(angle);
+//        emit zRotationChanged(angle);
         update();
     }
 }
 
-void GLWidget::cleanup() {
-}
 
 void GLWidget::initializeGL() {
     initializeOpenGLFunctions();
@@ -215,7 +213,7 @@ void GLWidget::drawNodes(){
     QVector<QSharedPointer<Node> > nodes = model.getNodes();
     for(int inn = 0; inn < nodes.size(); ++inn){
         // Prepare matrices
-        QMatrix4x4 modelMatrix = m_model * nodes[inn]->getTransformation();// * nodes[inn]->getDefaultPose();
+        QMatrix4x4 modelMatrix = m_model * nodes[inn]->getTransformation();
         QMatrix4x4 modelViewMatrix = m_view * modelMatrix;
         QMatrix3x3 normalMatrix = modelViewMatrix.normalMatrix();
         QMatrix4x4 mvp = m_projection * modelViewMatrix;

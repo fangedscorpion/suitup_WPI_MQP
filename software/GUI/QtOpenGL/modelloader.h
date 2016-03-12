@@ -38,7 +38,7 @@ private:
     QSharedPointer<MaterialInfo> processMaterial(aiMaterial *mater);
     QSharedPointer<Mesh> processMesh(aiMesh *mesh);
     void processNode(aiNode *node);
-    QVector3D jsonArr3toQVec3(QJsonArray jsonArr3);
+    QVector3D jsonArr3toQVec3(QJsonArray jsonArr3, QQuaternion rotation = QQuaternion());
     CoordinateFrame jsonXYZtoFrame(QJsonObject jsonFrame);
 
     QVector<float> m_vertices;
@@ -50,8 +50,8 @@ private:
     QVector<QSharedPointer<Node> > m_nodes;
 
     QJsonObject pointsJson;
-    QVector3D rootTail;
-    QVector3D rootHead;
+
+    QQuaternion rotateBlenderToOpenGL;
 };
 
 #endif // MODELLOADER_H
