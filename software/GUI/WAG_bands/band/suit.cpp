@@ -30,17 +30,6 @@ Suit::Suit(WifiManager *comms):QObject() {
         throw std::logic_error(str);
     }
 
-    refBand = bands[CHEST];
-    bands[CHEST]->setParentBand(new NullBand());
-    bands[CHEST]->addChildBand(bands[RIGHT_SHOULDER]);
-    bands[CHEST]->addChildBand(bands[LEFT_SHOULDER]);
-    bands[LEFT_SHOULDER]->addChildBand(bands[LEFT_UPPER_ARM]);
-    bands[RIGHT_SHOULDER]->addChildBand(bands[RIGHT_UPPER_ARM]);
-    bands[LEFT_UPPER_ARM]->addChildBand(bands[LEFT_LOWER_ARM]);
-    bands[RIGHT_UPPER_ARM]->addChildBand(bands[RIGHT_LOWER_ARM]);
-    /*bands[LEFT_LOWER_ARM]->addChildBand(bands[LEFT_HAND]);
-    bands[RIGHT_LOWER_ARM]->addChildBand(bands[RIGHT_HAND]);*/
-
     connect(wifiMan, SIGNAL(dataAvailable(BandType,BandMessage*, QElapsedTimer)), this, SLOT(getRecvdData(BandType,BandMessage*,QElapsedTimer)));
     connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(handleConnectionStatusChange(BandType, ConnectionStatus)));
 

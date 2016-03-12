@@ -73,6 +73,7 @@ public:
     void setWorldRotation(QQuaternion worldRotation);
     void setAllRotIdentity();
     void setAllRotDefault();
+    void calibrate(QQuaternion sensedOrientation);
 
 private:
     QString name;
@@ -88,6 +89,7 @@ private:
     QVector3D rotHead;
     QVector3D rotTail;
     QQuaternion worldRotation;
+    QQuaternion calibration;
 
     QSharedPointer<Node> parent;
     QVector<QSharedPointer<Node> > children;

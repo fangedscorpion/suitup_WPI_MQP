@@ -40,7 +40,6 @@ SOURCES += main.cpp\
     communications/bandmessage.cpp \
     customWidgets/motionviewer.cpp \
     band/quatpose.cpp \
-    band/nullband.cpp \
     band/quaterror.cpp \
     math/reflection.cpp \
     test/testreflection.cpp \

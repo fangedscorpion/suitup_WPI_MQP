@@ -92,16 +92,7 @@ void AbsBand::updateState(AbsState* state, qint32 msgTime){
     poseRecvdTime = msgTime;
     pose->update(state);
 
-    updatePoints();
     emit poseRecvd(pose->getState(), type, poseRecvdTime);
-}
-
-void AbsBand::updatePoints(){
-
-    pose->updatePoints(parentBand->getState(),parentBand->getEndpoint());
-    for (unsigned int i = 0; i < childBands.size(); i++){
-        childBands[i]->updatePoints();
-    }
 }
 
 bool AbsBand::isConnected() {

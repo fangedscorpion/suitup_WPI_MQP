@@ -60,14 +60,18 @@ void Node::init() {
     defaultPose = transformationToOrigin.inverted();
 }
 
+void Node::calibrate(QQuaternion sensedOrientation) {
+    calibration = sensedOrientation.conjugated() * worldRotation;
+}
+
 void Node::setWorldRotation(QQuaternion worldRotation) {
-    this->worldRotation = worldRotation;
+    this->worldRotation = worldRotation*calibration;
     rotHead = parent->rotTail + parent->worldRotation.rotatedVector(parent->rotToOrigin.rotatedVector(head - parent->tail));
-    rotTail = rotHead + worldRotation.rotatedVector(rotToOrigin.rotatedVector(tail - head));
+    rotTail = rotHead + this->worldRotation.rotatedVector(rotToOrigin.rotatedVector(tail - head));
 
     transformation.setToIdentity();
     transformation.translate(rotHead);
-    transformation.rotate(worldRotation);
+    transformation.rotate(this->worldRotation);
 
     transformation *= transformationToOrigin;
 
