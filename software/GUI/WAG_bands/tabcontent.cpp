@@ -126,9 +126,9 @@ QWidget* TabContent::createModeRadios(USER u) {
     modeRadiosGroup = new StyledGroupBox("Modes");
 
     QVBoxLayout *vl = modeRadiosGroup->getLayout();
-    recordRadio = new smartRadioButton("Record Motion", RECORD);
-    editRadio = new smartRadioButton("Edit Motion", EDIT);
-    playbackRadio = new smartRadioButton("Playback Motion", PLAYBACK);
+    recordRadio = new SmartRadioButton("Record Motion", RECORD);
+    editRadio = new SmartRadioButton("Edit Motion", EDIT);
+    playbackRadio = new SmartRadioButton("Playback Motion", PLAYBACK);
 
     // if there is only 1 action this user can perform, don't show any modes
     int count = 0;

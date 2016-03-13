@@ -26,6 +26,7 @@
 #include "customWidgets/overlaywidget.h"
 #include "playbackcontroller.h"
 #include "customWidgets/smartpushbutton.h"
+#include "customWidgets/smartradiobutton.h"
 #include "wagfile.h"
 #include <set>
 #include <QTableWidget>
@@ -63,9 +64,9 @@ private:
     QString textInputStyleWhite;
     QString textInputStyleRed;
     // menubar
-    smartPushButton *newBtn;
-    smartPushButton *openBtn;
-    smartPushButton *settingsBtn;
+    SmartPushButton *newBtn;
+    SmartPushButton *openBtn;
+    SmartPushButton *settingsBtn;
     QHBoxLayout* createMenuButtons();
     // statusbar
     QLabel *connectionStatus;
@@ -78,14 +79,14 @@ private:
     QCheckBox *rightShoulder;
     QCheckBox *rightUpperArm;
     QCheckBox *rightLowerArm;
-    smartPushButton *connectBands;
+    SmartPushButton *connectBands;
     OverlayWidget *settingsWidget;
     void createSettings();
     // open (from lib)
     OverlayWidget *openFromLibWidget;
     OverlayWidget *openWidget;
     QTableWidget *openFromLibTable;
-    smartPushButton *openFromLibBtn;
+    SmartPushButton *openFromLibBtn;
     QLineEdit *openFromLibFilterBar;
     QComboBox *openFromLibFilterOpts;
     void createOpenFromLib(USER u);
@@ -96,11 +97,11 @@ private:
     QTextEdit *newMotionDescription;
     QLineEdit *newMotionTagsTextEdit;
     QHBoxLayout *newMotionTagsLayout;
-    smartPushButton *addTagBtn;
-    QRadioButton *newMotionCompRadio;
+    SmartPushButton *addTagBtn;
+    SmartRadioButton *newMotionCompRadio;
     QLabel *newMotionSaveLocation;
-    smartPushButton *createNewMotionBtn;
-    smartPushButton *newMotionBrowseBtn;
+    SmartPushButton *createNewMotionBtn;
+    SmartPushButton *newMotionBrowseBtn;
     void createNewMotion(USER u);
     // user options
     OverlayWidget *userOptionsWidget;

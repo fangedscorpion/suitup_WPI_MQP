@@ -6,12 +6,12 @@
 /*
  * This button has an associated USER to make the button more dynamic
  */
-class smartPushButton : public QPushButton
+class SmartPushButton : public QPushButton
 {
     Q_OBJECT
 public:
-    smartPushButton(const char* name, USER owner);
-    smartPushButton(const char* name);
+    SmartPushButton(const char* name, USER owner);
+    SmartPushButton(const char* name);
     void setUser(USER u);
     void setRed(bool t);
 

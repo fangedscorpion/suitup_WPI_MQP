@@ -102,13 +102,13 @@ void MainWindow::addTab(USER u, WAGFile* w, ACTION_TYPE a) {
 // Menubar actions
 // TODO: finish actions
 QHBoxLayout* MainWindow::createMenuButtons() {
-    newBtn = new smartPushButton("Record New Motion");
+    newBtn = new SmartPushButton("Record New Motion");
     newBtn->hide();
-    openBtn = new smartPushButton("Load Motion");
+    openBtn = new SmartPushButton("Load Motion");
     openBtn->hide();
-    settingsBtn = new smartPushButton("Settings");
+    settingsBtn = new SmartPushButton("Settings");
     connect(settingsBtn, SIGNAL(released()), this, SLOT(launchSettings()));
-    smartPushButton *helpBtn = new smartPushButton("Help");
+    SmartPushButton *helpBtn = new SmartPushButton("Help");
     //    connect(helpAct, SIGNAL(triggered()), this, SLOT(help()));
 
     QHBoxLayout* menuLayout = new QHBoxLayout;
@@ -141,7 +141,7 @@ QWidget* MainWindow::createUserSelectionWindow(std::vector<USER> u) {
     QHBoxLayout *l = new QHBoxLayout;
     int i;
     for(i=0; i < (int)u.size(); i++) {
-        smartPushButton *btn = new smartPushButton(u[i].getName(), u[i]);
+        SmartPushButton *btn = new SmartPushButton(u[i].getName(), u[i]);
         QLabel *lbl = new QLabel(u[i].getDescription());
         lbl->setWordWrap(true);
         lbl->setAlignment(Qt::AlignCenter);
@@ -200,11 +200,11 @@ void MainWindow::createSettings() {
     right->addWidget(rightLowerArm);
     // Buttons on bottom of settings
     QHBoxLayout *settingsButtons = new QHBoxLayout;
-    smartPushButton *calibrate = new smartPushButton("Calibrate Bands");
+    SmartPushButton *calibrate = new SmartPushButton("Calibrate Bands");
     calibrate->setRed(true);
-    connectBands = new smartPushButton("Connect Bands");
+    connectBands = new SmartPushButton("Connect Bands");
     connectBands->setRed(true);
-    smartPushButton *done = new smartPushButton("Done");
+    SmartPushButton *done = new SmartPushButton("Done");
     settingsButtons->addWidget(connectBands);
     settingsButtons->addWidget(calibrate);
     settingsButtons->addWidget(done);
@@ -270,7 +270,7 @@ void MainWindow::createNewMotion(USER u) {
     newMotionTagsTextEdit->setStyleSheet(textInputStyleWhite);
     newMotionTagsTextEdit->setMaximumWidth(inputMaxWidth);
     t->addWidget(newMotionTagsTextEdit);
-    addTagBtn = new smartPushButton("Add Keyword");
+    addTagBtn = new SmartPushButton("Add Keyword");
     addTagBtn->setEnabled(false);
     addTagBtn->setMaximumWidth(110);
     // tags list
@@ -297,12 +297,12 @@ void MainWindow::createNewMotion(USER u) {
     l5->setAlignment(Qt::AlignRight);
     s->addWidget(l5, -1);
     QVBoxLayout *s1 = new QVBoxLayout;
-    QRadioButton *newMotionLibRadio = new QRadioButton("Motion Library");
+    SmartRadioButton *newMotionLibRadio = new SmartRadioButton("Motion Library");
     newMotionLibRadio->setChecked(true);
     QHBoxLayout *c = new QHBoxLayout;
     c->setContentsMargins(0,0,0,0);
-    newMotionCompRadio = new QRadioButton("Local Computer");
-    newMotionBrowseBtn = new smartPushButton("Select Save Location");
+    newMotionCompRadio = new SmartRadioButton("Local Computer");
+    newMotionBrowseBtn = new SmartPushButton("Select Save Location");
     newMotionBrowseBtn->setEnabled(false);
     newMotionSaveLocation = new QLabel("");
     c->addWidget(newMotionBrowseBtn);
@@ -313,9 +313,9 @@ void MainWindow::createNewMotion(USER u) {
     s->addLayout(s1);
 
     QHBoxLayout *btns = new QHBoxLayout;
-    createNewMotionBtn = new smartPushButton("Create", u);
+    createNewMotionBtn = new SmartPushButton("Create", u);
     createNewMotionBtn->setEnabled(false);
-    smartPushButton *cancel = new smartPushButton("Cancel");
+    SmartPushButton *cancel = new SmartPushButton("Cancel");
     btns->addWidget(cancel);
     btns->addWidget(createNewMotionBtn);
     layout->setAlignment(Qt::AlignLeft);
@@ -351,9 +351,9 @@ void MainWindow::createNewMotion(USER u) {
 void MainWindow::createOpenMotionOptions(USER u) {
     openWidget = new OverlayWidget(this, "Load Motion");
     QVBoxLayout *layout = openWidget->getLayout();
-    smartPushButton *openLib = new smartPushButton("Load Motion From Library", u);
-    smartPushButton *openComp = new smartPushButton("Load Motion From Computer", u);
-    smartPushButton *cancel = new smartPushButton("Cancel");
+    SmartPushButton *openLib = new SmartPushButton("Load Motion From Library", u);
+    SmartPushButton *openComp = new SmartPushButton("Load Motion From Computer", u);
+    SmartPushButton *cancel = new SmartPushButton("Cancel");
 
     layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     layout->addWidget(openLib);
@@ -451,9 +451,9 @@ void MainWindow::createOpenFromLib(USER u) {
     layout->addSpacing(20);
 
     QHBoxLayout *btns = new QHBoxLayout;
-    openFromLibBtn = new smartPushButton("Load", u);
+    openFromLibBtn = new SmartPushButton("Load", u);
     openFromLibBtn->setEnabled(false);
-    smartPushButton *cancel = new smartPushButton("Cancel");
+    SmartPushButton *cancel = new SmartPushButton("Cancel");
     btns->addWidget(cancel);
     btns->addWidget(openFromLibBtn);
     layout->addLayout(btns);

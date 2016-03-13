@@ -16,28 +16,28 @@ void MainWindow::launchUserOptions(USER u) {
     lbl->setAlignment(Qt::AlignCenter);
     layout->addWidget(lbl);
     if (u.hasAction(RECORD)) {
-        smartPushButton* newMotion = new smartPushButton("Record a new motion", u);
+        SmartPushButton* newMotion = new SmartPushButton("Record a new motion", u);
         connect(newMotion, SIGNAL(released(USER)), this, SLOT(launchNewMotion(USER))); // finish this
         layout->addWidget(newMotion);
     }
     // if a user can only edit (can't playback other user's motions
     if (u.hasAction(EDIT) && !u.hasAction(PLAYBACK)) {
-        smartPushButton* openFromLib = new smartPushButton("Open your motion from the library", u);
-        smartPushButton* openFromComp = new smartPushButton("Open your motion from your computer", u);
+        SmartPushButton* openFromLib = new SmartPushButton("Open your motion from the library", u);
+        SmartPushButton* openFromComp = new SmartPushButton("Open your motion from your computer", u);
         connect(openFromLib, SIGNAL(released(USER)), this, SLOT(launchOpenFromLibrary(USER))); // finish this
         connect(openFromComp, SIGNAL(released(USER)), this, SLOT(launchOpenFromComputer(USER))); // finish this
         layout->addWidget(openFromLib);
         layout->addWidget(openFromComp);
     }
     if (u.hasAction(PLAYBACK)) {
-        smartPushButton* openFromLib = new smartPushButton("Open a motion from the library", u);
-        smartPushButton* openFromComp = new smartPushButton("Open a motion from your computer", u);
+        SmartPushButton* openFromLib = new SmartPushButton("Open a motion from the library", u);
+        SmartPushButton* openFromComp = new SmartPushButton("Open a motion from your computer", u);
         connect(openFromLib, SIGNAL(released(USER)), this, SLOT(launchOpenFromLibrary(USER))); // finish this
         connect(openFromComp, SIGNAL(released(USER)), this, SLOT(launchOpenFromComputer(USER))); // finish this
         layout->addWidget(openFromLib);
         layout->addWidget(openFromComp);
     }
-    smartPushButton* back = new smartPushButton("Cancel", u);
+    SmartPushButton* back = new SmartPushButton("Cancel", u);
     layout->addWidget(back);
     layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     connect(back, SIGNAL(released()), this, SLOT(closeUserOptions()));
