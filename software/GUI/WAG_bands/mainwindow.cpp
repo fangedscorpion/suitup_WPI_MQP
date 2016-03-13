@@ -20,6 +20,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
+    this->setStyleSheet("QMainWindow {background-color: #C8E6C9;}"); // grey rgb(234, 237, 237)
     // application
     QWidget *applicationWidget = new QWidget;
     setCentralWidget(applicationWidget);
@@ -34,7 +35,6 @@ MainWindow::MainWindow(QWidget *parent) :
     titleStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-top: 0.5em; subcontrol-origin: margin; left: 10px; padding: 25px 3px 0 3px;}";
     textInputStyleRed = "QLineEdit {border: 1px solid red; background: white;} QTextEdit {border-radius: 2px; border: 1px solid red; background: white;}";
     textInputStyleWhite = "QLineEdit {background: white;} QTextEdit {border-radius: 2px; border: 1px outset grey; background: white;}";
-    buttonHeight = 35;
 
     // users
     USER u("Trainer", "A trainer can record and save motions for others to use");
@@ -57,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // tabs
     tabs = new QTabWidget;
+    tabs->setFocusPolicy(Qt::NoFocus);
     tabs->addTab(createUserSelectionWindow(users), "User selection");
     tabs->clearFocus();
     connect(tabs, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
@@ -70,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
     applicationLayout->setMargin(5);
     applicationLayout->addLayout(createMenuButtons());
     applicationLayout->addLayout(createStatusBar());
-    applicationLayout->addWidget(line);
+//    applicationLayout->addWidget(line);
     applicationLayout->addWidget(tabs, 1);
 
     wifiMan = new WifiManager();
@@ -122,7 +123,9 @@ QHBoxLayout* MainWindow::createStatusBar() {
     QHBoxLayout *l = new QHBoxLayout;
     connectionStatus = new QLabel("7 Bands Disconnected");
     connectionStatus->setStyleSheet("QLabel { color : red; }");
-    settingsBtn->setStyleSheet("QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }");
+    // make settingsBtn red.
+    settingsBtn->setRed(true);
+
     connectionStatus->setAlignment(Qt::AlignLeft);
     batteryStatus = new QLabel("Battery full");
     batteryStatus->setStyleSheet("QLabel { color : green; }");
@@ -161,7 +164,6 @@ void MainWindow::createSettings() {
     // Settings widget
     settingsWidget = new OverlayWidget(this, "Settings");
     QVBoxLayout *settingsLayout = settingsWidget->getLayout();
-    QString redBtn = "QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }";
 
     QHBoxLayout *h = new QHBoxLayout;
     // Graphic of bands
@@ -198,14 +200,11 @@ void MainWindow::createSettings() {
     right->addWidget(rightLowerArm);
     // Buttons on bottom of settings
     QHBoxLayout *settingsButtons = new QHBoxLayout;
-    QPushButton *calibrate = new QPushButton("Calibrate Bands");
-    calibrate->setMinimumHeight(buttonHeight);
-    calibrate->setStyleSheet(redBtn);
-    connectBands = new QPushButton("Connect Bands");
-    connectBands->setMinimumHeight(buttonHeight);
-    connectBands->setStyleSheet(redBtn);
-    QPushButton *done = new QPushButton("Done");
-    done->setMinimumHeight(buttonHeight);
+    smartPushButton *calibrate = new smartPushButton("Calibrate Bands");
+    calibrate->setRed(true);
+    connectBands = new smartPushButton("Connect Bands");
+    connectBands->setRed(true);
+    smartPushButton *done = new smartPushButton("Done");
     settingsButtons->addWidget(connectBands);
     settingsButtons->addWidget(calibrate);
     settingsButtons->addWidget(done);
@@ -271,9 +270,8 @@ void MainWindow::createNewMotion(USER u) {
     newMotionTagsTextEdit->setStyleSheet(textInputStyleWhite);
     newMotionTagsTextEdit->setMaximumWidth(inputMaxWidth);
     t->addWidget(newMotionTagsTextEdit);
-    addTagBtn = new QPushButton("Add Keyword");
+    addTagBtn = new smartPushButton("Add Keyword");
     addTagBtn->setEnabled(false);
-    addTagBtn->setMinimumHeight(buttonHeight);
     addTagBtn->setMaximumWidth(110);
     // tags list
     QHBoxLayout *t2 = new QHBoxLayout;
@@ -304,7 +302,7 @@ void MainWindow::createNewMotion(USER u) {
     QHBoxLayout *c = new QHBoxLayout;
     c->setContentsMargins(0,0,0,0);
     newMotionCompRadio = new QRadioButton("Local Computer");
-    newMotionBrowseBtn = new QPushButton("Select Save Location");
+    newMotionBrowseBtn = new smartPushButton("Select Save Location");
     newMotionBrowseBtn->setEnabled(false);
     newMotionSaveLocation = new QLabel("");
     c->addWidget(newMotionBrowseBtn);
@@ -317,8 +315,7 @@ void MainWindow::createNewMotion(USER u) {
     QHBoxLayout *btns = new QHBoxLayout;
     createNewMotionBtn = new smartPushButton("Create", u);
     createNewMotionBtn->setEnabled(false);
-    QPushButton *cancel = new QPushButton("Cancel");
-    cancel->setMinimumHeight(buttonHeight);
+    smartPushButton *cancel = new smartPushButton("Cancel");
     btns->addWidget(cancel);
     btns->addWidget(createNewMotionBtn);
     layout->setAlignment(Qt::AlignLeft);
@@ -356,8 +353,7 @@ void MainWindow::createOpenMotionOptions(USER u) {
     QVBoxLayout *layout = openWidget->getLayout();
     smartPushButton *openLib = new smartPushButton("Load Motion From Library", u);
     smartPushButton *openComp = new smartPushButton("Load Motion From Computer", u);
-    QPushButton *cancel = new QPushButton("Cancel");
-    cancel->setMinimumHeight(buttonHeight);
+    smartPushButton *cancel = new smartPushButton("Cancel");
 
     layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     layout->addWidget(openLib);
@@ -456,8 +452,7 @@ void MainWindow::createOpenFromLib(USER u) {
     QHBoxLayout *btns = new QHBoxLayout;
     openFromLibBtn = new smartPushButton("Load", u);
     openFromLibBtn->setEnabled(false);
-    QPushButton *cancel = new QPushButton("Cancel");
-    cancel->setMinimumHeight(buttonHeight);
+    smartPushButton *cancel = new smartPushButton("Cancel");
     btns->addWidget(cancel);
     btns->addWidget(openFromLibBtn);
     layout->addLayout(btns);
@@ -483,29 +478,29 @@ void MainWindow::connectCheckedBands() {
     // get checked bands
     //    call functio nin wifiman
 
-    QList<BandType> connectBands = QList<BandType>();
+    QList<BandType> connectedBands = QList<BandType>();
 
-    connectBands<<CHEST;
+    connectedBands<<CHEST;
 
     if (leftShoulder->isChecked()) {
-        connectBands<<LEFT_SHOULDER;
+        connectedBands<<LEFT_SHOULDER;
     }
     if (leftUpperArm->isChecked()) {
-        connectBands<<LEFT_UPPER_ARM;
+        connectedBands<<LEFT_UPPER_ARM;
     }
     if (leftLowerArm->isChecked()) {
-        connectBands<<LEFT_LOWER_ARM;
+        connectedBands<<LEFT_LOWER_ARM;
     }
     if (rightShoulder->isChecked()) {
-        connectBands<<RIGHT_SHOULDER;
+        connectedBands<<RIGHT_SHOULDER;
     }
     if (rightUpperArm->isChecked()) {
-        connectBands<<RIGHT_UPPER_ARM;
+        connectedBands<<RIGHT_UPPER_ARM;
     }
     if (rightLowerArm->isChecked()) {
-        connectBands<<RIGHT_LOWER_ARM;
+        connectedBands<<RIGHT_LOWER_ARM;
     }
-    wifiMan->initiateConnection(connectBands);
+    wifiMan->initiateConnection(connectedBands);
 }
 
 // Samee, connection status changes indicated here, (CONNECTED/DISCONNECTED)

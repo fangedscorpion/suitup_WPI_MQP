@@ -139,8 +139,6 @@ void MainWindow::closeOpenMotionOptions() {
 void MainWindow::launchSettings(){
     overlay->show();
     settingsWidget->show();
-    // setup the widget
-    connectBands->setFocus();
 }
 
 // closes the settings window
@@ -201,9 +199,9 @@ void MainWindow::handleNewMotionRequiredInput() {
     // makes the add tags button only enabled when there is text in the tags box
     addTagBtn->setEnabled(!newMotionTagsTextEdit->text().isEmpty());
     if (newMotionCompRadio->isChecked() && newMotionSaveLocation->text().isEmpty()) {
-        newMotionBrowseBtn->setStyleSheet("QPushButton { border-radius: 2px; border-style: outset; border-width: 2px; border-color: red; padding-left: 9px; padding-right: 9px; padding-top: 4px; padding-bottom: 4px;}");
+        newMotionBrowseBtn->setRed(true);
     } else {
-        newMotionBrowseBtn->setStyleSheet("QPushButton { }");
+        newMotionBrowseBtn->setRed(false);
     }
 
     // enables the create button if the description AND filename text boxes are filled
@@ -243,14 +241,13 @@ void MainWindow::handleConnectedBands() {
     }
 
     if (connectedBands.size() < totalActiveBands) {
-        QString redBtn = "QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }";
-        settingsBtn->setStyleSheet(redBtn);
-        connectBands->setStyleSheet(redBtn);
+        settingsBtn->setRed(true);
+        connectBands->setRed(true);
         connectionStatus->setText(QString::number(totalActiveBands - connectedBands.size()) + " Bands Disconnected");
         connectionStatus->setStyleSheet("QLabel { color : red; }");
     } else {
-        settingsBtn->setStyleSheet("QPushButton { }");
-        connectBands->setStyleSheet("QPushButton { }");
+        settingsBtn->setRed(false);
+        connectBands->setRed(false);
         connectionStatus->setText("All Bands Connected");
         connectionStatus->setStyleSheet("QLabel { color : green; }");
     }

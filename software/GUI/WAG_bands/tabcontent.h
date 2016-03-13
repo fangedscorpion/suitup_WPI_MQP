@@ -6,6 +6,7 @@
 #include "customWidgets/motionviewer.h"
 #include "band/suit.h"
 #include "recordingcontroller.h"
+#include "customWidgets/styledgroupbox.h"
 
 class GLWidget;
 
@@ -35,12 +36,12 @@ private:
 
     // fonts & styles
     QFont titleFont;
-    QString groupboxStyleSheet;
+    QString groupStyleSheet;
     QString textInputStyleWhite;
     QString textInputStyleRed;
     int buttonHeight;
     // mode radio buttons
-    QGroupBox *modeRadiosGroup;
+    StyledGroupBox *modeRadiosGroup;
     smartRadioButton *playbackRadio;
     smartRadioButton *editRadio;
     smartRadioButton *recordRadio;
@@ -49,7 +50,7 @@ private:
     QCheckBox *playOnSuit;
     QComboBox *stepThrough;
     QSlider *speedSlider;
-    QGroupBox *playbackOptions;
+    StyledGroupBox *playbackOptions;
     QTimer *playbackCountdownTimer;
     QLabel *playbackCountdownTime;
     void playbackResetCountDownTimer();
@@ -70,11 +71,11 @@ private:
     void switchStepThroughMode(bool steppingThrough);
     void initializePlaybackSettings();
     // recording
-    QGroupBox *recordGroup;
+    StyledGroupBox *recordGroup;
     QIcon stopIcon;
     QIcon recordIcon;
     QDoubleSpinBox *recordCountDownSpinner;
-    QGroupBox *recordOptionsGroup;
+    StyledGroupBox *recordOptionsGroup;
     QWidget* createRecordOptionsAndController();
     QWidget* createRecordingWindow();
     // recording viewer
@@ -83,8 +84,8 @@ private:
     QLabel *recordStopwatchTitleLabel;
     QLabel *recordCountdownSecondsTitleLabel;
     QLabel *recordStopwatchMinutesTitleLabel;
-    QPushButton *recordButton;
-    QPushButton *resetButton;
+    smartPushButton *recordButton;
+    smartPushButton *resetButton;
     void recordResetCountDownTimer();
     void handleRecordTimeCounter();
     QTimer *recordCountdownTimer;
@@ -101,7 +102,7 @@ private:
     // file info
     OverlayWidget *motionInfoWidget;
     void createMotionInfoWindow();
-    QPushButton* addTagBtn;
+    smartPushButton* addTagBtn;
     smartPushButton* saveMotionInfoBtn;
     QLineEdit* infoMotionNameTextEdit;
     QTextEdit* infoMotionDescription;
@@ -109,7 +110,7 @@ private:
     QHBoxLayout* infoMotionTagsLayout;
     QRadioButton *infoMotionCompRadio;
     QLabel *infoMotionSaveLocation;
-    QPushButton *infoMotionBrowseBtn;
+    smartPushButton *infoMotionBrowseBtn;
 
 public slots:
     void show(ACTION_TYPE a);

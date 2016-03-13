@@ -1,5 +1,5 @@
 #include "tabcontent.h"
-
+#include "customWidgets/styledgroupbox.h"
 
 // Edit Recording options and controller
 // TODO: add edit file name and description in here
@@ -8,32 +8,27 @@ QWidget* TabContent::createEditOptionsAndControls() {
     editingControls->setActiveMotion(motion);
     connect(editingControls, SIGNAL(changeSliderMax(qint32)), editMotionViewer, SLOT(changeSliderRange(qint32)));
     // Edit recording options
-    QGroupBox *editOptions = new QGroupBox("Editing Options");
-    editOptions->setStyleSheet(groupboxStyleSheet);
-    editOptions->setFont(titleFont);
-    editOptions->setAlignment(Qt::AlignRight);
-    QPushButton *undoBtn = new QPushButton;
+    StyledGroupBox *editOptions = new StyledGroupBox("Editing Options");
+
+    smartPushButton *undoBtn = new smartPushButton("Undo");
     undoBtn->setIcon(undoIcon);
     undoBtn->setIconSize(QSize(51,25));
     undoBtn->setMinimumHeight(buttonHeight);
-    undoBtn->setText("Undo");
     undoBtn->setEnabled(false);
-    QPushButton *cropBtn = new QPushButton;
+    smartPushButton *cropBtn = new smartPushButton("Crop");
     cropBtn->setIcon(cropIcon);
     cropBtn->setIconSize(QSize(49,25));
     cropBtn->setMinimumHeight(buttonHeight);
-    cropBtn->setText("Crop");
-    QPushButton *splitBtn = new QPushButton;
+    smartPushButton *splitBtn = new smartPushButton("Split");
     splitBtn->setIcon(splitIcon);
     splitBtn->setIconSize(QSize(62,25));
     splitBtn->setMinimumHeight(buttonHeight);
-    splitBtn->setText("Split");
-    QPushButton *MotionInfoBtn = new QPushButton;
+    smartPushButton *MotionInfoBtn = new smartPushButton("Edit Motion Information");
     MotionInfoBtn->setIcon(editIcon);
     MotionInfoBtn->setIconSize(QSize(62,25));
     MotionInfoBtn->setMinimumHeight(buttonHeight);
-    MotionInfoBtn->setText("Edit Motion Information");
-    QVBoxLayout *recordPlaybackLayout = new QVBoxLayout;
+    QVBoxLayout *recordPlaybackLayout = editOptions->getLayout();
+    recordPlaybackLayout->setContentsMargins(20,20,20,20);
     QVBoxLayout *buttons = new QVBoxLayout;
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     buttons->addWidget(undoBtn);
@@ -42,7 +37,6 @@ QWidget* TabContent::createEditOptionsAndControls() {
     buttons->addWidget(MotionInfoBtn);
     recordPlaybackLayout->addLayout(buttons, 1);
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
-    editOptions->setLayout(recordPlaybackLayout);
 
     connect(MotionInfoBtn, SIGNAL(released()), this, SLOT(launchMotionInfo()));
     // add connections to crop and split and undo
@@ -108,7 +102,7 @@ void TabContent::createMotionInfoWindow() {
     infoMotionTagsTextEdit->setStyleSheet(textInputStyleWhite);
     infoMotionTagsTextEdit->setMaximumWidth(inputMaxWidth);
     t->addWidget(infoMotionTagsTextEdit);
-    addTagBtn = new QPushButton("Add Keyword");
+    addTagBtn = new smartPushButton("Add Keyword");
     addTagBtn->setEnabled(false);
     addTagBtn->setMinimumHeight(buttonHeight);
     // tags list
@@ -143,7 +137,7 @@ void TabContent::createMotionInfoWindow() {
     QHBoxLayout *r = new QHBoxLayout;
     r->setContentsMargins(0,0,0,0);
     infoMotionCompRadio = new QRadioButton("Local Computer");
-    infoMotionBrowseBtn = new QPushButton("Select Save Location");
+    infoMotionBrowseBtn = new smartPushButton("Select Save Location");
     infoMotionSaveLocation = new QLabel("");
     if (motion->getSaveLocation() == LOCALLY) {
         qDebug() << "tabContent-edit locally";
@@ -165,7 +159,7 @@ void TabContent::createMotionInfoWindow() {
 
     QHBoxLayout *btns = new QHBoxLayout;
     saveMotionInfoBtn = new smartPushButton("Save");
-    QPushButton *cancel = new QPushButton("Cancel");
+    smartPushButton *cancel = new smartPushButton("Cancel");
     cancel->setMinimumHeight(buttonHeight);
     btns->addWidget(cancel);
     btns->addWidget(saveMotionInfoBtn);
@@ -246,9 +240,9 @@ void TabContent::handleInfoMotionRequiredInput() {
     // makes the add tags button only enabled when there is text in the tags box
     addTagBtn->setEnabled(!infoMotionTagsTextEdit->text().isEmpty());
     if (infoMotionCompRadio->isChecked() && infoMotionSaveLocation->text().isEmpty()) {
-        infoMotionBrowseBtn->setStyleSheet("QPushButton { border-radius: 2px; border-style: outset; border-width: 1px; border-color: red; padding-left: 9px; padding-right: 9px; padding-top: 4px; padding-bottom: 4px;}");
+        infoMotionBrowseBtn->setRed(true);
     } else {
-        infoMotionBrowseBtn->setStyleSheet("QPushButton { }");
+        infoMotionBrowseBtn->setRed(false);
     }
 
     // enables the create button if the description AND filename text boxes are filled

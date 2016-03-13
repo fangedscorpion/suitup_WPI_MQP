@@ -53,7 +53,8 @@ SOURCES += main.cpp\
     visualization/modelgl.cpp \
     visualization/modelglloader.cpp \
     model/model.cpp \
-    model/modelloader.cpp
+    model/modelloader.cpp \
+    customWidgets/styledgroupbox.cpp
 
 HEADERS  += mainwindow.h \
     positionsnapshot.h \
@@ -87,6 +88,7 @@ HEADERS  += mainwindow.h \
     customWidgets/closablelabel.h \
     localtesting.h \
     communications/incorrectdatalengthexception.h \
+    customWidgets/styledgroupbox.h \
     band/absstate.h \
     visualization/glwidget.h \
     visualization/modelgl.h \

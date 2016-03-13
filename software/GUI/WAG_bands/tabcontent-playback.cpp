@@ -7,10 +7,8 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     // Playback options
     playbackControls->setActiveMotion(motion);
 
-    playbackOptions = new QGroupBox("Playback Options");
-    playbackOptions->setStyleSheet(groupboxStyleSheet);
-    playbackOptions->setFont(titleFont);
-    QVBoxLayout *playbackLayout = new QVBoxLayout;
+    playbackOptions = new StyledGroupBox("Playback Options");
+    QVBoxLayout *playbackLayout = playbackOptions->getLayout();
     QVBoxLayout *options = new QVBoxLayout;
     playOnSuit = new QCheckBox("Play on suit");
     stepThrough = new QComboBox;
@@ -89,7 +87,6 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
 
     playbackLayout->addLayout(options);
     playbackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
-    playbackOptions->setLayout(playbackLayout);
     playbackOptions->setVisible(false);
     //playbackControls
     //connect(stepThrough, SIGNAL(currentIndexChanged(QString)), playbackControls, SLOT(setStepThroughMode(QString)));
