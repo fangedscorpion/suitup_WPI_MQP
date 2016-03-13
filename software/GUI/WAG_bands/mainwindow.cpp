@@ -19,6 +19,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
+    this->setStyleSheet("QMainWindow {background-color: #C8E6C9;}"); // grey rgb(234, 237, 237)
     // application
     QWidget *applicationWidget = new QWidget;
     setCentralWidget(applicationWidget);
@@ -56,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // tabs
     tabs = new QTabWidget;
+    tabs->setFocusPolicy(Qt::NoFocus);
     tabs->addTab(createUserSelectionWindow(users), "User selection");
     tabs->clearFocus();
     connect(tabs, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
@@ -69,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
     applicationLayout->setMargin(5);
     applicationLayout->addLayout(createMenuButtons());
     applicationLayout->addLayout(createStatusBar());
-    applicationLayout->addWidget(line);
+//    applicationLayout->addWidget(line);
     applicationLayout->addWidget(tabs, 1);
     wifiMan = new WifiManager();
     fullSuit = new Suit(wifiMan);
@@ -119,7 +121,9 @@ QHBoxLayout* MainWindow::createStatusBar() {
     QHBoxLayout *l = new QHBoxLayout;
     connectionStatus = new QLabel("7 Bands Disconnected");
     connectionStatus->setStyleSheet("QLabel { color : red; }");
-    settingsBtn->setStyleSheet("QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }");
+    // make settingsBtn red.
+    settingsBtn->setRed(true);
+
     connectionStatus->setAlignment(Qt::AlignLeft);
     batteryStatus = new QLabel("Battery full");
     batteryStatus->setStyleSheet("QLabel { color : green; }");
@@ -195,13 +199,13 @@ void MainWindow::createSettings() {
     right->addWidget(rightLowerArm);
     // Buttons on bottom of settings
     QHBoxLayout *settingsButtons = new QHBoxLayout;
-    QPushButton *calibrate = new QPushButton("Calibrate Bands");
+    smartPushButton *calibrate = new smartPushButton("Calibrate Bands");
     calibrate->setMinimumHeight(buttonHeight);
     calibrate->setStyleSheet(redBtn);
-    connectBands = new QPushButton("Connect Bands");
+    connectBands = new smartPushButton("Connect Bands");
     connectBands->setMinimumHeight(buttonHeight);
     connectBands->setStyleSheet(redBtn);
-    QPushButton *done = new QPushButton("Done");
+    smartPushButton *done = new smartPushButton("Done");
     done->setMinimumHeight(buttonHeight);
     settingsButtons->addWidget(connectBands);
     settingsButtons->addWidget(calibrate);
@@ -268,7 +272,7 @@ void MainWindow::createNewMotion(USER u) {
     newMotionTagsTextEdit->setStyleSheet(textInputStyleWhite);
     newMotionTagsTextEdit->setMaximumWidth(inputMaxWidth);
     t->addWidget(newMotionTagsTextEdit);
-    addTagBtn = new QPushButton("Add Keyword");
+    addTagBtn = new smartPushButton("Add Keyword");
     addTagBtn->setEnabled(false);
     addTagBtn->setMinimumHeight(buttonHeight);
     addTagBtn->setMaximumWidth(110);
@@ -301,7 +305,7 @@ void MainWindow::createNewMotion(USER u) {
     QHBoxLayout *c = new QHBoxLayout;
     c->setContentsMargins(0,0,0,0);
     newMotionCompRadio = new QRadioButton("Local Computer");
-    newMotionBrowseBtn = new QPushButton("Select Save Location");
+    newMotionBrowseBtn = new smartPushButton("Select Save Location");
     newMotionBrowseBtn->setEnabled(false);
     newMotionSaveLocation = new QLabel("");
     c->addWidget(newMotionBrowseBtn);
@@ -314,7 +318,7 @@ void MainWindow::createNewMotion(USER u) {
     QHBoxLayout *btns = new QHBoxLayout;
     createNewMotionBtn = new smartPushButton("Create", u);
     createNewMotionBtn->setEnabled(false);
-    QPushButton *cancel = new QPushButton("Cancel");
+    smartPushButton *cancel = new smartPushButton("Cancel");
     cancel->setMinimumHeight(buttonHeight);
     btns->addWidget(cancel);
     btns->addWidget(createNewMotionBtn);
@@ -353,7 +357,7 @@ void MainWindow::createOpenMotionOptions(USER u) {
     QVBoxLayout *layout = openWidget->getLayout();
     smartPushButton *openLib = new smartPushButton("Load Motion From Library", u);
     smartPushButton *openComp = new smartPushButton("Load Motion From Computer", u);
-    QPushButton *cancel = new QPushButton("Cancel");
+    smartPushButton *cancel = new smartPushButton("Cancel");
     cancel->setMinimumHeight(buttonHeight);
 
     layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -453,7 +457,7 @@ void MainWindow::createOpenFromLib(USER u) {
     QHBoxLayout *btns = new QHBoxLayout;
     openFromLibBtn = new smartPushButton("Load", u);
     openFromLibBtn->setEnabled(false);
-    QPushButton *cancel = new QPushButton("Cancel");
+    smartPushButton *cancel = new smartPushButton("Cancel");
     cancel->setMinimumHeight(buttonHeight);
     btns->addWidget(cancel);
     btns->addWidget(openFromLibBtn);

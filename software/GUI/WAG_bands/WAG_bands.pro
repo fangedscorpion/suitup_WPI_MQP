@@ -54,7 +54,8 @@ SOURCES += main.cpp\
     customWidgets/closablelabel.cpp \
     test/testquatstate.cpp \
     test/testquaterror.cpp \
-    communications/incorrectdatalengthexception.cpp
+    communications/incorrectdatalengthexception.cpp \
+    customWidgets/styledgroupbox.cpp
 
 HEADERS  += mainwindow.h \
     positionsnapshot.h \
@@ -92,7 +93,8 @@ HEADERS  += mainwindow.h \
     test/testband.h \
     customWidgets/closablelabel.h \
     localtesting.h \
-    communications/incorrectdatalengthexception.h
+    communications/incorrectdatalengthexception.h \
+    customWidgets/styledgroupbox.h
 
 FORMS    +=
 

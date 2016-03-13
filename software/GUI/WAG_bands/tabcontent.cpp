@@ -12,7 +12,7 @@ TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION
     emit modeChanged(initiallyShow);
 
     titleFont = QFont( "Arial", 15, QFont::Bold);
-    groupboxStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-left: 0.25em; margin-right: 0.25em; margin-top: 0.5em; padding: 25px 3px 0 3px;} QGroupBox::title{subcontrol-position: top center; subcontrol-origin: margin;}";
+    groupStyleSheet = "QWidget#group{ background-color: #C8E6C9; border: 1px solid gray; border-radius: 9px; margin-left: 0.25em; margin-right: 0.25em; margin-top: 0.5em;}";
     textInputStyleRed = "QLineEdit {border: 1px solid red; background: white;} QTextEdit {border-radius: 2px; border: 1px solid red; background: white;}";
     textInputStyleWhite = "QLineEdit {background: white;} QTextEdit {border-radius: 2px; border: 1px outset grey; background: white;}";
     buttonHeight = 35;
@@ -123,11 +123,9 @@ void TabContent::show(ACTION_TYPE a) {
 
 // The groupbox of Mode radio buttons
 QWidget* TabContent::createModeRadios(USER u) {
-    modeRadiosGroup = new QGroupBox("Modes");
-    modeRadiosGroup->setAlignment(Qt::AlignHCenter);
-    modeRadiosGroup->setStyleSheet(groupboxStyleSheet);
-    modeRadiosGroup->setFont(titleFont);
-    QVBoxLayout *vl = new QVBoxLayout;
+    modeRadiosGroup = new StyledGroupBox("Modes");
+
+    QVBoxLayout *vl = modeRadiosGroup->getLayout();
     recordRadio = new smartRadioButton("Record Motion", RECORD);
     editRadio = new smartRadioButton("Edit Motion", EDIT);
     playbackRadio = new smartRadioButton("Playback Motion", PLAYBACK);
@@ -161,19 +159,17 @@ QWidget* TabContent::createModeRadios(USER u) {
     }
     vl->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-    modeRadiosGroup->setLayout(vl);
     return modeRadiosGroup;
 }
 
 void TabContent::updateMotion() {
     if (user.hasAction(PLAYBACK))
-        static_cast<QGroupBox*>(viewerStack->widget(PLAYBACK))->setTitle(QString("Playing: ") + motion->getName());
+        static_cast<StyledGroupBox*>(viewerStack->widget(PLAYBACK))->setTitle(QString("Playing: ") + motion->getName());
     if (user.hasAction(EDIT))
-        static_cast<QGroupBox*>(viewerStack->widget(EDIT))->setTitle(QString("Editing: ") + motion->getName());
+        static_cast<StyledGroupBox*>(viewerStack->widget(EDIT))->setTitle(QString("Editing: ") + motion->getName());
     if (user.hasAction(RECORD))
         recordGroup->setTitle(QString("Recording: ") + motion->getName());
     parent->setCurrentTabName(motion->getName());
-
 }
 
 // save the motion file
@@ -183,21 +179,20 @@ void TabContent::saveMotion() {
 
 // OpenGL Motion Viewer window with video slider
 QWidget* TabContent::createViewer(ACTION_TYPE t) {
-    QGroupBox* v;
-    QVBoxLayout *viewerPane = new QVBoxLayout;
+
+    StyledGroupBox *v = new StyledGroupBox("temp");
+    QVBoxLayout *viewerPane = v->getLayout();
 
     if (t == EDIT) {
-        v = new QGroupBox("Editing: " + motion->getName());
+        v->setTitle("Editing: " + motion->getName());
         editMotionViewer = new MotionViewer(this);
         viewerPane->addWidget(editMotionViewer);
     } else {
-        v= new QGroupBox("Playing: " + motion->getName());
+        v->setTitle("Playing: " + motion->getName());
         playbackMotionViewer = new MotionViewer(this);
         viewerPane->addWidget(playbackMotionViewer);
     }
 
-    v->setStyleSheet(groupboxStyleSheet);
-    v->setFont(titleFont);
     v->setLayout(viewerPane);
     return v;
 }

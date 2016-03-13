@@ -3,9 +3,7 @@
 QWidget* TabContent::createRecordOptionsAndController() {
     recordingControls = new RecordingController(suitObj);
     recordingControls->setActiveMotion(motion);
-    recordOptionsGroup = new QGroupBox("Recording Options");
-    recordOptionsGroup->setStyleSheet(groupboxStyleSheet);
-    recordOptionsGroup->setFont(titleFont);
+    recordOptionsGroup = new StyledGroupBox("Recording Options");
 
     recordCountDownSpinner = new QDoubleSpinBox;
     recordCountDownSpinner->setMinimum(0.5);
@@ -23,12 +21,12 @@ QWidget* TabContent::createRecordOptionsAndController() {
 
     QCheckBox *recordVoiceControl = new QCheckBox("Voice Control");
 
-    QVBoxLayout *buttons = new QVBoxLayout;
-    buttons->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
-    buttons->addWidget(recordVoiceControl);
-    buttons->addLayout(h);
-    buttons->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
-    recordOptionsGroup->setLayout(buttons);
+    QVBoxLayout *options = recordOptionsGroup->getLayout();
+    options->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    options->addWidget(recordVoiceControl);
+    options->addLayout(h);
+    options->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    recordOptionsGroup->setLayout(options);
 
     connect(recordCountDownSpinner, SIGNAL(valueChanged(double)), this, SLOT(recordSetCountDownTimer(double)));
     connect(recordVoiceControl, SIGNAL(toggled(bool)), recordingControls, SLOT(toggleVoiceControl(bool)));
@@ -37,9 +35,7 @@ QWidget* TabContent::createRecordOptionsAndController() {
 
 // The right panel under record motion
 QWidget* TabContent::createRecordingWindow() {
-    recordGroup = new QGroupBox("Recording: " + motion->getName());
-    recordGroup->setStyleSheet(groupboxStyleSheet);
-    recordGroup->setFont(titleFont);
+    recordGroup = new StyledGroupBox("Recording: " + motion->getName());
     // viewer window
 
     QFont bigFont = QFont("Arial", 25);
@@ -68,20 +64,19 @@ QWidget* TabContent::createRecordingWindow() {
     h->addWidget(recordStopwatchMinutesTitleLabel);
     h->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-    resetButton = new QPushButton("Reset");
+    resetButton = new smartPushButton("Reset");
     resetButton->setMinimumHeight(buttonHeight);
     resetButton->setEnabled(false);
     resetButton->setIcon(resetIcon);
     resetButton->setIconSize(QSize(35,30));
 
-    recordButton = new QPushButton;
+    recordButton = new smartPushButton("Start Recording");
     recordButton->setMinimumHeight(buttonHeight);
-    recordButton->setText("Start Recording");
     recordButton->setIcon(recordIcon);
     recordButton->setIconSize(QSize(35,15));
 
     // viewer side of the GUI
-    QVBoxLayout *info = new QVBoxLayout;
+    QVBoxLayout *info = recordGroup->getLayout();
     info->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     QHBoxLayout* b = new QHBoxLayout;
     b->addWidget(resetButton, 1);
@@ -91,7 +86,6 @@ QWidget* TabContent::createRecordingWindow() {
     info->addLayout(h);
     info->addWidget(recordCountDownTitleLabel);
     info->addWidget(recordStopwatchTitleLabel);
-    recordGroup->setLayout(info);
 
     connect(recordButton, SIGNAL(released()), this, SLOT(handleRecordingWindowButtons()));
     connect(resetButton, SIGNAL(released()), this, SLOT(handleRecordingWindowButtons()));

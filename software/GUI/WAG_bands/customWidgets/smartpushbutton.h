@@ -13,9 +13,13 @@ public:
     smartPushButton(const char* name, USER owner);
     smartPushButton(const char* name);
     void setUser(USER u);
+    void setRed(bool t);
 
 private:
     USER user;
+    void setTheme();
+    QString blueTheme;
+    QString redTheme;
 
 signals:
     void released(USER);

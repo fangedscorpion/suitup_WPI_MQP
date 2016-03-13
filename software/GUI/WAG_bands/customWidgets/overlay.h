@@ -17,9 +17,6 @@ public:
     void paintEvent(QPaintEvent *);
     void makeSemiTransparent();
 
-private:
-
-
 public slots:
     void resizeWindow();
 };

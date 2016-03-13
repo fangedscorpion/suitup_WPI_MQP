@@ -79,7 +79,7 @@ private:
     QCheckBox *rightShoulder;
     QCheckBox *rightUpperArm;
     QCheckBox *rightLowerArm;
-    QPushButton *connectBands;
+    smartPushButton *connectBands;
     OverlayWidget *settingsWidget;
     void createSettings();
     // open (from lib)
@@ -97,11 +97,11 @@ private:
     QTextEdit *newMotionDescription;
     QLineEdit *newMotionTagsTextEdit;
     QHBoxLayout *newMotionTagsLayout;
-    QPushButton *addTagBtn;
+    smartPushButton *addTagBtn;
     QRadioButton *newMotionCompRadio;
     QLabel *newMotionSaveLocation;
-    QPushButton *createNewMotionBtn;
-    QPushButton *newMotionBrowseBtn;
+    smartPushButton *createNewMotionBtn;
+    smartPushButton *newMotionBrowseBtn;
     void createNewMotion(USER u);
     // user options
     OverlayWidget *userOptionsWidget;
