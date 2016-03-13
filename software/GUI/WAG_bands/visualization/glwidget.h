@@ -7,7 +7,7 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
 #include <QMatrix4x4>
-#include "modelloader.h"
+#include "modelglloader.h"
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
@@ -37,7 +37,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 
         void draw();
         void drawNodes();
-        void setMaterialUniforms(MaterialInfo &mater);
+        void setMaterialUniforms(Material &mater);
 
         QOpenGLShaderProgram m_shaderProgram;
 
@@ -47,12 +47,10 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         QOpenGLBuffer m_normalBuffer;
         QOpenGLBuffer m_indexBuffer;
 
-        QVector<QSharedPointer<Node> > m_nodes;
-
         QMatrix4x4 m_projection, m_view, m_model;
 
         QString m_filepath;
-        ModelLoader::PathType m_pathType;
+        ModelGLLoader::PathType m_pathType;
 
         LightInfo m_lightInfo;
 
@@ -65,7 +63,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 
         QVector3D m_cam_offset;
 
-        Model model;
+        ModelGL modelGL;
     };
 
     #endif

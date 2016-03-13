@@ -49,10 +49,12 @@ SOURCES += main.cpp\
     test/testquatstate.cpp \
     test/testquaterror.cpp \
     communications/incorrectdatalengthexception.cpp \
-    customWidgets/styledgroupbox.cpp \
-    visualization/model.cpp \
-    visualization/modelloader.cpp \
-    visualization/glwidget.cpp
+    visualization/glwidget.cpp \
+    visualization/modelgl.cpp \
+    visualization/modelglloader.cpp \
+    model/model.cpp \
+    model/modelloader.cpp \
+    customWidgets/styledgroupbox.cpp
 
 HEADERS  += mainwindow.h \
     positionsnapshot.h \
@@ -88,9 +90,11 @@ HEADERS  += mainwindow.h \
     communications/incorrectdatalengthexception.h \
     customWidgets/styledgroupbox.h \
     band/absstate.h \
-    visualization/model.h \
-    visualization/modelloader.h \
-    visualization/glwidget.h
+    visualization/glwidget.h \
+    visualization/modelgl.h \
+    visualization/modelglloader.h \
+    model/model.h \
+    model/modelloader.h
 
 FORMS    +=
 

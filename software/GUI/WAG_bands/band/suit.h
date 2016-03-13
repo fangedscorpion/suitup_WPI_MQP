@@ -9,12 +9,13 @@
 #include "communications/bandmessage.h"
 #include "positionsnapshot.h"
 #include "user.h"
+#include "model/model.h"
 
 class Suit:public QObject
 {
     Q_OBJECT
 public:
-    Suit(WifiManager* comms);
+    Suit(WifiManager* comms, Model* model);
     AbsBand* getBand(BandType bt);
     // bool playback(vector<PositionSnapshot> motion)
     // PositionSnapshot takeSnapshot( )
@@ -35,6 +36,7 @@ private:
     QList<qint32> activeSnapTimes;
     PositionSnapshot activeSnapshot;
     QSet<BandType> getConnectedBands();
+    Model* model;
 
 public slots:
     void catchStartPlayback();

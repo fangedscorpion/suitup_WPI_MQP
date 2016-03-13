@@ -1,9 +1,8 @@
 #include "model.h"
 #include <stdexcept>
 
-Model::Model(QVector<QSharedPointer<Node> > nodes, QVector<QSharedPointer<MaterialInfo> > materials):
-    nodes(nodes),
-    materials(materials){
+Model::Model(QVector<QSharedPointer<Node> > nodes) : QObject(){
+    this->nodes = nodes;
     for (int i = 0; i < nodes.size(); ++i){
         if (nodes[i]->isRoot()){
             rootNode = nodes[i];
@@ -16,20 +15,10 @@ Model::Model(QVector<QSharedPointer<Node> > nodes, QVector<QSharedPointer<Materi
 
 QSharedPointer<Node> Model::getNodeByName(QString name) const {
     for (int i = 0; i < nodes.size(); ++i){
-        if (nodes[i]->getName() == name){
+        if (nodes[i]->getName() == name)
             return nodes[i];
-        }
     }
-    throw std::invalid_argument("Node with given name not found.");
-}
-
-QSharedPointer<MaterialInfo> Model::getMaterialByName(QString name) const {
-    for (int i = 0; i < materials.size(); ++i){
-        if (materials[i]->Name == name){
-            return materials[i];
-        }
-    }
-    throw std::invalid_argument("Material with given name not found.");
+    throw std::invalid_argument("node with given name not found");
 }
 
 void Node::setParent(QSharedPointer<Node> parent) {
