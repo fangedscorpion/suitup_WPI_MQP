@@ -11,7 +11,7 @@ ShoulderBand::ShoulderBand(BandType b) : AbsBand(b) {
     if (b != LEFT_SHOULDER && b != RIGHT_SHOULDER) {
         throw std::invalid_argument("Created ShoulderBand with bad BandType");
     }
-    pose = new QuatPose(QVector3D(0, 0, 0), QVector3D(1, 0, 0), QVector3D(0, 0, 1));
+    pose = new QuatPose(QVector3D(1, 0, 0), QVector3D(0, 0, 1));
 }
 
 bool ShoulderBand::moveTo(AbsState* x) {

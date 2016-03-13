@@ -15,7 +15,7 @@ ArmBand::ArmBand(BandType b) : AbsBand(b) {
         throw std::invalid_argument("Created ArmBand with bad BandType");
     }
 
-    pose = new QuatPose(QVector3D(0, 0, 0), QVector3D(1, 0, 0), QVector3D(0, 0, 1));
+    pose = new QuatPose(QVector3D(1, 0, 0), QVector3D(0, 0, 1));
 }
 
 bool ArmBand::moveTo(AbsState* x) {

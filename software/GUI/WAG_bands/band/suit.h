@@ -20,12 +20,10 @@ public:
     // PositionSnapshot takeSnapshot( )
     // void calibrate( )
     // map<enum, BandCalibration> getCalibrationData( )
-    AbsBand* getRefBand() const {return refBand;};
     void startOrStopMode(MessageType);
 
 private:
     QHash<BandType, AbsBand*> bands;
-    AbsBand* refBand;
     WifiManager *wifiMan;
     ACTION_TYPE currentMode;
     bool collectingData;

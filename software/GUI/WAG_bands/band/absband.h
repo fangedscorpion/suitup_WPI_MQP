@@ -24,19 +24,9 @@ class AbsBand:public QObject
 public:
     AbsBand(BandType);
 
-    // child and parent bands
-    void addChildBand(AbsBand *band) {childBands.push_back(band); band->setParentBand(this); band->setParent(this);}
-    AbsBand* getChildBand(int index) const {return childBands[index]; }
-    int numDependentBands() {return childBands.size();}
-    void setParentBand(AbsBand* band) {parentBand = band;}
-    AbsBand* getParentBand() {return parentBand;}
-
     // updating the pose
     void updateState(AbsState* state, qint32 msgTime);
-    void updatePoints();
-    void setCalibrationState(AbsState* refState) {pose->calibrate(refState);}
-    virtual QVector3D* getEndpoint() const {return pose->getEndpoint();}
-    AbsState* getCalibrationState() const {return pose->getCalibrationState(); }
+    void setCalibrationState() {pose->calibrate();}
     virtual AbsState* getState() const {return pose->getState();}
     virtual AbsState* getStateUpdate() const = 0;
 
@@ -63,8 +53,6 @@ private:
     PositionRepresentation positionRep;
     bool active;
 
-    AbsBand* parentBand;
-    std::vector<AbsBand*> childBands;
     qint32 poseRecvdTime;
 
     bool commsSetUp;
@@ -110,15 +98,6 @@ public:
     void handleMessage(qint32, BandMessage *);
     AbsState* getStateUpdate() const;
     bool moveTo(AbsState* x);
-};
-
-class NullBand : public AbsBand {
-public:
-    NullBand();
-    AbsState* getStateUpdate() const {return NULL;}
-    bool moveTo(AbsState* x) {return false;}
-    AbsState* getState();
-    QVector3D getEndpoint();
 };
 
 #endif // ABSBAND_H

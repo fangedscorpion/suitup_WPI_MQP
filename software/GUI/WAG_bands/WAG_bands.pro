@@ -18,11 +18,6 @@ SOURCES += main.cpp\
     positionsnapshot.cpp \
     tabcontent.cpp \
     wagfile.cpp \
-    visualization/suitsimulation.cpp \
-    visualization/glcamera.cpp \
-    visualization/glwidget.cpp \
-    visualization/visualization.cpp \
-    visualization/vertextranslator.cpp\
     mainwindowslots.cpp \
     band/absband.cpp \
     band/abspose.cpp \
@@ -45,7 +40,6 @@ SOURCES += main.cpp\
     communications/bandmessage.cpp \
     customWidgets/motionviewer.cpp \
     band/quatpose.cpp \
-    band/nullband.cpp \
     band/quaterror.cpp \
     math/reflection.cpp \
     test/testreflection.cpp \
@@ -55,17 +49,15 @@ SOURCES += main.cpp\
     test/testquatstate.cpp \
     test/testquaterror.cpp \
     communications/incorrectdatalengthexception.cpp \
-    customWidgets/styledgroupbox.cpp
+    customWidgets/styledgroupbox.cpp \
+    visualization/model.cpp \
+    visualization/modelloader.cpp \
+    visualization/glwidget.cpp
 
 HEADERS  += mainwindow.h \
     positionsnapshot.h \
     tabcontent.h \
     wagfile.h \
-    visualization/suitsimulation.h \
-    visualization/glcamera.h \
-    visualization/glwidget.h \
-    visualization/visualization.h \
-    visualization/vertextranslator.h \
     user.h \
     band/absband.h \
     band/abspose.h \
@@ -94,16 +86,23 @@ HEADERS  += mainwindow.h \
     customWidgets/closablelabel.h \
     localtesting.h \
     communications/incorrectdatalengthexception.h \
-    customWidgets/styledgroupbox.h
+    customWidgets/styledgroupbox.h \
+    band/absstate.h \
+    visualization/model.h \
+    visualization/modelloader.h \
+    visualization/glwidget.h
 
 FORMS    +=
 
 RESOURCES += \
-    icons.qrc
+    icons.qrc \
+    visualization/resources.qrc
 
 CONFIG += console
 
-LIBS += -L/usr/lib/ -lboost_filesystem -lboost_system
+LIBS += -L/usr/lib/ -lboost_filesystem -lboost_system -lassimp
 
 DISTFILES += \
-    README.txt
+    README.txt \
+    visualization/ads_fragment.frag \
+    visualization/ads_fragment.vert
