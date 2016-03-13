@@ -8,24 +8,7 @@
 #include <QMatrix4x4>
 #include <stdexcept>
 
-struct MaterialInfo {
-    QString Name;
-    QVector3D Ambient;
-    QVector3D Diffuse;
-    QVector3D Specular;
-    float Shininess;
-};
-
-struct LightInfo {
-    QVector4D Position;
-    QVector3D Intensity;
-};
-
-struct Mesh {
-    unsigned int indexCount;
-    unsigned int indexOffset;
-    QSharedPointer<MaterialInfo> material;
-};
+#include "band/absband.h"
 
 class CoordinateFrame {
 public:
@@ -37,7 +20,6 @@ public:
 
     QMatrix3x3 toRotationMatrix() const;
 
-//    QQuaternion rotationTo(CoordinateFrame other);
 private:
     QVector3D xv;
     QVector3D yv;
@@ -55,14 +37,12 @@ public:
     void setHead(QVector3D head) {this->head = head;}
     void setFrame(CoordinateFrame frame) {this->frame = frame;}
     void setParent(QSharedPointer<Node> parent);
-    void addMesh(QSharedPointer<Mesh> mesh) {this->meshes.push_back(mesh);}
     void root(bool isRoot) {this->isRootNode = isRoot;}
     void addChild(QSharedPointer<Node> child) {children.push_back(child);}
 
     // getters
     QString getName() const {return name;}
     QMatrix4x4 getTransformation() const {return transformation;}
-    QVector<QSharedPointer<Mesh> > getMeshes() const {return meshes;}
     QMatrix4x4 getDefaultPose() const {return defaultPose;}
     QQuaternion getWorldRotation() const {return worldRotation;}
     bool isRoot() const {return isRootNode;}
@@ -94,24 +74,24 @@ private:
     QSharedPointer<Node> parent;
     QVector<QSharedPointer<Node> > children;
 
-    QVector<QSharedPointer<Mesh> > meshes;
 };
 
-class Model {
+class Model : public QObject{
+    Q_OBJECT
 public:
-    Model() {}
-    Model(QVector<QSharedPointer<Node> > nodes, QVector<QSharedPointer<MaterialInfo> > materials);
+    Model() : QObject() {}
+    Model(QVector<QSharedPointer<Node> > nodes);
     QVector<QSharedPointer<Node> > getNodes() const {return nodes;}
     QSharedPointer<Node> getNodeByName(QString name) const;
-
-    QVector<QSharedPointer<MaterialInfo> > getMaterials() const {return materials;}
-    QSharedPointer<MaterialInfo> getMaterialByIndex(int index) const {return materials[index];}
-    QSharedPointer<MaterialInfo> getMaterialByName(QString name) const;
 
 private:
     QSharedPointer<Node> rootNode;
     QVector<QSharedPointer<Node> > nodes;
-    QVector<QSharedPointer<MaterialInfo> > materials;
+
+public slots:
+
+signals:
+
 };
 
 #endif // MODEL_H

@@ -1,4 +1,4 @@
-newmtl Material
+newmtl PurpleHoser
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.425974 0.000000 0.800000
@@ -8,7 +8,7 @@ Ni 1.000000
 d 1.000000
 illum 2
 
-newmtl Material2
+newmtl LightBlue
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.425974 1.000000 0.800000

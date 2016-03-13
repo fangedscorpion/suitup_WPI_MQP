@@ -49,9 +49,11 @@ SOURCES += main.cpp\
     test/testquatstate.cpp \
     test/testquaterror.cpp \
     communications/incorrectdatalengthexception.cpp \
-    visualization/model.cpp \
-    visualization/modelloader.cpp \
-    visualization/glwidget.cpp
+    visualization/glwidget.cpp \
+    visualization/modelgl.cpp \
+    visualization/modelglloader.cpp \
+    model/model.cpp \
+    model/modelloader.cpp
 
 HEADERS  += mainwindow.h \
     positionsnapshot.h \
@@ -86,9 +88,11 @@ HEADERS  += mainwindow.h \
     localtesting.h \
     communications/incorrectdatalengthexception.h \
     band/absstate.h \
-    visualization/model.h \
-    visualization/modelloader.h \
-    visualization/glwidget.h
+    visualization/glwidget.h \
+    visualization/modelgl.h \
+    visualization/modelglloader.h \
+    model/model.h \
+    model/modelloader.h
 
 FORMS    +=
 

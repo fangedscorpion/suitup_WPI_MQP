@@ -1,4 +1,4 @@
-#include "modelloader.h"
+#include "modelglloader.h"
 #include <limits>
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -6,14 +6,7 @@
 
 #define DEBUGOUTPUT_NORMALS(nodeIndex) (false)//( QList<int>{1}.contains(nodeIndex) )//(false)
 
-ModelLoader::ModelLoader() {
-    QFile file("../biped/final/pts.out");
-    file.open(QFile::ReadOnly);
-    QByteArray blob = file.readAll();
-    pointsJson = QJsonDocument::fromJson(blob).object();
-
-    float blend2openglarr[9] = {1,0,0,0,0,1,0,-1,0};
-    rotateBlenderToOpenGL = QQuaternion::fromRotationMatrix(QMatrix3x3(blend2openglarr));
+ModelGLLoader::ModelGLLoader() {
 }
 
 // look for file using relative path
@@ -28,7 +21,7 @@ QString findFile(QString relativeFilePath, int scanDepth) {
     return "";
 }
 
-bool ModelLoader::Load(QString filePath, PathType pathType) {
+bool ModelGLLoader::Load(QString filePath, PathType pathType) {
     QString l_filePath;
     if (pathType == RelativePath)
         l_filePath = findFile(filePath, 5);
@@ -48,8 +41,14 @@ bool ModelLoader::Load(QString filePath, PathType pathType) {
         return false;
     }
 
+    QFile file("../biped/final/mtls.out");
+    file.open(QFile::ReadOnly);
+    QByteArray blob = file.readAll();
+    QJsonArray mtlsJson = QJsonDocument::fromJson(blob).array();
+
     for(unsigned int ii=0; ii < scene->mNumMaterials; ++ii) {
-        QSharedPointer<MaterialInfo> mater = processMaterial(scene->mMaterials[ii]);
+        QSharedPointer<Material> mater = processMaterial(scene->mMaterials[ii]);
+        mater->Name = mtlsJson[ii].toString();
         m_materials.push_back(mater);
     }
 
@@ -68,7 +67,7 @@ bool ModelLoader::Load(QString filePath, PathType pathType) {
     return true;
 }
 
-void ModelLoader::getBufferData(QVector<float> **vertices, QVector<float> **normals, QVector<unsigned int> **indices) {
+void ModelGLLoader::getBufferData(QVector<float> **vertices, QVector<float> **normals, QVector<unsigned int> **indices) {
     if(vertices != 0)
         *vertices = &m_vertices;
 
@@ -79,8 +78,8 @@ void ModelLoader::getBufferData(QVector<float> **vertices, QVector<float> **norm
         *indices = &m_indices;
 }
 
-QSharedPointer<MaterialInfo> ModelLoader::processMaterial(aiMaterial *material) {
-    QSharedPointer<MaterialInfo> mater(new MaterialInfo);
+QSharedPointer<Material> ModelGLLoader::processMaterial(aiMaterial *material) {
+    QSharedPointer<Material> mater(new Material);
 
     aiString mname;
     material->Get(AI_MATKEY_NAME, mname);
@@ -115,7 +114,7 @@ QSharedPointer<MaterialInfo> ModelLoader::processMaterial(aiMaterial *material) 
     return mater;
 }
 
-QSharedPointer<Mesh> ModelLoader::processMesh(aiMesh *mesh) {
+QSharedPointer<Mesh> ModelGLLoader::processMesh(aiMesh *mesh) {
     QSharedPointer<Mesh> newMesh(new Mesh);
     newMesh->indexOffset = m_indices.size();
     unsigned int indexCountBefore = m_indices.size();
@@ -156,16 +155,13 @@ QSharedPointer<Mesh> ModelLoader::processMesh(aiMesh *mesh) {
     return newMesh;
 }
 
-void ModelLoader::processNode(aiNode *node) {
+void ModelGLLoader::processNode(aiNode *node) {
 
     for(uint ich = 0; ich < node->mNumChildren; ++ich) {
-        QSharedPointer<Node> n(new Node());
+        QSharedPointer<NodeGL> n(new NodeGL());
 
         aiNode* thisNode = node->mChildren[ich];
         n->setName(thisNode->mName.length != 0 ? thisNode->mName.C_Str() : "");
-        n->setTail(jsonArr3toQVec3(pointsJson.value(n->getName()).toObject().value("tail").toArray(),rotateBlenderToOpenGL));
-        n->setHead(jsonArr3toQVec3(pointsJson.value(n->getName()).toObject().value("head").toArray(),rotateBlenderToOpenGL));
-        n->setFrame(jsonXYZtoFrame(pointsJson.value(n->getName()).toObject().value("frame").toObject()));
         n->setTransformation(QMatrix4x4(thisNode->mTransformation[0]));
 
         for(uint imesh = 0; imesh < thisNode->mNumMeshes; ++imesh) {
@@ -174,53 +170,12 @@ void ModelLoader::processNode(aiNode *node) {
         }
 
         qDebug() << "NodeName" << n->getName();
-//        qDebug() << "  NodeIndex" << ich;
-//        for (int ii=0; ii < n->getMeshes().size(); ++ii) {
-//            qDebug() << "    MaterialName" << n->getMeshes()[ii]->material->Name;
-//            qDebug() << "    MeshVertices" << n->getMeshes()[ii]->indexCount;
-//        }
 
         m_nodes.push_back(n);
     }
-
-    QSharedPointer<Node> rootNode;
-    // assign parents
-    for (int i = 0; i < m_nodes.size(); ++i){
-        QString parentName = pointsJson.value(m_nodes[i]->getName()).toObject().value("parent_name").toString();
-        if (parentName == ""){
-            rootNode = m_nodes[i];
-            m_nodes[i]->root(true);
-        }
-        else {
-            m_nodes[i]->setParent(getNodeByName(parentName));
-            getNodeByName(parentName)->addChild(m_nodes[i]);
-        }
-    }
-    for (int i = 0; i < m_nodes.size(); ++i){
-        m_nodes[i]->init();
-    }
-    rootNode->setAllRotDefault();
 }
 
-QVector3D ModelLoader::jsonArr3toQVec3(QJsonArray jsonArr3, QQuaternion rotation){
-    if (jsonArr3.size() != 3){
-        throw std::invalid_argument("requires 3-element QJsonArray");
-    }
-    // convert from blender axes to opengl axes
-    return rotation.rotatedVector(QVector3D(
-                                    jsonArr3[0].toDouble(),
-                                    jsonArr3[1].toDouble(),
-                                    jsonArr3[2].toDouble()));
-}
-
-CoordinateFrame ModelLoader::jsonXYZtoFrame(QJsonObject jsonFrame){
-    return CoordinateFrame(
-                jsonArr3toQVec3(jsonFrame.value("x").toArray(),rotateBlenderToOpenGL),
-                jsonArr3toQVec3(jsonFrame.value("y").toArray(),rotateBlenderToOpenGL),
-                jsonArr3toQVec3(jsonFrame.value("z").toArray(),rotateBlenderToOpenGL));
-}
-
-QSharedPointer<Node> ModelLoader::getNodeByName(QString name){
+QSharedPointer<NodeGL> ModelGLLoader::getNodeByName(QString name){
     for (int i = 0; i < m_nodes.size(); i++){
         if (m_nodes[i]->getName() == name)
             return m_nodes[i];
@@ -228,6 +183,6 @@ QSharedPointer<Node> ModelLoader::getNodeByName(QString name){
     throw std::invalid_argument("given name not found in node list");
 }
 
-Model ModelLoader::toModel(){
-    return Model(m_nodes,m_materials);
+ModelGL ModelGLLoader::toModel(){
+    return ModelGL(m_nodes,m_materials);
 }

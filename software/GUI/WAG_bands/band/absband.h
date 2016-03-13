@@ -42,6 +42,7 @@ public:
 
     static AbsState *deserialize(QByteArray byteRep, PositionRepresentation positionRep);
     static QString bandTypeToString(BandType stringifyThis);
+    static QString bandTypeToModelName(BandType b);
 
 public slots:
     void catchTolChange(int newTol);

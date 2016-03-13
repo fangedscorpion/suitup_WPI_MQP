@@ -4,6 +4,7 @@
 #include "visualization/glwidget.h"
 #include "playbackcontroller.h"
 #include "band/absband.h"
+#include "model/modelloader.h"
 #include <QTableWidget>
 #include <QHeaderView>
 
@@ -71,8 +72,10 @@ MainWindow::MainWindow(QWidget *parent) :
     applicationLayout->addLayout(createStatusBar());
     applicationLayout->addWidget(line);
     applicationLayout->addWidget(tabs, 1);
+
     wifiMan = new WifiManager();
-    fullSuit = new Suit(wifiMan);
+    ModelLoader modelLoader = ModelLoader();
+    fullSuit = new Suit(wifiMan,modelLoader.load());
     connectedBands = QSet<BandType>();
     connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(indicateConnectionStatusChange(BandType, ConnectionStatus)));
     connect(this, SIGNAL(modeChanged(ACTION_TYPE)), fullSuit, SLOT(catchModeChanged(ACTION_TYPE)));

@@ -1,6 +1,7 @@
 #include "absband.h"
 #include <cstddef>
 #include <QDebug>
+#include <stdexcept>
 
 QDataStream & operator>>(QDataStream & str, BandType & v) {
     unsigned int type = 0;
@@ -99,6 +100,10 @@ bool AbsBand::isConnected() {
     return commsSetUp;
 }
 
+//void AbsBand::assignNode(QSharedPointer<Node> node){
+//    pose->assignNode(node);
+//}
+
 AbsState *AbsBand::deserialize(QByteArray byteRep, PositionRepresentation positionRep) {
     AbsState *state;
     switch (positionRep) {
@@ -171,5 +176,26 @@ QString AbsBand::bandTypeToString(BandType stringifyThis) {
     default:
         return QString("unknown band");
         break;
+    }
+}
+
+QString AbsBand::bandTypeToModelName(BandType b){
+    switch(b){
+    case LEFT_LOWER_ARM:
+        return QString("Forearm.L");
+    case LEFT_UPPER_ARM:
+        return QString("UpperArm.L");
+    case LEFT_SHOULDER:
+        return QString("Shoulder.L");
+    case RIGHT_SHOULDER:
+        return QString("Shoulder.R");
+    case RIGHT_UPPER_ARM:
+        return QString("UpperArm.R");
+    case RIGHT_LOWER_ARM:
+        return QString("Forearm.R");
+    case CHEST:
+        return QString("Chest");
+    default:
+        throw std::invalid_argument("unknown bandtype");
     }
 }

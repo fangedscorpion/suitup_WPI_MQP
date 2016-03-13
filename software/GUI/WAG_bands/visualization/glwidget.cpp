@@ -5,7 +5,7 @@ GLWidget::GLWidget() :
     QOpenGLWidget(0),
     m_indexBuffer(QOpenGLBuffer::IndexBuffer),
     m_filepath(QString("biped/final/biped_rig.obj")),
-    m_pathType(ModelLoader::RelativePath),
+    m_pathType(ModelGLLoader::RelativePath),
     m_error(false),
     m_xRot(0),
     m_yRot(0),
@@ -84,7 +84,7 @@ void GLWidget::createBuffers(){
     if(m_error)
         return;
 
-    ModelLoader modelLoader;
+    ModelGLLoader modelLoader;
     if(!modelLoader.Load(m_filepath, m_pathType)){
         m_error = true;
         return;
@@ -118,8 +118,7 @@ void GLWidget::createBuffers(){
     m_indexBuffer.bind();
     m_indexBuffer.allocate(&(*indices)[0], indices->size()*sizeof(unsigned int));
 
-//    m_nodes = modelLoader.getAllNodes();
-    model = modelLoader.toModel();
+    modelGL = modelLoader.toModel();
 }
 
 void GLWidget::createAttributes(){
@@ -203,7 +202,7 @@ void GLWidget::resizeGL(int w, int h){
 
 
 void GLWidget::drawNodes(){
-    QVector<QSharedPointer<Node> > nodes = model.getNodes();
+    QVector<QSharedPointer<NodeGL> > nodes = modelGL.getNodes();
     for(int inn = 0; inn < nodes.size(); ++inn){
         // Prepare matrices
         QMatrix4x4 modelMatrix = m_model * nodes[inn]->getTransformation();
@@ -217,10 +216,11 @@ void GLWidget::drawNodes(){
 
         // Draw each mesh in this node
         for(int imm = 0; imm < nodes[inn]->getMeshes().size(); ++imm) {
+            QVector<QSharedPointer<Material> > materials = modelGL.getMaterials();
             if (nodes[inn]->getName().contains(QString("UpperArm")))
-                setMaterialUniforms(*(model.getMaterialByIndex(2)));
+                setMaterialUniforms(*(modelGL.getMaterialByName("PurpleHoser")));
             else
-                setMaterialUniforms(*(model.getMaterialByIndex(0)));
+                setMaterialUniforms(*(modelGL.getMaterialByName("DefaultMaterial")));
 
             glDrawElements(GL_TRIANGLES,
                            nodes[inn]->getMeshes()[imm]->indexCount,
@@ -230,7 +230,7 @@ void GLWidget::drawNodes(){
     }
 }
 
-void GLWidget::setMaterialUniforms(MaterialInfo &mater) {
+void GLWidget::setMaterialUniforms(Material &mater) {
     m_shaderProgram.setUniformValue("Ka", mater.Ambient);
     m_shaderProgram.setUniformValue("Kd", mater.Diffuse);
     m_shaderProgram.setUniformValue("Ks", mater.Specular);

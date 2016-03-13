@@ -8,13 +8,11 @@ for key in bones.keys():
     bdict[key] = {
         'head': list(bones[key].head_local),
         'tail': list(bones[key].tail_local),
-    'frame': {
-        'x': list(bones[key].x_axis),
-        'y': list(bones[key].y_axis),
-        'z': list(bones[key].z_axis)
-    },
-        'head_local': list(bones[key].head),
-        'tail_local': list(bones[key].tail),
+	    'frame': {
+	        'x': list(bones[key].x_axis),
+	        'y': list(bones[key].y_axis),
+	        'z': list(bones[key].z_axis)
+	    },
     } 
     if bones[key].parent is not None:
         bdict[key]['parent_name'] = bones[key].parent.name
