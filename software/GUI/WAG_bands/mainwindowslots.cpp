@@ -232,7 +232,7 @@ void MainWindow::updateConnectionStatus(BandType b, ConnectionStatus c) {
 }
 
 void MainWindow::handleConnectedBands() {
-    // count active bands
+    // count active bands, chest plus any other enabled bands
     int totalActiveBands = rightLowerArm->isChecked() + rightUpperArm->isChecked() + rightShoulder->isChecked();
     totalActiveBands += leftLowerArm->isChecked() + leftUpperArm->isChecked() + leftShoulder->isChecked() + 1;
 
@@ -303,17 +303,29 @@ void MainWindow::handleOpenFromLibBtn(int, int) {
 }
 
 void MainWindow::handleOpenFromLibFilter(QString) {
-    QRegExp rx("(\\ |\\,)");
+    QRegExp rx("(\\ |\\,)"); // split on space and comma
     QStringList filterByList = openFromLibFilterBar->text().trimmed().toLower().split(rx);
-    int col = openFromLibFilterOpts->currentIndex();
+    int startCol = openFromLibFilterOpts->currentIndex()-1;
+    int endCol = startCol+1;
+    // searching 'All'
+    if (startCol < 0) {
+        startCol = 0;
+        endCol = openFromLibFilterOpts->count()-1;
+    }
+
     for( int i = 0; i < openFromLibTable->rowCount(); ++i ) {
-        bool match = true;
-        QTableWidgetItem *item = openFromLibTable->item( i, col );
-        for (int j=0; j < filterByList.size(); j++) {
-            if(!item->text().toLower().contains(filterByList[j]) ) {
-                match = false;
-                break;
+        bool match = false;
+
+        for (int col = startCol; col < endCol; col++) {
+            QTableWidgetItem *item = openFromLibTable->item( i, col );
+            for (int j=0; j < filterByList.size(); j++) {
+                if(item->text().toLower().contains(filterByList[j]) ) {
+                    match = true;
+                    break;
+                }
             }
+            if (match)
+                break;
         }
 
         if (!match)

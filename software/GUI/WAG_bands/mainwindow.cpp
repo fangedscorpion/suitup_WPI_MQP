@@ -374,6 +374,7 @@ void MainWindow::createOpenFromLib(USER u) {
     // choose a category
     openFromLibFilterOpts = new QComboBox;
     openFromLibFilterOpts->setMaximumWidth(120);
+    openFromLibFilterOpts->addItem("All");
     openFromLibFilterOpts->addItem("Name");
     openFromLibFilterOpts->addItem("Description");
     openFromLibFilterOpts->addItem("Keywords");
@@ -422,7 +423,7 @@ void MainWindow::createOpenFromLib(USER u) {
     openFromLibTable->setMinimumHeight(400);
     openFromLibTable->verticalHeader()->setVisible(false);
     QStringList tableHeader;
-    tableHeader<<"Name"<<"Description" << "Keywords";
+    tableHeader << "Name" << "Description" << "Keywords";
     QHeaderView *headerView = new QHeaderView(Qt::Horizontal, openFromLibTable);
     openFromLibTable->setHorizontalHeader(headerView);
     headerView->setSectionResizeMode(QHeaderView::Stretch);
