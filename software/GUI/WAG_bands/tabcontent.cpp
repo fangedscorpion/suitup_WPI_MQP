@@ -193,7 +193,6 @@ QWidget* TabContent::createViewer(ACTION_TYPE t) {
         viewerPane->addWidget(playbackMotionViewer);
     }
 
-    v->setLayout(viewerPane);
     return v;
 }
 

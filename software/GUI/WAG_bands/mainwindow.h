@@ -62,7 +62,6 @@ private:
     QString titleStyleSheet;
     QString textInputStyleWhite;
     QString textInputStyleRed;
-    int buttonHeight;
     // menubar
     smartPushButton *newBtn;
     smartPushButton *openBtn;

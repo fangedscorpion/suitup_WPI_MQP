@@ -240,9 +240,9 @@ void TabContent::handleInfoMotionRequiredInput() {
     // makes the add tags button only enabled when there is text in the tags box
     addTagBtn->setEnabled(!infoMotionTagsTextEdit->text().isEmpty());
     if (infoMotionCompRadio->isChecked() && infoMotionSaveLocation->text().isEmpty()) {
-        infoMotionBrowseBtn->setStyleSheet("QPushButton { border-radius: 2px; border-style: outset; border-width: 1px; border-color: red; padding-left: 9px; padding-right: 9px; padding-top: 4px; padding-bottom: 4px;}");
+        infoMotionBrowseBtn->setRed(true);
     } else {
-        infoMotionBrowseBtn->setStyleSheet("QPushButton { }");
+        infoMotionBrowseBtn->setRed(false);
     }
 
     // enables the create button if the description AND filename text boxes are filled
