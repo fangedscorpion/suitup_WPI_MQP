@@ -7,6 +7,7 @@
 #include "band/suit.h"
 #include "recordingcontroller.h"
 #include "customWidgets/styledgroupbox.h"
+#include "customWidgets/styledcheckbox.h"
 
 class GLWidget;
 
@@ -47,7 +48,7 @@ private:
     SmartRadioButton *recordRadio;
     QWidget* createModeRadios(USER u);
     // playback options
-    QCheckBox *playOnSuit;
+    StyledCheckBox *playOnSuit;
     QComboBox *stepThrough;
     QSlider *speedSlider;
     StyledGroupBox *playbackOptions;

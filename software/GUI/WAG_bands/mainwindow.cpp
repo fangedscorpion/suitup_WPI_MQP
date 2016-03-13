@@ -180,17 +180,17 @@ void MainWindow::createSettings() {
     settingsLayout->addLayout(h);
     settingsLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     // checkboxes
-    leftShoulder = new QCheckBox("Left Shoulder");
+    leftShoulder = new StyledCheckBox("Left Shoulder");
     leftShoulder->setChecked(true);
-    leftUpperArm = new QCheckBox("Left Upper Arm");
+    leftUpperArm = new StyledCheckBox("Left Upper Arm");
     leftUpperArm->setChecked(true);
-    leftLowerArm = new QCheckBox("Left Lower Arm");
+    leftLowerArm = new StyledCheckBox("Left Lower Arm");
     leftLowerArm->setChecked(true);
-    rightShoulder = new QCheckBox("Right Shoulder");
+    rightShoulder = new StyledCheckBox("Right Shoulder");
     rightShoulder->setChecked(true);
-    rightUpperArm = new QCheckBox("Right Upper Arm");
+    rightUpperArm = new StyledCheckBox("Right Upper Arm");
     rightUpperArm->setChecked(true);
-    rightLowerArm = new QCheckBox("Right Lower Arm");
+    rightLowerArm = new StyledCheckBox("Right Lower Arm");
     rightLowerArm->setChecked(true);
     left->addWidget(leftShoulder);
     left->addWidget(leftUpperArm);

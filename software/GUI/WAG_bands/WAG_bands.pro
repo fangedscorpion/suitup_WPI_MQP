@@ -54,7 +54,8 @@ SOURCES += main.cpp\
     visualization/modelglloader.cpp \
     model/model.cpp \
     model/modelloader.cpp \
-    customWidgets/styledgroupbox.cpp
+    customWidgets/styledgroupbox.cpp \
+    customWidgets/styledcheckbox.cpp
 
 HEADERS  += mainwindow.h \
     positionsnapshot.h \
@@ -94,7 +95,8 @@ HEADERS  += mainwindow.h \
     visualization/modelgl.h \
     visualization/modelglloader.h \
     model/model.h \
-    model/modelloader.h
+    model/modelloader.h \
+    customWidgets/styledcheckbox.h
 
 FORMS    +=
 

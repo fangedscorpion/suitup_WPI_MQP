@@ -27,6 +27,7 @@
 #include "playbackcontroller.h"
 #include "customWidgets/smartpushbutton.h"
 #include "customWidgets/smartradiobutton.h"
+#include "customWidgets/styledcheckbox.h"
 #include "wagfile.h"
 #include <set>
 #include <QTableWidget>
@@ -73,12 +74,12 @@ private:
     QLabel *batteryStatus;
     QHBoxLayout* createStatusBar();
     // settings overlay
-    QCheckBox *leftShoulder;
-    QCheckBox *leftUpperArm;
-    QCheckBox *leftLowerArm;
-    QCheckBox *rightShoulder;
-    QCheckBox *rightUpperArm;
-    QCheckBox *rightLowerArm;
+    StyledCheckBox *leftShoulder;
+    StyledCheckBox *leftUpperArm;
+    StyledCheckBox *leftLowerArm;
+    StyledCheckBox *rightShoulder;
+    StyledCheckBox *rightUpperArm;
+    StyledCheckBox *rightLowerArm;
     SmartPushButton *connectBands;
     OverlayWidget *settingsWidget;
     void createSettings();

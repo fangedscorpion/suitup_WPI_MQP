@@ -10,7 +10,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     playbackOptions = new StyledGroupBox("Playback Options");
     QVBoxLayout *playbackLayout = playbackOptions->getLayout();
     QVBoxLayout *options = new QVBoxLayout;
-    playOnSuit = new QCheckBox("Play on suit");
+    playOnSuit = new StyledCheckBox("Play on suit");
     stepThrough = new QComboBox;
     stepThrough->addItem("Step through mode");
     stepThrough->addItem("Timed mode");
@@ -71,7 +71,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     h->addWidget(playbackCountDownSpinner);
     h->addWidget(countDownMessage);
     // voice control
-    QCheckBox *playbackVoiceControl = new QCheckBox("Voice Control");
+    StyledCheckBox *playbackVoiceControl = new StyledCheckBox("Voice Control");
     // add everything
     options->addWidget(playOnSuit);
     options->addWidget(playbackVoiceControl);

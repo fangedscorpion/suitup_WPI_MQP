@@ -19,7 +19,7 @@ QWidget* TabContent::createRecordOptionsAndController() {
     h->addWidget(recordCountDownSpinner);
     h->addWidget(countDownMessage);
 
-    QCheckBox *recordVoiceControl = new QCheckBox("Voice Control");
+    StyledCheckBox *recordVoiceControl = new StyledCheckBox("Voice Control");
 
     QVBoxLayout *options = recordOptionsGroup->getLayout();
     options->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
