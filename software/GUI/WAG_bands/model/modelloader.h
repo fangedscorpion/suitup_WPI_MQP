@@ -8,7 +8,7 @@
 class ModelLoader {
 public:
     ModelLoader();
-//    ~ModelLoader() {}
+    ~ModelLoader() {}
 
     Model* load();
 

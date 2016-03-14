@@ -32,6 +32,7 @@
 
 #include "communications/wifimanager.h"
 #include "band/suit.h"
+#include "model/modelloader.h"
 
 namespace Ui {
 class MainWindow;
@@ -108,6 +109,7 @@ private:
     // move to wherever we initialize the suit object
     WifiManager *wifiMan;
     Suit *fullSuit;
+    ModelLoader *modelLoader;
     QSet<BandType> connectedBands;
 
 private slots:

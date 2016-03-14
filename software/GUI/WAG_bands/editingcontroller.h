@@ -3,12 +3,13 @@
 
 #include <QObject>
 #include "wagfile.h"
+#include "model/model.h"
 
 class EditingController : public QObject
 {
     Q_OBJECT
 public:
-    EditingController();
+    EditingController(Model *m);
     void setActiveMotion(WAGFile *newMotion);
 signals:
     void editingPlayStateChanged(bool);
@@ -34,6 +35,7 @@ public slots:
     void currentFrameChanged(int currentFrameSliderPos);
 
 private:
+    Model *model;
     bool playing;
     int beginningPointer;
     int endPointer;

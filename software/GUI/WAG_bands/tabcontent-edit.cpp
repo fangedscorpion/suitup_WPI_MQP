@@ -4,7 +4,7 @@
 // Edit Recording options and controller
 // TODO: add edit file name and description in here
 QWidget* TabContent::createEditOptionsAndControls() {
-    editingControls = new EditingController();
+    editingControls = new EditingController(modelLoader->load());
     editingControls->setActiveMotion(motion);
     connect(editingControls, SIGNAL(changeSliderMax(qint32)), editMotionViewer, SLOT(changeSliderRange(qint32)));
     // Edit recording options

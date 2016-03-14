@@ -75,8 +75,7 @@ MainWindow::MainWindow(QWidget *parent) :
     applicationLayout->addWidget(tabs, 1);
 
     wifiMan = new WifiManager();
-    ModelLoader modelLoader = ModelLoader();
-    fullSuit = new Suit(wifiMan,modelLoader.load());
+    fullSuit = new Suit(wifiMan);
     connectedBands = QSet<BandType>();
     connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(indicateConnectionStatusChange(BandType, ConnectionStatus)));
     connect(this, SIGNAL(modeChanged(ACTION_TYPE)), fullSuit, SLOT(catchModeChanged(ACTION_TYPE)));
@@ -84,6 +83,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(fullSuit, SIGNAL(bandHasLowBattery(BandType)), this, SLOT(catchLowBatterySignal(BandType)));
     connect(fullSuit, SIGNAL(bandConnectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(updateConnectionStatus(BandType,ConnectionStatus)));
 
+    modelLoader = new ModelLoader;
 }
 
 MainWindow::~MainWindow() {}
@@ -93,7 +93,7 @@ void MainWindow::setCurrentTabName(QString s) {
 }
 
 void MainWindow::addTab(USER u, WAGFile* w, ACTION_TYPE a) {
-    TabContent *tab = new TabContent(this, w, u, a, fullSuit);
+    TabContent *tab = new TabContent(this, w, u, a, fullSuit, modelLoader);
     tabs->addTab(tab, tab->getFilename());
     tabs->setCurrentIndex(tabs->indexOf(tab));
     tabs->clearFocus();

@@ -5,11 +5,12 @@
 #include "wagfile.h"
 #include <QString>
 #include "band/suit.h"
+#include "model/model.h"
 
 class PlaybackController:public QObject {
     Q_OBJECT
 public:
-    PlaybackController(Suit *);
+    PlaybackController(Suit *, Model*);
     void setActiveMotion(WAGFile *);
 
 protected:
@@ -67,6 +68,7 @@ private:
     int timerId;
     int lastFrameNum;
     Suit *suitObj;
+    Model *model;
 
     // These indicate the positions of the beginning and ending sliders on the super slider
     // should be 0 - 100

@@ -1,9 +1,10 @@
 #include "recordingcontroller.h"
 
 // takes in record commands (stop/start recording), talks to suit,
-RecordingController::RecordingController(Suit *newSuitObj) : QObject()
+RecordingController::RecordingController(Suit *newSuitObj, Model *m) : QObject()
 {
     suitObj = newSuitObj;
+    model = m;
     connect(suitObj, SIGNAL(positionSnapshotReady(qint32,PositionSnapshot)), this, SLOT(addSnapshotToMotion(qint32, PositionSnapshot)));
     connect(suitObj, SIGNAL(voiceControlCommandReady(MessageType)), this, SLOT(catchVoiceControlCommand(MessageType)));
     voiceEnabled = false;
