@@ -54,14 +54,21 @@ QByteArray BandMessage::getSerializedMessage() {
 
 VoiceControlMsgType BandMessage::parseVoiceControlMsg() {
     QByteArray data = getMessageData();
-    if (getMessageLength() == VOICE_CONTROL_DATA_LEN) {
+    //if (getMessageLength() == VOICE_CONTROL_DATA_LEN) {
+    if (data.length() != 0) {
         const char *constMsgData = data.constData();
+        qDebug()<<"BandMessage: message data"<<constMsgData;
+        qDebug()<<"BandMessage start "<<VOICE_CONTROL_START;
+        qDebug()<<"BandMessage stop "<<VOICE_CONTROL_STOP;
         // for now, assuming VOICE_CONTROL_DATA_LEN is 1, if not, have to change equality check
         if (constMsgData[0] == VOICE_CONTROL_START) {
+            qDebug()<<"voice control start";
             return VC_START;
         } else if (constMsgData[0] == VOICE_CONTROL_STOP){
+            qDebug()<<"Voice control stop";
             return VC_STOP;
         } else {
+            qDebug()<<"Voice control other";
             return OTHER;
         }
     } else {

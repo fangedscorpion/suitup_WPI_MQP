@@ -277,6 +277,7 @@ void MainWindow::lockOnPlayOrRecord(bool suitRecording) {
 }
 
 void MainWindow::catchLowBatterySignal(BandType lowBatteryBand) {
+    qDebug()<<"Caught low battery signal from "<<lowBatteryBand;
     static QSet<BandType> lowBatteryBands = QSet<BandType>();
     if (!(lowBatteryBands.contains(lowBatteryBand))) {
         lowBatteryBands<<lowBatteryBand;
