@@ -15,6 +15,7 @@ Model::Model(QVector<QSharedPointer<Node> > nodes) : QObject(){
 }
 
 void Model::updatePose(PositionSnapshot pose){
+    qDebug() << "Model::updatePose: received pose update";
     QHash<BandType, AbsState*> map = pose.getSnapshot();
     QList<BandType> bands = map.keys();
     for (int i = 0; i < bands.size(); ++i){
@@ -29,7 +30,9 @@ void Model::updatePose(PositionSnapshot pose){
             somethingChanged = false;
             qDebug() << "Model::updatePose(): Don't know how to handle given state representation!";
         }
-        if (somethingChanged) emit poseUpdated(bandName,getNodeByName(bandName)->getTransformation());
+        if (somethingChanged) {
+            emit poseUpdated(bandName,getNodeByName(bandName)->getTransformation());
+        }
     }
 
 }
@@ -110,7 +113,7 @@ void Node::setAllRotIdentity() {
 void Node::setAllRotDefault() {
     if (isRootNode){
         transformation = defaultPose;
-        transformation.translate(-1000*tail);
+        transformation.translate(-1000*tail); // TODO fix...
     }
     for (int i = 0; i < children.size(); ++i){
         children[i]->setWorldRotation(children[i]->rotToOrigin.conjugated());
