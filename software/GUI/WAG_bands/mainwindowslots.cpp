@@ -92,7 +92,7 @@ void MainWindow::launchOpenFromComputer(USER u) {
         WAGFile* w = new WAGFile(f.trimmed());
         addTab(u, w, EDIT);
         closeOpenMotionOptions();
-    }    
+    }
 }
 
 // opens the user determined file
@@ -208,7 +208,7 @@ void MainWindow::handleNewMotionRequiredInput() {
     createNewMotionBtn->setEnabled(!newMotionDescription->toPlainText().isEmpty() &&
                                    !newMotionNameTextEdit->text().isEmpty() &&
                                    ((newMotionCompRadio->isChecked() && !newMotionSaveLocation->text().isEmpty()) ||
-                                   !newMotionCompRadio->isChecked()));
+                                    !newMotionCompRadio->isChecked()));
 }
 
 // handles the behavior of the radio buttons on the new motion window.
@@ -276,28 +276,46 @@ void MainWindow::lockOnPlayOrRecord(bool suitRecording) {
 
 }
 
-void MainWindow::catchLowBatterySignal(BandType lowBatteryBand) {
-    qDebug()<<"Caught low battery signal from "<<lowBatteryBand;
+void MainWindow::catchLowBatterySignal(BandType lowBatteryBand, bool hasLowBattery) {
     static QSet<BandType> lowBatteryBands = QSet<BandType>();
-    if (!(lowBatteryBands.contains(lowBatteryBand))) {
-        lowBatteryBands<<lowBatteryBand;
-        qDebug()<<lowBatteryBands;
-        QString lowBatteryText = "Low Battery: ";
-        QList<BandType> bandList = lowBatteryBands.toList();
-        if (bandList.size() == 1) {
-            lowBatteryText +=(AbsBand::bandTypeToString(bandList[0]));
+    bool updated = false;
+    if (hasLowBattery) {
+        if (!(lowBatteryBands.contains(lowBatteryBand))) {
+            lowBatteryBands<<lowBatteryBand;
+            qDebug()<<lowBatteryBands;
+            updated = true;
+        }
+    } else {
+        if (lowBatteryBands.contains(lowBatteryBand))  {
+            lowBatteryBands.remove(lowBatteryBand);
+            updated = true;
+        }
+
+    }
+    if (updated) {
+        QString lowBatteryText;
+        if (lowBatteryBands.size() == 0) {
+            lowBatteryText = "Battery full";
         } else {
-            for (int i = 0; i < bandList.size() - 1; i++) {
-                lowBatteryText += AbsBand::bandTypeToString(bandList[i]);
-                lowBatteryText += ", ";
+            lowBatteryText = "Low Battery: ";
+            QList<BandType> bandList = lowBatteryBands.toList();
+            if (bandList.size() == 1) {
+                lowBatteryText +=(AbsBand::bandTypeToString(bandList[0]));
+            } else {
+                for (int i = 0; i < bandList.size() - 1; i++) {
+                    lowBatteryText += AbsBand::bandTypeToString(bandList[i]);
+                    lowBatteryText += ", ";
+                }
+                lowBatteryText += "and ";
+                lowBatteryText += AbsBand::bandTypeToString(bandList[bandList.size() - 1]);
             }
-            lowBatteryText += "and ";
-            lowBatteryText += AbsBand::bandTypeToString(bandList[bandList.size() - 1]);
         }
         batteryStatus->setText(lowBatteryText);
+
         updateBatteryStatus();
     }
 }
+
 
 // enables the "load" button on the openFromLib widget if one of the motions is selected.
 void MainWindow::handleOpenFromLibBtn(int, int) {

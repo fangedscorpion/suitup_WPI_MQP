@@ -20,7 +20,7 @@ public slots: // some of these might be better as normal functions
     // but for now, I'm making them slots so they can be called asynchronously
     void togglePlay();
     void setStepThroughMode(bool steppingThrough);
-    void toggleVoiceControl();
+    void toggleVoiceControl(bool enable);
     void toggleSuitActive(bool active);
     void currentFrameChanged(int currentFrameSliderPos);
     void modifyHoldTime(double holdSeconds);

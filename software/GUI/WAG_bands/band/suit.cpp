@@ -39,7 +39,7 @@ Suit::Suit(WifiManager *comms):QObject() {
         connect(bands[allBands[i]], SIGNAL(poseRecvd(AbsState *,BandType,qint32)), this, SLOT(catchNewPose(AbsState *, BandType, qint32)));
         connect(this, SIGNAL(toleranceChanged(int)), bands[allBands[i]], SLOT(catchTolChange(int)));
         connect(bands[allBands[i]], SIGNAL(connectionProblem(BandType)), this, SLOT(catchConnectionProblem(BandType)));
-        connect(bands[allBands[i]], SIGNAL(lowBattery(BandType)), this, SLOT(propagateLowBattery(BandType)));
+        connect(bands[allBands[i]], SIGNAL(lowBattery(BandType, bool)), this, SLOT(propagateLowBatteryUpdate(BandType, bool)));
     }
 
     collectingData = true;
@@ -52,14 +52,11 @@ void Suit::getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTime
     AbsBand *targetBand = getBand(band);
     // send data to target band
     qint64 elapsedTime = startTime.msecsTo(dataTimestamp);
-    if (data->getMessageType() == VOICE_CONTROL) {
+    if ((data->getMessageType() == VOICE_CONTROL_LOW_BATT) || (data->getMessageType() == VOICE_CONTROL)) {
         processVoiceControlMessage(data);
-    } else {
-        if (data->getMessageType() == VOICE_CONTROL_LOW_BATT) {
-            processVoiceControlMessage(data);
-        }
-        targetBand->handleMessage((qint32) elapsedTime, data);
     }
+    targetBand->handleMessage((qint32) elapsedTime, data);
+
 }
 
 AbsBand* Suit::getBand(BandType bt) {
@@ -248,9 +245,8 @@ void Suit::processVoiceControlMessage(BandMessage *msg) {
     // currently shouldn't do anything in edit mode
 }
 
-void Suit::propagateLowBattery(BandType chargeBand) {
-    qDebug()<<"Suit: emitting band type "<<chargeBand<<" has low battery";
-    emit bandHasLowBattery(chargeBand);
+void Suit::propagateLowBatteryUpdate(BandType chargeBand, bool hasLowBattery) {
+    emit bandHasLowBattery(chargeBand, hasLowBattery);
 }
 
 

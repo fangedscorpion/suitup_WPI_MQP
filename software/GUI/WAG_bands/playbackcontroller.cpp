@@ -39,9 +39,10 @@ void PlaybackController::togglePlay() {
     //qDebug("PlaybackController: Toggling play");
     //qDebug()<<"PlaybackController: Last frame num: "<<lastFrameNum;
     //qDebug()<<"PlaybackController: Current frame num: "<<currentFrame;
+    qDebug()<<"Trying to toggle play";
     if (!((!playing) && (currentFrame >= (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))))) {
         playing = !playing;
-        //qDebug()<<"PlaybackController: Play status: "<<playing;
+        qDebug()<<"PlaybackController: Play status: "<<playing;
         if (playing) {
             startPlaying();
         }
@@ -61,8 +62,9 @@ void PlaybackController::changeFrameRate(float newFrameRate) {
     frameRate = newFrameRate;
 }
 
-void PlaybackController::toggleVoiceControl() {
-    voiceControl = !voiceControl;
+void PlaybackController::toggleVoiceControl(bool enable) {
+    qDebug()<<"Toggle voice control to "<<enable;
+    voiceControl = enable;
 }
 
 void PlaybackController::toggleSuitActive(bool active) {
@@ -239,13 +241,19 @@ void PlaybackController::catchFrameUpdate(qint32 newFrame) {
 }
 
 void PlaybackController::catchVoiceControlCommand(MessageType vcCommandInstruction) {
+    qDebug()<<"PlaybackController: Recieved voice control message";
+    qDebug()<<"Voice control state"<<voiceControl;
     if (voiceControl) {
         if (vcCommandInstruction == START_PLAYBACK) {
+            qDebug()<<"PlaybackController: Start playback";
             if (!playing) {
+                qDebug()<<"PlaybackController: actually toggle play";
                 togglePlay();
             }
         } else if (vcCommandInstruction == STOP_PLAYBACK) {
+            qDebug()<<"PlaybackController:: stop playback";
             if (playing) {
+                qDebug("Actually toggle play");
                 togglePlay();
             }
         }

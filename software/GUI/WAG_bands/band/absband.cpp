@@ -16,6 +16,7 @@ AbsBand::AbsBand(BandType bt):QObject() {
     active = true;
     commsSetUp = false;
     pingProblems = 0;
+    hasLowBattery = false;
 }
 
 void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
@@ -33,6 +34,7 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
 }
 
 void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
+    bool tmpLowBattery;
     //qDebug("AbsBand: Handling message\n");
     qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType();
     switch (recvdMessage->getMessageType()) {
@@ -41,9 +43,15 @@ void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     case BAND_PING_LOW_BATT:
     case BAND_POSITION_UPDATE_LOW_BATT:
     case LOW_BATTERY_UPDATE:
-        qDebug()<<"AbsBand: Emitting low battery";
-        emit lowBattery(type);
+        tmpLowBattery = true;
         break;
+    default:
+        tmpLowBattery = false;
+    }
+
+    if (tmpLowBattery != hasLowBattery) {
+        hasLowBattery = tmpLowBattery;
+        emit lowBattery(type, hasLowBattery);
     }
 
     AbsState *newState;
