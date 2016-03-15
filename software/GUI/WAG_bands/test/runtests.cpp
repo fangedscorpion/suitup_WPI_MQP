@@ -2,6 +2,7 @@
 #include "testquatpose.h"
 #include "testquatstate.h"
 #include "testquaterror.h"
+#include "testwagfile.h"
 
 void runtests(int argc, char *argv[]){
 
@@ -16,5 +17,10 @@ void runtests(int argc, char *argv[]){
 
     TestQuatError test4;
     QTest::qExec(&test4, argc, argv);
+
+    QApplication a(argc, argv);
+
+    TestWAGFile test5;
+    QTest::qExec(&test5, argc, argv);
 
 }
