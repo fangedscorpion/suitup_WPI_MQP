@@ -1,7 +1,7 @@
 #include "glwidget.h"
 #include <QMouseEvent>
 
-GLWidget::GLWidget() :
+GLWidget::GLWidget(Model* m) :
     QOpenGLWidget(0),
     m_indexBuffer(QOpenGLBuffer::IndexBuffer),
     m_filepath(QString("biped/final/biped_rig.obj")),
@@ -10,7 +10,8 @@ GLWidget::GLWidget() :
     m_xRot(0),
     m_yRot(0),
     m_zRot(0),
-    m_cam_offset(QVector3D(0,0,0)){
+    m_cam_offset(QVector3D(0,0,0)),
+    model(m){
 
     QSurfaceFormat format;
     format.setDepthBufferSize(24);
@@ -119,6 +120,8 @@ void GLWidget::createBuffers(){
     m_indexBuffer.allocate(&(*indices)[0], indices->size()*sizeof(unsigned int));
 
     modelGL = modelLoader.toModel();
+    connect(model,SIGNAL(poseUpdated(QString,QMatrix4x4)),modelGL,SLOT(updatePose(QString,QMatrix4x4)));
+    connect(modelGL,SIGNAL(modelGLChanged()),this,SLOT(update()));
 }
 
 void GLWidget::createAttributes(){
@@ -202,7 +205,7 @@ void GLWidget::resizeGL(int w, int h){
 
 
 void GLWidget::drawNodes(){
-    QVector<QSharedPointer<NodeGL> > nodes = modelGL.getNodes();
+    QVector<QSharedPointer<NodeGL> > nodes = modelGL->getNodes();
     for(int inn = 0; inn < nodes.size(); ++inn){
         // Prepare matrices
         QMatrix4x4 modelMatrix = m_model * nodes[inn]->getTransformation();
@@ -216,11 +219,11 @@ void GLWidget::drawNodes(){
 
         // Draw each mesh in this node
         for(int imm = 0; imm < nodes[inn]->getMeshes().size(); ++imm) {
-            QVector<QSharedPointer<Material> > materials = modelGL.getMaterials();
+            QVector<QSharedPointer<Material> > materials = modelGL->getMaterials();
             if (nodes[inn]->getName().contains(QString("UpperArm")))
-                setMaterialUniforms(*(modelGL.getMaterialByName("PurpleHoser")));
+                setMaterialUniforms(*(modelGL->getMaterialByName("PurpleHoser")));
             else
-                setMaterialUniforms(*(modelGL.getMaterialByName("DefaultMaterial")));
+                setMaterialUniforms(*(modelGL->getMaterialByName("DefaultMaterial")));
 
             glDrawElements(GL_TRIANGLES,
                            nodes[inn]->getMeshes()[imm]->indexCount,

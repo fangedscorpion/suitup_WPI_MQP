@@ -33,7 +33,7 @@ public:
     QSharedPointer<Material> getMaterial(int index) {return m_materials[index];}
     QSharedPointer<NodeGL> getNodeByName(QString name);
 
-    ModelGL toModel();
+    ModelGL *toModel();
 
 private:
     QSharedPointer<Material> processMaterial(aiMaterial *mater);

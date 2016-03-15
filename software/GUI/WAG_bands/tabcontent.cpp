@@ -2,10 +2,11 @@
 #include <unistd.h>
 #include <QTimerEvent>
 
-TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow, Suit *sysSuit) : parent(in_parent){
+TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow, Suit *sysSuit, ModelLoader *ml) : parent(in_parent){
     motion = in_motion;
     user = u;
     suitObj = sysSuit;
+    modelLoader = ml;
 
     connect(this, SIGNAL(modeChanged(ACTION_TYPE)), suitObj, SLOT(catchModeChanged(ACTION_TYPE)));
     connect(this, SIGNAL(modeChanged(ACTION_TYPE)), this, SLOT(catchModeChanged(ACTION_TYPE)));
@@ -24,11 +25,13 @@ TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION
     }
     if (u.hasAction(EDIT)) {
         // createViewer must come first
+        editModel = modelLoader->load();
         viewerStack->addWidget(createViewer(EDIT));
         optionsStack->addWidget(createEditOptionsAndControls());
     }
     if (u.hasAction(PLAYBACK)) {
         // createViewer must come first
+        playbackModel = modelLoader->load();
         viewerStack->addWidget(createViewer(PLAYBACK));
         optionsStack->addWidget(createPlaybackOptionsAndControls());
     }
@@ -182,11 +185,11 @@ QWidget* TabContent::createViewer(ACTION_TYPE t) {
 
     if (t == EDIT) {
         v->setTitle("Editing: " + motion->getName());
-        editMotionViewer = new MotionViewer(this);
+        editMotionViewer = new MotionViewer(this, editModel);
         viewerPane->addWidget(editMotionViewer);
     } else {
         v->setTitle("Playing: " + motion->getName());
-        playbackMotionViewer = new MotionViewer(this);
+        playbackMotionViewer = new MotionViewer(this, playbackModel);
         viewerPane->addWidget(playbackMotionViewer);
     }
 

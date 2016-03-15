@@ -43,10 +43,11 @@ private:
 };
 
 
-class ModelGL {
+class ModelGL : public QObject {
+    Q_OBJECT
 public:
-    ModelGL(){}
-    ModelGL(QVector<QSharedPointer<NodeGL> > nodes, QVector<QSharedPointer<Material> > materials) : nodes(nodes), materials(materials) {}
+    ModelGL() : QObject() {}
+    ModelGL(QVector<QSharedPointer<NodeGL> > nodes, QVector<QSharedPointer<Material> > materials) : QObject(), nodes(nodes), materials(materials) {}
     ~ModelGL(){}
 
     QVector<QSharedPointer<NodeGL> > getNodes() const {return nodes;}
@@ -54,7 +55,12 @@ public:
 
     QSharedPointer<NodeGL> getNodeByName(QString name) const;
     QSharedPointer<Material> getMaterialByName(QString name) const;
-//    QSharedPointer<Material> getMaterialByIndex(int index) const;
+
+public slots:
+    void updatePose(QString nodeName, QMatrix4x4 pose);
+
+signals:
+    void modelGLChanged();
 
 private:
     QVector<QSharedPointer<NodeGL> > nodes;

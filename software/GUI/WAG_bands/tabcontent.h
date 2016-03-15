@@ -5,6 +5,7 @@
 #include "editingcontroller.h"
 #include "customWidgets/motionviewer.h"
 #include "band/suit.h"
+#include "model/modelloader.h"
 #include "recordingcontroller.h"
 #include "customWidgets/styledgroupbox.h"
 #include "customWidgets/styledcheckbox.h"
@@ -16,7 +17,7 @@ class TabContent : public QWidget
     Q_OBJECT
 
 public:
-    TabContent(MainWindow* parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow, Suit *sysSuit);
+    TabContent(MainWindow* parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow, Suit *sysSuit, ModelLoader *modelLoader);
     ~TabContent();
 
     QString getFilename() { return motion->getName();}
@@ -34,7 +35,11 @@ private:
     Overlay* overlay;
     void updateMotion();
     Suit *suitObj;
+    ModelLoader* modelLoader;
 
+    // models
+    Model* playbackModel;
+    Model* editModel;
     // fonts & styles
     QString textInputStyleWhite;
     QString textInputStyleRed;

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "wagfile.h"
+#include "model/model.h"
 
 class EditingController : public QObject
 {

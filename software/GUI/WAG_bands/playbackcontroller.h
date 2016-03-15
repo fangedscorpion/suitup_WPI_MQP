@@ -5,6 +5,7 @@
 #include "wagfile.h"
 #include <QString>
 #include "band/suit.h"
+#include "model/model.h"
 
 class PlaybackController:public QObject {
     Q_OBJECT
