@@ -54,6 +54,9 @@ void Suit::getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTime
     if (data->getMessageType() == VOICE_CONTROL) {
         processVoiceControlMessage(data);
     } else {
+        if (data->getMessageType() == VOICE_CONTROL_LOW_BATT) {
+            processVoiceControlMessage(data);
+        }
         targetBand->handleMessage((qint32) elapsedTime, data);
     }
 }
