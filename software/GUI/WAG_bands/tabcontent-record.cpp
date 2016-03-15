@@ -1,7 +1,7 @@
 #include "tabcontent.h"
 
 QWidget* TabContent::createRecordOptionsAndController() {
-    recordingControls = new RecordingController(suitObj, modelLoader->load());
+    recordingControls = new RecordingController(suitObj);
     recordingControls->setActiveMotion(motion);
     recordOptionsGroup = new StyledGroupBox("Recording Options");
 

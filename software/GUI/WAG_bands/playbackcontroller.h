@@ -10,7 +10,7 @@
 class PlaybackController:public QObject {
     Q_OBJECT
 public:
-    PlaybackController(Suit *, Model*);
+    PlaybackController(Suit *);
     void setActiveMotion(WAGFile *);
 
 protected:
@@ -68,7 +68,6 @@ private:
     int timerId;
     int lastFrameNum;
     Suit *suitObj;
-    Model *model;
 
     // These indicate the positions of the beginning and ending sliders on the super slider
     // should be 0 - 100

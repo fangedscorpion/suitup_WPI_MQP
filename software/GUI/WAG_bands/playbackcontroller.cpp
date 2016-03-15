@@ -15,9 +15,8 @@
 #define MILLISECONDS_PER_FRAME 75
 
 
-PlaybackController::PlaybackController(Suit *newSuitObj, Model *m) {
+PlaybackController::PlaybackController(Suit *newSuitObj) {
     suitObj = newSuitObj;
-    model = m;
     playing = false;
     stepThrough = false;
     frameRate = 1;

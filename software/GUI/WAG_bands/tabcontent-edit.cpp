@@ -4,9 +4,12 @@
 // Edit Recording options and controller
 // TODO: add edit file name and description in here
 QWidget* TabContent::createEditOptionsAndControls() {
-    editingControls = new EditingController(modelLoader->load());
+    editingControls = new EditingController();
     editingControls->setActiveMotion(motion);
-    connect(editingControls, SIGNAL(changeSliderMax(qint32)), editMotionViewer, SLOT(changeSliderRange(qint32)));
+
+    connect(editingControls, SIGNAL(changeSliderMax(qint32)), editMotionViewer, SLOT(changeSliderRange(qint32)));    
+    connect(editingControls, SIGNAL(goToSnapshot(PositionSnapshot)), editModel, SLOT(updatePose(PositionSnapshot)));
+
     // Edit recording options
     StyledGroupBox *editOptions = new StyledGroupBox("Editing Options");
 

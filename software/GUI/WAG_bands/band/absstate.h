@@ -3,15 +3,22 @@
 
 #include <QQuaternion>
 
+enum PositionRepresentation {QUATERNION};
+
 class AbsState{
+public:
+    AbsState(PositionRepresentation stateRep) : stateRep(stateRep) {}
+    PositionRepresentation getStateRep(){return stateRep;}
+protected:
+    PositionRepresentation stateRep;
 };
 
 class QuatState : public AbsState, public QQuaternion {
 public:
-    QuatState(const QVector4D &vector) : QQuaternion(vector){}
-    QuatState(float scalar, const QVector3D &vector) : QQuaternion(scalar,vector){}
-    QuatState(float scalar, float xpos, float ypos, float zpos) : QQuaternion(scalar,xpos,ypos,zpos){}
-    QuatState() : QQuaternion(){}
+    QuatState(const QVector4D &vector) : AbsState(QUATERNION), QQuaternion(vector) {}
+    QuatState(float scalar, const QVector3D &vector) : AbsState(QUATERNION), QQuaternion(scalar,vector){}
+    QuatState(float scalar, float xpos, float ypos, float zpos) : AbsState(QUATERNION), QQuaternion(scalar,xpos,ypos,zpos){}
+    QuatState() : AbsState(QUATERNION), QQuaternion(){}
 
 };
 
