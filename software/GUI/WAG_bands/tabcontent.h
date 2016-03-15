@@ -116,6 +116,7 @@ private:
     QRadioButton *infoMotionCompRadio;
     QLabel *infoMotionSaveLocation;
     smartPushButton *infoMotionBrowseBtn;
+    void changeRecordingState(bool shouldRecord);
 
 public slots:
     void show(ACTION_TYPE a);
@@ -143,6 +144,7 @@ public slots:
     void catchCurrentFrameChange(int newSliderPos);
     void lockOnSuitPlayback(bool playingOnSuit);
     void playToggled(bool playing);
+    void handleVCChangeState(bool shouldRecord);
 
 signals:
     void stepThroughChanged(bool steppingThrough);
