@@ -67,6 +67,9 @@ void Suit::handleConnectionStatusChange(BandType band, ConnectionStatus newStatu
 }
 
 void Suit::sendData(BandType destBand, BandMessage* sendMsg) {
+    if (sendMsg->getMessageType() == POSITION_ERROR) {
+        qDebug()<<"Sending error message";
+    }
     wifiMan->sendMessageToBand(destBand, sendMsg);
 }
 
@@ -147,7 +150,7 @@ void Suit::catchStartPlayback() {
 }
 
 void Suit::playSnapshot(PositionSnapshot goToSnap) {
-    //qDebug("Suit: Received snap to play\n");
+    qDebug("Suit: Received snap to play\n");
     if (collectingData) {
         // TODO
         // probably want to set a snapshot to match, and then when we receive a full snapshot, we can compare
@@ -158,9 +161,9 @@ void Suit::playSnapshot(PositionSnapshot goToSnap) {
         for (int i = 0; i < connected.size(); i++){
             BandType getBand = connected[i];
             if (snapshotData.contains(getBand)) {
-                //qDebug()<<"Suit: Sending error to band "<<getBand;
+                qDebug()<<"Suit: Sending error to band "<<getBand;
                 posWithinTol &= bands[getBand]->moveTo(snapshotData[getBand]);
-                //qDebug()<<"Suit: Position for band "<<getBand<<" within tolerance "<<posWithinTol;
+                qDebug()<<"Suit: Position for band "<<getBand<<" within tolerance "<<posWithinTol;
             }
         }
 
