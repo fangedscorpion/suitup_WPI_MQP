@@ -84,6 +84,7 @@ public:
     Model(QVector<QSharedPointer<Node> > nodes);
     QVector<QSharedPointer<Node> > getNodes() const {return nodes;}
     QSharedPointer<Node> getNodeByName(QString name) const;
+    void resetPose();
 
 private:
     QSharedPointer<Node> rootNode;
@@ -93,7 +94,7 @@ public slots:
     void updatePose(PositionSnapshot pose);
 
 signals:
-
+    void poseUpdated(QString,QMatrix4x4);
 };
 
 #endif // MODEL_H

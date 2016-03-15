@@ -5,3 +5,4 @@ test_obj/*
 build*
 
 **.pro.user
+*.wagz

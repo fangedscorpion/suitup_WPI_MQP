@@ -22,5 +22,6 @@ QSharedPointer<Material> ModelGL::getMaterialByName(QString name) const {
 
 void ModelGL::updatePose(QString nodeName, QMatrix4x4 pose){
     getNodeByName(nodeName)->setTransformation(pose);
+    qDebug()<< "ModelGL::updatePose: received change to node " << nodeName;
     emit modelGLChanged();
 }

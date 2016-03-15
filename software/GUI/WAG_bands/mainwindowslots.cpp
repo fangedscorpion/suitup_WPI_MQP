@@ -280,6 +280,7 @@ void MainWindow::catchLowBatterySignal(BandType lowBatteryBand) {
     static QSet<BandType> lowBatteryBands = QSet<BandType>();
     if (!(lowBatteryBands.contains(lowBatteryBand))) {
         lowBatteryBands<<lowBatteryBand;
+        qDebug()<<lowBatteryBands;
         QString lowBatteryText = "Low Battery: ";
         QList<BandType> bandList = lowBatteryBands.toList();
         if (bandList.size() == 1) {

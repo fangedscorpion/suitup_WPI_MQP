@@ -37,9 +37,11 @@ void RecordingController::addSnapshotToMotion(qint32 snapTime, PositionSnapshot 
 void RecordingController::catchVoiceControlCommand(MessageType vcCommandInstruction) {
     if (voiceEnabled) {
         if (vcCommandInstruction == START_RECORDING) {
-            startRecording();
+            emit vcChangeState(true);
+            //startRecording();
         } else if (vcCommandInstruction == STOP_RECORDING) {
-            stopRecording();
+            emit vcChangeState(false);
+            //stopRecording();
         }
     }
 }
