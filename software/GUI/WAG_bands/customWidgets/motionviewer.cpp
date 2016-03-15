@@ -3,12 +3,12 @@
 #include <QBoxLayout>
 
 
-MotionViewer::MotionViewer(QWidget *parent) : QWidget(parent){
+MotionViewer::MotionViewer(QWidget *parent, Model *m) : QWidget(parent){
     playIcon = QIcon(QPixmap(":/icons/play.png"));
     pauseIcon = QIcon(QPixmap(":/icons/pause.png"));
 
     // viewer window
-    viewer = new GLWidget;
+    viewer = new GLWidget(m);
     // video controls
     QHBoxLayout *controls = new QHBoxLayout;
     playPause = new QPushButton;

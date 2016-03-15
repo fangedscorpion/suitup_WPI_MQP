@@ -9,6 +9,7 @@
 #include <stdexcept>
 
 #include "band/absband.h"
+#include "positionsnapshot.h"
 
 class CoordinateFrame {
 public:
@@ -89,6 +90,7 @@ private:
     QVector<QSharedPointer<Node> > nodes;
 
 public slots:
+    void updatePose(PositionSnapshot pose);
 
 signals:
 

@@ -183,6 +183,6 @@ QSharedPointer<NodeGL> ModelGLLoader::getNodeByName(QString name){
     throw std::invalid_argument("given name not found in node list");
 }
 
-ModelGL ModelGLLoader::toModel(){
-    return ModelGL(m_nodes,m_materials);
+ModelGL* ModelGLLoader::toModel(){
+    return new ModelGL(m_nodes,m_materials);
 }

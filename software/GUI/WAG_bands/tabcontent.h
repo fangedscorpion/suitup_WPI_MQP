@@ -36,6 +36,9 @@ private:
     Suit *suitObj;
     ModelLoader* modelLoader;
 
+    // models
+    Model* playbackModel;
+    Model* editModel;
     // fonts & styles
     QFont titleFont;
     QString groupStyleSheet;

@@ -28,11 +28,13 @@ TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION
     }
     if (u.hasAction(EDIT)) {
         // createViewer must come first
+        editModel = modelLoader->load();
         viewerStack->addWidget(createViewer(EDIT));
         optionsStack->addWidget(createEditOptionsAndControls());
     }
     if (u.hasAction(PLAYBACK)) {
         // createViewer must come first
+        playbackModel = modelLoader->load();
         viewerStack->addWidget(createViewer(PLAYBACK));
         optionsStack->addWidget(createPlaybackOptionsAndControls());
     }
@@ -186,11 +188,11 @@ QWidget* TabContent::createViewer(ACTION_TYPE t) {
 
     if (t == EDIT) {
         v->setTitle("Editing: " + motion->getName());
-        editMotionViewer = new MotionViewer(this);
+        editMotionViewer = new MotionViewer(this, editModel);
         viewerPane->addWidget(editMotionViewer);
     } else {
         v->setTitle("Playing: " + motion->getName());
-        playbackMotionViewer = new MotionViewer(this);
+        playbackMotionViewer = new MotionViewer(this, playbackModel);
         viewerPane->addWidget(playbackMotionViewer);
     }
 

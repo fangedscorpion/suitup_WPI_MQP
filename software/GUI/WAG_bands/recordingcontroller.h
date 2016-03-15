@@ -4,13 +4,12 @@
 #include <QObject>
 #include "band/suit.h"
 #include "wagfile.h"
-#include "model/model.h"
 
 class RecordingController : public QObject
 {
     Q_OBJECT
 public:
-    RecordingController(Suit *newSuitObj, Model *m);
+    RecordingController(Suit *newSuitObj);
 
     void stopRecording();
 
@@ -19,7 +18,6 @@ public:
     void setActiveMotion(WAGFile *motion);
 private:
     Suit *suitObj;
-    Model *model;
     QHash<qint32, PositionSnapshot> currentMotionData;
     WAGFile *activeMotion;
     bool voiceEnabled;

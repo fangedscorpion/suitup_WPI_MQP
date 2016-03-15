@@ -9,7 +9,7 @@ class EditingController : public QObject
 {
     Q_OBJECT
 public:
-    EditingController(Model *m);
+    EditingController();
     void setActiveMotion(WAGFile *newMotion);
 signals:
     void editingPlayStateChanged(bool);
@@ -35,7 +35,6 @@ public slots:
     void currentFrameChanged(int currentFrameSliderPos);
 
 private:
-    Model *model;
     bool playing;
     int beginningPointer;
     int endPointer;

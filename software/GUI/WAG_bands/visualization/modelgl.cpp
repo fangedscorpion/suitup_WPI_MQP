@@ -16,10 +16,11 @@ QSharedPointer<Material> ModelGL::getMaterialByName(QString name) const {
             return materials[i];
         }
     }
-    throw std::invalid_argument("Material with given name not found.");
-//    return getMaterialByName("DefaultMaterial");
+//    throw std::invalid_argument("Material with given name not found.");
+    return getMaterialByName("DefaultMaterial");
 }
 
-//QSharedPointer<Material> ModelGL::getMaterialByIndex(int index) const {
-//    return materials[index];
-//}
+void ModelGL::updatePose(QString nodeName, QMatrix4x4 pose){
+    getNodeByName(nodeName)->setTransformation(pose);
+    emit modelGLChanged();
+}

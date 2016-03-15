@@ -8,6 +8,7 @@
 #include <QOpenGLShaderProgram>
 #include <QMatrix4x4>
 #include "modelglloader.h"
+#include "model/model.h"
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
@@ -16,7 +17,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         Q_OBJECT
 
     public:
-        GLWidget();
+        GLWidget(Model* m);
         ~GLWidget();
 
     protected:
@@ -35,7 +36,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         void setXRotation(int angle);
         void setZRotation(int angle);
 
-        void draw();
+//        void draw();
         void drawNodes();
         void setMaterialUniforms(Material &mater);
 
@@ -63,7 +64,8 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 
         QVector3D m_cam_offset;
 
-        ModelGL modelGL;
+        ModelGL* modelGL;
+        Model* model;
     };
 
     #endif

@@ -15,7 +15,7 @@
 class MotionViewer : public QWidget {
     Q_OBJECT
 public:
-    MotionViewer(QWidget *parent);
+    MotionViewer(QWidget *parent, Model* m);
     ~MotionViewer();
 
     const QPushButton* getPlayPauseBtn() {return playPause;}
@@ -24,6 +24,7 @@ public:
 private:
 
     GLWidget *viewer;
+    Model *model;
     SuperSlider *videoSlider;
     QIcon playIcon;
     QIcon pauseIcon;

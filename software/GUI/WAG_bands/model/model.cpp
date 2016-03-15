@@ -1,4 +1,5 @@
 #include "model.h"
+#include "band/suit.h"
 #include <stdexcept>
 
 Model::Model(QVector<QSharedPointer<Node> > nodes) : QObject(){
@@ -11,6 +12,23 @@ Model::Model(QVector<QSharedPointer<Node> > nodes) : QObject(){
     }
     if (!rootNode)
         throw std::exception();
+}
+
+void Model::updatePose(PositionSnapshot pose){
+    QHash<BandType, AbsState*> map = pose.getSnapshot();
+    QList<BandType> bands = map.keys();
+    for (int i = 0; i < bands.size(); ++i){
+        QString bandName = AbsBand::bandTypeToModelName(bands[i]);
+        AbsState* state = map[bands[i]];
+        switch (state->getStateRep()) {
+        case QUATERNION:
+            getNodeByName(bandName)->setWorldRotation(*(static_cast<QuatState*>(state)));
+            break;
+        default:
+            qDebug() << "Model::updatePose(): Don't know how to handle given state representation!";
+        }
+    }
+
 }
 
 QSharedPointer<Node> Model::getNodeByName(QString name) const {

@@ -2,8 +2,11 @@
 
 // Playback motion options and controller
 QWidget* TabContent::createPlaybackOptionsAndControls() {
-    playbackControls = new PlaybackController(suitObj,modelLoader->load());
+    playbackControls = new PlaybackController(suitObj);
+
     connect(playbackControls, SIGNAL(changeSliderMax(qint32)), playbackMotionViewer, SLOT(changeSliderRange(qint32)));
+    connect(playbackControls, SIGNAL(goToSnapshot(PositionSnapshot)), playbackModel, SLOT(updatePose(PositionSnapshot)));
+
     // Playback options
     playbackControls->setActiveMotion(motion);
 

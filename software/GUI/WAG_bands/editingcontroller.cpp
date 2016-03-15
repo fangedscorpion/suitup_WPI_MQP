@@ -4,9 +4,8 @@
 
 #define MILLISECONDS_PER_FRAME 25
 
-EditingController::EditingController(Model *m) : QObject()
+EditingController::EditingController() : QObject()
 {
-    model = m;
     playing = false;
     currentFrame = 0;
     lastFrameNum = 0;
