@@ -24,7 +24,7 @@ private:
     bool recording;
 
 signals:
-
+    void vcChangeState(bool);
 public slots:
     void addSnapshotToMotion(qint32, PositionSnapshot);
     void catchVoiceControlCommand(MessageType);

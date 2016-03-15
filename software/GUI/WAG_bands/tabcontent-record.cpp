@@ -89,13 +89,21 @@ QWidget* TabContent::createRecordingWindow() {
 
     connect(recordButton, SIGNAL(released()), this, SLOT(handleRecordingWindowButtons()));
     connect(resetButton, SIGNAL(released()), this, SLOT(handleRecordingWindowButtons()));
+    connect(recordingControls, SIGNAL(vcChangeState(bool)), this, SLOT(handleVCChangeState(bool)));
     return recordGroup;
 }
 
+void TabContent::handleVCChangeState(bool shouldRecord) {
+    if (((shouldRecord) && (recordButton->text() == QString("Start Recording"))) || ((!shouldRecord) && (recordButton->text() == QString("Stop Recording")))) {
+        changeRecordingState(shouldRecord);
+    } else {
+        // shouldn't do anything b/c they issued the wrong voice command for the current recording state
+    }
+}
+
 // Handle buttons on the right panel of the recording window
-void TabContent::handleRecordingWindowButtons() {
-    // pressed "start recording"
-    if (recordButton->text() == QString("Start Recording")) {
+void TabContent::changeRecordingState(bool shouldRecord) {
+    if (shouldRecord) {
         // disable options when recording
         recordOptionsGroup->setEnabled(false);
         modeRadiosGroup->setEnabled(false);
@@ -106,8 +114,7 @@ void TabContent::handleRecordingWindowButtons() {
         // start countdown timer
         msecs = 0;
         recordCountdownTimer->start(500); // half a second
-    // pressed "stop recording"
-    } else if (recordButton->text() == QString("Stop Recording")){
+    } else {
         // update buttons
         recordButton->setText("Recording Stopped");
         // stopped during countdown
@@ -128,7 +135,49 @@ void TabContent::handleRecordingWindowButtons() {
         recordStopwatchTimer->stop();
         // save new recording
         saveMotion();
-    // pressed "reset"
+    }
+}
+
+
+void TabContent::handleRecordingWindowButtons() {
+    // pressed "start recording"
+    if (recordButton->text() == QString("Start Recording")) {
+        changeRecordingState(true);
+        //        // disable options when recording
+        //        recordOptionsGroup->setEnabled(false);
+        //        modeRadiosGroup->setEnabled(false);
+        //        // update button
+        //        recordButton->setText("Stop Recording");
+        //        recordButton->setIcon(stopIcon);
+        //        recordButton->setIconSize(QSize(25,15));
+        //        // start countdown timer
+        //        msecs = 0;
+        //        recordCountdownTimer->start(500); // half a second
+        // pressed "stop recording"
+    } else if (recordButton->text() == QString("Stop Recording")){
+        //        // update buttons
+        //        recordButton->setText("Recording Stopped");
+        //        // stopped during countdown
+        //        if (recordCountdownTimer->isActive()) {
+        //            // stop countdown timer
+        //            recordCountdownTimer->stop();
+        //            recordResetCountDownTimer();
+        //            // automatically reset
+        //            handleRecordingWindowButtons();
+        //            return;
+        //        } else {
+        //            recordingControls->stopRecording();
+        //        }
+        //        resetButton->setEnabled(true);
+        //        recordButton->setEnabled(false);
+        //        modeRadiosGroup->setEnabled(true);
+        //        // stop recording timer
+        //        recordStopwatchTimer->stop();
+        //        // save new recording
+        //        saveMotion();
+        changeRecordingState(false);
+
+        // pressed "reset"
     } else if (recordButton->text() == QString("Recording Stopped")) {
         // update button
         recordButton->setText("Start Recording");
@@ -163,8 +212,8 @@ void TabContent::recordResetCountDownTimer() {
 void TabContent::recordCountdownTimerEvent() {
     // counting down
     if (recordCountdownTime->text().toDouble() > 0) {
-       recordCountdownTime->setText(QString::number(recordCountdownTime->text().toDouble() - 0.5, 'f', 1));
-    // count down over
+        recordCountdownTime->setText(QString::number(recordCountdownTime->text().toDouble() - 0.5, 'f', 1));
+        // count down over
     } else {
         // stop counting down
         recordCountdownTimer->stop();
