@@ -65,13 +65,11 @@ QWidget* TabContent::createRecordingWindow() {
     h->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
     resetButton = new SmartPushButton("Reset");
-    resetButton->setMinimumHeight(buttonHeight);
     resetButton->setEnabled(false);
     resetButton->setIcon(resetIcon);
     resetButton->setIconSize(QSize(35,30));
 
     recordButton = new SmartPushButton("Start Recording");
-    recordButton->setMinimumHeight(buttonHeight);
     recordButton->setIcon(recordIcon);
     recordButton->setIconSize(QSize(35,15));
 

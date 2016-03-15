@@ -13,20 +13,16 @@ QWidget* TabContent::createEditOptionsAndControls() {
     SmartPushButton *undoBtn = new SmartPushButton("Undo");
     undoBtn->setIcon(undoIcon);
     undoBtn->setIconSize(QSize(51,25));
-    undoBtn->setMinimumHeight(buttonHeight);
     undoBtn->setEnabled(false);
     SmartPushButton *cropBtn = new SmartPushButton("Crop");
     cropBtn->setIcon(cropIcon);
     cropBtn->setIconSize(QSize(49,25));
-    cropBtn->setMinimumHeight(buttonHeight);
     SmartPushButton *splitBtn = new SmartPushButton("Split");
     splitBtn->setIcon(splitIcon);
     splitBtn->setIconSize(QSize(62,25));
-    splitBtn->setMinimumHeight(buttonHeight);
     SmartPushButton *MotionInfoBtn = new SmartPushButton("Edit Motion Information");
     MotionInfoBtn->setIcon(editIcon);
     MotionInfoBtn->setIconSize(QSize(62,25));
-    MotionInfoBtn->setMinimumHeight(buttonHeight);
     QVBoxLayout *recordPlaybackLayout = editOptions->getLayout();
     recordPlaybackLayout->setContentsMargins(20,20,20,20);
     QVBoxLayout *buttons = new QVBoxLayout;
@@ -104,7 +100,6 @@ void TabContent::createMotionInfoWindow() {
     t->addWidget(infoMotionTagsTextEdit);
     addTagBtn = new SmartPushButton("Add Keyword");
     addTagBtn->setEnabled(false);
-    addTagBtn->setMinimumHeight(buttonHeight);
     // tags list
     QHBoxLayout *t2 = new QHBoxLayout;
     QLabel *spacer = new QLabel;
@@ -160,7 +155,6 @@ void TabContent::createMotionInfoWindow() {
     QHBoxLayout *btns = new QHBoxLayout;
     saveMotionInfoBtn = new SmartPushButton("Save");
     SmartPushButton *cancel = new SmartPushButton("Cancel");
-    cancel->setMinimumHeight(buttonHeight);
     btns->addWidget(cancel);
     btns->addWidget(saveMotionInfoBtn);
     layout->addLayout(f);

@@ -36,11 +36,8 @@ private:
     Suit *suitObj;
 
     // fonts & styles
-    QFont titleFont;
-    QString groupStyleSheet;
     QString textInputStyleWhite;
     QString textInputStyleRed;
-    int buttonHeight;
     // mode radio buttons
     StyledGroupBox *modeRadiosGroup;
     SmartRadioButton *playbackRadio;

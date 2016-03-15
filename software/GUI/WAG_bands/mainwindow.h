@@ -60,8 +60,6 @@ private:
     Overlay *overlay;
 
     // fonts & styles
-    QFont titleFont;
-    QString titleStyleSheet;
     QString textInputStyleWhite;
     QString textInputStyleRed;
     // menubar

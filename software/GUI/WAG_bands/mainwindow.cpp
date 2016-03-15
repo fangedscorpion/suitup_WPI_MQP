@@ -31,10 +31,8 @@ MainWindow::MainWindow(QWidget *parent) :
     setMinimumSize(1100, 650);
     setMaximumSize(1100, 650);
 
-    titleFont = QFont( "Arial", 15, QFont::Bold);
-    titleStyleSheet = "QGroupBox{ border: 1px solid gray; border-radius: 9px; margin-top: 0.5em; subcontrol-origin: margin; left: 10px; padding: 25px 3px 0 3px;}";
-    textInputStyleRed = "QLineEdit {border: 1px solid red; background: white;} QTextEdit {border-radius: 2px; border: 1px solid red; background: white;}";
-    textInputStyleWhite = "QLineEdit {background: white;} QTextEdit {border-radius: 2px; border: 1px outset grey; background: white;}";
+    textInputStyleRed = "QLineEdit {border: 2px solid red; background: white; border-radius: 4px;} QTextEdit {border-radius: 4px; border: 2px solid red; background: white;}";
+    textInputStyleWhite = "QLineEdit {border: 1px solid gray; border-radius: 4px; background: white;} QTextEdit {border-radius: 4px; border: 1px solid grey; background: white;}";
 
     // users
     USER u("Trainer", "A trainer can record and save motions for others to use");
@@ -57,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // tabs
     tabs = new QTabWidget;
+    tabs->setStyleSheet("QTabBar::tab:!selected {background-color: rgb(82, 190, 128); border: 1px solid grey; border-radius: 2px;} QTabBar:tab{padding: 5px 5px 5px 5px;");
     tabs->setFocusPolicy(Qt::NoFocus);
     tabs->addTab(createUserSelectionWindow(users), "User selection");
     tabs->clearFocus();
@@ -421,6 +420,7 @@ void MainWindow::createOpenFromLib(USER u) {
     closedir( dp );
 
     openFromLibTable = new QTableWidget();
+    openFromLibTable->setStyleSheet("QTableView {border: 1px solid grey; border-radius: 4px");
     openFromLibTable->setColumnCount(4); // name, desc, tags
     openFromLibTable->setRowCount(libraryFiles.size());
     openFromLibTable->setMinimumHeight(400);
