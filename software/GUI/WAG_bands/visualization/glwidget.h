@@ -36,7 +36,6 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         void setXRotation(int angle);
         void setZRotation(int angle);
 
-//        void draw();
         void drawNodes();
         void setMaterialUniforms(Material &mater);
 

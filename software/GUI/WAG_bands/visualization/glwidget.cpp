@@ -10,7 +10,7 @@ GLWidget::GLWidget(Model* m) :
     m_xRot(0),
     m_yRot(0),
     m_zRot(0),
-    m_cam_offset(QVector3D(0,0,0)),
+    m_cam_offset(QVector3D(0,-0.3f,0)),
     model(m){
 
     QSurfaceFormat format;
@@ -122,6 +122,7 @@ void GLWidget::createBuffers(){
     modelGL = modelLoader.toModel();
     connect(model,SIGNAL(poseUpdated(QString,QMatrix4x4)),modelGL,SLOT(updatePose(QString,QMatrix4x4)));
     connect(modelGL,SIGNAL(modelGLChanged()),this,SLOT(update()));
+    model->resetPose();
 }
 
 void GLWidget::createAttributes(){
@@ -152,7 +153,7 @@ void GLWidget::createAttributes(){
 void GLWidget::setupLightingAndMatrices() {
     m_view.setToIdentity();
     m_view.lookAt(
-                QVector3D(-m_cam_offset + QVector3D(0,0,2.4f)),    // Camera Position
+                QVector3D(-m_cam_offset + QVector3D(0,0,1.8f)),    // Camera Position
                 QVector3D(-m_cam_offset),    // Point camera looks towards
                 QVector3D(0.0f, 1.0f, 0.0f));   // Up vector
 
@@ -181,10 +182,10 @@ void GLWidget::paintGL() {
     // Set the model matrix
     // Translate and rotate it a bit to get a better view of the model
     m_model.setToIdentity();
-    m_model.translate(-m_cam_offset);
+//    m_model.translate(-m_cam_offset);
     m_model.rotate(m_xRot/16, 1.0f, 0.0f, 0.0f);
     m_model.rotate(m_zRot/16, 0.0f, 1.0f, 0.0f);
-    m_model.translate(m_cam_offset);
+//    m_model.translate(m_cam_offset);
 
     // Set shader uniforms for light information
     m_shaderProgram.setUniformValue("lightPosition", m_lightInfo.Position);
