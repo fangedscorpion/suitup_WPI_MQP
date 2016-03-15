@@ -18,6 +18,7 @@ void Model::updatePose(PositionSnapshot pose){
     QHash<BandType, AbsState*> map = pose.getSnapshot();
     QList<BandType> bands = map.keys();
     for (int i = 0; i < bands.size(); ++i){
+        bool somethingChanged = true;
         QString bandName = AbsBand::bandTypeToModelName(bands[i]);
         AbsState* state = map[bands[i]];
         switch (state->getStateRep()) {
@@ -25,8 +26,10 @@ void Model::updatePose(PositionSnapshot pose){
             getNodeByName(bandName)->setWorldRotation(*(static_cast<QuatState*>(state)));
             break;
         default:
+            somethingChanged = false;
             qDebug() << "Model::updatePose(): Don't know how to handle given state representation!";
         }
+        if (somethingChanged) emit poseUpdated(bandName,getNodeByName(bandName)->getTransformation());
     }
 
 }
@@ -37,6 +40,13 @@ QSharedPointer<Node> Model::getNodeByName(QString name) const {
             return nodes[i];
     }
     throw std::invalid_argument("node with given name not found");
+}
+
+void Model::resetPose(){
+    rootNode->setAllRotDefault();
+    for (int i = 0; i < nodes.size(); ++i){
+        emit poseUpdated(QString(nodes[i]->getName()),nodes[i]->getTransformation());
+    }
 }
 
 void Node::setParent(QSharedPointer<Node> parent) {
@@ -99,7 +109,8 @@ void Node::setAllRotIdentity() {
 
 void Node::setAllRotDefault() {
     if (isRootNode){
-        transformation.translate(-tail);
+        transformation = defaultPose;
+        transformation.translate(-1000*tail);
     }
     for (int i = 0; i < children.size(); ++i){
         children[i]->setWorldRotation(children[i]->rotToOrigin.conjugated());
