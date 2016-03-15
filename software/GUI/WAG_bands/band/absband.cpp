@@ -133,6 +133,7 @@ bool AbsBand::moveTo(AbsState* x) {
     IError * posError = pose->error(x);
     QByteArray msgData = posError->toMessage();
     BandMessage *newMsg = new BandMessage(POSITION_ERROR, msgData);
+    qDebug()<<"AbsBAnd: constructed error message";
     emit dataToSend(type, newMsg);
     if (posError->withinTolerance(tolerance)) {
         return true;

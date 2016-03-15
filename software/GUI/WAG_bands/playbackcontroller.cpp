@@ -235,6 +235,7 @@ void PlaybackController::catchFrameUpdate(qint32 newFrame) {
     PositionSnapshot desiredPos = activeMotion->getSnapshot(approxPercentThroughFile, newFrame, CLOSEST);
     // should probably figure out how to handle null snapshots
     // TODO
+    qDebug()<<"Playback controller: emitting snapshot";
     emit goToSnapshot(desiredPos);
 }
 
