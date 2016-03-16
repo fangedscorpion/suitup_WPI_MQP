@@ -11,6 +11,13 @@
 #include "band/absband.h"
 #include "positionsnapshot.h"
 
+enum NodeStatus {NODE_CONNECTED,NODE_DISCONNECTED,NODE_UNUSED};
+
+struct NodeState {
+    QMatrix4x4 transformation;
+    NodeStatus status;
+};
+
 class CoordinateFrame {
 public:
     CoordinateFrame() {}
@@ -40,6 +47,7 @@ public:
     void setParent(QSharedPointer<Node> parent);
     void root(bool isRoot) {this->isRootNode = isRoot;}
     void addChild(QSharedPointer<Node> child) {children.push_back(child);}
+    void setStatus(NodeStatus status) {this->status = status;}
 
     // getters
     QString getName() const {return name;}
@@ -47,6 +55,7 @@ public:
     QMatrix4x4 getDefaultPose() const {return defaultPose;}
     QQuaternion getWorldRotation() const {return worldRotation;}
     bool isRoot() const {return isRootNode;}
+    NodeStatus getStatus() const {return status;}
 
     // other
     void init();
@@ -55,6 +64,7 @@ public:
     void setAllRotIdentity();
     void setAllRotDefault();
     void calibrate(QQuaternion sensedOrientation);
+    NodeState getState() const;
 
 private:
     QString name;
@@ -66,6 +76,7 @@ private:
     QVector3D head;
     CoordinateFrame frame;
     bool isRootNode;
+    NodeStatus status;
 
     QVector3D rotHead;
     QVector3D rotTail;
@@ -89,12 +100,15 @@ public:
 private:
     QSharedPointer<Node> rootNode;
     QVector<QSharedPointer<Node> > nodes;
+    QHash<QString,NodeState> namesAndStates;
+    void updateNamesAndStates();
 
 public slots:
     void updatePose(PositionSnapshot pose);
+    void updateNodeStatus(QHash<BandType,NodeStatus>);
 
 signals:
-    void poseUpdated(QString,QMatrix4x4);
+    void poseUpdated(QHash<QString,NodeState>);
 };
 
 #endif // MODEL_H

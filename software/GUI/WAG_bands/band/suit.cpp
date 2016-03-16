@@ -39,6 +39,7 @@ Suit::Suit(WifiManager *comms):QObject() {
         connect(bands[allBands[i]], SIGNAL(poseRecvd(AbsState *,BandType,qint32)), this, SLOT(catchNewPose(AbsState *, BandType, qint32)));
         connect(this, SIGNAL(toleranceChanged(int)), bands[allBands[i]], SLOT(catchTolChange(int)));
         connect(bands[allBands[i]], SIGNAL(connectionProblem(BandType)), this, SLOT(catchConnectionProblem(BandType)));
+        connect(bands[allBands[i]], SIGNAL(lowBattery(BandType, bool)), this, SLOT(propagateLowBatteryUpdate(BandType, bool)));
     }
 
     collectingData = true;
@@ -51,14 +52,11 @@ void Suit::getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTime
     AbsBand *targetBand = getBand(band);
     // send data to target band
     qint64 elapsedTime = startTime.msecsTo(dataTimestamp);
-    if (data->getMessageType() == VOICE_CONTROL) {
+    if ((data->getMessageType() == VOICE_CONTROL_LOW_BATT) || (data->getMessageType() == VOICE_CONTROL)) {
         processVoiceControlMessage(data);
-    } else {
-        if (data->getMessageType() == VOICE_CONTROL_LOW_BATT) {
-            processVoiceControlMessage(data);
-        }
-        targetBand->handleMessage((qint32) elapsedTime, data);
     }
+    targetBand->handleMessage((qint32) elapsedTime, data);
+
 }
 
 AbsBand* Suit::getBand(BandType bt) {
@@ -153,7 +151,7 @@ void Suit::catchStartPlayback() {
 }
 
 void Suit::playSnapshot(PositionSnapshot goToSnap) {
-    qDebug("Suit: Received snap to play\n");
+    //qDebug("Suit: Received snap to play\n");
     if (collectingData) {
         // TODO
         // probably want to set a snapshot to match, and then when we receive a full snapshot, we can compare
@@ -164,14 +162,13 @@ void Suit::playSnapshot(PositionSnapshot goToSnap) {
         for (int i = 0; i < connected.size(); i++){
             BandType getBand = connected[i];
             if (snapshotData.contains(getBand)) {
-                qDebug()<<"Suit: Sending error to band "<<getBand;
+                //qDebug()<<"Suit: Sending error to band "<<getBand;
                 posWithinTol &= bands[getBand]->moveTo(snapshotData[getBand]);
-                qDebug()<<"Suit: Position for band "<<getBand<<" within tolerance "<<posWithinTol;
+                //qDebug()<<"Suit: Position for band "<<getBand<<" within tolerance "<<posWithinTol;
             }
         }
 
         if (posWithinTol) {
-            //qDebug("Suit: Emitting position met");
             emit positionMet();
         }
     }
@@ -182,31 +179,39 @@ void Suit::catchStopPlayback() {
 }
 
 void Suit::catchModeChanged(ACTION_TYPE newMode) {
+    qDebug()<<"Suit: mode changed to "<<newMode;
     currentMode = newMode;
 }
 
 void Suit::processVoiceControlMessage(BandMessage *msg) {
+    qDebug()<<"Received voice control message";
+    qDebug()<<"Suit: voice contrl data"<<msg->getMessageData();
     if (currentMode == PLAYBACK) {
         switch (msg->parseVoiceControlMsg()) {
         case VC_START:
             if (!collectingData) {
                 // start playback
+                qDebug()<<"Voice c ontrol start playback";
                 emit voiceControlCommandReady(START_PLAYBACK);
             } else {
                 // user error!
+                qDebug()<<"User tried to start playback while playing";
             }
             break;
         case VC_STOP:
             if (collectingData) {
                 // stop playback
+                qDebug()<<"Voice control stop playback";
                 emit voiceControlCommandReady(STOP_PLAYBACK);
             } else {
                 // user error!
+                qDebug()<<"User tried to stop playback while stopped";
             }
             break;
         default:
             // do nothing
             // error (user said wrong word or data wasn't properly transmitted)
+            qDebug()<<"Invalid message type transmitted";
             break;
         }
     } else if (currentMode == RECORD) {
@@ -214,34 +219,40 @@ void Suit::processVoiceControlMessage(BandMessage *msg) {
         case VC_START:
             if (!collectingData) {
                 // start recording
+                qDebug()<<"Voice control start recording";
                 emit voiceControlCommandReady(START_RECORDING);
             } else {
                 // user error!
+                qDebug()<<"User tried to start recording while already recording";
             }
             break;
         case VC_STOP:
             if (collectingData) {
+                qDebug()<<"VC stop recroding";
                 emit voiceControlCommandReady(STOP_RECORDING);
                 // start playback
             } else {
                 // user error!
+                qDebug()<<"User tried to stop recording while not recording";
             }
             break;
         default:
             // do nothing
+            qDebug()<<"Invalid voice command type";
             break;
         }
     }
     // currently shouldn't do anything in edit mode
 }
 
-void Suit::propagateLowBattery(BandType chargeBand) {
-    emit bandHasLowBattery(chargeBand);
+void Suit::propagateLowBatteryUpdate(BandType chargeBand, bool hasLowBattery) {
+    emit bandHasLowBattery(chargeBand, hasLowBattery);
 }
 
 
 void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime) {
     //qDebug()<<"Suit: adding pose to snapshot from band "<<bandForPose;
+    qDebug()<<newPose;
 
     /* AbsState *copiedPose = (AbsState*) malloc(newPose->objectSize()); // not sure if can do this for abs
     // TODO figure out where to free this
@@ -252,8 +263,6 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
     activeSnapshot.addMapping(bandForPose, newPose);
 
     activeSnapTimes.append(poseTime);
-    //qDebug()<<"Suit: Pose time"<< poseTime;
-
 
     // maybe just want to make it so it's all bands, not just the connected ones
     if (getConnectedBands() == activeSnapshot.getRecordedBands()) {
@@ -267,12 +276,10 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
         qint32 avgReadingTime;
         if (activeSnapTimes.length() != 0) {
             avgReadingTime = (qint32) (totalTime/activeSnapTimes.length());
-            //qDebug()<<"Suit: Snapshot time: "<<avgReadingTime;
         }
         else {
             avgReadingTime = 0;
         }
-        //qDebug()<<"Suit: position snapshot ready";
         emit positionSnapshotReady(avgReadingTime, activeSnapshot);
 
         activeSnapshot = PositionSnapshot();

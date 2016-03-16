@@ -5,6 +5,8 @@
 #include <QSharedPointer>
 #include <QMatrix4x4>
 
+#include "model/model.h"
+
 struct Material {
     QString Name;
     QVector3D Ambient;
@@ -34,11 +36,14 @@ public:
     QMatrix4x4 getTransformation() {return transformation;}
     QString getName() const {return name;}
     void setName(QString name) {this->name = name;}
+    void setMaterial(QSharedPointer<Material> material) {this->material = material;}
     void setTransformation(QMatrix4x4 transformation) {this->transformation = transformation;}
+    QSharedPointer<Material> getMaterial() {return material;}
 
 private:
     QString name;
     QVector<QSharedPointer<Mesh> > meshes;
+    QSharedPointer<Material> material;
     QMatrix4x4 transformation;
 };
 
@@ -56,8 +61,10 @@ public:
     QSharedPointer<NodeGL> getNodeByName(QString name) const;
     QSharedPointer<Material> getMaterialByName(QString name) const;
 
+    QSharedPointer<Material> nodeStatusToMaterial(NodeStatus status);
+
 public slots:
-    void updatePose(QString nodeName, QMatrix4x4 pose);
+    void updatePose(QHash<QString, NodeState> bandsAndTransforms);
 
 signals:
     void modelGLChanged();

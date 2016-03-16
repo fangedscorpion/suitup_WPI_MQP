@@ -163,6 +163,7 @@ void ModelGLLoader::processNode(aiNode *node) {
         aiNode* thisNode = node->mChildren[ich];
         n->setName(thisNode->mName.length != 0 ? thisNode->mName.C_Str() : "");
         n->setTransformation(QMatrix4x4(thisNode->mTransformation[0]));
+        n->setMaterial(getMaterial(0));
 
         for(uint imesh = 0; imesh < thisNode->mNumMeshes; ++imesh) {
             QSharedPointer<Mesh> mesh = m_meshes[thisNode->mMeshes[imesh]];

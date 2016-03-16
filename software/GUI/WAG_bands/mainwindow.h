@@ -146,7 +146,7 @@ private slots:
     // statusbar
     void updateConnectionStatus(BandType b, ConnectionStatus c);
     void updateBatteryStatus();
-    void catchLowBatterySignal(BandType lowBatteryBand);
+    void catchLowBatterySignal(BandType lowBatteryBand, bool batteryIsLow);
 
 signals:
     void modeChanged(ACTION_TYPE);

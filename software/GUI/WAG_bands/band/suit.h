@@ -42,7 +42,7 @@ public slots:
     void catchStartPlayback();
     void catchStopPlayback();
     void playSnapshot(PositionSnapshot);
-    void propagateLowBattery(BandType);
+    void propagateLowBatteryUpdate(BandType, bool);
 
     void catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime);
     void catchToleranceChange(int);
@@ -50,7 +50,7 @@ public slots:
 signals:
     void positionSnapshotReady(qint32, PositionSnapshot);
     void voiceControlCommandReady(MessageType);
-    void bandHasLowBattery(BandType);
+    void bandHasLowBattery(BandType, bool);
     void toleranceChanged(int);
     void positionMet();
     void bandConnectionStatusChanged(BandType, ConnectionStatus);

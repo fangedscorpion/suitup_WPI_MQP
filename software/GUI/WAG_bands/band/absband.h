@@ -51,6 +51,7 @@ private:
     BandType type;
     PositionRepresentation positionRep;
     bool active;
+    bool hasLowBattery;
 
     qint32 poseRecvdTime;
 
@@ -60,7 +61,7 @@ private:
     int pingProblems;
 signals:
     void dataToSend(BandType, BandMessage *);
-    void lowBattery(BandType);
+    void lowBattery(BandType, bool);
     void poseRecvd(AbsState *, BandType, qint32);
     void withinTolerance(BandType);
     void connectionProblem(BandType);

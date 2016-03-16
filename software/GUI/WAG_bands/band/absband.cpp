@@ -16,6 +16,7 @@ AbsBand::AbsBand(BandType bt):QObject() {
     active = true;
     commsSetUp = false;
     pingProblems = 0;
+    hasLowBattery = false;
 }
 
 void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
@@ -33,6 +34,7 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
 }
 
 void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
+    bool tmpLowBattery;
     //qDebug("AbsBand: Handling message\n");
     qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType();
     switch (recvdMessage->getMessageType()) {
@@ -41,8 +43,15 @@ void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     case BAND_PING_LOW_BATT:
     case BAND_POSITION_UPDATE_LOW_BATT:
     case LOW_BATTERY_UPDATE:
-        emit lowBattery(type);
+        tmpLowBattery = true;
         break;
+    default:
+        tmpLowBattery = false;
+    }
+
+    if (tmpLowBattery != hasLowBattery) {
+        hasLowBattery = tmpLowBattery;
+        emit lowBattery(type, hasLowBattery);
     }
 
     AbsState *newState;
@@ -67,6 +76,7 @@ void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
 
         // this print line is necessary or the program will crash. cannot figure out why
         //qDebug()<<"AbsBand: BAND POSITION RECEIVED FROM"<<type<<" at "<<msgTimestamp;
+        qDebug()<<"ABsBand: position data "<<recvdMessage->getMessageData();
         newState = deserialize(recvdMessage->getMessageData(), this->getPositionRepresentation());
         updateState(newState, msgTimestamp);
         // should probably handle in subclass
@@ -143,7 +153,6 @@ bool AbsBand::moveTo(AbsState* x) {
     IError * posError = pose->error(x);
     QByteArray msgData = posError->toMessage();
     BandMessage *newMsg = new BandMessage(POSITION_ERROR, msgData);
-    qDebug()<<"AbsBAnd: constructed error message";
     emit dataToSend(type, newMsg);
     if (posError->withinTolerance(tolerance)) {
         return true;
