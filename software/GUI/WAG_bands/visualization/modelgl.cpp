@@ -20,8 +20,29 @@ QSharedPointer<Material> ModelGL::getMaterialByName(QString name) const {
     return getMaterialByName("DefaultMaterial");
 }
 
-void ModelGL::updatePose(QString nodeName, QMatrix4x4 pose){
-    getNodeByName(nodeName)->setTransformation(pose);
-    qDebug()<< "ModelGL::updatePose: received change to node " << nodeName;
+void ModelGL::updatePose(QHash<QString,NodeState> bandsAndTransforms){
+    QList<QString> bands = bandsAndTransforms.keys();
+    for (int i = 0; i < bands.length(); ++i){
+        getNodeByName(bands[i])->setTransformation(bandsAndTransforms[bands[i]].transformation);
+        getNodeByName(bands[i])->setMaterial(nodeStatusToMaterial(bandsAndTransforms[bands[i]].status));
+    }
+    qDebug()<< "ModelGL::updatePose: received change to nodes";
     emit modelGLChanged();
+}
+
+QSharedPointer<Material> ModelGL::nodeStatusToMaterial(NodeStatus status){
+    switch (status){
+    case NODE_CONNECTED:
+        return getMaterialByName("PurpleHoser");
+        break;
+    case NODE_DISCONNECTED:
+        return getMaterialByName("DefaultMaterial");
+        break;
+    case NODE_UNUSED:
+        return getMaterialByName("LightBlue");
+        break;
+    default:
+        return getMaterialByName("DefaultMaterial");
+        break;
+    }
 }

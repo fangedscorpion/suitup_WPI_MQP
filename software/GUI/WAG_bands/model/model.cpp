@@ -5,6 +5,9 @@
 Model::Model(QVector<QSharedPointer<Node> > nodes) : QObject(){
     this->nodes = nodes;
     for (int i = 0; i < nodes.size(); ++i){
+        namesAndStates.insert(nodes[i]->getName(),nodes[i]->getState());
+    }
+    for (int i = 0; i < nodes.size(); ++i){
         if (nodes[i]->isRoot()){
             rootNode = nodes[i];
             break;
@@ -15,11 +18,9 @@ Model::Model(QVector<QSharedPointer<Node> > nodes) : QObject(){
 }
 
 void Model::updatePose(PositionSnapshot pose){
-    qDebug() << "Model::updatePose: received pose update";
     QHash<BandType, AbsState*> map = pose.getSnapshot();
     QList<BandType> bands = map.keys();
     for (int i = 0; i < bands.size(); ++i){
-        bool somethingChanged = true;
         QString bandName = AbsBand::bandTypeToModelName(bands[i]);
         AbsState* state = map[bands[i]];
         switch (state->getStateRep()) {
@@ -27,14 +28,20 @@ void Model::updatePose(PositionSnapshot pose){
             getNodeByName(bandName)->setWorldRotation(*(static_cast<QuatState*>(state)));
             break;
         default:
-            somethingChanged = false;
             qDebug() << "Model::updatePose(): Don't know how to handle given state representation!";
-        }
-        if (somethingChanged) {
-            emit poseUpdated(bandName,getNodeByName(bandName)->getTransformation());
         }
     }
 
+    updateNamesAndStates();
+}
+
+void Model::updateNodeStatus(QHash<BandType, NodeStatus> statuses){
+    QList<BandType> bands = statuses.keys();
+    for (int i = 0; i < bands.size(); ++i){
+        QString name = AbsBand::bandTypeToModelName(bands[i]);
+        getNodeByName(name)->setStatus(statuses[bands[i]]);
+    }
+    updateNamesAndStates();
 }
 
 QSharedPointer<Node> Model::getNodeByName(QString name) const {
@@ -47,9 +54,14 @@ QSharedPointer<Node> Model::getNodeByName(QString name) const {
 
 void Model::resetPose(){
     rootNode->setAllRotDefault();
+    updateNamesAndStates();
+}
+
+void Model::updateNamesAndStates(){
     for (int i = 0; i < nodes.size(); ++i){
-        emit poseUpdated(QString(nodes[i]->getName()),nodes[i]->getTransformation());
+        namesAndStates[nodes[i]->getName()] = nodes[i]->getState();
     }
+    emit poseUpdated(namesAndStates);
 }
 
 void Node::setParent(QSharedPointer<Node> parent) {
@@ -61,6 +73,8 @@ void Node::init() {
     Node n = *this;
     QQuaternion worldToThis;
     QQuaternion rotationFromParent = QQuaternion::fromRotationMatrix(n.frame.toRotationMatrix());
+
+    status = NODE_DISCONNECTED;
 
     while (!n.isRoot()) {
         worldToThis = rotationFromParent * worldToThis;
@@ -82,6 +96,13 @@ void Node::init() {
 
 void Node::calibrate(QQuaternion sensedOrientation) {
     calibration = sensedOrientation.conjugated() * worldRotation;
+}
+
+NodeState Node::getState() const {
+    NodeState n;
+    n.status = status;
+    n.transformation = transformation;
+    return n;
 }
 
 void Node::setWorldRotation(QQuaternion worldRotation) {
