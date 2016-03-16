@@ -1,10 +1,10 @@
 #include "abspose.h"
+#include "model/model.h"
 
 QuatPose::QuatPose(QVector3D xAxis, QVector3D zAxis) :
+    AbsPose(),
     x(xAxis),
     z(zAxis) {
-    calibration = new QuatState(1,0,0,0);
-    current = new QuatState(1,0,0,0);
 }
 
 QuatState* QuatPose::qqinv(AbsState* q1, AbsState* q2) const {
@@ -18,7 +18,7 @@ QuatState* QuatPose::qqinv(AbsState* q1, AbsState* q2) const {
 }
 
 void QuatPose::calibrate() {
-//    node->calibrate(node->getWorldRotation());
+    node->calibrate(node->getWorldRotation());
 }
 
 IError* QuatPose::error(AbsState* goal) const {
@@ -30,19 +30,27 @@ IError* QuatPose::error(AbsState* goal) const {
     //    twist = Quaternion([qerr.w; p]).unit();
     //    swing = inv(twist) * qerr;
     QVector3D axis = x.normalized();
-    QuatState* qerr = qqinv(goal,current);
+    QuatState* qerr = qqinv(goal,getState());
 
     QVector3D p = QVector3D::dotProduct(qerr->vector(),axis)*axis;
     QQuaternion twist = QQuaternion(qerr->scalar(),p).normalized();
     QQuaternion swing = twist.inverted() * (*qerr);
 
-    return new QuatError(*qerr,swing,twist,((QuatState*)current)->rotatedVector(z),((QuatState*)current)->rotatedVector(x));
+    return new QuatError(*qerr,swing,twist,((QuatState*)getState())->rotatedVector(z),((QuatState*)getState())->rotatedVector(x));
+}
+
+void QuatPose::update(AbsState *s){
+    node->setWorldRotation(*((QuatState*)s));
+}
+
+AbsState* QuatPose::getCalibrationState() const {
+    return new QuatState(node->getCalibration());
+}
+
+AbsState* QuatPose::getState() const {
+    return new QuatState(node->getWorldRotation());
 }
 
 size_t QuatPose::objectSize() {
     return sizeof(QuatPose);
-}
-
-void QuatPose::update(AbsState *s){
-//    node->setWorldRotation(*((QuatState*)s));
 }

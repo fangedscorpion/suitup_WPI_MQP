@@ -28,6 +28,8 @@ public:
     virtual AbsState* getState() const {return pose->getState();}
     virtual AbsState* getStateUpdate() const = 0;
 
+    void addNode(Node* node) {pose->addNode(node);}
+
     BandType getType() const {return type;}
     bool moveTo(AbsState* x);
     void setActive(bool a) {active = a;}

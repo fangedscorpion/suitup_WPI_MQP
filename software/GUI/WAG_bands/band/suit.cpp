@@ -4,8 +4,9 @@
 
 #define PING_INTERVAL 5000
 
-Suit::Suit(WifiManager *comms):QObject() {
+Suit::Suit(WifiManager *comms, Model *suitModel):QObject() {
 
+    model = suitModel;
     wifiMan = comms;
     startTime = QElapsedTimer();
     startTime.start();
@@ -35,6 +36,8 @@ Suit::Suit(WifiManager *comms):QObject() {
 
     QList<BandType> allBands = bands.keys();
     for (int i = 0; i < allBands.length(); i++) {
+        bands[allBands[i]]->addNode(model->getNodeByName(AbsBand::bandTypeToModelName(allBands[i])).data());
+
         connect(bands[allBands[i]], SIGNAL(dataToSend(BandType,BandMessage*)), this, SLOT(sendData(BandType, BandMessage*)));
         connect(bands[allBands[i]], SIGNAL(poseRecvd(AbsState *,BandType,qint32)), this, SLOT(catchNewPose(AbsState *, BandType, qint32)));
         connect(this, SIGNAL(toleranceChanged(int)), bands[allBands[i]], SLOT(catchTolChange(int)));

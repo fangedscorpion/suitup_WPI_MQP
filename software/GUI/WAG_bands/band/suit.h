@@ -15,7 +15,7 @@ class Suit:public QObject
 {
     Q_OBJECT
 public:
-    Suit(WifiManager* comms);
+    Suit(WifiManager* comms, Model *suitModel);
     AbsBand* getBand(BandType bt);
     // bool playback(vector<PositionSnapshot> motion)
     // PositionSnapshot takeSnapshot( )

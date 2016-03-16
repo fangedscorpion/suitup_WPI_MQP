@@ -7,31 +7,37 @@
 #include <QVector3D>
 #include <QQuaternion>
 
-class AbsPose {
+class Node;
+
+class AbsPose : public QObject {
 //    Q_PROPERTY(std::vector<QVector3D> points READ getPoints WRITE setPoints)
+    Q_OBJECT
 
 public:
     AbsPose();
-    virtual void update(AbsState* s) = 0;
-    AbsState* getCalibrationState() const {return calibration;}
-    AbsState* getState() const {return current;}
+    void addNode(Node* node){this->node = node;}
 
+    virtual AbsState* getCalibrationState() const = 0; //{return calibration;}
+    virtual AbsState* getState() const = 0; //{return current;}
+    virtual void update(AbsState* s) = 0;
     virtual void calibrate() = 0;
     virtual IError* error(AbsState* goal) const = 0;
     virtual size_t objectSize() = 0;
 protected:
-    std::vector<QVector3D*> points;
-    AbsState* current;
-    AbsState* calibration;
+    Node* node;
 };
 
 class QuatPose : public AbsPose{
 public:
-    void update(AbsState *s);
     QuatPose(QVector3D xAxis, QVector3D zAxis);
+
+    AbsState* getCalibrationState() const;
+    AbsState* getState() const;
+    void update(AbsState *s);
     void calibrate();
     IError* error(AbsState* goal) const;
     size_t objectSize();
+
     QVector3D getX() {return x;}
     QVector3D getZ() {return z;}
 

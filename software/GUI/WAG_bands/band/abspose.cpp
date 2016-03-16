@@ -1,6 +1,6 @@
 #include "abspose.h"
 
-AbsPose::AbsPose()
+AbsPose::AbsPose() : QObject()
 {
 
 }

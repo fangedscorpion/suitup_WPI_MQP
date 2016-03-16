@@ -19,6 +19,7 @@ public:
     QuatState(float scalar, const QVector3D &vector) : AbsState(QUATERNION), QQuaternion(scalar,vector){}
     QuatState(float scalar, float xpos, float ypos, float zpos) : AbsState(QUATERNION), QQuaternion(scalar,xpos,ypos,zpos){}
     QuatState() : AbsState(QUATERNION), QQuaternion(){}
+    QuatState(QQuaternion q) : AbsState(QUATERNION), QQuaternion(q.scalar(),q.vector()){}
 
 };
 

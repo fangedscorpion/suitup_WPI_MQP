@@ -18,6 +18,7 @@ Model::Model(QVector<QSharedPointer<Node> > nodes) : QObject(){
 }
 
 void Model::updatePose(PositionSnapshot pose){
+    bool somethingChanged = false;
     QHash<BandType, AbsState*> map = pose.getSnapshot();
     QList<BandType> bands = map.keys();
     for (int i = 0; i < bands.size(); ++i){
@@ -25,14 +26,15 @@ void Model::updatePose(PositionSnapshot pose){
         AbsState* state = map[bands[i]];
         switch (state->getStateRep()) {
         case QUATERNION:
+            somethingChanged = true;
             getNodeByName(bandName)->setWorldRotation(*(static_cast<QuatState*>(state)));
             break;
         default:
             qDebug() << "Model::updatePose(): Don't know how to handle given state representation!";
         }
     }
-
-    updateNamesAndStates();
+    if (somethingChanged)
+        updateNamesAndStates();
 }
 
 void Model::updateNodeStatus(QHash<BandType, NodeStatus> statuses){

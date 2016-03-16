@@ -8,7 +8,6 @@
 #include <QMatrix4x4>
 #include <stdexcept>
 
-#include "band/absband.h"
 #include "positionsnapshot.h"
 
 enum NodeStatus {NODE_CONNECTED,NODE_DISCONNECTED,NODE_UNUSED};
@@ -48,6 +47,7 @@ public:
     void root(bool isRoot) {this->isRootNode = isRoot;}
     void addChild(QSharedPointer<Node> child) {children.push_back(child);}
     void setStatus(NodeStatus status) {this->status = status;}
+    void setWorldRotation(QQuaternion worldRotation);
 
     // getters
     QString getName() const {return name;}
@@ -56,11 +56,11 @@ public:
     QQuaternion getWorldRotation() const {return worldRotation;}
     bool isRoot() const {return isRootNode;}
     NodeStatus getStatus() const {return status;}
+    QQuaternion getCalibration() const {return calibration;}
 
     // other
     void init();
     void findRotationFromParent();
-    void setWorldRotation(QQuaternion worldRotation);
     void setAllRotIdentity();
     void setAllRotDefault();
     void calibrate(QQuaternion sensedOrientation);

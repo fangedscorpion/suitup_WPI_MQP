@@ -73,16 +73,15 @@ MainWindow::MainWindow(QWidget *parent) :
 //    applicationLayout->addWidget(line);
     applicationLayout->addWidget(tabs, 1);
 
+    modelLoader = new ModelLoader;
     wifiMan = new WifiManager();
-    fullSuit = new Suit(wifiMan);
+    fullSuit = new Suit(wifiMan,modelLoader->load());
     connectedBands = QSet<BandType>();
     connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(indicateConnectionStatusChange(BandType, ConnectionStatus)));
     connect(this, SIGNAL(modeChanged(ACTION_TYPE)), fullSuit, SLOT(catchModeChanged(ACTION_TYPE)));
     connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(updateConnectionStatus(BandType, ConnectionStatus)));
     connect(fullSuit, SIGNAL(bandHasLowBattery(BandType, bool)), this, SLOT(catchLowBatterySignal(BandType, bool)));
     connect(fullSuit, SIGNAL(bandConnectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(updateConnectionStatus(BandType,ConnectionStatus)));
-
-    modelLoader = new ModelLoader;
 }
 
 MainWindow::~MainWindow() {}
