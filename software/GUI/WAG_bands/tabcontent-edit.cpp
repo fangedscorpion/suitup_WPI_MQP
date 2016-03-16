@@ -204,11 +204,9 @@ void TabContent::saveMotionInfo() {
         s = LIBRARY;
     }
 
-    WAGFile* w = new WAGFile(filename, infoMotionDescription->toPlainText(),
+    motion->updateWAGFile(filename, infoMotionDescription->toPlainText(),
                              motion->getAuthor(), infoMotionTagsLayout, s);
     // new motion info
-    delete motion;
-    motion = w;
     updateMotion();
     saveMotion();
     closeMotionInfo();
