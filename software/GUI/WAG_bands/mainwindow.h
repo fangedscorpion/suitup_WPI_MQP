@@ -26,6 +26,8 @@
 #include "customWidgets/overlaywidget.h"
 #include "playbackcontroller.h"
 #include "customWidgets/smartpushbutton.h"
+#include "customWidgets/smartradiobutton.h"
+#include "customWidgets/styledcheckbox.h"
 #include "wagfile.h"
 #include <set>
 #include <QTableWidget>
@@ -59,34 +61,32 @@ private:
     Overlay *overlay;
 
     // fonts & styles
-    QFont titleFont;
-    QString titleStyleSheet;
     QString textInputStyleWhite;
     QString textInputStyleRed;
     // menubar
-    smartPushButton *newBtn;
-    smartPushButton *openBtn;
-    smartPushButton *settingsBtn;
+    SmartPushButton *newBtn;
+    SmartPushButton *openBtn;
+    SmartPushButton *settingsBtn;
     QHBoxLayout* createMenuButtons();
     // statusbar
     QLabel *connectionStatus;
     QLabel *batteryStatus;
     QHBoxLayout* createStatusBar();
     // settings overlay
-    QCheckBox *leftShoulder;
-    QCheckBox *leftUpperArm;
-    QCheckBox *leftLowerArm;
-    QCheckBox *rightShoulder;
-    QCheckBox *rightUpperArm;
-    QCheckBox *rightLowerArm;
-    smartPushButton *connectBands;
+    StyledCheckBox *leftShoulder;
+    StyledCheckBox *leftUpperArm;
+    StyledCheckBox *leftLowerArm;
+    StyledCheckBox *rightShoulder;
+    StyledCheckBox *rightUpperArm;
+    StyledCheckBox *rightLowerArm;
+    SmartPushButton *connectBands;
     OverlayWidget *settingsWidget;
     void createSettings();
     // open (from lib)
     OverlayWidget *openFromLibWidget;
     OverlayWidget *openWidget;
     QTableWidget *openFromLibTable;
-    smartPushButton *openFromLibBtn;
+    SmartPushButton *openFromLibBtn;
     QLineEdit *openFromLibFilterBar;
     QComboBox *openFromLibFilterOpts;
     void createOpenFromLib(USER u);
@@ -97,11 +97,11 @@ private:
     QTextEdit *newMotionDescription;
     QLineEdit *newMotionTagsTextEdit;
     QHBoxLayout *newMotionTagsLayout;
-    smartPushButton *addTagBtn;
-    QRadioButton *newMotionCompRadio;
+    SmartPushButton *addTagBtn;
+    SmartRadioButton *newMotionCompRadio;
     QLabel *newMotionSaveLocation;
-    smartPushButton *createNewMotionBtn;
-    smartPushButton *newMotionBrowseBtn;
+    SmartPushButton *createNewMotionBtn;
+    SmartPushButton *newMotionBrowseBtn;
     void createNewMotion(USER u);
     // user options
     OverlayWidget *userOptionsWidget;
@@ -146,7 +146,7 @@ private slots:
     // statusbar
     void updateConnectionStatus(BandType b, ConnectionStatus c);
     void updateBatteryStatus();
-    void catchLowBatterySignal(BandType lowBatteryBand);
+    void catchLowBatterySignal(BandType lowBatteryBand, bool batteryIsLow);
 
 signals:
     void modeChanged(ACTION_TYPE);

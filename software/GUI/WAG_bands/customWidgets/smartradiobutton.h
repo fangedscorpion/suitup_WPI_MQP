@@ -5,16 +5,17 @@
 /*
  * This button has an associated USER to make the button more dynamic
  */
-class smartRadioButton : public QRadioButton
+class SmartRadioButton : public QRadioButton
 {
     Q_OBJECT
 public:
-    smartRadioButton(const char* name, ACTION_TYPE a);
-    smartRadioButton(const char* name);
+    SmartRadioButton(const char* name, ACTION_TYPE a);
+    SmartRadioButton(const char* name);
     void setAction(ACTION_TYPE a);
 
 private:
     ACTION_TYPE action;
+    void setTheme();
 
 signals:
     void released(ACTION_TYPE);

@@ -13,23 +13,19 @@ QWidget* TabContent::createEditOptionsAndControls() {
     // Edit recording options
     StyledGroupBox *editOptions = new StyledGroupBox("Editing Options");
 
-    smartPushButton *undoBtn = new smartPushButton("Undo");
+    SmartPushButton *undoBtn = new SmartPushButton("Undo");
     undoBtn->setIcon(undoIcon);
     undoBtn->setIconSize(QSize(51,25));
-    undoBtn->setMinimumHeight(buttonHeight);
     undoBtn->setEnabled(false);
-    smartPushButton *cropBtn = new smartPushButton("Crop");
+    SmartPushButton *cropBtn = new SmartPushButton("Crop");
     cropBtn->setIcon(cropIcon);
     cropBtn->setIconSize(QSize(49,25));
-    cropBtn->setMinimumHeight(buttonHeight);
-    smartPushButton *splitBtn = new smartPushButton("Split");
+    SmartPushButton *splitBtn = new SmartPushButton("Split");
     splitBtn->setIcon(splitIcon);
     splitBtn->setIconSize(QSize(62,25));
-    splitBtn->setMinimumHeight(buttonHeight);
-    smartPushButton *MotionInfoBtn = new smartPushButton("Edit Motion Information");
+    SmartPushButton *MotionInfoBtn = new SmartPushButton("Edit Motion Information");
     MotionInfoBtn->setIcon(editIcon);
     MotionInfoBtn->setIconSize(QSize(62,25));
-    MotionInfoBtn->setMinimumHeight(buttonHeight);
     QVBoxLayout *recordPlaybackLayout = editOptions->getLayout();
     recordPlaybackLayout->setContentsMargins(20,20,20,20);
     QVBoxLayout *buttons = new QVBoxLayout;
@@ -105,9 +101,8 @@ void TabContent::createMotionInfoWindow() {
     infoMotionTagsTextEdit->setStyleSheet(textInputStyleWhite);
     infoMotionTagsTextEdit->setMaximumWidth(inputMaxWidth);
     t->addWidget(infoMotionTagsTextEdit);
-    addTagBtn = new smartPushButton("Add Keyword");
+    addTagBtn = new SmartPushButton("Add Keyword");
     addTagBtn->setEnabled(false);
-    addTagBtn->setMinimumHeight(buttonHeight);
     // tags list
     QHBoxLayout *t2 = new QHBoxLayout;
     QLabel *spacer = new QLabel;
@@ -136,11 +131,11 @@ void TabContent::createMotionInfoWindow() {
     l5->setAlignment(Qt::AlignRight);
     s->addWidget(l5, -1);
     QVBoxLayout *s1 = new QVBoxLayout;
-    QRadioButton *infoMotionLibRadio = new QRadioButton("Motion Library");
+    SmartRadioButton *infoMotionLibRadio = new SmartRadioButton("Motion Library");
     QHBoxLayout *r = new QHBoxLayout;
     r->setContentsMargins(0,0,0,0);
-    infoMotionCompRadio = new QRadioButton("Local Computer");
-    infoMotionBrowseBtn = new smartPushButton("Select Save Location");
+    infoMotionCompRadio = new SmartRadioButton("Local Computer");
+    infoMotionBrowseBtn = new SmartPushButton("Select Save Location");
     infoMotionSaveLocation = new QLabel("");
     if (motion->getSaveLocation() == LOCALLY) {
         qDebug() << "tabContent-edit locally";
@@ -161,9 +156,8 @@ void TabContent::createMotionInfoWindow() {
     s->addLayout(s1);
 
     QHBoxLayout *btns = new QHBoxLayout;
-    saveMotionInfoBtn = new smartPushButton("Save");
-    smartPushButton *cancel = new smartPushButton("Cancel");
-    cancel->setMinimumHeight(buttonHeight);
+    saveMotionInfoBtn = new SmartPushButton("Save");
+    SmartPushButton *cancel = new SmartPushButton("Cancel");
     btns->addWidget(cancel);
     btns->addWidget(saveMotionInfoBtn);
     layout->addLayout(f);

@@ -12,11 +12,8 @@ TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION
     connect(this, SIGNAL(modeChanged(ACTION_TYPE)), this, SLOT(catchModeChanged(ACTION_TYPE)));
     emit modeChanged(initiallyShow);
 
-    titleFont = QFont( "Arial", 15, QFont::Bold);
-    groupStyleSheet = "QWidget#group{ background-color: #C8E6C9; border: 1px solid gray; border-radius: 9px; margin-left: 0.25em; margin-right: 0.25em; margin-top: 0.5em;}";
-    textInputStyleRed = "QLineEdit {border: 1px solid red; background: white;} QTextEdit {border-radius: 2px; border: 1px solid red; background: white;}";
-    textInputStyleWhite = "QLineEdit {background: white;} QTextEdit {border-radius: 2px; border: 1px outset grey; background: white;}";
-    buttonHeight = 35;
+    textInputStyleRed = "QLineEdit {border: 2px solid red; background: white; border-radius: 4px;} QTextEdit {border-radius: 4px; border: 2px solid red; background: white;}";
+    textInputStyleWhite = "QLineEdit {border: 1px solid gray; border-radius: 4px; background: white;} QTextEdit {border-radius: 4px; border: 1px solid grey; background: white;}";
 
     createIcons();
 
@@ -129,9 +126,9 @@ QWidget* TabContent::createModeRadios(USER u) {
     modeRadiosGroup = new StyledGroupBox("Modes");
 
     QVBoxLayout *vl = modeRadiosGroup->getLayout();
-    recordRadio = new smartRadioButton("Record Motion", RECORD);
-    editRadio = new smartRadioButton("Edit Motion", EDIT);
-    playbackRadio = new smartRadioButton("Playback Motion", PLAYBACK);
+    recordRadio = new SmartRadioButton("Record Motion", RECORD);
+    editRadio = new SmartRadioButton("Edit Motion", EDIT);
+    playbackRadio = new SmartRadioButton("Playback Motion", PLAYBACK);
 
     // if there is only 1 action this user can perform, don't show any modes
     int count = 0;

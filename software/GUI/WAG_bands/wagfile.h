@@ -30,10 +30,12 @@ public:
             QHBoxLayout* container, SAVE_LOCATION saveLoc);
     WAGFile(QString filename, bool peek = false); // Loads WAGFile content from the given filename.
     // getters
+    // returns filename without extension
     QString getName() {return name;}
     QString getDescription() {return description;}
     QString getAuthor() {return author;}
     QString getPathWithoutFile() {return QString(path.parent_path().c_str()); }
+    // returns entire filepath including filename and extension
     QString getPathString() {return QString(path.c_str());}
     QVector<QString> getTagStrings() {return tags;}
     QString getTagString() {return getTagStrings().toList().join(", ");}
@@ -44,13 +46,14 @@ public:
     PositionSnapshot getSnapshot(float approxPercentThroughFile, qint32 snapTime, SNAP_CLOSENESS retrieveType);
     QHash<qint32, PositionSnapshot> getChunkInRange(qint32 startTime, qint32 endTime);
     // setters
-    // If you need vvv, make sure it removes the '.wagz' first
-//    void updateFilename(QString newName) { name = newName;}
+    void updateFilename(QString newName);
     void updateDescription(QString desc) {description = desc;}
-    void replaceTags(QHBoxLayout* container);
-//    void updateSaveLocation(SAVE_LOCATION l) {saveLoc = l;}
-    void setMotionData(QHash<qint32, PositionSnapshot> newMotionData);
-
+    void updateAuthor(QString auth) {author = auth;}
+    void updateTags(QHBoxLayout* container);
+    void updateSaveLocation(SAVE_LOCATION l) {saveLoc = l;}
+    void updateMotionData(QHash<qint32, PositionSnapshot> newMotionData);
+    void updateWAGFile(QString filename, QString description, QString author,
+                       QHBoxLayout* container, SAVE_LOCATION saveLoc);
     void saveToFile();
 
 signals:

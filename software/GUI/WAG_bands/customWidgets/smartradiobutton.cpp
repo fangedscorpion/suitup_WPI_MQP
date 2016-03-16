@@ -1,18 +1,25 @@
 #include "smartradiobutton.h"
 
-smartRadioButton::smartRadioButton(const char *name) : QRadioButton(name) {}
+SmartRadioButton::SmartRadioButton(const char *name) : QRadioButton(name) {
+    setTheme();
+}
 
-smartRadioButton::smartRadioButton(const char *name, ACTION_TYPE a) : QRadioButton(name)
-{
+SmartRadioButton::SmartRadioButton(const char *name, ACTION_TYPE a) : QRadioButton(name) {
+    setTheme();
     action = a;
     connect(this, SIGNAL(released()), this, SLOT(releaseAction()));
 }
 
-void smartRadioButton::setAction(ACTION_TYPE a) {
+void SmartRadioButton::setTheme() {
+    this->setStyleSheet("SmartRadioButton:hover{background-color: #C8E6C9;}");
+    this->setFocusPolicy(Qt::NoFocus);
+}
+
+void SmartRadioButton::setAction(ACTION_TYPE a) {
     action = a;
     connect(this, SIGNAL(released()), this, SLOT(releaseAction()));
 }
 
-void smartRadioButton::releaseAction() {
+void SmartRadioButton::releaseAction() {
     emit released(action);
 }

@@ -16,28 +16,28 @@ void MainWindow::launchUserOptions(USER u) {
     lbl->setAlignment(Qt::AlignCenter);
     layout->addWidget(lbl);
     if (u.hasAction(RECORD)) {
-        smartPushButton* newMotion = new smartPushButton("Record a new motion", u);
+        SmartPushButton* newMotion = new SmartPushButton("Record a new motion", u);
         connect(newMotion, SIGNAL(released(USER)), this, SLOT(launchNewMotion(USER))); // finish this
         layout->addWidget(newMotion);
     }
     // if a user can only edit (can't playback other user's motions
     if (u.hasAction(EDIT) && !u.hasAction(PLAYBACK)) {
-        smartPushButton* openFromLib = new smartPushButton("Open your motion from the library", u);
-        smartPushButton* openFromComp = new smartPushButton("Open your motion from your computer", u);
+        SmartPushButton* openFromLib = new SmartPushButton("Open your motion from the library", u);
+        SmartPushButton* openFromComp = new SmartPushButton("Open your motion from your computer", u);
         connect(openFromLib, SIGNAL(released(USER)), this, SLOT(launchOpenFromLibrary(USER))); // finish this
         connect(openFromComp, SIGNAL(released(USER)), this, SLOT(launchOpenFromComputer(USER))); // finish this
         layout->addWidget(openFromLib);
         layout->addWidget(openFromComp);
     }
     if (u.hasAction(PLAYBACK)) {
-        smartPushButton* openFromLib = new smartPushButton("Open a motion from the library", u);
-        smartPushButton* openFromComp = new smartPushButton("Open a motion from your computer", u);
+        SmartPushButton* openFromLib = new SmartPushButton("Open a motion from the library", u);
+        SmartPushButton* openFromComp = new SmartPushButton("Open a motion from your computer", u);
         connect(openFromLib, SIGNAL(released(USER)), this, SLOT(launchOpenFromLibrary(USER))); // finish this
         connect(openFromComp, SIGNAL(released(USER)), this, SLOT(launchOpenFromComputer(USER))); // finish this
         layout->addWidget(openFromLib);
         layout->addWidget(openFromComp);
     }
-    smartPushButton* back = new smartPushButton("Cancel", u);
+    SmartPushButton* back = new SmartPushButton("Cancel", u);
     layout->addWidget(back);
     layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     connect(back, SIGNAL(released()), this, SLOT(closeUserOptions()));
@@ -92,7 +92,7 @@ void MainWindow::launchOpenFromComputer(USER u) {
         WAGFile* w = new WAGFile(f.trimmed());
         addTab(u, w, EDIT);
         closeOpenMotionOptions();
-    }    
+    }
 }
 
 // opens the user determined file
@@ -208,7 +208,7 @@ void MainWindow::handleNewMotionRequiredInput() {
     createNewMotionBtn->setEnabled(!newMotionDescription->toPlainText().isEmpty() &&
                                    !newMotionNameTextEdit->text().isEmpty() &&
                                    ((newMotionCompRadio->isChecked() && !newMotionSaveLocation->text().isEmpty()) ||
-                                   !newMotionCompRadio->isChecked()));
+                                    !newMotionCompRadio->isChecked()));
 }
 
 // handles the behavior of the radio buttons on the new motion window.
@@ -232,7 +232,7 @@ void MainWindow::updateConnectionStatus(BandType b, ConnectionStatus c) {
 }
 
 void MainWindow::handleConnectedBands() {
-    // count active bands
+    // count active bands, chest plus any other enabled bands
     int totalActiveBands = rightLowerArm->isChecked() + rightUpperArm->isChecked() + rightShoulder->isChecked();
     totalActiveBands += leftLowerArm->isChecked() + leftUpperArm->isChecked() + leftShoulder->isChecked() + 1;
 
@@ -276,27 +276,46 @@ void MainWindow::lockOnPlayOrRecord(bool suitRecording) {
 
 }
 
-void MainWindow::catchLowBatterySignal(BandType lowBatteryBand) {
+void MainWindow::catchLowBatterySignal(BandType lowBatteryBand, bool hasLowBattery) {
     static QSet<BandType> lowBatteryBands = QSet<BandType>();
-    if (!(lowBatteryBands.contains(lowBatteryBand))) {
-        lowBatteryBands<<lowBatteryBand;
-        qDebug()<<lowBatteryBands;
-        QString lowBatteryText = "Low Battery: ";
-        QList<BandType> bandList = lowBatteryBands.toList();
-        if (bandList.size() == 1) {
-            lowBatteryText +=(AbsBand::bandTypeToString(bandList[0]));
+    bool updated = false;
+    if (hasLowBattery) {
+        if (!(lowBatteryBands.contains(lowBatteryBand))) {
+            lowBatteryBands<<lowBatteryBand;
+            qDebug()<<lowBatteryBands;
+            updated = true;
+        }
+    } else {
+        if (lowBatteryBands.contains(lowBatteryBand))  {
+            lowBatteryBands.remove(lowBatteryBand);
+            updated = true;
+        }
+
+    }
+    if (updated) {
+        QString lowBatteryText;
+        if (lowBatteryBands.size() == 0) {
+            lowBatteryText = "Battery full";
         } else {
-            for (int i = 0; i < bandList.size() - 1; i++) {
-                lowBatteryText += AbsBand::bandTypeToString(bandList[i]);
-                lowBatteryText += ", ";
+            lowBatteryText = "Low Battery: ";
+            QList<BandType> bandList = lowBatteryBands.toList();
+            if (bandList.size() == 1) {
+                lowBatteryText +=(AbsBand::bandTypeToString(bandList[0]));
+            } else {
+                for (int i = 0; i < bandList.size() - 1; i++) {
+                    lowBatteryText += AbsBand::bandTypeToString(bandList[i]);
+                    lowBatteryText += ", ";
+                }
+                lowBatteryText += "and ";
+                lowBatteryText += AbsBand::bandTypeToString(bandList[bandList.size() - 1]);
             }
-            lowBatteryText += "and ";
-            lowBatteryText += AbsBand::bandTypeToString(bandList[bandList.size() - 1]);
         }
         batteryStatus->setText(lowBatteryText);
+
         updateBatteryStatus();
     }
 }
+
 
 // enables the "load" button on the openFromLib widget if one of the motions is selected.
 void MainWindow::handleOpenFromLibBtn(int, int) {
@@ -304,17 +323,29 @@ void MainWindow::handleOpenFromLibBtn(int, int) {
 }
 
 void MainWindow::handleOpenFromLibFilter(QString) {
-    QRegExp rx("(\\ |\\,)");
+    QRegExp rx("(\\ |\\,)"); // split on space and comma
     QStringList filterByList = openFromLibFilterBar->text().trimmed().toLower().split(rx);
-    int col = openFromLibFilterOpts->currentIndex();
+    int startCol = openFromLibFilterOpts->currentIndex()-1;
+    int endCol = startCol+1;
+    // searching 'All'
+    if (startCol < 0) {
+        startCol = 0;
+        endCol = openFromLibFilterOpts->count()-1;
+    }
+
     for( int i = 0; i < openFromLibTable->rowCount(); ++i ) {
-        bool match = true;
-        QTableWidgetItem *item = openFromLibTable->item( i, col );
-        for (int j=0; j < filterByList.size(); j++) {
-            if(!item->text().toLower().contains(filterByList[j]) ) {
-                match = false;
-                break;
+        bool match = false;
+
+        for (int col = startCol; col < endCol; col++) {
+            QTableWidgetItem *item = openFromLibTable->item( i, col );
+            for (int j=0; j < filterByList.size(); j++) {
+                if(item->text().toLower().contains(filterByList[j]) ) {
+                    match = true;
+                    break;
+                }
             }
+            if (match)
+                break;
         }
 
         if (!match)

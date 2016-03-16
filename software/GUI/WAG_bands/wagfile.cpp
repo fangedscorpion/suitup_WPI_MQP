@@ -37,7 +37,7 @@ WAGFile::WAGFile(QString filename, QString in_description, QString author,
                  QHBoxLayout* container, SAVE_LOCATION saveLoc) : description(in_description),
                  author(author), saveLoc(saveLoc) {
     tags = QVector<QString>();
-    replaceTags(container);
+    updateTags(container);
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot>();
     keys = QList<qint32>();
@@ -56,12 +56,25 @@ WAGFile::WAGFile(QString filename, bool peek) {
         loadFromFile(filename);
 }
 
-void WAGFile::replaceTags(QHBoxLayout* c) {
+void WAGFile::updateFilename(QString newName) {
+    setFilenameAndPath(newName);
+}
+
+void WAGFile::updateTags(QHBoxLayout* c) {
     tags.clear();
     int i;
     for (i=0; i < c->count(); i++) {
         tags.push_back(static_cast<ClosableLabel*>((c->itemAt(i)->widget()))->getText());
     }
+}
+
+void WAGFile::updateWAGFile(QString name, QString desc, QString auth,
+                   QHBoxLayout* cont, SAVE_LOCATION saveLoc) {
+    updateFilename(name);
+    updateDescription(desc);
+    updateAuthor(auth);
+    updateTags(cont);
+    updateSaveLocation(saveLoc);
 }
 
 QVector<ClosableLabel*> WAGFile::getTagLabels() {
@@ -189,7 +202,7 @@ qint32 WAGFile::pickValue(qint32 target, SNAP_CLOSENESS retrType, qint32 beforeT
 
 
 
-void WAGFile::setMotionData(QHash<qint32, PositionSnapshot> newMotionData) {
+void WAGFile::updateMotionData(QHash<qint32, PositionSnapshot> newMotionData) {
     motionData = newMotionData;
     keys = motionData.keys();
     qDebug()<<"WAGFile: Motion data size: "<<keys.size();

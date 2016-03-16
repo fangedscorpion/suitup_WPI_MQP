@@ -16,7 +16,7 @@ ClosableLabel::ClosableLabel(QString text) {
     lbl->setMinimumWidth(fm.width(text));
 
     this->setMargin(0);
-    this->setStyleSheet("QLabel{padding: 0px 0px 0px 0px;}");
+    this->setStyleSheet("ClosableLabel{padding: 0px 0px 0px 0px; border: 1px solid gray; border-radius: 4px; background-color: #A5D6A7;}");
     this->setIndent(0);
 
     QHBoxLayout *h = new QHBoxLayout();
@@ -29,8 +29,6 @@ ClosableLabel::ClosableLabel(QString text) {
     this->setLayout(h);
     this->setMaximumWidth(h->minimumSize().width());
     this->setMaximumHeight(33); // buttonHeight-2
-    this->setFrameStyle(QFrame::Panel | QFrame::Raised);
-    this->setLineWidth(2);
 
     connect(close, SIGNAL(released()), this, SLOT(close()));
     this->setAttribute(Qt::WA_DeleteOnClose);

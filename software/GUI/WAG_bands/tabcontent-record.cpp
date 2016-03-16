@@ -19,7 +19,7 @@ QWidget* TabContent::createRecordOptionsAndController() {
     h->addWidget(recordCountDownSpinner);
     h->addWidget(countDownMessage);
 
-    QCheckBox *recordVoiceControl = new QCheckBox("Voice Control");
+    StyledCheckBox *recordVoiceControl = new StyledCheckBox("Voice Control");
 
     QVBoxLayout *options = recordOptionsGroup->getLayout();
     options->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -64,14 +64,12 @@ QWidget* TabContent::createRecordingWindow() {
     h->addWidget(recordStopwatchMinutesTitleLabel);
     h->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-    resetButton = new smartPushButton("Reset");
-    resetButton->setMinimumHeight(buttonHeight);
+    resetButton = new SmartPushButton("Reset");
     resetButton->setEnabled(false);
     resetButton->setIcon(resetIcon);
     resetButton->setIconSize(QSize(35,30));
 
-    recordButton = new smartPushButton("Start Recording");
-    recordButton->setMinimumHeight(buttonHeight);
+    recordButton = new SmartPushButton("Start Recording");
     recordButton->setIcon(recordIcon);
     recordButton->setIconSize(QSize(35,15));
 

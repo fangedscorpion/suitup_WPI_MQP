@@ -15,7 +15,7 @@ void RecordingController::stopRecording() {
     suitObj->startOrStopMode(STOP_RECORDING);
     qDebug("RecordingController: Setting motion data");
 
-    activeMotion->setMotionData(currentMotionData);
+    activeMotion->updateMotionData(currentMotionData);
     qDebug()<<"RecordingController: totalFrames"<<activeMotion->getFrameNums();
     recording = false;
 }

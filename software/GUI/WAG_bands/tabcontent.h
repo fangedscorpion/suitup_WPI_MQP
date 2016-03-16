@@ -8,6 +8,7 @@
 #include "model/modelloader.h"
 #include "recordingcontroller.h"
 #include "customWidgets/styledgroupbox.h"
+#include "customWidgets/styledcheckbox.h"
 
 class GLWidget;
 
@@ -40,19 +41,16 @@ private:
     Model* playbackModel;
     Model* editModel;
     // fonts & styles
-    QFont titleFont;
-    QString groupStyleSheet;
     QString textInputStyleWhite;
     QString textInputStyleRed;
-    int buttonHeight;
     // mode radio buttons
     StyledGroupBox *modeRadiosGroup;
-    smartRadioButton *playbackRadio;
-    smartRadioButton *editRadio;
-    smartRadioButton *recordRadio;
+    SmartRadioButton *playbackRadio;
+    SmartRadioButton *editRadio;
+    SmartRadioButton *recordRadio;
     QWidget* createModeRadios(USER u);
     // playback options
-    QCheckBox *playOnSuit;
+    StyledCheckBox *playOnSuit;
     QComboBox *stepThrough;
     QSlider *speedSlider;
     StyledGroupBox *playbackOptions;
@@ -89,8 +87,8 @@ private:
     QLabel *recordStopwatchTitleLabel;
     QLabel *recordCountdownSecondsTitleLabel;
     QLabel *recordStopwatchMinutesTitleLabel;
-    smartPushButton *recordButton;
-    smartPushButton *resetButton;
+    SmartPushButton *recordButton;
+    SmartPushButton *resetButton;
     void recordResetCountDownTimer();
     void handleRecordTimeCounter();
     QTimer *recordCountdownTimer;
@@ -107,15 +105,15 @@ private:
     // file info
     OverlayWidget *motionInfoWidget;
     void createMotionInfoWindow();
-    smartPushButton* addTagBtn;
-    smartPushButton* saveMotionInfoBtn;
+    SmartPushButton* addTagBtn;
+    SmartPushButton* saveMotionInfoBtn;
     QLineEdit* infoMotionNameTextEdit;
     QTextEdit* infoMotionDescription;
     QLineEdit* infoMotionTagsTextEdit;
     QHBoxLayout* infoMotionTagsLayout;
-    QRadioButton *infoMotionCompRadio;
+    SmartRadioButton *infoMotionCompRadio;
     QLabel *infoMotionSaveLocation;
-    smartPushButton *infoMotionBrowseBtn;
+    SmartPushButton *infoMotionBrowseBtn;
     void changeRecordingState(bool shouldRecord);
 
 public slots:

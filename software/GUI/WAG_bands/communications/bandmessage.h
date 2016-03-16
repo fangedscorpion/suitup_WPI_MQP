@@ -22,7 +22,11 @@ enum MessageType {
     START_PLAYBACK = 8,
     STOP_PLAYBACK = 9,
     VOICE_CONTROL = 10,
-    LOW_BATTERY_UPDATE = 11
+    LOW_BATTERY_UPDATE = 11,
+    BAND_CONNECTING_LOW_BATT = 12,                   //From band to PC --> shows band is starting connection    (LOW BATTERY!!!)
+    BAND_PING_LOW_BATT = 13,                         //From PC to Band --> starts up TCP connection from band listener  (LOW BATTERY!!!)
+    BAND_POSITION_UPDATE_LOW_BATT = 14,              //From band to Band --> contains new data for PC (12 bytes of data)    (LOW BATTERY!!!)
+    VOICE_CONTROL_LOW_BATT = 15,
 };
 
 enum VoiceControlMsgType {

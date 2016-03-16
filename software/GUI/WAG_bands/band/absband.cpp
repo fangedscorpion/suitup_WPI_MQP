@@ -16,6 +16,7 @@ AbsBand::AbsBand(BandType bt):QObject() {
     active = true;
     commsSetUp = false;
     pingProblems = 0;
+    hasLowBattery = false;
 }
 
 void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
@@ -33,33 +34,52 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
 }
 
 void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
+    bool tmpLowBattery;
     //qDebug("AbsBand: Handling message\n");
     qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType();
+    switch (recvdMessage->getMessageType()) {
+    case VOICE_CONTROL_LOW_BATT:
+    case BAND_CONNECTING_LOW_BATT:
+    case BAND_PING_LOW_BATT:
+    case BAND_POSITION_UPDATE_LOW_BATT:
+    case LOW_BATTERY_UPDATE:
+        tmpLowBattery = true;
+        break;
+    default:
+        tmpLowBattery = false;
+    }
+
+    if (tmpLowBattery != hasLowBattery) {
+        hasLowBattery = tmpLowBattery;
+        emit lowBattery(type, hasLowBattery);
+    }
+
     AbsState *newState;
     switch(recvdMessage->getMessageType()) {
+    case BAND_CONNECTING_LOW_BATT:
     case BAND_CONNECTING:
         if (!commsSetUp) {
             commsSetUp = true;
         }
         qDebug("AbsBand: recvd band connecting");
         break;
+    case BAND_PING_LOW_BATT:
     case BAND_PING:
         if (pendingBandPing) {
             pendingBandPing = false;
         }
         //qDebug("AbsBand: Recvd band ping");
         break;
+    case BAND_POSITION_UPDATE_LOW_BATT:
     case BAND_POSITION_UPDATE:
         // parse into absstate
 
         // this print line is necessary or the program will crash. cannot figure out why
         //qDebug()<<"AbsBand: BAND POSITION RECEIVED FROM"<<type<<" at "<<msgTimestamp;
+        qDebug()<<"ABsBand: position data "<<recvdMessage->getMessageData();
         newState = deserialize(recvdMessage->getMessageData(), this->getPositionRepresentation());
         updateState(newState, msgTimestamp);
         // should probably handle in subclass
-        break;
-    case LOW_BATTERY_UPDATE:
-        emit lowBattery(type);
         break;
     default:
         // should never receive a message that isn't one of these types
@@ -133,7 +153,6 @@ bool AbsBand::moveTo(AbsState* x) {
     IError * posError = pose->error(x);
     QByteArray msgData = posError->toMessage();
     BandMessage *newMsg = new BandMessage(POSITION_ERROR, msgData);
-    qDebug()<<"AbsBAnd: constructed error message";
     emit dataToSend(type, newMsg);
     if (posError->withinTolerance(tolerance)) {
         return true;

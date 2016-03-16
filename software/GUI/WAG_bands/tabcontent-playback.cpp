@@ -13,7 +13,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     playbackOptions = new StyledGroupBox("Playback Options");
     QVBoxLayout *playbackLayout = playbackOptions->getLayout();
     QVBoxLayout *options = new QVBoxLayout;
-    playOnSuit = new QCheckBox("Play on suit");
+    playOnSuit = new StyledCheckBox("Play on suit");
     stepThrough = new QComboBox;
     stepThrough->addItem("Step through mode");
     stepThrough->addItem("Timed mode");
@@ -74,7 +74,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     h->addWidget(playbackCountDownSpinner);
     h->addWidget(countDownMessage);
     // voice control
-    QCheckBox *playbackVoiceControl = new QCheckBox("Voice Control");
+    StyledCheckBox *playbackVoiceControl = new StyledCheckBox("Voice Control");
     // add everything
     options->addWidget(playOnSuit);
     options->addWidget(playbackVoiceControl);
@@ -98,6 +98,7 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     connect(toleranceSlider, SIGNAL(sliderMoved(int)), playbackControls, SLOT(updateStepThroughTolerance(int)));
     connect(speedSlider, SIGNAL(sliderMoved(int)), playbackControls, SLOT(speedChanged(int)));
     connect(playOnSuit, SIGNAL(toggled(bool)), playbackControls, SLOT(toggleSuitActive(bool)));
+    connect(playbackVoiceControl, SIGNAL(toggled(bool)), playbackControls, SLOT(toggleVoiceControl(bool)));
     connect(seconds, SIGNAL(valueChanged(double)), playbackControls, SLOT(modifyHoldTime(double)));
 //    connect(playbackControls, SIGNAL(timeChanged(int)), playbackMotionViewer, SLOT(displayNewTime(int)));
     connect(playbackControls, SIGNAL(playbackStateChanged(bool)), playbackMotionViewer, SLOT(playToggled(bool)));
