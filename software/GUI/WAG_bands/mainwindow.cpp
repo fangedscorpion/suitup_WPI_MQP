@@ -55,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // tabs
     tabs = new QTabWidget;
-    tabs->setStyleSheet("QTabBar::tab:!selected {background-color: rgb(82, 190, 128); border: 1px solid grey; border-radius: 2px;} QTabBar:tab{padding: 5px 5px 5px 5px;");
+    tabs->setStyleSheet("QTabBar::tab:!selected {background-color: rgb(82, 190, 128); border: 1px solid grey; border-radius: 2px; padding: 0 5px 0 5px;} ");
     tabs->setFocusPolicy(Qt::NoFocus);
     tabs->addTab(createUserSelectionWindow(users), "User selection");
     tabs->clearFocus();
@@ -70,7 +70,6 @@ MainWindow::MainWindow(QWidget *parent) :
     applicationLayout->setMargin(5);
     applicationLayout->addLayout(createMenuButtons());
     applicationLayout->addLayout(createStatusBar());
-//    applicationLayout->addWidget(line);
     applicationLayout->addWidget(tabs, 1);
 
     modelLoader = new ModelLoader;
@@ -85,6 +84,12 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 MainWindow::~MainWindow() {}
+
+void MainWindow::closeTab(int i) {
+    QWidget* w = tabs->widget(i);
+    tabs->removeTab(i);
+    delete w;
+}
 
 void MainWindow::setCurrentTabName(QString s) {
     tabs->setTabText(tabs->currentIndex(), s);
@@ -442,6 +447,7 @@ void MainWindow::createOpenFromLib(USER u) {
         openFromLibTable->setItem(i,1, new QTableWidgetItem(curFile->getDescription()));
         openFromLibTable->setItem(i,2, new QTableWidgetItem(curFile->getTagString()));
         openFromLibTable->setItem(i,3, new QTableWidgetItem(curFile->getPathString()));
+        delete libraryFiles[i];
     }
 
     openFromLibTable->hideColumn(3);
