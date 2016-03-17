@@ -478,29 +478,29 @@ void MainWindow::connectCheckedBands() {
     // get checked bands
     //    call functio nin wifiman
 
-    QList<BandType> connectedBands = QList<BandType>();
+    QList<BandType> bandsToConnect = QList<BandType>();
 
-    connectedBands<<CHEST;
+    bandsToConnect<<CHEST;
 
     if (leftShoulder->isChecked()) {
-        connectedBands<<LEFT_SHOULDER;
+        bandsToConnect<<LEFT_SHOULDER;
     }
     if (leftUpperArm->isChecked()) {
-        connectedBands<<LEFT_UPPER_ARM;
+        bandsToConnect<<LEFT_UPPER_ARM;
     }
     if (leftLowerArm->isChecked()) {
-        connectedBands<<LEFT_LOWER_ARM;
+        bandsToConnect<<LEFT_LOWER_ARM;
     }
     if (rightShoulder->isChecked()) {
-        connectedBands<<RIGHT_SHOULDER;
+        bandsToConnect<<RIGHT_SHOULDER;
     }
     if (rightUpperArm->isChecked()) {
-        connectedBands<<RIGHT_UPPER_ARM;
+        bandsToConnect<<RIGHT_UPPER_ARM;
     }
     if (rightLowerArm->isChecked()) {
-        connectedBands<<RIGHT_LOWER_ARM;
+        bandsToConnect<<RIGHT_LOWER_ARM;
     }
-    wifiMan->initiateConnection(connectedBands);
+    wifiMan->initiateConnection(bandsToConnect);
 }
 
 // Samee, connection status changes indicated here, (CONNECTED/DISCONNECTED)
