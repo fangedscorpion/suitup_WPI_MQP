@@ -65,7 +65,9 @@ TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION
     saveMotion();
 }
 
-TabContent::~TabContent() {}
+TabContent::~TabContent() {
+    delete motion;
+}
 
 void TabContent::createIcons() {
     recordIcon = QIcon(QPixmap(":/icons/record.png"));

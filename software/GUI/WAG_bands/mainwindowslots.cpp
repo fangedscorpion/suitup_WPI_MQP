@@ -67,7 +67,9 @@ void MainWindow::handleUserOptions(USER u) {
     overlay->hide();
     delete userOptionsWidget;
     userOptionsWidget = NULL;
+    QWidget* w = tabs->widget(0);
     tabs->removeTab(0);
+    delete w;
     tabs->setTabsClosable(true);
 }
 
