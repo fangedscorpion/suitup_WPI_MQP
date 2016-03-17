@@ -107,7 +107,7 @@ void EditingController::catchFrameUpdate(qint32 newFrame) {
     if (lastFrameNum != 0) {
         approxPercentThroughFile = ((float) newFrame)/lastFrameNum;
     }
-    PositionSnapshot desiredPos = activeMotion->getSnapshot(approxPercentThroughFile, newFrame, CLOSEST);
+    PositionSnapshot *desiredPos = activeMotion->getSnapshot(approxPercentThroughFile, newFrame, CLOSEST);
     // should probably figure out how to handle null snapshots
     // TODO
     emit goToSnapshot(desiredPos);

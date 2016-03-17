@@ -8,7 +8,7 @@ QWidget* TabContent::createEditOptionsAndControls() {
     editingControls->setActiveMotion(motion);
 
     connect(editingControls, SIGNAL(changeSliderMax(qint32)), editMotionViewer, SLOT(changeSliderRange(qint32)));    
-    connect(editingControls, SIGNAL(goToSnapshot(PositionSnapshot)), editModel, SLOT(updatePose(PositionSnapshot)));
+    connect(editingControls, SIGNAL(goToSnapshot(PositionSnapshot*)), editModel, SLOT(updatePose(PositionSnapshot*)));
 
     // Edit recording options
     StyledGroupBox *editOptions = new StyledGroupBox("Editing Options");

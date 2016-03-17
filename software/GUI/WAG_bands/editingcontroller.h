@@ -24,7 +24,7 @@ signals:
     void startPlayback();
     void endOfTimeRange();
     void changeSliderVal(int);
-    void goToSnapshot(PositionSnapshot);
+    void goToSnapshot(PositionSnapshot *);
 
 public slots:
     void beginningSliderChanged(int);

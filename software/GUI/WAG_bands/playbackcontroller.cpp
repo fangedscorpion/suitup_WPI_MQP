@@ -70,13 +70,13 @@ void PlaybackController::toggleVoiceControl(bool enable) {
 void PlaybackController::toggleSuitActive(bool active) {
     if (active != suitActive) {
         if (active) {
-            connect(this, SIGNAL(goToSnapshot(PositionSnapshot)), suitObj, SLOT(playSnapshot(PositionSnapshot)));
+            connect(this, SIGNAL(goToSnapshot(PositionSnapshot*)), suitObj, SLOT(playSnapshot(PositionSnapshot*)));
             connect(this, SIGNAL(startPlayback()), suitObj, SLOT(catchStartPlayback()));
             connect(this, SIGNAL(stopPlayback()), suitObj, SLOT(catchStopPlayback()));
             connect(suitObj, SIGNAL(positionMet()), this, SLOT(positionMet()));
         } else {
             // disconnect everything from suit obj
-            disconnect(this, SIGNAL(goToSnapshot(PositionSnapshot)), suitObj, 0);
+            disconnect(this, SIGNAL(goToSnapshot(PositionSnapshot*)), suitObj, 0);
             disconnect(this, SIGNAL(startPlayback()), suitObj, 0);
             disconnect(this, SIGNAL(stopPlayback()), suitObj, 0);
             disconnect(suitObj, SIGNAL(positionMet()), this, 0);
@@ -233,7 +233,7 @@ void PlaybackController::catchFrameUpdate(qint32 newFrame) {
     if (lastFrameNum != 0) {
         approxPercentThroughFile = ((float) newFrame)/lastFrameNum;
     }
-    PositionSnapshot desiredPos = activeMotion->getSnapshot(approxPercentThroughFile, newFrame, CLOSEST);
+    PositionSnapshot *desiredPos = activeMotion->getSnapshot(approxPercentThroughFile, newFrame, CLOSEST);
     // should probably figure out how to handle null snapshots
     // TODO
     qDebug()<<"Playback controller: emitting snapshot";

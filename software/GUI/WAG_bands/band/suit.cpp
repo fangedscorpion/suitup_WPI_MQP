@@ -84,7 +84,7 @@ void Suit::toggleCollecting(bool shouldCollectData) {
             // stop timer
             //qDebug("Suit: Killing ping timer");
             killTimer(pingTimerID);
-            activeSnapshot = PositionSnapshot();
+            activeSnapshot = new PositionSnapshot();
             activeSnapTimes.clear();
         } else {
             // start timer
@@ -153,14 +153,14 @@ void Suit::catchStartPlayback() {
 
 }
 
-void Suit::playSnapshot(PositionSnapshot goToSnap) {
+void Suit::playSnapshot(PositionSnapshot *goToSnap) {
     //qDebug("Suit: Received snap to play\n");
     if (collectingData) {
         // TODO
         // probably want to set a snapshot to match, and then when we receive a full snapshot, we can compare
         // and send back error
         QList<BandType> connected = getConnectedBands().toList();
-        QHash<BandType, AbsState*> snapshotData = goToSnap.getSnapshot();
+        QHash<BandType, AbsState*> snapshotData = goToSnap->getSnapshot();
         bool posWithinTol = true;
         for (int i = 0; i < connected.size(); i++){
             BandType getBand = connected[i];
@@ -263,12 +263,12 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
 
     // NOTE: may have to make sure changes to this absstate later are not reflected in position snapshot
 
-    activeSnapshot.addMapping(bandForPose, newPose);
+    activeSnapshot->addMapping(bandForPose, newPose);
 
     activeSnapTimes.append(poseTime);
 
     // maybe just want to make it so it's all bands, not just the connected ones
-    if (getConnectedBands() == activeSnapshot.getRecordedBands()) {
+    if (getConnectedBands() == activeSnapshot->getRecordedBands()) {
         // full snapshot!
 
         qint64 totalTime = 0;
@@ -285,7 +285,7 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
         }
         emit positionSnapshotReady(avgReadingTime, activeSnapshot);
 
-        activeSnapshot = PositionSnapshot();
+        activeSnapshot = new PositionSnapshot();
         activeSnapTimes.clear();
     }
 }

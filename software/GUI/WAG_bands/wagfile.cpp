@@ -12,24 +12,28 @@ QDataStream & operator>>(QDataStream & str, SAVE_LOCATION & v) {
     return str;
 }
 
-QDataStream & operator<<(QDataStream & str, const PositionSnapshot & v) {
-    str << v.getSnapshot();
+QDataStream & operator<<(QDataStream & str, const PositionSnapshot *v) {
+    str << v->getSnapshot();
     return str;
 }
 
-QDataStream & operator>>(QDataStream & str, PositionSnapshot & v) {
+QDataStream & operator>>(QDataStream & str, PositionSnapshot *v) {
     QHash<BandType, AbsState *> t;
     str >> t;
-    v.setSnapshot(t);
+    v->setSnapshot(t);
     return str;
 }
 
+WAGFile::~WAGFile() {
+    // what to delete here?
+    clearHashmapData(motionData);
+}
 
 WAGFile::WAGFile(QString filename, QString in_description, QString author,
                  QVector<QString> in_tags, SAVE_LOCATION saveLoc) : description(in_description),
                  author(author), tags(in_tags), saveLoc(saveLoc), QObject() {
     setFilenameAndPath(filename);
-    motionData = QHash<qint32, PositionSnapshot>();
+    motionData = QHash<qint32, PositionSnapshot*>();
     keys = QList<qint32>();
 }
 
@@ -39,14 +43,14 @@ WAGFile::WAGFile(QString filename, QString in_description, QString author,
     tags = QVector<QString>();
     updateTags(container);
     setFilenameAndPath(filename);
-    motionData = QHash<qint32, PositionSnapshot>();
+    motionData = QHash<qint32, PositionSnapshot*>();
     keys = QList<qint32>();
 }
 
 // If peek is true, this loads only the metadata, not the whole file.
 WAGFile::WAGFile(QString filename, bool peek) {
     setFilenameAndPath(filename);
-    motionData = QHash<qint32, PositionSnapshot>();
+    motionData = QHash<qint32, PositionSnapshot*>();
     keys = QList<qint32>();
     tags = QVector<QString>();
 
@@ -139,13 +143,14 @@ qint32 WAGFile::getFrameNums() {
     return maxKey; // TODO fix this
 }
 
-PositionSnapshot WAGFile::getSnapshot(float approxPercentThroughFile, qint32 snapTime, SNAP_CLOSENESS retrieveType) {
+PositionSnapshot *WAGFile::getSnapshot(float approxPercentThroughFile, qint32 snapTime, SNAP_CLOSENESS retrieveType) {
     if (motionData.contains(snapTime)) {
         return motionData[snapTime];
     }
     if (keys.size() == 0) {
-        return PositionSnapshot();
+        return new PositionSnapshot();
         // not sure what to do here....
+        // TODO
     } else if (keys.size() == 1) {
         return motionData[keys[0]];
     }
@@ -202,7 +207,8 @@ qint32 WAGFile::pickValue(qint32 target, SNAP_CLOSENESS retrType, qint32 beforeT
 
 
 
-void WAGFile::updateMotionData(QHash<qint32, PositionSnapshot> newMotionData) {
+void WAGFile::updateMotionData(QHash<qint32, PositionSnapshot*> newMotionData) {
+    this->clearHashmapData(motionData);
     motionData = newMotionData;
     keys = motionData.keys();
     qDebug()<<"WAGFile: Motion data size: "<<keys.size();
@@ -210,12 +216,14 @@ void WAGFile::updateMotionData(QHash<qint32, PositionSnapshot> newMotionData) {
     emit framesChanged(this->getFrameNums());
 }
 
-QHash<qint32, PositionSnapshot> WAGFile::getMotionData() {
+QHash<qint32, PositionSnapshot*> WAGFile::getMotionData() {
     return motionData;
 }
 
-QHash<qint32, PositionSnapshot> WAGFile::getChunkInRange(qint32 startTime, qint32 endTime) {
-    QHash<qint32, PositionSnapshot> motionDataCopy = QHash<qint32, PositionSnapshot>(motionData);
+QHash<qint32, PositionSnapshot *> WAGFile::getChunkInRange(qint32 startTime, qint32 endTime) {
+    // need to figure out if this makes a deep or shallow copy of the positionsnapshots
+    // should probably only have this get the keys and then do the cropping in another way
+    QHash<qint32, PositionSnapshot* > motionDataCopy = QHash<qint32, PositionSnapshot*>(motionData);
     for (int i = 0; i < keys.length(); i++) {
         if ((keys[i] < startTime) || (keys[i] > endTime)) {
             motionDataCopy.remove(keys[i]);
@@ -284,4 +292,9 @@ void WAGFile::loadMetadataFromFile(QString f) {
 //    if (description.isEmpty())
         // not a real wag file!
         // throw error
+}
+
+void WAGFile::clearHashmapData(QHash<qint32, PositionSnapshot *> data) {
+    qDebug()<<"WAGFile: deleting all hashmap data";
+    qDeleteAll(data);
 }

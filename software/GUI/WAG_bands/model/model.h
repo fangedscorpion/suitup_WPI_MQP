@@ -104,7 +104,7 @@ private:
     void updateNamesAndStates();
 
 public slots:
-    void updatePose(PositionSnapshot pose);
+    void updatePose(PositionSnapshot *pose);
     void updateNodeStatus(QHash<BandType,NodeStatus>);
 
 signals:

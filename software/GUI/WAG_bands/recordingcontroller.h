@@ -18,7 +18,7 @@ public:
     void setActiveMotion(WAGFile *motion);
 private:
     Suit *suitObj;
-    QHash<qint32, PositionSnapshot> currentMotionData;
+    QHash<qint32, PositionSnapshot *> currentMotionData;
     WAGFile *activeMotion;
     bool voiceEnabled;
     bool recording;
@@ -26,7 +26,7 @@ private:
 signals:
     void vcChangeState(bool);
 public slots:
-    void addSnapshotToMotion(qint32, PositionSnapshot);
+    void addSnapshotToMotion(qint32, PositionSnapshot *);
     void catchVoiceControlCommand(MessageType);
     void toggleVoiceControl(bool voiceControlOn);
 

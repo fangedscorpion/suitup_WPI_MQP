@@ -17,9 +17,9 @@ Model::Model(QVector<QSharedPointer<Node> > nodes) : QObject(){
         throw std::exception();
 }
 
-void Model::updatePose(PositionSnapshot pose){
+void Model::updatePose(PositionSnapshot *pose){
     bool somethingChanged = false;
-    QHash<BandType, AbsState*> map = pose.getSnapshot();
+    QHash<BandType, AbsState*> map = pose->getSnapshot();
     QList<BandType> bands = map.keys();
     for (int i = 0; i < bands.size(); ++i){
         QString bandName = AbsBand::bandTypeToModelName(bands[i]);
