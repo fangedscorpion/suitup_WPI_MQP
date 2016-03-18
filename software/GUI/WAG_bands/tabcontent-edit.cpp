@@ -20,9 +20,6 @@ QWidget* TabContent::createEditOptionsAndControls() {
     SmartPushButton *cropBtn = new SmartPushButton("Crop");
     cropBtn->setIcon(cropIcon);
     cropBtn->setIconSize(QSize(49,25));
-    SmartPushButton *splitBtn = new SmartPushButton("Split");
-    splitBtn->setIcon(splitIcon);
-    splitBtn->setIconSize(QSize(62,25));
     SmartPushButton *MotionInfoBtn = new SmartPushButton("Edit Motion Information");
     MotionInfoBtn->setIcon(editIcon);
     MotionInfoBtn->setIconSize(QSize(62,25));
@@ -32,7 +29,6 @@ QWidget* TabContent::createEditOptionsAndControls() {
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     buttons->addWidget(undoBtn);
     buttons->addWidget(cropBtn);
-    buttons->addWidget(splitBtn);
     buttons->addWidget(MotionInfoBtn);
     recordPlaybackLayout->addLayout(buttons, 1);
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
