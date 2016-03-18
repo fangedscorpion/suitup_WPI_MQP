@@ -29,6 +29,7 @@ public:
     WAGFile(QString filename, QString description, QString author,
             QHBoxLayout* container, SAVE_LOCATION saveLoc);
     WAGFile(QString filename, bool peek = false); // Loads WAGFile content from the given filename.
+    ~WAGFile();
     // getters
     // returns filename without extension
     QString getName() {return name;}
@@ -42,16 +43,16 @@ public:
     QVector<ClosableLabel*> getTagLabels();
     SAVE_LOCATION getSaveLocation() {return saveLoc;}
     qint32 getFrameNums();
-    QHash<qint32, PositionSnapshot> getMotionData();
-    PositionSnapshot getSnapshot(float approxPercentThroughFile, qint32 snapTime, SNAP_CLOSENESS retrieveType);
-    QHash<qint32, PositionSnapshot> getChunkInRange(qint32 startTime, qint32 endTime);
+    QHash<qint32, PositionSnapshot*> getMotionData();
+    PositionSnapshot *getSnapshot(float approxPercentThroughFile, qint32 snapTime, SNAP_CLOSENESS retrieveType);
+    QHash<qint32, PositionSnapshot*> getChunkInRange(qint32 startTime, qint32 endTime);
     // setters
     void updateFilename(QString newName);
     void updateDescription(QString desc) {description = desc;}
     void updateAuthor(QString auth) {author = auth;}
     void updateTags(QHBoxLayout* container);
     void updateSaveLocation(SAVE_LOCATION l) {saveLoc = l;}
-    void updateMotionData(QHash<qint32, PositionSnapshot> newMotionData);
+    void updateMotionData(QHash<qint32, PositionSnapshot*> newMotionData);
     void updateWAGFile(QString filename, QString description, QString author,
                        QHBoxLayout* container, SAVE_LOCATION saveLoc);
     void saveToFile();
@@ -68,9 +69,10 @@ private:
     QString author;
     QVector<QString> tags;
     SAVE_LOCATION saveLoc;
-    QHash<qint32, PositionSnapshot> motionData;
+    QHash<qint32, PositionSnapshot*> motionData;
     QList<qint32> keys;
 
+    void clearHashmapData(QHash<qint32, PositionSnapshot *> data);
     qint32 pickValue(qint32 target, SNAP_CLOSENESS retrType, qint32 beforeTarget, qint32 afterTarget);
 
     void setFilenameAndPath(QString filename);

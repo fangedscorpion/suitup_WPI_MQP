@@ -34,21 +34,21 @@ private:
     QElapsedTimer startTime;
     void processVoiceControlMessage(BandMessage *msg);
     QList<qint32> activeSnapTimes;
-    PositionSnapshot activeSnapshot;
+    PositionSnapshot *activeSnapshot;
     QSet<BandType> getConnectedBands();
     Model* model;
 
 public slots:
     void catchStartPlayback();
     void catchStopPlayback();
-    void playSnapshot(PositionSnapshot);
+    void playSnapshot(PositionSnapshot *);
     void propagateLowBatteryUpdate(BandType, bool);
 
     void catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime);
     void catchToleranceChange(int);
     void catchConnectionProblem(BandType bandWithProblem);
 signals:
-    void positionSnapshotReady(qint32, PositionSnapshot);
+    void positionSnapshotReady(qint32, PositionSnapshot*);
     void voiceControlCommandReady(MessageType);
     void bandHasLowBattery(BandType, bool);
     void toleranceChanged(int);

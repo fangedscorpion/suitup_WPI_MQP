@@ -44,7 +44,7 @@ signals:
     void endOfTimeRange();
     void metPosition();
     void playbackStateChanged(bool playing);
-    void goToSnapshot(PositionSnapshot);
+    void goToSnapshot(PositionSnapshot*);
     void changeSliderMax(qint32);
     void toleranceChanged(int);
     void changeSliderVal(int);
