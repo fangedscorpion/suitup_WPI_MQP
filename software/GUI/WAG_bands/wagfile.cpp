@@ -30,8 +30,8 @@ WAGFile::~WAGFile() {
 }
 
 WAGFile::WAGFile(QString filename, QString in_description, QString author,
-                 QVector<QString> in_tags, SAVE_LOCATION saveLoc) : description(in_description),
-                 author(author), tags(in_tags), saveLoc(saveLoc), QObject() {
+                 QVector<QString> in_tags, SAVE_LOCATION saveLoc) : QObject(), description(in_description),
+                 author(author), tags(in_tags), saveLoc(saveLoc) {
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot*>();
     keys = QList<qint32>();
