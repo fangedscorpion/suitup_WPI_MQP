@@ -311,3 +311,12 @@ void Suit::catchConnectionProblem(BandType bandWithProblem) {
     bands[bandWithProblem]->handleConnectionStatusChange(DISCONNECTED);
     emit bandConnectionStatusChanged(bandWithProblem, DISCONNECTED);
 }
+
+void Suit::calibrate() {
+    QList<AbsBand*> bandArr = bands.values();
+    for (int i = 0; i < bandArr.size(); ++i){
+        if (bandArr[i]->isConnected()){
+            bandArr[i]->calibrate();
+        }
+    }
+}

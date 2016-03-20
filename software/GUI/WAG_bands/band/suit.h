@@ -22,6 +22,7 @@ public:
     // void calibrate( )
     // map<enum, BandCalibration> getCalibrationData( )
     void startOrStopMode(MessageType);
+    Model* getModel() {return model;}
 
 private:
     QHash<BandType, AbsBand*> bands;
@@ -47,6 +48,9 @@ public slots:
     void catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime);
     void catchToleranceChange(int);
     void catchConnectionProblem(BandType bandWithProblem);
+
+    void calibrate();
+
 signals:
     void positionSnapshotReady(qint32, PositionSnapshot*);
     void voiceControlCommandReady(MessageType);

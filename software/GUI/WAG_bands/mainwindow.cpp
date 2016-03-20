@@ -65,6 +65,12 @@ MainWindow::MainWindow(QWidget *parent) :
     overlay = new Overlay(this);
     overlay->makeSemiTransparent();
     overlay->hide();
+
+    // createSettings needs fullSuit pointer to be set
+    modelLoader = new ModelLoader;
+    wifiMan = new WifiManager();
+    fullSuit = new Suit(wifiMan,modelLoader->load());
+
     createSettings();
 
     applicationLayout->setMargin(5);
@@ -72,9 +78,6 @@ MainWindow::MainWindow(QWidget *parent) :
     applicationLayout->addLayout(createStatusBar());
     applicationLayout->addWidget(tabs, 1);
 
-    modelLoader = new ModelLoader;
-    wifiMan = new WifiManager();
-    fullSuit = new Suit(wifiMan,modelLoader->load());
     connectedBands = QSet<BandType>();
     connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(indicateConnectionStatusChange(BandType, ConnectionStatus)));
     connect(this, SIGNAL(modeChanged(ACTION_TYPE)), fullSuit, SLOT(catchModeChanged(ACTION_TYPE)));
@@ -169,8 +172,13 @@ void MainWindow::createSettings() {
     QVBoxLayout *settingsLayout = settingsWidget->getLayout();
 
     QHBoxLayout *h = new QHBoxLayout;
+
+
     // Graphic of bands
     QGraphicsView *view = new QGraphicsView;
+    // looks like a TV screen with a shit signal back from the old antenna days...
+//     GLWidget *view = new GLWidget(fullSuit->getModel());
+
     view->setMinimumHeight(250);
     view->setMinimumWidth(350);
     QVBoxLayout *left = new QVBoxLayout;
@@ -222,7 +230,7 @@ void MainWindow::createSettings() {
     connect(rightUpperArm, SIGNAL(released()), this, SLOT(handleConnectedBands()));
     connect(rightShoulder, SIGNAL(released()), this, SLOT(handleConnectedBands()));
     connect(connectBands, SIGNAL(released()), this, SLOT(connectCheckedBands()));
-    // TODO: connect calibrate
+    connect(calibrate, SIGNAL(released()), fullSuit, SLOT(calibrate()));
 }
 
 // create new file overlay

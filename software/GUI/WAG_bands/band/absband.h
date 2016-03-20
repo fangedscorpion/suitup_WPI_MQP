@@ -24,7 +24,7 @@ public:
 
     // updating the pose
     void updateState(AbsState* state, qint32 msgTime);
-    void setCalibrationState() {pose->calibrate();}
+    void calibrate() {pose->calibrate();}
     virtual AbsState* getState() const {return pose->getState();}
     virtual AbsState* getStateUpdate() const = 0;
 

@@ -17,8 +17,8 @@ public:
     AbsPose();
     void addNode(Node* node){this->node = node;}
 
-    virtual AbsState* getCalibrationState() const = 0; //{return calibration;}
-    virtual AbsState* getState() const = 0; //{return current;}
+    virtual AbsState* getCalibrationState() const = 0;
+    virtual AbsState* getState() const = 0;
     virtual void update(AbsState* s) = 0;
     virtual void calibrate() = 0;
     virtual IError* error(AbsState* goal) const = 0;
