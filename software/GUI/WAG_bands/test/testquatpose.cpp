@@ -40,7 +40,7 @@ void TestQuatPose::testCalibrate(){
 
     float a2 = 30.0f;
     QQuaternion q2 = QQuaternion::fromAxisAndAngle(axis,a2);
-    QuatState* calstate = (QuatState*)(&q2);
+//    QuatState* calstate = (QuatState*)(&q2);
 //    qp->calibrate(calstate);
 
     QuatState* caladj = (QuatState*)(qp->getCalibrationState());
