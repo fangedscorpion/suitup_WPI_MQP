@@ -11,9 +11,8 @@
 #include <dirent.h>
 #include <fstream>
 #include <errno.h>
-//#include <unistd.h>
 #include <sys/stat.h>
-//#include <sys/types.h>
+#include <QPointer>
 
 #include "customWidgets/smartpushbutton.h"
 
@@ -22,9 +21,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     this->setStyleSheet("QMainWindow {background-color: #C8E6C9;}"); // grey rgb(234, 237, 237)
     // application
-    QWidget *applicationWidget = new QWidget;
+    QPointer<QWidget> applicationWidget = new QWidget;
     setCentralWidget(applicationWidget);
-    QVBoxLayout *applicationLayout = new QVBoxLayout;
+    QPointer<QVBoxLayout> applicationLayout = new QVBoxLayout;
     applicationWidget->setLayout(applicationLayout);
 
     setWindowTitle(tr("WAG bands"));
@@ -45,13 +44,6 @@ MainWindow::MainWindow(QWidget *parent) :
     std::vector<USER> users;
     users.push_back(u);
     users.push_back(u2);
-
-    // line under menubar
-    QFrame *line = new QFrame();
-    line->setObjectName(QString::fromUtf8("line"));
-    line->setGeometry(QRect(320, 150, 118, 3));
-    line->setFrameShape(QFrame::HLine);
-    line->setFrameShadow(QFrame::Sunken);
 
     // tabs
     tabs = new QTabWidget;
@@ -104,7 +96,7 @@ void MainWindow::addTab(USER u, WAGFile* w, ACTION_TYPE a) {
 
 // Menubar actions
 // TODO: finish actions
-QHBoxLayout* MainWindow::createMenuButtons() {
+QPointer<QHBoxLayout> MainWindow::createMenuButtons() {
     newBtn = new SmartPushButton("Record New Motion");
     newBtn->hide();
     openBtn = new SmartPushButton("Load Motion");
@@ -122,7 +114,7 @@ QHBoxLayout* MainWindow::createMenuButtons() {
     return menuLayout;
 }
 
-QHBoxLayout* MainWindow::createStatusBar() {
+QPointer<QHBoxLayout> MainWindow::createStatusBar() {
     QHBoxLayout *l = new QHBoxLayout;
     connectionStatus = new QLabel("7 Bands Disconnected");
     connectionStatus->setStyleSheet("QLabel { color : red; }");
@@ -139,7 +131,7 @@ QHBoxLayout* MainWindow::createStatusBar() {
 }
 
 // The first window a user sees on launch.
-QWidget* MainWindow::createUserSelectionWindow(std::vector<USER> u) {
+QPointer<QWidget> MainWindow::createUserSelectionWindow(std::vector<USER> u) {
     QWidget *w = new QWidget;
     QHBoxLayout *l = new QHBoxLayout;
     int i;

@@ -55,57 +55,57 @@ private:
     Ui::MainWindow *ui;
     void resizeEvent(QResizeEvent* r);
     void addTab(USER u, WAGFile *w, ACTION_TYPE a);
-    QWidget *getCurrentTabcontent() { return tabs->currentWidget(); }
+    QPointer<QWidget> getCurrentTabcontent() { return tabs->currentWidget(); }
 
-    QTabWidget *tabs;
-    Overlay *overlay;
+    QPointer<QTabWidget> tabs;
+    QPointer<Overlay> overlay;
 
     // fonts & styles
     QString textInputStyleWhite;
     QString textInputStyleRed;
     // menubar
-    SmartPushButton *newBtn;
-    SmartPushButton *openBtn;
-    SmartPushButton *settingsBtn;
-    QHBoxLayout* createMenuButtons();
+    QPointer<SmartPushButton> newBtn;
+    QPointer<SmartPushButton> openBtn;
+    QPointer<SmartPushButton> settingsBtn;
+    QPointer<QHBoxLayout> createMenuButtons();
     // statusbar
-    QLabel *connectionStatus;
-    QLabel *batteryStatus;
-    QHBoxLayout* createStatusBar();
+    QPointer<QLabel> connectionStatus;
+    QPointer<QLabel> batteryStatus;
+    QPointer<QHBoxLayout> createStatusBar();
     // settings overlay
-    StyledCheckBox *leftShoulder;
-    StyledCheckBox *leftUpperArm;
-    StyledCheckBox *leftLowerArm;
-    StyledCheckBox *rightShoulder;
-    StyledCheckBox *rightUpperArm;
-    StyledCheckBox *rightLowerArm;
-    SmartPushButton *connectBands;
-    OverlayWidget *settingsWidget;
+    QPointer<StyledCheckBox> leftShoulder;
+    QPointer<StyledCheckBox> leftUpperArm;
+    QPointer<StyledCheckBox> leftLowerArm;
+    QPointer<StyledCheckBox> rightShoulder;
+    QPointer<StyledCheckBox> rightUpperArm;
+    QPointer<StyledCheckBox> rightLowerArm;
+    QPointer<SmartPushButton> connectBands;
+    QPointer<OverlayWidget> settingsWidget;
     void createSettings();
     // open (from lib)
-    OverlayWidget *openFromLibWidget;
-    OverlayWidget *openWidget;
-    QTableWidget *openFromLibTable;
-    SmartPushButton *openFromLibBtn;
-    QLineEdit *openFromLibFilterBar;
-    QComboBox *openFromLibFilterOpts;
+    QPointer<OverlayWidget> openFromLibWidget;
+    QPointer<OverlayWidget> openWidget;
+    QPointer<QTableWidget> openFromLibTable;
+    QPointer<SmartPushButton> openFromLibBtn;
+    QPointer<QLineEdit> openFromLibFilterBar;
+    QPointer<QComboBox> openFromLibFilterOpts;
     void createOpenFromLib(USER u);
     void createOpenMotionOptions(USER u) ;
     // create new file
-    OverlayWidget *newMotionWidget;
-    QLineEdit *newMotionNameTextEdit;
-    QTextEdit *newMotionDescription;
-    QLineEdit *newMotionTagsTextEdit;
-    QHBoxLayout *newMotionTagsLayout;
-    SmartPushButton *addTagBtn;
-    SmartRadioButton *newMotionCompRadio;
-    QLabel *newMotionSaveLocation;
-    SmartPushButton *createNewMotionBtn;
-    SmartPushButton *newMotionBrowseBtn;
+    QPointer<OverlayWidget> newMotionWidget;
+    QPointer<QLineEdit> newMotionNameTextEdit;
+    QPointer<QTextEdit> newMotionDescription;
+    QPointer<QLineEdit> newMotionTagsTextEdit;
+    QPointer<QHBoxLayout> newMotionTagsLayout;
+    QPointer<SmartPushButton> addTagBtn;
+    QPointer<SmartRadioButton> newMotionCompRadio;
+    QPointer<QLabel> newMotionSaveLocation;
+    QPointer<SmartPushButton> createNewMotionBtn;
+    QPointer<SmartPushButton> newMotionBrowseBtn;
     void createNewMotion(USER u);
     // user options
-    OverlayWidget *userOptionsWidget;
-    QWidget* createUserSelectionWindow(std::vector<USER> u);
+    QPointer<OverlayWidget> userOptionsWidget;
+    QPointer<QWidget> createUserSelectionWindow(std::vector<USER> u);
     // move to wherever we initialize the suit object
     WifiManager *wifiMan;
     Suit *fullSuit;
