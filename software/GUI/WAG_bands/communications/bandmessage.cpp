@@ -86,6 +86,9 @@ QByteArray BandMessage::handleException(IncorrectDataLengthException *e) {
     if (intendedLength > this->getMessageLength()) {
         return QByteArray();
     }
+    if (intendedLength < 0) {
+        return QByteArray();
+    }
     // get the next packet that was lumped in with this message (intended length + 1 so we remove the new line that went with the first message)
     QByteArray extraPacketData = this->getMessageData().right(this->getMessageLength() - (intendedLength + 1));
     // shorten the data to what was actually supposed to be int heis message

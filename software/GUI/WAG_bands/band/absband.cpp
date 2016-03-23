@@ -35,7 +35,6 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
 
 void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     bool tmpLowBattery;
-    //qDebug("AbsBand: Handling message\n");
     qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType();
     switch (recvdMessage->getMessageType()) {
     case VOICE_CONTROL_LOW_BATT:
@@ -43,6 +42,7 @@ void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     case BAND_PING_LOW_BATT:
     case BAND_POSITION_UPDATE_LOW_BATT:
     case LOW_BATTERY_UPDATE:
+        qDebug()<<"AbsBand:: has low battery";
         tmpLowBattery = true;
         break;
     default:
@@ -68,7 +68,6 @@ void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
         if (pendingBandPing) {
             pendingBandPing = false;
         }
-        //qDebug("AbsBand: Recvd band ping");
         break;
     case BAND_POSITION_UPDATE_LOW_BATT:
     case BAND_POSITION_UPDATE:

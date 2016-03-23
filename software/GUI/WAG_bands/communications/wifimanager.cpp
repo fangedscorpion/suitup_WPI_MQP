@@ -186,7 +186,7 @@ void WifiManager::routeToBandObject(BandType bandWithData) {
         //qDebug()<<"WifiManager: READ " <<readData<<" from band number " <<bandWithData;
         bool keepParsing = true;
         int iterations = 1;
-        while (keepParsing) {
+        while (keepParsing && iterations < 100) {
             if (iterations > 1) {
                 qDebug()<<"WifiManager:: message parsing iterations "<<iterations;
             }
