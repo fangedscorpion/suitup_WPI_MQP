@@ -7,21 +7,26 @@
 EditingController::EditingController() : QObject()
 {
     playing = false;
-    currentFrame = 0;
+    //currentFrame = 0;
     lastFrameNum = 0;
     beginningPointer = 0;
     endPointer = 100;
     connect(this, SIGNAL(endOfTimeRange()), this, SLOT(togglePlay()));
     connect(this, SIGNAL(frameChanged(qint32)), this, SLOT(catchFrameUpdate(qint32)));
 
+    updater = new FrameUpdater();
 }
 
 void EditingController::beginningSliderChanged(int sliderVal) {
     qDebug()<<"EditingController: beginning slider val: "<<sliderVal;
     beginningPointer = sliderVal;
-    if (currentFrame < (beginningPointer*lastFrameNum/100)) {
+    /* if (currentFrame < (beginningPointer*lastFrameNum/100)) {
         currentFrame = beginningPointer *lastFrameNum/100;
         emit frameChanged(currentFrame);
+    } */
+    if (updater->getCurrentFrameNum() < (beginningPointer*lastFrameNum/100)) {
+        updater->setCurrentFrameNum(beginningPointer *lastFrameNum/100);
+        emit frameChanged(updater->getCurrentFrameNum());
     }
     emit beginningTimeChanged(beginningPointer*lastFrameNum/100);
 }
@@ -29,15 +34,20 @@ void EditingController::beginningSliderChanged(int sliderVal) {
 void EditingController::endSliderChanged(int sliderVal) {
     qDebug()<<"EditingController: end slider val: "<<sliderVal;
     endPointer = sliderVal;
-    if (currentFrame > (endPointer*lastFrameNum/100)) {
+    /* if (currentFrame > (endPointer*lastFrameNum/100)) {
         currentFrame = endPointer *lastFrameNum/100;
         emit frameChanged(currentFrame);
+    } */
+    if (updater->getCurrentFrameNum() > (endPointer*lastFrameNum/100)) {
+        updater->setCurrentFrameNum(endPointer *lastFrameNum/100);
+        emit frameChanged(updater->getCurrentFrameNum());
     }
     emit endTimeChanged(endPointer*lastFrameNum/100);
 }
 
 void EditingController::togglePlay() {
-    if (!((!playing) && (currentFrame >= (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))))) {
+    //if (!((!playing) && (currentFrame >= (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))))) {
+    if (!((!playing) && (updater->getCurrentFrameNum() >= (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))))) {
         playing = !playing;
         qDebug()<<"PlaybackController: Play status: "<<playing;
         if (playing) {
@@ -65,13 +75,18 @@ void EditingController::setActiveMotion(WAGFile *newMotion) {
 
 void EditingController::startPlaying() {
     timerId = startTimer(MILLISECONDS_PER_FRAME);
+    updater->setFrameIncrement(MILLISECONDS_PER_FRAME);
+    updater->startFrameUpdates(MILLISECONDS_PER_FRAME);
     emit startPlayback();
 }
 
 void EditingController::timerEvent(QTimerEvent *event) {
-    currentFrame += MILLISECONDS_PER_FRAME;
-    if (currentFrame < (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {
-        emit frameChanged(currentFrame);
+    //currentFrame += MILLISECONDS_PER_FRAME;
+    qint32 frame = updater->getCurrentFrameNum();
+    //if (currentFrame < (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {
+    //emit frameChanged(currentFrame);
+    if (frame < (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {
+        emit frameChanged(frame);
     }
     else {
         reachedEndOfTimeRange();
@@ -117,6 +132,7 @@ void EditingController::catchFrameUpdate(qint32 newFrame) {
 void EditingController::currentFrameChanged(int currentFrameSliderPos) {
     // may have to check here to see if frame in bounds (not sure where we want those checks)
     qDebug()<<"PlaybackController: currentFrame slider moved to "<<currentFrameSliderPos;
-    currentFrame = currentFrameSliderPos*lastFrameNum/1000;
+    //currentFrame = currentFrameSliderPos*lastFrameNum/1000;
+
     emit frameChanged(currentFrame);
 }

@@ -1,6 +1,7 @@
 #include "suit.h"
 #include <QHash>
 #include <stdexcept>
+#include "frameupdater.h"
 
 #define PING_INTERVAL 5000
 
