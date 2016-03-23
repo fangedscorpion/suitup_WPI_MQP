@@ -15,11 +15,11 @@
 class MotionViewer : public QWidget {
     Q_OBJECT
 public:
-    MotionViewer(QWidget *parent, Model* m);
+    MotionViewer(QPointer<QWidget> parent, QPointer<Model> m);
     ~MotionViewer();
 
     const QPushButton* getPlayPauseBtn() {return playPause;}
-    const SuperSlider* getSlider() {return videoSlider;}
+    const QPointer<SuperSlider> getSlider() {return videoSlider;}
 
 private:
 

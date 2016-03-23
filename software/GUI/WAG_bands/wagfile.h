@@ -27,7 +27,7 @@ public:
     WAGFile(QString filename, QString description, QString author,
             QVector<QString> in_tags, SAVE_LOCATION saveLoc);
     WAGFile(QString filename, QString description, QString author,
-            QHBoxLayout* container, SAVE_LOCATION saveLoc);
+            QPointer<QHBoxLayout> container, SAVE_LOCATION saveLoc);
     WAGFile(QString filename, bool peek = false); // Loads WAGFile content from the given filename.
     ~WAGFile();
     // getters
@@ -50,11 +50,11 @@ public:
     void updateFilename(QString newName);
     void updateDescription(QString desc) {description = desc;}
     void updateAuthor(QString auth) {author = auth;}
-    void updateTags(QHBoxLayout* container);
+    void updateTags(QPointer<QHBoxLayout> container);
     void updateSaveLocation(SAVE_LOCATION l) {saveLoc = l;}
     void updateMotionData(QHash<qint32, PositionSnapshot*> newMotionData);
     void updateWAGFile(QString filename, QString description, QString author,
-                       QHBoxLayout* container, SAVE_LOCATION saveLoc);
+                       QPointer<QHBoxLayout> container, SAVE_LOCATION saveLoc);
     void saveToFile();
 
 signals:

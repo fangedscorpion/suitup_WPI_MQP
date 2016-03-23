@@ -2,15 +2,16 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QHBoxLayout>
+#include <QPointer>
 
 ClosableLabel::ClosableLabel(QString text) {
-    QPushButton *close = new QPushButton("×");
+    QPointer<QPushButton> close = new QPushButton("×");
     close->setStyleSheet("QPushButton{font-weight: bold; border:none; } QPushButton:hover{border: 1px solid grey; border-radius: 2px;}");
     close->setFocusPolicy(Qt::NoFocus);
     close->setMaximumWidth(16);
     close->setMinimumWidth(16);
     label = text;
-    QLabel *lbl = new QLabel(text);
+    QPointer<QLabel> lbl = new QLabel(text);
     QFontMetrics fm(this->font());
     lbl->setMaximumWidth(fm.width(text));
     lbl->setMinimumWidth(fm.width(text));
@@ -19,7 +20,7 @@ ClosableLabel::ClosableLabel(QString text) {
     this->setStyleSheet("ClosableLabel{padding: 0px 0px 0px 0px; border: 1px solid gray; border-radius: 4px; background-color: #A5D6A7;}");
     this->setIndent(0);
 
-    QHBoxLayout *h = new QHBoxLayout();
+    QPointer<QHBoxLayout> h = new QHBoxLayout();
     h->setSpacing(0);
     h->addWidget(lbl, -1, Qt::AlignLeft);
     h->addSpacing(10);

@@ -3,14 +3,14 @@
 #include <QBoxLayout>
 
 
-MotionViewer::MotionViewer(QWidget *parent, Model *m) : QWidget(parent){
+MotionViewer::MotionViewer(QPointer<QWidget> parent, QPointer<Model> m) : QWidget(parent){
     playIcon = QIcon(QPixmap(":/icons/play.png"));
     pauseIcon = QIcon(QPixmap(":/icons/pause.png"));
 
     // viewer window
     viewer = new GLWidget(m);
     // video controls
-    QHBoxLayout *controls = new QHBoxLayout;
+    QPointer<QHBoxLayout> controls = new QHBoxLayout;
     playPause = new QPushButton;
     videoSlider = new SuperSlider;
     handle1Time = new QLabel("00:00.00");
@@ -23,7 +23,7 @@ MotionViewer::MotionViewer(QWidget *parent, Model *m) : QWidget(parent){
     controls->addWidget(handle2Time);
 
     // add everything
-    QVBoxLayout *viewerPane = new QVBoxLayout;
+    QPointer<QVBoxLayout> viewerPane = new QVBoxLayout;
     viewerPane->addWidget(viewer,1);
     viewerPane->addLayout(controls);
     this->setLayout(viewerPane);

@@ -17,7 +17,7 @@ class TabContent : public QWidget
     Q_OBJECT
 
 public:
-    TabContent(MainWindow* parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow, Suit *sysSuit, ModelLoader *modelLoader);
+    TabContent(QPointer<MainWindow> parent, QPointer<WAGFile> in_motion, USER u, ACTION_TYPE initiallyShow, Suit *sysSuit, ModelLoader *modelLoader);
     ~TabContent();
 
     QString getFilename() { return motion->getName();}
@@ -48,7 +48,7 @@ private:
     SmartRadioButton *playbackRadio;
     SmartRadioButton *editRadio;
     SmartRadioButton *recordRadio;
-    QWidget* createModeRadios(USER u);
+    QPointer<StyledGroupBox> createModeRadios(USER u);
     // playback options
     StyledCheckBox *playOnSuit;
     QComboBox *stepThrough;
@@ -58,8 +58,8 @@ private:
     QLabel *playbackCountdownTime;
     void playbackResetCountDownTimer();
     // playback viewer and controls
-    QWidget* createViewer(ACTION_TYPE t);
-    QWidget* createPlaybackOptionsAndControls();
+    QPointer<StyledGroupBox> createViewer(ACTION_TYPE t);
+    QPointer<StyledGroupBox> createPlaybackOptionsAndControls();
     QLabel *sfi;
     QLabel *minSpeed;
     QLabel *midSpeed;
@@ -79,8 +79,8 @@ private:
     QIcon recordIcon;
     QDoubleSpinBox *recordCountDownSpinner;
     StyledGroupBox *recordOptionsGroup;
-    QWidget* createRecordOptionsAndController();
-    QWidget* createRecordingWindow();
+    QPointer<StyledGroupBox> createRecordOptionsAndController();
+    QPointer<StyledGroupBox> createRecordingWindow();
     // recording viewer
     QLabel *recordCountdownTime;
     QLabel *recordCountDownTitleLabel;
@@ -100,7 +100,7 @@ private:
     QIcon undoIcon;
     QIcon editIcon;
     QIcon resetIcon;
-    QWidget* createEditOptionsAndControls();
+    QPointer<StyledGroupBox> createEditOptionsAndControls();
     MotionViewer* editMotionViewer;
     // file info
     OverlayWidget *motionInfoWidget;
@@ -110,7 +110,7 @@ private:
     QLineEdit* infoMotionNameTextEdit;
     QTextEdit* infoMotionDescription;
     QLineEdit* infoMotionTagsTextEdit;
-    QHBoxLayout* infoMotionTagsLayout;
+    QPointer<QHBoxLayout> infoMotionTagsLayout;
     SmartRadioButton *infoMotionCompRadio;
     QLabel *infoMotionSaveLocation;
     SmartPushButton *infoMotionBrowseBtn;

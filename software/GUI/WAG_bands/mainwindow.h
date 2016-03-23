@@ -45,7 +45,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = 0);
+    MainWindow(QPointer<QWidget> parent = 0);
     ~MainWindow();
 
     void setCurrentTabName(QString s);
@@ -54,7 +54,7 @@ public:
 private:
     Ui::MainWindow *ui;
     void resizeEvent(QResizeEvent* r);
-    void addTab(USER u, WAGFile *w, ACTION_TYPE a);
+    void addTab(USER u, QPointer<WAGFile> w, ACTION_TYPE a);
     QPointer<QWidget> getCurrentTabcontent() { return tabs->currentWidget(); }
 
     QPointer<QTabWidget> tabs;

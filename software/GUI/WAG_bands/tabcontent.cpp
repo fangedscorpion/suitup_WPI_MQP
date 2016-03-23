@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <QTimerEvent>
 
-TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow, Suit *sysSuit, ModelLoader *ml) : parent(in_parent){
+TabContent::TabContent(QPointer<MainWindow> in_parent, QPointer<WAGFile> in_motion, USER u, ACTION_TYPE initiallyShow, Suit *sysSuit, ModelLoader *ml) : parent(in_parent){
     motion = in_motion;
     user = u;
     suitObj = sysSuit;
@@ -37,8 +37,8 @@ TabContent::TabContent(MainWindow *in_parent, WAGFile* in_motion, USER u, ACTION
     }
 
     // contains both options and viewer
-    QHBoxLayout *splitPanes = new QHBoxLayout;
-    QVBoxLayout *vl = new QVBoxLayout;
+    QPointer<QHBoxLayout> splitPanes = new QHBoxLayout;
+    QPointer<QVBoxLayout> vl = new QVBoxLayout;
 
     vl->addWidget(optionsStack);
     vl->addWidget(createModeRadios(u));
@@ -124,10 +124,10 @@ void TabContent::show(ACTION_TYPE a) {
 }
 
 // The groupbox of Mode radio buttons
-QWidget* TabContent::createModeRadios(USER u) {
+QPointer<StyledGroupBox> TabContent::createModeRadios(USER u) {
     modeRadiosGroup = new StyledGroupBox("Modes");
 
-    QVBoxLayout *vl = modeRadiosGroup->getLayout();
+    QPointer<QVBoxLayout> vl = modeRadiosGroup->getLayout();
     recordRadio = new SmartRadioButton("Record Motion", RECORD);
     editRadio = new SmartRadioButton("Edit Motion", EDIT);
     playbackRadio = new SmartRadioButton("Playback Motion", PLAYBACK);
@@ -180,10 +180,10 @@ void TabContent::saveMotion() {
 }
 
 // OpenGL Motion Viewer window with video slider
-QWidget* TabContent::createViewer(ACTION_TYPE t) {
+QPointer<StyledGroupBox> TabContent::createViewer(ACTION_TYPE t) {
 
-    StyledGroupBox *v = new StyledGroupBox("temp");
-    QVBoxLayout *viewerPane = v->getLayout();
+    QPointer<StyledGroupBox> v = new StyledGroupBox("temp");
+    QPointer<QVBoxLayout> viewerPane = v->getLayout();
 
     if (t == EDIT) {
         v->setTitle("Editing: " + motion->getName());

@@ -1,7 +1,7 @@
 #include "tabcontent.h"
 
 // Playback motion options and controller
-QWidget* TabContent::createPlaybackOptionsAndControls() {
+QPointer<StyledGroupBox> TabContent::createPlaybackOptionsAndControls() {
     playbackControls = new PlaybackController(suitObj);
 
     connect(playbackControls, SIGNAL(changeSliderMax(qint32)), playbackMotionViewer, SLOT(changeSliderRange(qint32)));
@@ -11,21 +11,21 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     playbackControls->setActiveMotion(motion);
 
     playbackOptions = new StyledGroupBox("Playback Options");
-    QVBoxLayout *playbackLayout = playbackOptions->getLayout();
-    QVBoxLayout *options = new QVBoxLayout;
+    QPointer<QVBoxLayout> playbackLayout = playbackOptions->getLayout();
+    QPointer<QVBoxLayout> options = new QVBoxLayout;
     playOnSuit = new StyledCheckBox("Play on suit");
     stepThrough = new QComboBox;
     stepThrough->addItem("Step through mode");
     stepThrough->addItem("Timed mode");
     playbackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     // speed/frame slider
-    QVBoxLayout *speedSliderLayout = new QVBoxLayout;
+    QPointer<QVBoxLayout> speedSliderLayout = new QVBoxLayout;
     sfi = new QLabel("Frame Interval");
     sfi->setAlignment(Qt::AlignCenter);
     speedSliderLayout->addWidget(sfi);
     speedSlider = new QSlider(Qt::Horizontal);
     speedSliderLayout->addWidget(speedSlider);
-    QHBoxLayout *speeds = new QHBoxLayout;
+    QPointer<QHBoxLayout> speeds = new QHBoxLayout;
     minSpeed = new QLabel("8 fpm");
     speeds->addWidget(minSpeed);
     midSpeed = new QLabel("2 fpm");
@@ -36,9 +36,9 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     speeds->addWidget(maxSpeed);
     speedSliderLayout->addLayout(speeds);
     //hold last frame ticket
-    QHBoxLayout *holdLast = new QHBoxLayout;
+    QPointer<QHBoxLayout> holdLast = new QHBoxLayout;
     holdLast->addWidget(new QLabel("Hold last frame for"));
-    QDoubleSpinBox *seconds = new QDoubleSpinBox;
+    QPointer<QDoubleSpinBox> seconds = new QDoubleSpinBox;
     seconds->setMinimum(0.5);
     seconds->setMaximum(15); // consider changing
     seconds->setDecimals(1);
@@ -46,15 +46,15 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     holdLast->addWidget(seconds);
     holdLast->addWidget(new QLabel("sec(s)"), -1);
     // speed/frame slider
-    QVBoxLayout *positionToleranceLayout = new QVBoxLayout;
-    QLabel *pmt = new QLabel("Position matching tolerance");
+    QPointer<QVBoxLayout> positionToleranceLayout = new QVBoxLayout;
+    QPointer<QLabel> pmt = new QLabel("Position matching tolerance");
     pmt->setAlignment(Qt::AlignCenter);
     positionToleranceLayout->addWidget(pmt);
-    QSlider *toleranceSlider = new QSlider(Qt::Horizontal);
+    QPointer<QSlider> toleranceSlider = new QSlider(Qt::Horizontal);
     positionToleranceLayout->addWidget(toleranceSlider);
-    QHBoxLayout *tolerance = new QHBoxLayout;
+    QPointer<QHBoxLayout> tolerance = new QHBoxLayout;
     tolerance->addWidget(new QLabel("close"));
-    QLabel *rough = new QLabel("rough");
+    QPointer<QLabel> rough = new QLabel("rough");
     rough->setAlignment(Qt::AlignRight);
     tolerance->addWidget(rough);
     positionToleranceLayout->addLayout(tolerance);
@@ -67,14 +67,14 @@ QWidget* TabContent::createPlaybackOptionsAndControls() {
     playbackCountDownSpinner->setSingleStep(.5);
     playbackCountDownSpinner->setMaximumWidth(60);
     playbackCountdownTime = new QLabel();
-    QLabel *countDownPreMessage = new QLabel("Count down for");
-    QLabel *countDownMessage = new QLabel("sec(s)");
-    QHBoxLayout* h = new QHBoxLayout;
+    QPointer<QLabel> countDownPreMessage = new QLabel("Count down for");
+    QPointer<QLabel> countDownMessage = new QLabel("sec(s)");
+    QPointer<QHBoxLayout> h = new QHBoxLayout;
     h->addWidget(countDownPreMessage);
     h->addWidget(playbackCountDownSpinner);
     h->addWidget(countDownMessage);
     // voice control
-    StyledCheckBox *playbackVoiceControl = new StyledCheckBox("Voice Control");
+    QPointer<StyledCheckBox> playbackVoiceControl = new StyledCheckBox("Voice Control");
     // add everything
     options->addWidget(playOnSuit);
     options->addWidget(playbackVoiceControl);
@@ -201,7 +201,7 @@ void TabContent::playbackResetCountDownTimer() {
 
 void TabContent::catchCurrentFrameChange(int newSliderPos) {
     qDebug()<<"TabContent: New slider pos "<<newSliderPos;
-    const SuperSlider *slider = playbackMotionViewer->getSlider();
+    const QPointer<SuperSlider> slider = playbackMotionViewer->getSlider();
     //slider->setTimebarPosition(newSliderPos);
 }
 

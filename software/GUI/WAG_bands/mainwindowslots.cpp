@@ -10,34 +10,34 @@ void MainWindow::launchUserOptions(USER u) {
     std::stringstream ss;
     ss << u.getName() << " Options";
     userOptionsWidget = new OverlayWidget(this, ss.str());
-    QVBoxLayout* layout = userOptionsWidget->getLayout();
+    QPointer<QVBoxLayout> layout = userOptionsWidget->getLayout();
 
-    QLabel* lbl = new QLabel(u.getDescription());
+    QPointer<QLabel> lbl = new QLabel(u.getDescription());
     lbl->setAlignment(Qt::AlignCenter);
     layout->addWidget(lbl);
     if (u.hasAction(RECORD)) {
-        SmartPushButton* newMotion = new SmartPushButton("Record a new motion", u);
+        QPointer<SmartPushButton> newMotion = new SmartPushButton("Record a new motion", u);
         connect(newMotion, SIGNAL(released(USER)), this, SLOT(launchNewMotion(USER))); // finish this
         layout->addWidget(newMotion);
     }
     // if a user can only edit (can't playback other user's motions
     if (u.hasAction(EDIT) && !u.hasAction(PLAYBACK)) {
-        SmartPushButton* openFromLib = new SmartPushButton("Open your motion from the library", u);
-        SmartPushButton* openFromComp = new SmartPushButton("Open your motion from your computer", u);
+        QPointer<SmartPushButton> openFromLib = new SmartPushButton("Open your motion from the library", u);
+        QPointer<SmartPushButton> openFromComp = new SmartPushButton("Open your motion from your computer", u);
         connect(openFromLib, SIGNAL(released(USER)), this, SLOT(launchOpenFromLibrary(USER))); // finish this
         connect(openFromComp, SIGNAL(released(USER)), this, SLOT(launchOpenFromComputer(USER))); // finish this
         layout->addWidget(openFromLib);
         layout->addWidget(openFromComp);
     }
     if (u.hasAction(PLAYBACK)) {
-        SmartPushButton* openFromLib = new SmartPushButton("Open a motion from the library", u);
-        SmartPushButton* openFromComp = new SmartPushButton("Open a motion from your computer", u);
+        QPointer<SmartPushButton> openFromLib = new SmartPushButton("Open a motion from the library", u);
+        QPointer<SmartPushButton> openFromComp = new SmartPushButton("Open a motion from your computer", u);
         connect(openFromLib, SIGNAL(released(USER)), this, SLOT(launchOpenFromLibrary(USER))); // finish this
         connect(openFromComp, SIGNAL(released(USER)), this, SLOT(launchOpenFromComputer(USER))); // finish this
         layout->addWidget(openFromLib);
         layout->addWidget(openFromComp);
     }
-    SmartPushButton* back = new SmartPushButton("Cancel", u);
+    QPointer<SmartPushButton> back = new SmartPushButton("Cancel", u);
     layout->addWidget(back);
     layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     connect(back, SIGNAL(released()), this, SLOT(closeUserOptions()));
@@ -67,7 +67,7 @@ void MainWindow::handleUserOptions(USER u) {
     overlay->hide();
     delete userOptionsWidget;
     userOptionsWidget = NULL;
-    QWidget* w = tabs->widget(0);
+    QPointer<QWidget> w = tabs->widget(0);
     tabs->removeTab(0);
     delete w;
     tabs->setTabsClosable(true);
@@ -91,7 +91,7 @@ void MainWindow::launchOpenFromComputer(USER u) {
     if (!f.trimmed().isEmpty()) { // user clicked "open"
         if (userOptionsWidget != NULL)
             handleUserOptions(u); // setup the top bar
-        WAGFile* w = new WAGFile(f.trimmed());
+        QPointer<WAGFile> w = new WAGFile(f.trimmed());
         addTab(u, w, EDIT);
         closeOpenMotionOptions();
     }
@@ -169,7 +169,7 @@ void MainWindow::saveNewMotion(USER u) {
     } else {
         s = LIBRARY;
     }
-    WAGFile* w = new WAGFile(filename, newMotionDescription->toPlainText(),
+    QPointer<WAGFile> w = new WAGFile(filename, newMotionDescription->toPlainText(),
                              QString("author"), newMotionTagsLayout, s);
     addTab(u, w, RECORD);
     closeNewMotion();
@@ -339,7 +339,7 @@ void MainWindow::handleOpenFromLibFilter(QString) {
         bool match = false;
 
         for (int col = startCol; col < endCol; col++) {
-            QTableWidgetItem *item = openFromLibTable->item( i, col );
+            QTableWidgetItem* item = openFromLibTable->item( i, col );
             for (int j=0; j < filterByList.size(); j++) {
                 if(item->text().toLower().contains(filterByList[j]) ) {
                     match = true;
