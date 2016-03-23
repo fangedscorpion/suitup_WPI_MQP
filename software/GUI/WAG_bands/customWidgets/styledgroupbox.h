@@ -4,16 +4,17 @@
 #include <QWidget>
 #include <QLayout>
 #include <QLabel>
+#include <QPointer>
 
 class StyledGroupBox : public QWidget {
     Q_OBJECT
 public:
-    StyledGroupBox(QString title, QWidget *parent = 0);
+    StyledGroupBox(QString title, QPointer<QWidget> parent = 0);
     ~StyledGroupBox();
-    QVBoxLayout* getLayout() {return static_cast<QVBoxLayout*>(this->layout());}
+    QPointer<QVBoxLayout> getLayout() {return static_cast<QVBoxLayout*>(this->layout());}
     void setTitle(QString t);
 private:
-    QLabel *label;
+    QPointer<QLabel> label;
     QString title;
     void paintEvent(QPaintEvent *);
 };

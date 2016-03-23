@@ -23,16 +23,16 @@ public:
 
 private:
 
-    GLWidget *viewer;
-    Model *model;
-    SuperSlider *videoSlider;
+    QPointer<GLWidget> viewer;
+    QPointer<Model> model;
+    QPointer<SuperSlider> videoSlider;
     QIcon playIcon;
     QIcon pauseIcon;
 
-    QLabel *handle1Time;
-    QLabel *handle2Time;
+    QPointer<QLabel> handle1Time;
+    QPointer<QLabel> handle2Time;
 
-    QPushButton *playPause;
+    QPointer<QPushButton> playPause;
     QString convertTimeToString(qint32 convertTime);
 
 

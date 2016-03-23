@@ -52,7 +52,7 @@ public:
     void lockOnPlayOrRecord(bool suitRecording);
 
 private:
-    Ui::MainWindow *ui;
+    QPointer<Ui::MainWindow> ui;
     void resizeEvent(QResizeEvent* r);
     void addTab(USER u, QPointer<WAGFile> w, ACTION_TYPE a);
     QPointer<QWidget> getCurrentTabcontent() { return tabs->currentWidget(); }
@@ -107,8 +107,8 @@ private:
     QPointer<OverlayWidget> userOptionsWidget;
     QPointer<QWidget> createUserSelectionWindow(std::vector<USER> u);
     // move to wherever we initialize the suit object
-    WifiManager *wifiMan;
-    Suit *fullSuit;
+    QPointer<WifiManager> wifiMan;
+    QPointer<Suit> fullSuit;
     ModelLoader *modelLoader;
     QSet<BandType> connectedBands;
 

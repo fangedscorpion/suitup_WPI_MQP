@@ -4,10 +4,10 @@
 #include <QStyleOption>
 #include <QPainter>
 
-StyledGroupBox::StyledGroupBox(QString in_title, QWidget *parent) : QWidget(parent) {
+StyledGroupBox::StyledGroupBox(QString in_title, QPointer<QWidget> parent) : QWidget(parent) {
     title = in_title;
 
-    QVBoxLayout *layout = new QVBoxLayout;
+    QPointer<QVBoxLayout> layout = new QVBoxLayout;
     layout->setContentsMargins(20,20,20,20);
 
     label = new QLabel(title);
