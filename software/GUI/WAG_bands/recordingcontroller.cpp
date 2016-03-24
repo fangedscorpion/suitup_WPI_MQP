@@ -10,6 +10,11 @@ RecordingController::RecordingController(Suit *newSuitObj) : QObject()
     recording = false;
 }
 
+RecordingController::~RecordingController() {
+    // this is fine right?
+    qDeleteAll(currentMotionData);
+}
+
 void RecordingController::stopRecording() {
     // stop recording
     suitObj->startOrStopMode(STOP_RECORDING);

@@ -10,8 +10,6 @@
 #include "modelglloader.h"
 #include "model/model.h"
 
-#include <QPointer>
-
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
 class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
@@ -65,8 +63,8 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 
         QVector3D m_cam_offset;
 
-        QPointer<ModelGL> modelGL;
-        QPointer<Model> model;
+        ModelGL* modelGL;
+        Model* model;
     };
 
     #endif

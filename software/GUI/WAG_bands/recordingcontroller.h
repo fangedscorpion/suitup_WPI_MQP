@@ -10,7 +10,7 @@ class RecordingController : public QObject
     Q_OBJECT
 public:
     RecordingController(Suit *newSuitObj);
-
+    ~RecordingController();
     void stopRecording();
 
     void startRecording();

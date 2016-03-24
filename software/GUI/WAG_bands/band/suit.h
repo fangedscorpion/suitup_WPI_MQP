@@ -16,6 +16,7 @@ class Suit:public QObject
     Q_OBJECT
 public:
     Suit(WifiManager* comms, Model *suitModel);
+    ~Suit();
     AbsBand* getBand(BandType bt);
     // bool playback(vector<PositionSnapshot> motion)
     // PositionSnapshot takeSnapshot( )
@@ -26,7 +27,7 @@ public:
 
 private:
     QHash<BandType, AbsBand*> bands;
-    WifiManager *wifiMan;
+    WifiManager* wifiMan;
     ACTION_TYPE currentMode;
     bool collectingData;
     int pingTimerID;

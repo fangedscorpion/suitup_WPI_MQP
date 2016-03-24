@@ -49,10 +49,15 @@ Suit::Suit(WifiManager *comms, Model *suitModel):QObject() {
     toggleCollecting(false);
 }
 
+Suit::~Suit() {
+    qDeleteAll(bands);
+    delete activeSnapshot;
+    delete model;
+}
 
 void Suit::getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTimestamp) {
 
-    AbsBand *targetBand = getBand(band);
+    AbsBand* targetBand = getBand(band);
     // send data to target band
     qint64 elapsedTime = startTime.msecsTo(dataTimestamp);
     if ((data->getMessageType() == VOICE_CONTROL_LOW_BATT) || (data->getMessageType() == VOICE_CONTROL)) {
@@ -94,10 +99,10 @@ void Suit::toggleCollecting(bool shouldCollectData) {
     }
 }
 
-void Suit::timerEvent(QTimerEvent *event) {
-    BandMessage *newMsg = new BandMessage(COMPUTER_PING, QByteArray(""));
+void Suit::timerEvent(QTimerEvent *) {
     qDebug("Suit: Ping timer event");
-    sendToConnectedBands(newMsg);
+    BandMessage* b = new BandMessage(COMPUTER_PING, QByteArray(""));
+    sendToConnectedBands(b);
 }
 
 void Suit::sendToConnectedBands(BandMessage *sendMsg) {
@@ -105,6 +110,7 @@ void Suit::sendToConnectedBands(BandMessage *sendMsg) {
     for (int i = 0; i < allBands.length(); i++) {
         bands[allBands[i]]->sendIfConnected(sendMsg);
     }
+
 }
 
 /*
@@ -112,7 +118,7 @@ void Suit::sendToConnectedBands(BandMessage *sendMsg) {
  * only messagetypes of Start/stop recording and start/stop playback should be used
  */
 void Suit::startOrStopMode(MessageType commandType) {
-    BandMessage *newMsg;
+    BandMessage* newMsg;
     switch (commandType) {
     case START_RECORDING:
         qDebug("Suit: starting record");

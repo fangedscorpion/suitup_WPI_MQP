@@ -53,6 +53,7 @@ class WifiManager:public QObject
 public:
     // consider having wifimanager take in the suit object here
     WifiManager();
+    ~WifiManager();
     void initiateConnection(QList<BandType> bandsToConnect);
     void sendRawDataToBand(BandType destBand, QByteArray data);
     void sendRawDataToBand(BandType destBand, char * bandData);
@@ -65,13 +66,13 @@ signals:
     void connectionStatusChanged(BandType affectedBand, ConnectionStatus status);
 
 private:
-    QTcpServer *serv;
+    QTcpServer* serv;
     QHash<BandType, QTcpSocket*> socketMap;
     void routeToBandObject(BandType bandWithData);
     void startSingleConnection(BandType bandToConnect);
-    QSignalMapper *connectedMapper;
-    QSignalMapper *recvdMapper;
-    QSignalMapper *disconnectedMapper;
+    QSignalMapper* connectedMapper;
+    QSignalMapper* recvdMapper;
+    QSignalMapper* disconnectedMapper;
     QHash<BandType, QString> ipMap;
     QHash<BandType, quint16> portMap;
 

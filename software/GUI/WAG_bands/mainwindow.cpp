@@ -60,7 +60,7 @@ MainWindow::MainWindow(QPointer<QWidget> parent) :
 
     // createSettings needs fullSuit pointer to be set
     modelLoader = new ModelLoader;
-    wifiMan = new WifiManager();
+    wifiMan = new WifiManager;
     fullSuit = new Suit(wifiMan,modelLoader->load());
 
     createSettings();
@@ -78,7 +78,11 @@ MainWindow::MainWindow(QPointer<QWidget> parent) :
     connect(fullSuit, SIGNAL(bandConnectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(updateConnectionStatus(BandType,ConnectionStatus)));
 }
 
-MainWindow::~MainWindow() {}
+MainWindow::~MainWindow() {
+    delete modelLoader;
+    delete wifiMan;
+    delete fullSuit;
+}
 
 void MainWindow::closeTab(int i) {
     QPointer<QWidget> w = tabs->widget(i);

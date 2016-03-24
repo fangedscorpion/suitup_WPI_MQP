@@ -13,7 +13,7 @@ ModelLoader::ModelLoader(){
     rotateBlenderToOpenGL = QQuaternion::fromRotationMatrix(QMatrix3x3(blend2openglarr));
 }
 
-Model *ModelLoader::load() {
+Model* ModelLoader::load() {
     QVector<QSharedPointer<Node> > m_nodes;
     QStringList names = pointsJson.keys();
 
@@ -43,7 +43,8 @@ Model *ModelLoader::load() {
         m_nodes[i]->init();
     }
     rootNode->setAllRotDefault();
-    return new Model(m_nodes);
+    Model* m = new Model(m_nodes);
+    return m;
 }
 
 QSharedPointer<Node> ModelLoader::getNodeByName(QVector<QSharedPointer<Node> > nodes, QString name){

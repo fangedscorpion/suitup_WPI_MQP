@@ -48,7 +48,7 @@ public slots:
     void catchTolChange(int newTol);
 
 protected:
-    AbsPose *pose;
+    AbsPose* pose;
 private:
     BandType type;
     PositionRepresentation positionRep;

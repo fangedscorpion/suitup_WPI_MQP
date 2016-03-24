@@ -66,7 +66,7 @@ TabContent::TabContent(QPointer<MainWindow> in_parent, QPointer<WAGFile> in_moti
 }
 
 TabContent::~TabContent() {
-    delete motion;
+    delete modelLoader;
 }
 
 void TabContent::createIcons() {
