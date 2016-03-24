@@ -5,6 +5,7 @@
 #include <QPointer>
 #include "wagfile.h"
 #include "model/model.h"
+#include "frameupdater.h"
 
 class EditingController : public QObject
 {
@@ -40,13 +41,14 @@ private:
     int beginningPointer;
     int endPointer;
     QPointer<WAGFile> activeMotion;
-    qint32 currentFrame;
+    //qint32 currentFrame;
     qint32 lastFrameNum;
     int timerId;
 
     void reachedEndOfTimeRange();
     void stopPlaying();
     void startPlaying();
+    FrameUpdater* updater;
 
 protected:
     void timerEvent(QTimerEvent *event);

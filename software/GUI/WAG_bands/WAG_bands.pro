@@ -56,7 +56,8 @@ SOURCES += main.cpp\
     model/modelloader.cpp \
     customWidgets/styledgroupbox.cpp \
     customWidgets/styledcheckbox.cpp \
-    test/testwagfile.cpp
+    test/testwagfile.cpp \
+    frameupdater.cpp
 
 HEADERS  += mainwindow.h \
     positionsnapshot.h \
@@ -98,7 +99,8 @@ HEADERS  += mainwindow.h \
     model/model.h \
     model/modelloader.h \
     customWidgets/styledcheckbox.h \
-    test/testwagfile.h
+    test/testwagfile.h \
+    frameupdater.h
 
 FORMS    +=
 

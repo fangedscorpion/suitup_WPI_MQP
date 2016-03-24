@@ -6,6 +6,7 @@
 #include <QString>
 #include "band/suit.h"
 #include "model/model.h"
+#include "frameupdater.h"
 
 class PlaybackController:public QObject {
     Q_OBJECT
@@ -58,7 +59,7 @@ private:
     float frameRate;
     bool voiceControl;
     bool suitActive;
-    int currentFrame;
+   // int currentFrame;
     int timeToHoldFrameMillis;
     int stepThroughInterval; // number of frames to jump between poses to match in step through mode
     QPointer<WAGFile> activeMotion;
@@ -81,6 +82,7 @@ private:
     void stopPlaying();
     void reachedEndOfTimeRange();
     void updateFrameWithoutSuitNotification(int newFrame);
+    FrameUpdater *updater;
 };
 
 #endif // PLAYBACKCONTROLLER_H
