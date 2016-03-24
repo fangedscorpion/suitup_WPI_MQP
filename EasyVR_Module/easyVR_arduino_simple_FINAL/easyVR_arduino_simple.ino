@@ -34,6 +34,12 @@
 // Team Suit Up!
 // Modified December 2015
 
+// Modified again in March 2016 by Chas Frick
+// The code is still as aggravating to work with, but it works with the chestpiece
+// To get it to work, I had to change the bootloader for the ATMega328P so that it used the internal oscillator
+// Since we are running it at 3.3V the max clock speed is 8MHz so we have to watch out for that
+// I also had to solder an additional VCC pin on the bottom of the chestpiece on the Arduino because the package didn't connect it
+
 
 ///////////////////////////////////////
 // Communications to EasyVR
@@ -66,8 +72,7 @@ void checkMail(){
 
 
 // This is used to supress the print outs from the Arduino for testing the EasyVR
-boolean PRINT_FLUFF_FOR_TESTING = true;
-
+boolean PRINT_FLUFF_FOR_TESTING = false;
 ////////////////////////////////////////
 //EasyVR settings 
 int8_t bits = 4;
@@ -90,7 +95,7 @@ void setup() {
 
     // Setup interrupt on interrupt pin from Teesny
     // Set up comms to Teensy
-    DEBUG_SERIAL.begin(115200);
+    DEBUG_SERIAL.begin(9600);
     pinMode(ARDUINO_HAS_MAIL_PIN+2, INPUT);
     digitalWrite(ARDUINO_HAS_MAIL_PIN+2, HIGH); // Pull up resistors
     attachInterrupt(ARDUINO_HAS_MAIL_PIN, checkMail, FALLING);
@@ -305,12 +310,14 @@ void loop() {
     // Then tells the Teensy to check for serial
     if(easyvr.getWord() == 6){ // STOP
       DEBUG_SERIAL.print(F("S")); //Put stop onto output
+      delay(10);
       digitalWrite(OUTPUT_INTERRUPT_PIN, LOW);
       delay(1);
       digitalWrite(OUTPUT_INTERRUPT_PIN, HIGH);
     }
     if(easyvr.getWord() == 3){ //RUN
       DEBUG_SERIAL.print(F("R")); //Put run onto output serial
+      delay(10);
       digitalWrite(OUTPUT_INTERRUPT_PIN, LOW);
       delay(1);
       digitalWrite(OUTPUT_INTERRUPT_PIN, HIGH);

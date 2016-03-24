@@ -1,4 +1,5 @@
 #define INTERRUPT_FROM_ARDUINO 3
+#define RST_ACTIVE_LOW 2
 #define ARDUINO_SERIAL Serial1
 #define SERIAL_TO_PC Serial
 
@@ -9,7 +10,6 @@ volatile boolean heardArduino = false; //flag for testing printing
 
 void listenToArduino(){
   if(ARDUINO_SERIAL.available()){
-    receivedCmdFromArduino = ARDUINO_SERIAL.read();
     heardArduino = true;
   }
 }
@@ -18,12 +18,13 @@ void setup() {
   pinMode(INTERRUPT_FROM_ARDUINO, INPUT);
   digitalWrite(INTERRUPT_FROM_ARDUINO, HIGH); //Pull-ups
   attachInterrupt(INTERRUPT_FROM_ARDUINO, listenToArduino, FALLING);  
-  ARDUINO_SERIAL.begin(115200);
+  ARDUINO_SERIAL.begin(9600);
   SERIAL_TO_PC.begin(115200);
   heardArduino = false;
   pinMode(5,OUTPUT);
   digitalWrite(5,HIGH);
-
+  pinMode(RST_ACTIVE_LOW, OUTPUT);
+  digitalWrite(RST_ACTIVE_LOW,HIGH);
  
 
   //SPI.begin();
@@ -31,6 +32,7 @@ void setup() {
 
 void loop() {
   if(heardArduino){
+    receivedCmdFromArduino = ARDUINO_SERIAL.read();
     SERIAL_TO_PC.println(receivedCmdFromArduino);
     heardArduino = false;
   }
