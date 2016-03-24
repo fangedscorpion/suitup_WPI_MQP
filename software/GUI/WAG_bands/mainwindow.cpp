@@ -60,6 +60,7 @@ MainWindow::MainWindow(QPointer<QWidget> parent) :
 
     // createSettings needs fullSuit pointer to be set
     modelLoader = new ModelLoader;
+    calibModel = modelLoader->load();
     wifiMan = new WifiManager();
     fullSuit = new Suit(wifiMan,modelLoader->load());
 
@@ -162,25 +163,28 @@ void MainWindow::createSettings() {
     // Settings widget
     settingsWidget = new OverlayWidget(this, "Settings");
     QPointer<QVBoxLayout> settingsLayout = settingsWidget->getLayout();
-
     QPointer<QHBoxLayout> h = new QHBoxLayout;
 
+    QPointer<GLWidget> suitView = new GLWidget(fullSuit->getModel());
+    QPointer<GLWidget> calibView = new GLWidget(calibModel);
+    suitView->setMinimumSize(250,250);
+    calibView->setMinimumSize(250,250);
+    suitView->setMaximumHeight(250);
+    calibView->setMaximumHeight(250);
 
-    // Graphic of bands
-    QPointer<QGraphicsView> view = new QGraphicsView;
-    // looks like a TV screen with a shit signal back from the old antenna days...
-//     GLWidget *view = new GLWidget(fullSuit->getModel());
+    QPointer<QVBoxLayout> glwidgetLayout = new QVBoxLayout();
+    glwidgetLayout->addWidget(calibView,0,Qt::AlignTop);
+    glwidgetLayout->addWidget(suitView,0,Qt::AlignBottom);
 
-    view->setMinimumHeight(250);
-    view->setMinimumWidth(350);
     QPointer<QVBoxLayout> left = new QVBoxLayout;
     QPointer<QVBoxLayout> right = new QVBoxLayout;
     right->setAlignment(Qt::AlignLeft);
     left->setAlignment(Qt::AlignRight);
     h->addLayout(left, 1);
-    h->addWidget(view, 2);
+    h->addLayout(glwidgetLayout, 2);
     h->addLayout(right, 1);
     settingsLayout->addLayout(h);
+
     settingsLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     // checkboxes
     leftShoulder = new StyledCheckBox("Left Shoulder");
