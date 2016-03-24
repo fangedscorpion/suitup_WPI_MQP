@@ -8,13 +8,12 @@ EditingController::EditingController() : QObject()
 {
     playing = false;
     //currentFrame = 0;
+    updater = new FrameUpdater(MILLISECONDS_PER_FRAME);
     lastFrameNum = 0;
     beginningPointer = 0;
     endPointer = 100;
     connect(this, SIGNAL(endOfTimeRange()), this, SLOT(togglePlay()));
     connect(this, SIGNAL(frameChanged(qint32)), this, SLOT(catchFrameUpdate(qint32)));
-
-    updater = new FrameUpdater();
 }
 
 void EditingController::beginningSliderChanged(int sliderVal) {
@@ -75,7 +74,6 @@ void EditingController::setActiveMotion(WAGFile *newMotion) {
 
 void EditingController::startPlaying() {
     timerId = startTimer(MILLISECONDS_PER_FRAME);
-    updater->setFrameIncrement(MILLISECONDS_PER_FRAME);
     updater->startFrameUpdates(MILLISECONDS_PER_FRAME);
     emit startPlayback();
 }
@@ -95,6 +93,7 @@ void EditingController::timerEvent(QTimerEvent *event) {
 
 void EditingController::stopPlaying() {
     killTimer(timerId);
+    updater->stopFrameUpdates();
     emit stopPlayback();
 }
 
@@ -105,8 +104,10 @@ void EditingController::catchFrameNumsChanged(qint32 newLastNum) {
 }
 
 void EditingController::reachedEndOfTimeRange() {
-    currentFrame = beginningPointer*lastFrameNum/100;
-    emit frameChanged(currentFrame);
+//    currentFrame = beginningPointer*lastFrameNum/100;
+    updater->setCurrentFrameNum(beginningPointer*lastFrameNum/100);
+    emit frameChanged(updater->getCurrentFrameNum());
+    //emit frameChanged(currentFrame);
     emit endOfTimeRange();
 }
 
@@ -133,6 +134,8 @@ void EditingController::currentFrameChanged(int currentFrameSliderPos) {
     // may have to check here to see if frame in bounds (not sure where we want those checks)
     qDebug()<<"PlaybackController: currentFrame slider moved to "<<currentFrameSliderPos;
     //currentFrame = currentFrameSliderPos*lastFrameNum/1000;
+    updater->setCurrentFrameNum(currentFrameSliderPos*lastFrameNum/1000);
 
-    emit frameChanged(currentFrame);
+    //emit frameChanged(currentFrame);
+    emit frameChanged(updater->getCurrentFrameNum());
 }

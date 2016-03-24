@@ -12,17 +12,18 @@
 #define DEFAULT_TOLERANCE 1 // how are we expressing tolerance
 #define RECORDING_RATE 60 // 60 fps
 
-#define MILLISECONDS_PER_FRAME 75
+#define MILLISECONDS_PER_FRAME 25
 
 
 PlaybackController::PlaybackController(Suit *newSuitObj) {
     suitObj = newSuitObj;
+    updater = new FrameUpdater(MILLISECONDS_PER_FRAME);
     playing = false;
     stepThrough = false;
     frameRate = 1;
     voiceControl = false;
     suitActive = false;
-    currentFrame = 0;
+    //currentFrame = 0;
     timeToHoldFrameMillis = HOLD_POSE_DEFAULT_MILLIS;
     stepThroughInterval = STEP_THROUGH_INTERVAL_DEFAULT;
     stepThroughTolerance = DEFAULT_TOLERANCE; // how are we expressing this
@@ -36,11 +37,8 @@ PlaybackController::PlaybackController(Suit *newSuitObj) {
 }
 
 void PlaybackController::togglePlay() {
-    //qDebug("PlaybackController: Toggling play");
-    //qDebug()<<"PlaybackController: Last frame num: "<<lastFrameNum;
-    //qDebug()<<"PlaybackController: Current frame num: "<<currentFrame;
-    qDebug()<<"Trying to toggle play";
-    if (!((!playing) && (currentFrame >= (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))))) {
+    //if (!((!playing) && (currentFrame >= (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))))) {
+    if (!((!playing) && (updater->getCurrentFrameNum() >= (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))))) {
         playing = !playing;
         qDebug()<<"PlaybackController: Play status: "<<playing;
         if (playing) {
@@ -138,15 +136,19 @@ void PlaybackController::startPlaying() {
         emit startPlayback();
         if (suitActive) {
             qDebug("PlaybackController: start stepping through");
-            emit frameChanged(currentFrame);
+            //emit frameChanged(currentFrame);
+            emit frameChanged(updater->getCurrentFrameNum());
         } else {
             qDebug("PlaybackController: starting timer");
             // TODO: should probably slow this down
             int tempFrameRate = MILLISECONDS_PER_FRAME*stepThroughInterval;
+            updater->startFrameUpdates(tempFrameRate);
             timerId = startTimer(tempFrameRate);
         }
     } else {
-        timerId = startTimer(MILLISECONDS_PER_FRAME/frameRate);
+        int tmpFrameRate = MILLISECONDS_PER_FRAME/frameRate;
+        updater->startFrameUpdates(tmpFrameRate);
+        timerId = startTimer(tmpFrameRate);
         emit startPlayback();
     }
 }
@@ -157,10 +159,13 @@ void PlaybackController::timerEvent(QTimerEvent *event) {
         // TO DO remove once we can actually do position met
         emit metPosition();
     } else {
-        currentFrame += MILLISECONDS_PER_FRAME;
-        if (currentFrame < (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {
+        //currentFrame += MILLISECONDS_PER_FRAME;
+        //        if (currentFrame < (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {
+        if (updater->getCurrentFrameNum()< (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {
+
             //qDebug()<<"PlaybackController: Current frame "<<currentFrame;
-            emit frameChanged(currentFrame);
+            emit frameChanged(updater->getCurrentFrameNum());
+            // emit frameChanged(currentFrame);
         }
         else {
             reachedEndOfTimeRange();
@@ -170,10 +175,13 @@ void PlaybackController::timerEvent(QTimerEvent *event) {
 
 void PlaybackController::positionMet() {
     if (playing && stepThrough) {
-        currentFrame += stepThroughInterval*MILLISECONDS_PER_FRAME;
-        if (currentFrame < std::min(lastFrameNum, lastFrameNum*endPointer/100)) {
-            qDebug()<<"PlaybackController: Position met Frame: "<<currentFrame;
-            emit frameChanged(currentFrame);
+        //currentFrame += stepThroughInterval*MILLISECONDS_PER_FRAME;
+        updater->setCurrentFrameNum(stepThroughInterval*MILLISECONDS_PER_FRAME);
+        //if (currentFrame < std::min(lastFrameNum, lastFrameNum*endPointer/100)) {
+        qint32 frame = updater->getCurrentFrameNum();
+        if (frame < std::min(lastFrameNum, lastFrameNum*endPointer/100)) {
+            qDebug()<<"PlaybackController: Position met Frame: "<<frame;
+            emit frameChanged(frame);
         }
         else {
             qDebug()<<"PlaybackController: Reached end of time range in step through mode";
@@ -187,10 +195,12 @@ void PlaybackController::stopPlaying() {
         if (suitActive) {
 
         } else {
+            updater->stopFrameUpdates();
             killTimer(timerId);
         }
     }
     else {
+        updater->stopFrameUpdates();
         killTimer(timerId);
     }
     emit stopPlayback();
@@ -208,7 +218,8 @@ void PlaybackController::setActiveMotion(WAGFile *newMotion) {
 void PlaybackController::beginningSliderChanged(int sliderVal) {
     qDebug()<<"PlaybackController: beginning slider val: "<<sliderVal;
     beginningPointer = sliderVal;
-    if (currentFrame < (beginningPointer*lastFrameNum/100)) {
+    //if (currentFrame < (beginningPointer*lastFrameNum/100)) {
+    if (updater->getCurrentFrameNum() < (beginningPointer*lastFrameNum/100)) {
         updateFrameWithoutSuitNotification(beginningPointer *lastFrameNum/100);
     }
     emit beginningTimeChanged(beginningPointer*lastFrameNum/100);
@@ -216,7 +227,8 @@ void PlaybackController::beginningSliderChanged(int sliderVal) {
 
 void PlaybackController::endSliderChanged(int sliderVal) {
     endPointer = sliderVal;
-    if (currentFrame > (endPointer*lastFrameNum/100)) {
+//    if (currentFrame > (endPointer*lastFrameNum/100)) {
+    if (updater->getCurrentFrameNum() > (endPointer*lastFrameNum/100)) {
         updateFrameWithoutSuitNotification(endPointer *lastFrameNum/100);
     }
     emit endTimeChanged(endPointer*lastFrameNum/100);
@@ -276,8 +288,10 @@ void PlaybackController::updateFrameWithoutSuitNotification(int newFrame) {
     // if the suit is on, don't send this last frame update (which resets to the beginning)
     toggleSuitActive(false);
     // reset the pointer and the visualization to the beginning
-    currentFrame = newFrame;
-    emit frameChanged(currentFrame);
+    //currentFrame = newFrame;
+    updater->setCurrentFrameNum(newFrame);
+    //emit frameChanged(currentFrame);
+    emit frameChanged(newFrame);
     // restore the suit's active state to what it was before we manually toggled it
     toggleSuitActive(actualSuitActive);
 }
