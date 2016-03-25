@@ -109,7 +109,8 @@ private:
     // move to wherever we initialize the suit object
     QPointer<WifiManager> wifiMan;
     QPointer<Suit> fullSuit;
-    ModelLoader *modelLoader;
+    ModelLoader* modelLoader;
+    Model* calibModel;
     QSet<BandType> connectedBands;
 
 private slots:

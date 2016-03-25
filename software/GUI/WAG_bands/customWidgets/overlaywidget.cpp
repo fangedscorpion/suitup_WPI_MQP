@@ -16,7 +16,8 @@ OverlayWidget::OverlayWidget(QPointer<QWidget> parent, std::string title) : Over
     // drop shadow
     QPointer<CustomShadowEffect> bodyShadow = new CustomShadowEffect();
     this->setAutoFillBackground(true);
-    this->setGraphicsEffect(bodyShadow);
+//    this->setGraphicsEffect(bodyShadow);
+    // sorry samee :(
 
     // set background
     QPalette Pal(palette());

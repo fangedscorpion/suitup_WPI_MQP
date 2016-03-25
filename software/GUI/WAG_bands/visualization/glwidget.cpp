@@ -80,7 +80,6 @@ void  GLWidget::createShaderProgram(QString vShader, QString fShader) {
     }
 }
 
-
 void GLWidget::createBuffers(){
     if(m_error)
         return;
@@ -252,3 +251,9 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event) {
     m_lastPos = event->pos();
 }
 
+void GLWidget::mouseDoubleClickEvent(QMouseEvent *event){
+    if (event->buttons() & Qt::LeftButton) {
+        setXRotation(0);
+        setZRotation(0);
+    }
+}
