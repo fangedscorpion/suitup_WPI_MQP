@@ -11,6 +11,7 @@ RecordingController::RecordingController(Suit *newSuitObj) : QObject()
     connect(suitObj, SIGNAL(voiceControlCommandReady(MessageType)), this, SLOT(catchVoiceControlCommand(MessageType)));
     voiceEnabled = false;
     recording = false;
+    maxRecordedTime = 0;
 }
 
 void RecordingController::stopRecording() {
