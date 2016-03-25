@@ -49,6 +49,7 @@ Suit::Suit(WifiManager *comms, Model *suitModel):QObject() {
 
     collectingData = true;
     toggleCollecting(false);
+    activeSnapshot = new PositionSnapshot();
 }
 
 
