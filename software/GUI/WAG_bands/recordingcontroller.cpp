@@ -1,5 +1,8 @@
 #include "recordingcontroller.h"
 
+// max file length is 10 minutes (give 1 extra second so we make sure we satisfy 10 minute requirement)
+#define MAX_FILE_LENGTH 601000
+
 // takes in record commands (stop/start recording), talks to suit,
 RecordingController::RecordingController(Suit *newSuitObj) : QObject()
 {
@@ -22,6 +25,7 @@ void RecordingController::stopRecording() {
 
 void RecordingController::startRecording() {
     recording = true;
+    maxRecordedTime = 0;
     currentMotionData.clear();
     suitObj->startOrStopMode(START_RECORDING);
 }
@@ -29,8 +33,13 @@ void RecordingController::startRecording() {
 void RecordingController::addSnapshotToMotion(qint32 snapTime, PositionSnapshot *snap) {
     if (recording) {
         qint32 newSnapTime = snapTime;
-        //qDebug()<<"RecordingController: at time "<<newSnapTime<<" Adding snpashot to motion data";
+        maxRecordedTime = snapTime;
         currentMotionData[newSnapTime] = snap;
+        // if the file is longer than 10 minutes, stop recording
+        if (newSnapTime > MAX_FILE_LENGTH) {
+            // stop recording (use voice control signalling protocol)
+            emit vcChangeState(false);
+        }
     }
 }
 
@@ -55,4 +64,6 @@ void RecordingController::toggleVoiceControl(bool voiceControlOn) {
     qDebug()<<"RecordingController:Voice control enabled: "<<voiceEnabled;
 }
 
-
+qint32 RecordingController::getMaxRecordedTime() {
+    return maxRecordedTime;
+}

@@ -16,12 +16,15 @@ public:
     void startRecording();
 
     void setActiveMotion(WAGFile *motion);
+
+    qint32 getMaxRecordedTime();
 private:
     QPointer<Suit> suitObj;
     QHash<qint32, PositionSnapshot *> currentMotionData;
     QPointer<WAGFile> activeMotion;
     bool voiceEnabled;
     bool recording;
+    qint32 maxRecordedTime;
 
 signals:
     void vcChangeState(bool);

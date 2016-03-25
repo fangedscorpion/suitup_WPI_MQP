@@ -254,9 +254,6 @@ void Suit::propagateLowBatteryUpdate(BandType chargeBand, bool hasLowBattery) {
 
 
 void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime) {
-    //qDebug()<<"Suit: adding pose to snapshot from band "<<bandForPose;
-    qDebug()<<newPose;
-
     /* AbsState *copiedPose = (AbsState*) malloc(newPose->objectSize()); // not sure if can do this for abs
     // TODO figure out where to free this
     *copiedPose = *newPose; */
