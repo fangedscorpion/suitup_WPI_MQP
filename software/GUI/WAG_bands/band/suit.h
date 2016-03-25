@@ -23,6 +23,8 @@ public:
     // map<enum, BandCalibration> getCalibrationData( )
     void startOrStopMode(MessageType);
     Model* getModel() {return model;}
+    void startCollecting() {toggleCollecting(true);}
+    void stopCollecting() {toggleCollecting(false);}
 
 private:
     QHash<BandType, AbsBand*> bands;

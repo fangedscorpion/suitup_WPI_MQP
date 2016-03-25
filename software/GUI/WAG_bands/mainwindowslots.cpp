@@ -139,12 +139,14 @@ void MainWindow::closeOpenMotionOptions() {
 
 // opens the settings window
 void MainWindow::launchSettings(){
+    fullSuit->startCollecting();
     overlay->show();
     settingsWidget->show();
 }
 
 // closes the settings window
 void MainWindow::closeSettings() {
+    fullSuit->stopCollecting();
     overlay->hide();
     settingsWidget->hide();
     // TODO: show message box if user has not calibrated the suit yet
