@@ -3,7 +3,7 @@
 #include <QFile>
 
 #include <fstream>
-#include <QPointer>
+#include <QSharedPointer>
 
 QDataStream & operator>>(QDataStream & str, SAVE_LOCATION & v) {
     unsigned int loc = 0;
@@ -39,7 +39,7 @@ WAGFile::WAGFile(QString filename, QString in_description, QString author,
 }
 
 WAGFile::WAGFile(QString filename, QString in_description, QString author,
-                 QPointer<QHBoxLayout> container, SAVE_LOCATION saveLoc) : description(in_description),
+                 QHBoxLayout* container, SAVE_LOCATION saveLoc) : description(in_description),
                  author(author), saveLoc(saveLoc) {
     tags = QVector<QString>();
     updateTags(container);
@@ -65,7 +65,7 @@ void WAGFile::updateFilename(QString newName) {
     setFilenameAndPath(newName);
 }
 
-void WAGFile::updateTags(QPointer<QHBoxLayout> c) {
+void WAGFile::updateTags(QHBoxLayout* c) {
     tags.clear();
     int i;
     for (i=0; i < c->count(); i++) {
@@ -74,7 +74,7 @@ void WAGFile::updateTags(QPointer<QHBoxLayout> c) {
 }
 
 void WAGFile::updateWAGFile(QString name, QString desc, QString auth,
-                   QPointer<QHBoxLayout> cont, SAVE_LOCATION saveLoc) {
+                   QHBoxLayout* cont, SAVE_LOCATION saveLoc) {
     updateFilename(name);
     updateDescription(desc);
     updateAuthor(auth);

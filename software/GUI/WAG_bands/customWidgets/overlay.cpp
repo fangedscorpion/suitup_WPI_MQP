@@ -1,6 +1,6 @@
 #include "overlay.h"
 
-Overlay::Overlay(QPointer<QWidget> parent) : QWidget(parent) {
+Overlay::Overlay(QWidget *parent) : QWidget(parent) {
     this->setStyleSheet("Overlay { background-color: #C8E6C9; border-radius: 4px; border: 1px solid gray;}");
 }
 

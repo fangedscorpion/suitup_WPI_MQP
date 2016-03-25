@@ -6,14 +6,14 @@
 #include <QPushButton>
 #include <QPalette>
 #include <QPoint>
-#include <QPointer>
+#include <QSharedPointer>
 #include <QStyleOption>
 
 
 class Overlay : public QWidget {
     Q_OBJECT
 public:
-    Overlay(QPointer<QWidget> parent);
+    Overlay(QWidget* parent);
     ~Overlay();
     void paintEvent(QPaintEvent *);
     void makeSemiTransparent();

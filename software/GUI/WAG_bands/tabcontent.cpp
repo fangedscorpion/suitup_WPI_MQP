@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <QTimerEvent>
 
-TabContent::TabContent(QPointer<MainWindow> in_parent, QPointer<WAGFile> in_motion, USER u, ACTION_TYPE initiallyShow, Suit *sysSuit, ModelLoader *ml) : parent(in_parent){
+TabContent::TabContent(MainWindow* in_parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow, Suit *sysSuit, ModelLoader *ml) : parent(in_parent){
     motion = in_motion;
     user = u;
     suitObj = sysSuit;
@@ -37,8 +37,8 @@ TabContent::TabContent(QPointer<MainWindow> in_parent, QPointer<WAGFile> in_moti
     }
 
     // contains both options and viewer
-    QPointer<QHBoxLayout> splitPanes = new QHBoxLayout;
-    QPointer<QVBoxLayout> vl = new QVBoxLayout;
+    QHBoxLayout* splitPanes = new QHBoxLayout;
+    QVBoxLayout* vl = new QVBoxLayout;
 
     vl->addWidget(optionsStack);
     vl->addWidget(createModeRadios(u));
@@ -67,6 +67,15 @@ TabContent::TabContent(QPointer<MainWindow> in_parent, QPointer<WAGFile> in_moti
 
 TabContent::~TabContent() {
     delete motion;
+    if (playbackControls != 0)
+        delete playbackControls;
+    if (editingControls != 0)
+        delete editingControls;
+    if (recordingControls != 0)
+        delete recordingControls;
+
+    if (playbackMotionViewer != 0)
+        delete playbackMotionViewer;
 }
 
 void TabContent::createIcons() {
@@ -124,10 +133,10 @@ void TabContent::show(ACTION_TYPE a) {
 }
 
 // The groupbox of Mode radio buttons
-QPointer<StyledGroupBox> TabContent::createModeRadios(USER u) {
+StyledGroupBox* TabContent::createModeRadios(USER u) {
     modeRadiosGroup = new StyledGroupBox("Modes");
 
-    QPointer<QVBoxLayout> vl = modeRadiosGroup->getLayout();
+    QVBoxLayout* vl = modeRadiosGroup->getLayout();
     recordRadio = new SmartRadioButton("Record Motion", RECORD);
     editRadio = new SmartRadioButton("Edit Motion", EDIT);
     playbackRadio = new SmartRadioButton("Playback Motion", PLAYBACK);
@@ -180,10 +189,10 @@ void TabContent::saveMotion() {
 }
 
 // OpenGL Motion Viewer window with video slider
-QPointer<StyledGroupBox> TabContent::createViewer(ACTION_TYPE t) {
+StyledGroupBox* TabContent::createViewer(ACTION_TYPE t) {
 
-    QPointer<StyledGroupBox> v = new StyledGroupBox("temp");
-    QPointer<QVBoxLayout> viewerPane = v->getLayout();
+    StyledGroupBox* v = new StyledGroupBox("temp");
+    QVBoxLayout* viewerPane = v->getLayout();
 
     if (t == EDIT) {
         v->setTitle("Editing: " + motion->getName());

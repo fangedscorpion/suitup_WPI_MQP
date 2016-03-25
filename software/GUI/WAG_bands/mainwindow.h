@@ -45,70 +45,70 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QPointer<QWidget> parent = 0);
+    MainWindow(QWidget* parent = 0);
     ~MainWindow();
 
     void setCurrentTabName(QString s);
     void lockOnPlayOrRecord(bool suitRecording);
 
 private:
-    QPointer<Ui::MainWindow> ui;
+    Ui::MainWindow* ui;
     void resizeEvent(QResizeEvent* r);
-    void addTab(USER u, QPointer<WAGFile> w, ACTION_TYPE a);
-    QPointer<QWidget> getCurrentTabcontent() { return tabs->currentWidget(); }
+    void addTab(USER u, WAGFile* w, ACTION_TYPE a);
+    QWidget* getCurrentTabcontent() { return tabs->currentWidget(); }
 
-    QPointer<QTabWidget> tabs;
-    QPointer<Overlay> overlay;
+    QTabWidget* tabs;
+    Overlay* overlay;
 
     // fonts & styles
     QString textInputStyleWhite;
     QString textInputStyleRed;
     // menubar
-    QPointer<SmartPushButton> newBtn;
-    QPointer<SmartPushButton> openBtn;
-    QPointer<SmartPushButton> settingsBtn;
-    QPointer<QHBoxLayout> createMenuButtons();
+    SmartPushButton* newBtn;
+    SmartPushButton* openBtn;
+    SmartPushButton* settingsBtn;
+    QHBoxLayout* createMenuButtons();
     // statusbar
-    QPointer<QLabel> connectionStatus;
-    QPointer<QLabel> batteryStatus;
-    QPointer<QHBoxLayout> createStatusBar();
+    QLabel* connectionStatus;
+    QLabel* batteryStatus;
+    QHBoxLayout* createStatusBar();
     // settings overlay
-    QPointer<StyledCheckBox> leftShoulder;
-    QPointer<StyledCheckBox> leftUpperArm;
-    QPointer<StyledCheckBox> leftLowerArm;
-    QPointer<StyledCheckBox> rightShoulder;
-    QPointer<StyledCheckBox> rightUpperArm;
-    QPointer<StyledCheckBox> rightLowerArm;
-    QPointer<SmartPushButton> connectBands;
-    QPointer<OverlayWidget> settingsWidget;
+    StyledCheckBox* leftShoulder;
+    StyledCheckBox* leftUpperArm;
+    StyledCheckBox* leftLowerArm;
+    StyledCheckBox* rightShoulder;
+    StyledCheckBox* rightUpperArm;
+    StyledCheckBox* rightLowerArm;
+    SmartPushButton* connectBands;
+    OverlayWidget* settingsWidget;
     void createSettings();
     // open (from lib)
-    QPointer<OverlayWidget> openFromLibWidget;
-    QPointer<OverlayWidget> openWidget;
-    QPointer<QTableWidget> openFromLibTable;
-    QPointer<SmartPushButton> openFromLibBtn;
-    QPointer<QLineEdit> openFromLibFilterBar;
-    QPointer<QComboBox> openFromLibFilterOpts;
+    OverlayWidget* openFromLibWidget;
+    OverlayWidget* openWidget;
+    QTableWidget* openFromLibTable;
+    SmartPushButton* openFromLibBtn;
+    QLineEdit* openFromLibFilterBar;
+    QComboBox* openFromLibFilterOpts;
     void createOpenFromLib(USER u);
     void createOpenMotionOptions(USER u) ;
     // create new file
-    QPointer<OverlayWidget> newMotionWidget;
-    QPointer<QLineEdit> newMotionNameTextEdit;
-    QPointer<QTextEdit> newMotionDescription;
-    QPointer<QLineEdit> newMotionTagsTextEdit;
-    QPointer<QHBoxLayout> newMotionTagsLayout;
-    QPointer<SmartPushButton> addTagBtn;
-    QPointer<SmartRadioButton> newMotionCompRadio;
-    QPointer<QLabel> newMotionSaveLocation;
-    QPointer<SmartPushButton> createNewMotionBtn;
-    QPointer<SmartPushButton> newMotionBrowseBtn;
+    OverlayWidget* newMotionWidget;
+    QLineEdit* newMotionNameTextEdit;
+    QTextEdit* newMotionDescription;
+    QLineEdit* newMotionTagsTextEdit;
+    QHBoxLayout* newMotionTagsLayout;
+    SmartPushButton* addTagBtn;
+    SmartRadioButton* newMotionCompRadio;
+    QLabel* newMotionSaveLocation;
+    SmartPushButton* createNewMotionBtn;
+    SmartPushButton* newMotionBrowseBtn;
     void createNewMotion(USER u);
     // user options
-    QPointer<OverlayWidget> userOptionsWidget;
-    QPointer<QWidget> createUserSelectionWindow(std::vector<USER> u);
+    OverlayWidget* userOptionsWidget;
+    QWidget* createUserSelectionWindow(std::vector<USER> u);
     // move to wherever we initialize the suit object
-    QPointer<WifiManager> wifiMan;
-    QPointer<Suit> fullSuit;
+    WifiManager* wifiMan;
+    Suit* fullSuit;
     ModelLoader *modelLoader;
     QSet<BandType> connectedBands;
 

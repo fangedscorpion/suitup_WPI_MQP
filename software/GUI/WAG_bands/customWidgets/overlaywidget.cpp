@@ -1,12 +1,12 @@
 #include "overlaywidget.h"
 #include <QFont>
 
-OverlayWidget::OverlayWidget(QPointer<QWidget> parent, std::string title) : Overlay(parent){
+OverlayWidget::OverlayWidget(QWidget* parent, std::string title) : Overlay(parent){
 
     // title and layout
     QFont titleFont = QFont( "Arial", 15, QFont::Bold);
-    QPointer<QVBoxLayout> layout = new QVBoxLayout;
-    QPointer<QLabel> lbl = new QLabel(title.c_str());
+    QVBoxLayout* layout = new QVBoxLayout;
+    QLabel* lbl = new QLabel(title.c_str());
     lbl->setFont(titleFont);
     lbl->setAlignment(Qt::AlignCenter);
     layout->addWidget(lbl);
@@ -14,7 +14,7 @@ OverlayWidget::OverlayWidget(QPointer<QWidget> parent, std::string title) : Over
     this->setLayout(layout);
 
     // drop shadow
-    QPointer<CustomShadowEffect> bodyShadow = new CustomShadowEffect();
+    CustomShadowEffect* bodyShadow = new CustomShadowEffect();
     this->setAutoFillBackground(true);
     this->setGraphicsEffect(bodyShadow);
 
@@ -37,6 +37,6 @@ void OverlayWidget::resizeWindow() {
     Overlay::resizeWindow();
 }
 
-QPointer<QVBoxLayout> OverlayWidget::getLayout() {
+QVBoxLayout* OverlayWidget::getLayout() {
     return static_cast<QVBoxLayout*>(this->layout());
 }

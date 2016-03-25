@@ -3,7 +3,7 @@
 
 // Edit Recording options and controller
 // TODO: add edit file name and description in here
-QPointer<StyledGroupBox> TabContent::createEditOptionsAndControls() {
+StyledGroupBox* TabContent::createEditOptionsAndControls() {
     editingControls = new EditingController();
     editingControls->setActiveMotion(motion);
 
@@ -11,21 +11,21 @@ QPointer<StyledGroupBox> TabContent::createEditOptionsAndControls() {
     connect(editingControls, SIGNAL(goToSnapshot(PositionSnapshot*)), editModel, SLOT(updatePose(PositionSnapshot*)));
 
     // Edit recording options
-    QPointer<StyledGroupBox> editOptions = new StyledGroupBox("Editing Options");
+    StyledGroupBox* editOptions = new StyledGroupBox("Editing Options");
 
-    QPointer<SmartPushButton> undoBtn = new SmartPushButton("Undo");
+    SmartPushButton* undoBtn = new SmartPushButton("Undo");
     undoBtn->setIcon(undoIcon);
     undoBtn->setIconSize(QSize(51,25));
     undoBtn->setEnabled(false);
-    QPointer<SmartPushButton> cropBtn = new SmartPushButton("Crop");
+    SmartPushButton* cropBtn = new SmartPushButton("Crop");
     cropBtn->setIcon(cropIcon);
     cropBtn->setIconSize(QSize(49,25));
-    QPointer<SmartPushButton> MotionInfoBtn = new SmartPushButton("Edit Motion Information");
+    SmartPushButton* MotionInfoBtn = new SmartPushButton("Edit Motion Information");
     MotionInfoBtn->setIcon(editIcon);
     MotionInfoBtn->setIconSize(QSize(62,25));
-    QPointer<QVBoxLayout> recordPlaybackLayout = editOptions->getLayout();
+    QVBoxLayout* recordPlaybackLayout = editOptions->getLayout();
     recordPlaybackLayout->setContentsMargins(20,20,20,20);
-    QPointer<QVBoxLayout> buttons = new QVBoxLayout;
+    QVBoxLayout* buttons = new QVBoxLayout;
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     buttons->addWidget(undoBtn);
     buttons->addWidget(cropBtn);
@@ -50,15 +50,15 @@ QPointer<StyledGroupBox> TabContent::createEditOptionsAndControls() {
 
 void TabContent::createMotionInfoWindow() {
     motionInfoWidget = new OverlayWidget(this, "Edit Motion Information");
-    QPointer<QVBoxLayout> layout = motionInfoWidget->getLayout();
+    QVBoxLayout* layout = motionInfoWidget->getLayout();
 
     int inputMaxWidth = 780;
     int labelMaxWidth = 110;
 
     // Filename: textbox
-    QPointer<QHBoxLayout> f = new QHBoxLayout;
+    QHBoxLayout* f = new QHBoxLayout;
     f->setAlignment(Qt::AlignLeft);
-    QPointer<QLabel> l1 = new QLabel("Name: ");
+    QLabel* l1 = new QLabel("Name: ");
     l1->setMinimumWidth(labelMaxWidth);
     l1->setMaximumWidth(labelMaxWidth);
     l1->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
@@ -71,9 +71,9 @@ void TabContent::createMotionInfoWindow() {
     f->addWidget(infoMotionNameTextEdit);
 
     // description
-    QPointer<QHBoxLayout> d = new QHBoxLayout;
+    QHBoxLayout* d = new QHBoxLayout;
     d->setAlignment(Qt::AlignLeft);
-    QPointer<QLabel> l2 = new QLabel("Description: ");
+    QLabel* l2 = new QLabel("Description: ");
     l2->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     l2->setMinimumWidth(labelMaxWidth);
     l2->setMaximumWidth(labelMaxWidth);
@@ -86,9 +86,9 @@ void TabContent::createMotionInfoWindow() {
     d->addWidget(infoMotionDescription);
 
     // tags input
-    QPointer<QHBoxLayout> t = new QHBoxLayout;
+    QHBoxLayout* t = new QHBoxLayout;
     t->setAlignment(Qt::AlignLeft);
-    QPointer<QLabel> l3 = new QLabel("Keywords: ");
+    QLabel* l3 = new QLabel("Keywords: ");
     l3->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     l3->setMinimumWidth(labelMaxWidth);
     l3->setMaximumWidth(labelMaxWidth);
@@ -100,35 +100,35 @@ void TabContent::createMotionInfoWindow() {
     addTagBtn = new SmartPushButton("Add Keyword");
     addTagBtn->setEnabled(false);
     // tags list
-    QPointer<QHBoxLayout> t2 = new QHBoxLayout;
-    QPointer<QLabel> spacer = new QLabel;
+    QHBoxLayout* t2 = new QHBoxLayout;
+    QLabel* spacer = new QLabel;
     spacer->setMinimumWidth(labelMaxWidth);
     spacer->setMaximumWidth(labelMaxWidth);
     t2->addWidget(spacer, -1);
     t2->addWidget(addTagBtn);
     infoMotionTagsLayout = new QHBoxLayout();
     // populate the motion tags
-    QVector<ClosableLabel* > c = motion->getTagLabels();
+    QVector<ClosableLabel*> c = motion->getTagLabels();
     for (int i=0; i < c.size(); i++)
         infoMotionTagsLayout->addWidget(c[i]);
     t2->addLayout(infoMotionTagsLayout, 2);
     t2->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
-    QPointer<QLabel> spacer2 = new QLabel;
+    QLabel* spacer2 = new QLabel;
     spacer2->setMinimumWidth(65);
     spacer2->setMaximumWidth(65);
     t2->addWidget(spacer2);
 
     // save to options
-    QPointer<QHBoxLayout> s = new QHBoxLayout;
+    QHBoxLayout* s = new QHBoxLayout;
     s->setAlignment(Qt::AlignLeft);
-    QPointer<QLabel> l5 = new QLabel("Save to: ");
+    QLabel* l5 = new QLabel("Save to: ");
     l5->setMinimumWidth(labelMaxWidth);
     l5->setMaximumWidth(labelMaxWidth);
     l5->setAlignment(Qt::AlignRight);
     s->addWidget(l5, -1);
-    QPointer<QVBoxLayout> s1 = new QVBoxLayout;
-    QPointer<SmartRadioButton> infoMotionLibRadio = new SmartRadioButton("Motion Library");
-    QPointer<QHBoxLayout> r = new QHBoxLayout;
+    QVBoxLayout* s1 = new QVBoxLayout;
+    SmartRadioButton* infoMotionLibRadio = new SmartRadioButton("Motion Library");
+    QHBoxLayout* r = new QHBoxLayout;
     r->setContentsMargins(0,0,0,0);
     infoMotionCompRadio = new SmartRadioButton("Local Computer");
     infoMotionBrowseBtn = new SmartPushButton("Select Save Location");
@@ -151,9 +151,9 @@ void TabContent::createMotionInfoWindow() {
     s1->addLayout(r);
     s->addLayout(s1);
 
-    QPointer<QHBoxLayout> btns = new QHBoxLayout;
+    QHBoxLayout* btns = new QHBoxLayout;
     saveMotionInfoBtn = new SmartPushButton("Save");
-    QPointer<SmartPushButton> cancel = new SmartPushButton("Cancel");
+    SmartPushButton* cancel = new SmartPushButton("Cancel");
     btns->addWidget(cancel);
     btns->addWidget(saveMotionInfoBtn);
     layout->addLayout(f);

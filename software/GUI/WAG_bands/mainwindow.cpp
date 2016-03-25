@@ -12,18 +12,18 @@
 #include <fstream>
 #include <errno.h>
 #include <sys/stat.h>
-#include <QPointer>
+#include <QSharedPointer>
 
 #include "customWidgets/smartpushbutton.h"
 
-MainWindow::MainWindow(QPointer<QWidget> parent) :
+MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
     this->setStyleSheet("QMainWindow {background-color: #C8E6C9;}"); // grey rgb(234, 237, 237)
     // application
-    QPointer<QWidget> applicationWidget = new QWidget;
+    QWidget* applicationWidget(new QWidget());
     setCentralWidget(applicationWidget);
-    QPointer<QVBoxLayout> applicationLayout = new QVBoxLayout;
+    QVBoxLayout* applicationLayout(new QVBoxLayout());
     applicationWidget->setLayout(applicationLayout);
 
     setWindowTitle(tr("WAG bands"));
@@ -46,7 +46,7 @@ MainWindow::MainWindow(QPointer<QWidget> parent) :
     users.push_back(u2);
 
     // tabs
-    tabs = new QTabWidget;
+    tabs = new QTabWidget();
     tabs->setStyleSheet("QTabBar::tab:!selected {background-color: rgb(82, 190, 128); border: 1px solid grey; border-radius: 2px; padding: 0 5px 0 5px;} ");
     tabs->setFocusPolicy(Qt::NoFocus);
     tabs->addTab(createUserSelectionWindow(users), "User selection");
@@ -81,7 +81,7 @@ MainWindow::MainWindow(QPointer<QWidget> parent) :
 MainWindow::~MainWindow() {}
 
 void MainWindow::closeTab(int i) {
-    QPointer<QWidget> w = tabs->widget(i);
+    QWidget* w = tabs->widget(i);
     tabs->removeTab(i);
     delete w;
 }
@@ -90,8 +90,8 @@ void MainWindow::setCurrentTabName(QString s) {
     tabs->setTabText(tabs->currentIndex(), s);
 }
 
-void MainWindow::addTab(USER u, QPointer<WAGFile> w, ACTION_TYPE a) {
-    QPointer<TabContent> tab = new TabContent(this, w, u, a, fullSuit, modelLoader);
+void MainWindow::addTab(USER u, WAGFile* w, ACTION_TYPE a) {
+    TabContent* tab = new TabContent(this, w, u, a, fullSuit, modelLoader);
     tabs->addTab(tab, tab->getFilename());
     tabs->setCurrentIndex(tabs->indexOf(tab));
     tabs->clearFocus();
@@ -99,17 +99,17 @@ void MainWindow::addTab(USER u, QPointer<WAGFile> w, ACTION_TYPE a) {
 
 // Menubar actions
 // TODO: finish actions
-QPointer<QHBoxLayout> MainWindow::createMenuButtons() {
+QHBoxLayout* MainWindow::createMenuButtons() {
     newBtn = new SmartPushButton("Record New Motion");
     newBtn->hide();
     openBtn = new SmartPushButton("Load Motion");
     openBtn->hide();
     settingsBtn = new SmartPushButton("Settings");
     connect(settingsBtn, SIGNAL(released()), this, SLOT(launchSettings()));
-    QPointer<SmartPushButton> helpBtn = new SmartPushButton("Help");
+    SmartPushButton* helpBtn = new SmartPushButton("Help");
     //    connect(helpAct, SIGNAL(triggered()), this, SLOT(help()));
 
-    QPointer<QHBoxLayout> menuLayout = new QHBoxLayout;
+    QHBoxLayout* menuLayout = new QHBoxLayout;
     menuLayout->addWidget(newBtn);
     menuLayout->addWidget(openBtn);
     menuLayout->addWidget(settingsBtn);
@@ -117,8 +117,8 @@ QPointer<QHBoxLayout> MainWindow::createMenuButtons() {
     return menuLayout;
 }
 
-QPointer<QHBoxLayout> MainWindow::createStatusBar() {
-    QPointer<QHBoxLayout> l = new QHBoxLayout;
+QHBoxLayout* MainWindow::createStatusBar() {
+    QHBoxLayout* l = new QHBoxLayout;
     connectionStatus = new QLabel("7 Bands Disconnected");
     connectionStatus->setStyleSheet("QLabel { color : red; }");
     // make settingsBtn red.
@@ -134,16 +134,16 @@ QPointer<QHBoxLayout> MainWindow::createStatusBar() {
 }
 
 // The first window a user sees on launch.
-QPointer<QWidget> MainWindow::createUserSelectionWindow(std::vector<USER> u) {
-    QPointer<QWidget> w = new QWidget;
-    QPointer<QHBoxLayout> l = new QHBoxLayout;
+QWidget* MainWindow::createUserSelectionWindow(std::vector<USER> u) {
+    QWidget* w = new QWidget;
+    QHBoxLayout* l = new QHBoxLayout;
     int i;
     for(i=0; i < (int)u.size(); i++) {
-        QPointer<SmartPushButton> btn = new SmartPushButton(u[i].getName(), u[i]);
-        QPointer<QLabel> lbl = new QLabel(u[i].getDescription());
+        SmartPushButton* btn = new SmartPushButton(u[i].getName(), u[i]);
+        QLabel* lbl = new QLabel(u[i].getDescription());
         lbl->setWordWrap(true);
         lbl->setAlignment(Qt::AlignCenter);
-        QPointer<QVBoxLayout> v = new QVBoxLayout;
+        QVBoxLayout* v = new QVBoxLayout;
         v->addWidget(btn);
         v->addWidget(lbl);
         v->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -161,20 +161,20 @@ QPointer<QWidget> MainWindow::createUserSelectionWindow(std::vector<USER> u) {
 void MainWindow::createSettings() {
     // Settings widget
     settingsWidget = new OverlayWidget(this, "Settings");
-    QPointer<QVBoxLayout> settingsLayout = settingsWidget->getLayout();
+    QVBoxLayout* settingsLayout = settingsWidget->getLayout();
 
-    QPointer<QHBoxLayout> h = new QHBoxLayout;
+    QHBoxLayout* h = new QHBoxLayout;
 
 
     // Graphic of bands
-    QPointer<QGraphicsView> view = new QGraphicsView;
+    QGraphicsView* view = new QGraphicsView;
     // looks like a TV screen with a shit signal back from the old antenna days...
 //     GLWidget *view = new GLWidget(fullSuit->getModel());
 
     view->setMinimumHeight(250);
     view->setMinimumWidth(350);
-    QPointer<QVBoxLayout> left = new QVBoxLayout;
-    QPointer<QVBoxLayout> right = new QVBoxLayout;
+    QVBoxLayout* left = new QVBoxLayout;
+    QVBoxLayout* right = new QVBoxLayout;
     right->setAlignment(Qt::AlignLeft);
     left->setAlignment(Qt::AlignRight);
     h->addLayout(left, 1);
@@ -202,12 +202,12 @@ void MainWindow::createSettings() {
     right->addWidget(rightUpperArm);
     right->addWidget(rightLowerArm);
     // Buttons on bottom of settings
-    QPointer<QHBoxLayout> settingsButtons = new QHBoxLayout;
-    QPointer<SmartPushButton> calibrate = new SmartPushButton("Calibrate Bands");
+    QHBoxLayout* settingsButtons = new QHBoxLayout;
+    SmartPushButton* calibrate = new SmartPushButton("Calibrate Bands");
     calibrate->setRed(true);
     connectBands = new SmartPushButton("Connect Bands");
     connectBands->setRed(true);
-    QPointer<SmartPushButton> done = new SmartPushButton("Done");
+    SmartPushButton* done = new SmartPushButton("Done");
     settingsButtons->addWidget(connectBands);
     settingsButtons->addWidget(calibrate);
     settingsButtons->addWidget(done);
@@ -228,15 +228,15 @@ void MainWindow::createSettings() {
 // create new file overlay
 void MainWindow::createNewMotion(USER u) {
     newMotionWidget = new OverlayWidget(this, "New Motion");
-    QPointer<QVBoxLayout> layout = newMotionWidget->getLayout();
+    QVBoxLayout* layout = newMotionWidget->getLayout();
 
     int inputMaxWidth = 800;
     int labelMaxWidth = 110;
 
     // Filename: textbox
-    QPointer<QHBoxLayout> f = new QHBoxLayout;
+    QHBoxLayout* f = new QHBoxLayout;
     f->setAlignment(Qt::AlignLeft);
-    QPointer<QLabel> l1 = new QLabel("Name: ");
+    QLabel* l1 = new QLabel("Name: ");
     l1->setMinimumWidth(labelMaxWidth);
     l1->setMaximumWidth(labelMaxWidth);
     l1->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
@@ -247,9 +247,9 @@ void MainWindow::createNewMotion(USER u) {
     f->addWidget(newMotionNameTextEdit);
 
     // description
-    QPointer<QHBoxLayout> d = new QHBoxLayout;
+    QHBoxLayout* d = new QHBoxLayout;
     d->setAlignment(Qt::AlignLeft);
-    QPointer<QLabel> l2 = new QLabel("Description: ");
+    QLabel* l2 = new QLabel("Description: ");
     l2->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     l2->setMinimumWidth(labelMaxWidth);
     l2->setMaximumWidth(labelMaxWidth);
@@ -262,9 +262,9 @@ void MainWindow::createNewMotion(USER u) {
     d->addWidget(newMotionDescription);
 
     // tags input
-    QPointer<QHBoxLayout> t = new QHBoxLayout;
+    QHBoxLayout* t = new QHBoxLayout;
     t->setAlignment(Qt::AlignLeft);
-    QPointer<QLabel> l3 = new QLabel("Keywords: ");
+    QLabel* l3 = new QLabel("Keywords: ");
     l3->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     l3->setMinimumWidth(labelMaxWidth);
     l3->setMaximumWidth(labelMaxWidth);
@@ -277,8 +277,8 @@ void MainWindow::createNewMotion(USER u) {
     addTagBtn->setEnabled(false);
     addTagBtn->setMaximumWidth(110);
     // tags list
-    QPointer<QHBoxLayout> t2 = new QHBoxLayout;
-    QPointer<QLabel> spacer = new QLabel;
+    QHBoxLayout* t2 = new QHBoxLayout;
+    QLabel* spacer = new QLabel;
     spacer->setMinimumWidth(labelMaxWidth);
     spacer->setMaximumWidth(labelMaxWidth);
     t2->addWidget(spacer, -1);
@@ -286,23 +286,23 @@ void MainWindow::createNewMotion(USER u) {
     newMotionTagsLayout = new QHBoxLayout();
     t2->addLayout(newMotionTagsLayout, 2);
     t2->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
-    QPointer<QLabel> spacer2 = new QLabel;
+    QLabel* spacer2 = new QLabel;
     spacer2->setMinimumWidth(60);
     spacer2->setMaximumWidth(60);
     t2->addWidget(spacer2);
 
     // save to options
-    QPointer<QHBoxLayout> s = new QHBoxLayout;
+    QHBoxLayout* s = new QHBoxLayout;
     s->setAlignment(Qt::AlignLeft);
-    QPointer<QLabel> l5 = new QLabel("Save to: ");
+    QLabel* l5 = new QLabel("Save to: ");
     l5->setMinimumWidth(labelMaxWidth);
     l5->setMaximumWidth(labelMaxWidth);
     l5->setAlignment(Qt::AlignRight);
     s->addWidget(l5, -1);
-    QPointer<QVBoxLayout> s1 = new QVBoxLayout;
-    QPointer<SmartRadioButton> newMotionLibRadio = new SmartRadioButton("Motion Library");
+    QVBoxLayout* s1 = new QVBoxLayout;
+    SmartRadioButton* newMotionLibRadio = new SmartRadioButton("Motion Library");
     newMotionLibRadio->setChecked(true);
-    QPointer<QHBoxLayout> c = new QHBoxLayout;
+    QHBoxLayout* c = new QHBoxLayout;
     c->setContentsMargins(0,0,0,0);
     newMotionCompRadio = new SmartRadioButton("Local Computer");
     newMotionBrowseBtn = new SmartPushButton("Select Save Location");
@@ -315,10 +315,10 @@ void MainWindow::createNewMotion(USER u) {
     s1->addLayout(c);
     s->addLayout(s1);
 
-    QPointer<QHBoxLayout> btns = new QHBoxLayout;
+    QHBoxLayout* btns = new QHBoxLayout;
     createNewMotionBtn = new SmartPushButton("Create", u);
     createNewMotionBtn->setEnabled(false);
-    QPointer<SmartPushButton> cancel = new SmartPushButton("Cancel");
+    SmartPushButton* cancel = new SmartPushButton("Cancel");
     btns->addWidget(cancel);
     btns->addWidget(createNewMotionBtn);
     layout->setAlignment(Qt::AlignLeft);
@@ -353,10 +353,10 @@ void MainWindow::createNewMotion(USER u) {
 
 void MainWindow::createOpenMotionOptions(USER u) {
     openWidget = new OverlayWidget(this, "Load Motion");
-    QPointer<QVBoxLayout> layout = openWidget->getLayout();
-    QPointer<SmartPushButton> openLib = new SmartPushButton("Load Motion From Library", u);
-    QPointer<SmartPushButton> openComp = new SmartPushButton("Load Motion From Computer", u);
-    QPointer<SmartPushButton> cancel = new SmartPushButton("Cancel");
+    QVBoxLayout* layout = openWidget->getLayout();
+    SmartPushButton* openLib = new SmartPushButton("Load Motion From Library", u);
+    SmartPushButton* openComp = new SmartPushButton("Load Motion From Computer", u);
+    SmartPushButton* cancel = new SmartPushButton("Cancel");
 
     layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     layout->addWidget(openLib);
@@ -372,10 +372,10 @@ void MainWindow::createOpenMotionOptions(USER u) {
 // Open from library overlay
 void MainWindow::createOpenFromLib(USER u) {
     openFromLibWidget = new OverlayWidget(this, "Load Motion From Library");
-    QPointer<QVBoxLayout> layout = openFromLibWidget->getLayout();
+    QVBoxLayout* layout = openFromLibWidget->getLayout();
 
     // Search bar
-    QPointer<QHBoxLayout> s = new QHBoxLayout;
+    QHBoxLayout* s = new QHBoxLayout;
     s->setAlignment(Qt::AlignRight);
     // choose a category
     openFromLibFilterOpts = new QComboBox;
@@ -395,7 +395,7 @@ void MainWindow::createOpenFromLib(USER u) {
     layout->addSpacing(15);
 
     // get motion lib directory
-    std::vector<QPointer<WAGFile> > libraryFiles;
+    std::vector<WAGFile*> libraryFiles;
     std::ifstream myfile;
     myfile.open ("../WAG_bands/.WAGConfig");
     std::string library;
@@ -431,7 +431,7 @@ void MainWindow::createOpenFromLib(USER u) {
     openFromLibTable->verticalHeader()->setVisible(false);
     QStringList tableHeader;
     tableHeader << "Name" << "Description" << "Keywords";
-    QPointer<QHeaderView> headerView = new QHeaderView(Qt::Horizontal, openFromLibTable);
+    QHeaderView* headerView = new QHeaderView(Qt::Horizontal, openFromLibTable);
     openFromLibTable->setHorizontalHeader(headerView);
     headerView->setSectionResizeMode(QHeaderView::Stretch);
     headerView->setStyleSheet("QHeaderView { font-weight: bold; }");
@@ -442,7 +442,7 @@ void MainWindow::createOpenFromLib(USER u) {
     openFromLibTable->setSelectionMode(QAbstractItemView::SingleSelection);
 
     for (int i=0; i < (int)libraryFiles.size(); i++) {
-        QPointer<WAGFile> curFile = libraryFiles[i];
+        WAGFile* curFile = libraryFiles[i];
         openFromLibTable->setItem(i,0, new QTableWidgetItem(curFile->getName()));
         openFromLibTable->setItem(i,1, new QTableWidgetItem(curFile->getDescription()));
         openFromLibTable->setItem(i,2, new QTableWidgetItem(curFile->getTagString()));
@@ -455,10 +455,10 @@ void MainWindow::createOpenFromLib(USER u) {
     layout->addWidget(openFromLibTable);
     layout->addSpacing(20);
 
-    QPointer<QHBoxLayout> btns = new QHBoxLayout;
+    QHBoxLayout* btns = new QHBoxLayout;
     openFromLibBtn = new SmartPushButton("Load", u);
     openFromLibBtn->setEnabled(false);
-    QPointer<SmartPushButton> cancel = new SmartPushButton("Cancel");
+    SmartPushButton* cancel = new SmartPushButton("Cancel");
     btns->addWidget(cancel);
     btns->addWidget(openFromLibBtn);
     layout->addLayout(btns);
@@ -516,7 +516,7 @@ void MainWindow::indicateConnectionStatusChange(BandType changedBand, Connection
 
 void MainWindow::catchTabChange(int tabIndex) {
     //
-    QPointer<QWidget> current = tabs->currentWidget();
+    QWidget* current = tabs->currentWidget();
 
 
     // there's probably a better way to do this, but I can't think of one right now

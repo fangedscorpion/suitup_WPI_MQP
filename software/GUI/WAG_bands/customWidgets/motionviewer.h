@@ -15,24 +15,24 @@
 class MotionViewer : public QWidget {
     Q_OBJECT
 public:
-    MotionViewer(QPointer<QWidget> parent, QPointer<Model> m);
+    MotionViewer(QWidget* parent, Model* m);
     ~MotionViewer();
 
     const QPushButton* getPlayPauseBtn() {return playPause;}
-    const QPointer<SuperSlider> getSlider() {return videoSlider;}
+    const SuperSlider* getSlider() {return videoSlider;}
 
 private:
 
-    QPointer<GLWidget> viewer;
-    QPointer<Model> model;
-    QPointer<SuperSlider> videoSlider;
+    GLWidget* viewer;
+    Model* model;
+    SuperSlider* videoSlider;
     QIcon playIcon;
     QIcon pauseIcon;
 
-    QPointer<QLabel> handle1Time;
-    QPointer<QLabel> handle2Time;
+    QLabel* handle1Time;
+    QLabel* handle2Time;
 
-    QPointer<QPushButton> playPause;
+    QPushButton* playPause;
     QString convertTimeToString(qint32 convertTime);
 
 

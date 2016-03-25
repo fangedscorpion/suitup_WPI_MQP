@@ -1,6 +1,6 @@
 #include "tabcontent.h"
 
-QPointer<StyledGroupBox> TabContent::createRecordOptionsAndController() {
+StyledGroupBox* TabContent::createRecordOptionsAndController() {
     recordingControls = new RecordingController(suitObj);
     recordingControls->setActiveMotion(motion);
     recordOptionsGroup = new StyledGroupBox("Recording Options");
@@ -12,16 +12,16 @@ QPointer<StyledGroupBox> TabContent::createRecordOptionsAndController() {
     recordCountDownSpinner->setDecimals(1);
     recordCountDownSpinner->setSingleStep(.5);
     recordCountDownSpinner->setMaximumWidth(60);
-    QPointer<QLabel> countDownPreMessage = new QLabel("Count down for");
-    QPointer<QLabel> countDownMessage = new QLabel("sec(s)");
-    QPointer<QHBoxLayout> h = new QHBoxLayout;
+    QLabel* countDownPreMessage = new QLabel("Count down for");
+    QLabel* countDownMessage = new QLabel("sec(s)");
+    QHBoxLayout* h = new QHBoxLayout;
     h->addWidget(countDownPreMessage);
     h->addWidget(recordCountDownSpinner);
     h->addWidget(countDownMessage);
 
-    QPointer<StyledCheckBox> recordVoiceControl = new StyledCheckBox("Voice Control");
+    StyledCheckBox* recordVoiceControl = new StyledCheckBox("Voice Control");
 
-    QPointer<QVBoxLayout> options = recordOptionsGroup->getLayout();
+    QVBoxLayout* options = recordOptionsGroup->getLayout();
     options->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     options->addWidget(recordVoiceControl);
     options->addLayout(h);
@@ -34,7 +34,7 @@ QPointer<StyledGroupBox> TabContent::createRecordOptionsAndController() {
 }
 
 // The right panel under record motion
-QPointer<StyledGroupBox> TabContent::createRecordingWindow() {
+StyledGroupBox* TabContent::createRecordingWindow() {
     recordGroup = new StyledGroupBox("Recording: " + motion->getName());
     // viewer window
 
@@ -57,7 +57,7 @@ QPointer<StyledGroupBox> TabContent::createRecordingWindow() {
     recordStopwatchMinutesTitleLabel->setFont(bigFont);
     recordStopwatchMinutesTitleLabel->setAlignment(Qt::AlignBottom);
     recordStopwatchMinutesTitleLabel->hide();
-    QPointer<QHBoxLayout> h = new QHBoxLayout;
+    QHBoxLayout* h = new QHBoxLayout;
     h->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     h->addWidget(recordCountdownTime);
     h->addWidget(recordCountdownSecondsTitleLabel);
@@ -74,9 +74,9 @@ QPointer<StyledGroupBox> TabContent::createRecordingWindow() {
     recordButton->setIconSize(QSize(35,15));
 
     // viewer side of the GUI
-    QPointer<QVBoxLayout> info = recordGroup->getLayout();
+    QVBoxLayout* info = recordGroup->getLayout();
     info->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
-    QPointer<QHBoxLayout> b = new QHBoxLayout;
+    QHBoxLayout* b = new QHBoxLayout;
     b->addWidget(resetButton, 1);
     b->addWidget(recordButton, 2);
     info->addLayout(b);

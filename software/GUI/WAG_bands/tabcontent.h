@@ -17,7 +17,7 @@ class TabContent : public QWidget
     Q_OBJECT
 
 public:
-    TabContent(QPointer<MainWindow> parent, QPointer<WAGFile> in_motion, USER u, ACTION_TYPE initiallyShow, Suit *sysSuit, ModelLoader *modelLoader);
+    TabContent(MainWindow* parent, WAGFile* in_motion, USER u, ACTION_TYPE initiallyShow, Suit *sysSuit, ModelLoader *modelLoader);
     ~TabContent();
 
     QString getFilename() { return motion->getName();}
@@ -25,74 +25,74 @@ public:
     ACTION_TYPE getCurrentMode();
 
 private:
-    QPointer<MainWindow> parent;
+    MainWindow* parent;
     USER user;
-    QPointer<WAGFile> motion;
-    QPointer<QStackedWidget> optionsStack;
+    WAGFile* motion;
+    QStackedWidget* optionsStack;
     ACTION_TYPE currentMode;
     void createIcons();
     void resizeEvent(QResizeEvent* r);
-    QPointer<Overlay> overlay;
+    Overlay* overlay;
     void updateMotion();
-    QPointer<Suit> suitObj;
+    Suit* suitObj;
     ModelLoader* modelLoader;
 
     // models
-    QPointer<Model> playbackModel;
-    QPointer<Model> editModel;
+    Model* playbackModel;
+    Model* editModel;
     // fonts & styles
     QString textInputStyleWhite;
     QString textInputStyleRed;
     // mode radio buttons
-    QPointer<StyledGroupBox> modeRadiosGroup;
-    QPointer<SmartRadioButton> playbackRadio;
-    QPointer<SmartRadioButton> editRadio;
-    QPointer<SmartRadioButton> recordRadio;
-    QPointer<StyledGroupBox> createModeRadios(USER u);
+    StyledGroupBox* modeRadiosGroup;
+    SmartRadioButton* playbackRadio;
+    SmartRadioButton* editRadio;
+    SmartRadioButton* recordRadio;
+    StyledGroupBox* createModeRadios(USER u);
     // playback options
-    QPointer<StyledCheckBox> playOnSuit;
-    QPointer<QComboBox> stepThrough;
-    QPointer<QSlider> speedSlider;
-    QPointer<StyledGroupBox> playbackOptions;
-    QPointer<QTimer> playbackCountdownTimer;
-    QPointer<QLabel> playbackCountdownTime;
+    StyledCheckBox* playOnSuit;
+    QComboBox* stepThrough;
+    QSlider* speedSlider;
+    StyledGroupBox* playbackOptions;
+    QTimer* playbackCountdownTimer;
+    QLabel* playbackCountdownTime;
     void playbackResetCountDownTimer();
     // playback viewer and controls
-    QPointer<StyledGroupBox> createViewer(ACTION_TYPE t);
-    QPointer<StyledGroupBox> createPlaybackOptionsAndControls();
-    QPointer<QLabel> sfi;
-    QPointer<QLabel> minSpeed;
-    QPointer<QLabel> midSpeed;
-    QPointer<QLabel> maxSpeed;
-    QPointer<QStackedWidget> viewerStack;
-    QPointer<MotionViewer> playbackMotionViewer;
-    QPointer<PlaybackController> playbackControls;
-    QPointer<EditingController> editingControls;
-    QPointer<RecordingController> recordingControls;
-    QPointer<QDoubleSpinBox> playbackCountDownSpinner;
+    StyledGroupBox* createViewer(ACTION_TYPE t);
+    StyledGroupBox* createPlaybackOptionsAndControls();
+    QLabel* sfi;
+    QLabel* minSpeed;
+    QLabel* midSpeed;
+    QLabel* maxSpeed;
+    QStackedWidget* viewerStack;
+    MotionViewer* playbackMotionViewer;
+    PlaybackController* playbackControls;
+    EditingController* editingControls;
+    RecordingController* recordingControls;
+    QDoubleSpinBox* playbackCountDownSpinner;
     void lockOnPlayback(bool playing);
     void switchStepThroughMode(bool steppingThrough);
     void initializePlaybackSettings();
     // recording
-    QPointer<StyledGroupBox> recordGroup;
+    StyledGroupBox* recordGroup;
     QIcon stopIcon;
     QIcon recordIcon;
-    QPointer<QDoubleSpinBox> recordCountDownSpinner;
-    QPointer<StyledGroupBox> recordOptionsGroup;
-    QPointer<StyledGroupBox> createRecordOptionsAndController();
-    QPointer<StyledGroupBox> createRecordingWindow();
+    QDoubleSpinBox* recordCountDownSpinner;
+    StyledGroupBox* recordOptionsGroup;
+    StyledGroupBox* createRecordOptionsAndController();
+    StyledGroupBox* createRecordingWindow();
     // recording viewer
-    QPointer<QLabel> recordCountdownTime;
-    QPointer<QLabel> recordCountDownTitleLabel;
-    QPointer<QLabel> recordStopwatchTitleLabel;
-    QPointer<QLabel> recordCountdownSecondsTitleLabel;
-    QPointer<QLabel> recordStopwatchMinutesTitleLabel;
-    QPointer<SmartPushButton> recordButton;
-    QPointer<SmartPushButton> resetButton;
+    QLabel* recordCountdownTime;
+    QLabel* recordCountDownTitleLabel;
+    QLabel* recordStopwatchTitleLabel;
+    QLabel* recordCountdownSecondsTitleLabel;
+    QLabel* recordStopwatchMinutesTitleLabel;
+    SmartPushButton* recordButton;
+    SmartPushButton* resetButton;
     void recordResetCountDownTimer();
     void handleRecordTimeCounter();
-    QPointer<QTimer> recordCountdownTimer;
-    QPointer<QTimer> recordStopwatchTimer;
+    QTimer* recordCountdownTimer;
+    QTimer* recordStopwatchTimer;
     int msecs;
     // edit
     QIcon cropIcon;
@@ -100,20 +100,20 @@ private:
     QIcon undoIcon;
     QIcon editIcon;
     QIcon resetIcon;
-    QPointer<StyledGroupBox> createEditOptionsAndControls();
-    QPointer<MotionViewer> editMotionViewer;
+    StyledGroupBox* createEditOptionsAndControls();
+    MotionViewer* editMotionViewer;
     // file info
-    QPointer<OverlayWidget> motionInfoWidget;
+    OverlayWidget* motionInfoWidget;
     void createMotionInfoWindow();
-    QPointer<SmartPushButton> addTagBtn;
-    QPointer<SmartPushButton> saveMotionInfoBtn;
-    QPointer<QLineEdit> infoMotionNameTextEdit;
-    QPointer<QTextEdit> infoMotionDescription;
-    QPointer<QLineEdit> infoMotionTagsTextEdit;
-    QPointer<QHBoxLayout> infoMotionTagsLayout;
-    QPointer<SmartRadioButton> infoMotionCompRadio;
-    QPointer<QLabel> infoMotionSaveLocation;
-    QPointer<SmartPushButton> infoMotionBrowseBtn;
+    SmartPushButton* addTagBtn;
+    SmartPushButton* saveMotionInfoBtn;
+    QLineEdit* infoMotionNameTextEdit;
+    QTextEdit* infoMotionDescription;
+    QLineEdit* infoMotionTagsTextEdit;
+    QHBoxLayout* infoMotionTagsLayout;
+    SmartRadioButton* infoMotionCompRadio;
+    QLabel* infoMotionSaveLocation;
+    SmartPushButton* infoMotionBrowseBtn;
     void changeRecordingState(bool shouldRecord);
 
 public slots:

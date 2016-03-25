@@ -2,7 +2,7 @@
 #define EDITINGCONTROLLER_H
 
 #include <QObject>
-#include <QPointer>
+#include <QSharedPointer>
 #include "wagfile.h"
 #include "model/model.h"
 #include "frameupdater.h"
@@ -40,7 +40,7 @@ private:
     bool playing;
     int beginningPointer;
     int endPointer;
-    QPointer<WAGFile> activeMotion;
+    WAGFile* activeMotion;
     //qint32 currentFrame;
     qint32 lastFrameNum;
     int timerId;

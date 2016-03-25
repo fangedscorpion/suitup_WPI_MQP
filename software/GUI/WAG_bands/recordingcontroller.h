@@ -17,9 +17,9 @@ public:
 
     void setActiveMotion(WAGFile *motion);
 private:
-    QPointer<Suit> suitObj;
+    Suit* suitObj;
     QHash<qint32, PositionSnapshot *> currentMotionData;
-    QPointer<WAGFile> activeMotion;
+    WAGFile* activeMotion;
     bool voiceEnabled;
     bool recording;
 

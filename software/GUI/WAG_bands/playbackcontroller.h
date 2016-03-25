@@ -62,13 +62,13 @@ private:
    // int currentFrame;
     int timeToHoldFrameMillis;
     int stepThroughInterval; // number of frames to jump between poses to match in step through mode
-    QPointer<WAGFile> activeMotion;
+    WAGFile* activeMotion;
     //Time timeToHoldFinalFrame;
     //Time stepThroughInterval;
     int stepThroughTolerance;
     int timerId;
     int lastFrameNum;
-    QPointer<Suit> suitObj;
+    Suit* suitObj;
 
     // These indicate the positions of the beginning and ending sliders on the super slider
     // should be 0 - 100

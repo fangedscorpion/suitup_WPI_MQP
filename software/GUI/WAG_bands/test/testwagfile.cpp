@@ -6,7 +6,7 @@ void TestWAGFile::testSetters() {
     QString newFilepath = "/path/to/new/" + newName;
     QString newDesc = "this is a new desc";
     QString newAuth = "I am the new auth";
-    QPointer<QHBoxLayout> newTags = new QHBoxLayout;
+    QHBoxLayout* newTags = new QHBoxLayout;
     newTags->addWidget(new ClosableLabel("new"));
     newTags->addWidget(new ClosableLabel("ya"));
     QVector<QString> newTagStrings;

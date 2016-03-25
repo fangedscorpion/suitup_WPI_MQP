@@ -3,7 +3,7 @@
 #include "qslider.h"
 #include "qlabel.h"
 #include <stdio.h>
-#include <QPointer>
+#include <QSharedPointer>
 
 /*
 *  Super sick nasty awesome double handled slider!
@@ -124,7 +124,7 @@ public:
   int value();
 
   /** Store the parent as a slider so that you don't have to keep casting it  */
-  QPointer<SuperSlider> parent;
+  SuperSlider* parent;
 
   /** Store a bool to determine if the alternate handle has been activated  */
   bool handleActivated;
@@ -136,6 +136,6 @@ public slots:
   /** Sets the value of the handle with respect to the slider */
   void setValue(int newVal);
 private:
-  QPointer<SliderEventFilter> filter;
+  SliderEventFilter* filter;
   int timebarVal;
 };
