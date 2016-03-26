@@ -72,26 +72,28 @@ void loop() {
         DEBUG_SERIAL.print("\t\tLOW_BATT_START: ");
         esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_START_LOW_BATT);
       }
-      else if(voiceTestCnt == 200){//PURELY FOR TESTING!!!!!
+      if(voiceTestCnt == 200){//PURELY FOR TESTING!!!!!
         DEBUG_SERIAL.print("\t\tLOW_BATT_STOP: ");
         esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_STOP_LOW_BATT);
       }
       else{
         esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA_LOW_BATT);  
       }
+//      esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA_LOW_BATT);  
     }
     else{
       if(voiceTestCnt == 100){//PURELY FOR TESTING!!!!!
         DEBUG_SERIAL.print("\t\tSTART: ");
         esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_START);
       }
-//      else if(voiceTestCnt == 200){ //PURELY FOR TESTING!!!!!
-//        DEBUG_SERIAL.print("\t\tSTOP: ");
-//        esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_STOP);
-//      }
+      else if(voiceTestCnt == 200){ //PURELY FOR TESTING!!!!!
+        DEBUG_SERIAL.print("\t\tSTOP: ");
+        esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_STOP);
+      }
       else{
         esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA);  
       }
+     // esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA);  
     }
     voiceTestCnt++;
     
