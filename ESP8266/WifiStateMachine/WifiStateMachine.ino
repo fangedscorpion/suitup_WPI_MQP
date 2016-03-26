@@ -75,6 +75,8 @@ pfodESP8266BufferedClient bufferedClient; // http://www.forward.com.au/pfod/pfod
 #define ESP8266_SERIAL Serial
 #define DEBUG_SERIAL Serial
 
+#define PRINT_DEBUGGING_MSGS // Comment this for no prints to the console screen for debugging
+
 //Coming from the Teensy!
 #define MSG_TO_ESP8266_ALIGN_BYTES 4
 #define MSG_TO_ESP8266_DATA_BYTES 8 //For sending back to the ESP8266
@@ -221,11 +223,10 @@ void readTeensySerialSendPkt(boolean printStuff){
         ESP8266_SERIAL.print("END_RD");
       }
       
-//      if(sbuf[wrapCircularIndex(serialDataTailPointer)] == ESP8266_START_BYTE && sbuf[wrapCircularIndex(serialDataTailPointer+1)] == ESP8266_START_BYTE && sbuf[wrapCircularIndex(serialDataTailPointer+2)] == ESP8266_START_BYTE){ //Check for our packet from Teensy
-//        if(printStuff){
+        if(printStuff){
           ESP8266_SERIAL.print("CMD:");
           ESP8266_SERIAL.print(char(sbuf[wrapCircularIndex(serialDataTailPointer+3)]));
-//        }
+        }
           serialDataTailPointer = wrapCircularIndex(serialDataTailPointer+4);
 
 
@@ -296,7 +297,7 @@ void readTeensySerialSendPkt(boolean printStuff){
 
             
             //Actually send out WiFi packets for checking stuff
-            if(state == RECORDING){ //Check that in proper state to send data!!!
+            if(state == RECORDING || state == PLAYBACK){ //Check that in proper state to send data!!!
               if(count == 50){
                bufferedClient.write((const uint8_t *)recordingMsg, RECORDING_MSG_SIZE);
                count = 0;
@@ -315,10 +316,6 @@ void readTeensySerialSendPkt(boolean printStuff){
             
 }
 //////////////////////
-
-
-
-
 
 ////////////////////////////////////
 //Returns true if could connect
@@ -440,7 +437,10 @@ void GoToStateFindHost(){
     }
     int counter = 0;
     // Wait until the client sends some data
-    ESP8266_SERIAL.println("Host PC available");
+    #ifdef PRINT_DEBUGGING_MSGS
+      ESP8266_SERIAL.println("Host PC available");
+    #endif
+    
     while(!hostPC.available()){
       delay(1);
       counter++;
@@ -451,12 +451,21 @@ void GoToStateFindHost(){
     }
     
     bufferedClient.connect(&hostPC); //Buffer this like in the SimplifiedUARTtoWiFiBridge library
-    
-    ESP8266_SERIAL.print("hostPC IP: ");
+    #ifdef PRINT_DEBUGGING_MSGS
+      ESP8266_SERIAL.print("hostPC IP: ");
+    #endif
     hostPCAddr = hostPC.remoteIP();
-    ESP8266_SERIAL.println(hostPCAddr);
+    
+    #ifdef PRINT_DEBUGGING_MSGS
+      ESP8266_SERIAL.println(hostPCAddr);
+    #endif
+    
     hasHostPCIP = true;
-    ESP8266_SERIAL.println("Connected to PC!");
+
+    #ifdef PRINT_DEBUGGING_MSGS
+      ESP8266_SERIAL.println("Connected to PC!");
+    #endif 
+    
     state = IDLE_CONNECTED_TO_HOST;
 }
 
@@ -491,7 +500,10 @@ boolean listenForSpecificPacket(char specificPacket){
         }
       }
       else{
-        ESP8266_SERIAL.println("HOST PC DISCONNECTED!");
+        #ifdef PRINT_DEBUGGING_MSGS
+          ESP8266_SERIAL.println("HOST PC DISCONNECTED!");
+        #endif
+        
         bufferedClient.stop(); // Close out old TCP stuff?
         
         state = FIND_HOST;
@@ -511,14 +523,12 @@ void listenForPackets(){
 
         switch(msgTypeRXed){
               case COMPUTER_INITIATE_CONNECTION:  replyToPCInitiation();  break;
-              case BAND_CONNECTING:  Serial.println("Doing nothing for BAND_CONNECTING"); break;
+              case BAND_CONNECTING:  break;
               case COMPUTER_PING:  replyToPCPing(); break;
-              case BAND_PING:  Serial.println("Doing nothing for BAND_PING"); break;
-              case BAND_POSITION_UPDATE:  Serial.println("Doing nothing for BAND_POSITION_UPDATE"); break;
+              case BAND_PING:  break;
+              case BAND_POSITION_UPDATE:  break;
               case POSITION_ERROR:  
-                    giveMotorsFeedback();
-                    
-                    //replyToRXPosError();
+//                    ESP8266_SERIAL.print(line)
               break;
               case START_RECORDING:  
                   state = RECORDING;
@@ -532,18 +542,21 @@ void listenForPackets(){
               case STOP_PLAYBACK: 
                   state = IDLE_CONNECTED_TO_HOST;
               break;
-              case VOICE_CONTROL:  Serial.println("Doing nothing for VOICE_CONTROL"); break;
-              case LOW_BATTERY_UPDATE: Serial.println("Doing nothing for LOW_BATTERY_UPDATE"); break;
+              case VOICE_CONTROL:  break;
+              case LOW_BATTERY_UPDATE: break;
               case NOTHING_NEW: break;
-              default: Serial.println("Unrecognized format: "); break;
+              default: break;
         }
       }
       else{
-        Serial.println("HOST PC DISCONNECTED!");
+        #ifdef PRINT_DEBUGGING_MSGS
+          ESP8266_SERIAL.println("HOST PC DISCONNECTED!");
+        #endif
         bufferedClient.stop(); // Close out old TCP stuff?
         state = FIND_HOST;
       }
 }
+
 int playBackPktCount = 0;
 void loop() {
   switch(state){
@@ -574,28 +587,27 @@ void loop() {
 
     case PLAYBACK:
     {
+        listenForPackets();
+        readTeensySerialSendPkt(false); // Sends the packet 
         
-        boolean gotStopPlayback = listenForSpecificPacket(STOP_PLAYBACK);
-        if(gotStopPlayback){
-          state = IDLE_CONNECTED_TO_HOST;
-        }
-        else{
-          //readTeensySerialSendPkt(false);
-          playBackPktCount++;
-          if(playBackPktCount == 200){
-             bufferedClient.write((const uint8_t *)playbackMsg, PLAYBACK_MSG_SIZE);
-             playBackPktCount = 0;
-          }
-          if (bufferedClient.connected()) {
-            ESP8266_SERIAL.print((bufferedClient.available() > 0));
+////        boolean gotStopPlayback = listenForSpecificPacket(STOP_PLAYBACK);
+//        if(gotStopPlayback){
+//          state = IDLE_CONNECTED_TO_HOST;
+//        }
+//        else{
+//          readTeensySerialSendPkt(false); // Sends the packet 
+//
+//          if (bufferedClient.connected()) {
+//            
+////            ESP8266_SERIAL.print((bufferedClient.available() > 0));
 //            while ((bufferedClient.available() > 0) &&  (ESP8266_SERIAL.availableForWrite() > 0)) { //This is borrowed from the SimplifiedUARTtoWiFiBridge example
 //              // use Serial.availableForWrite to prevent loosing incoming data
-//              //ESP8266_SERIAL.print(bufferedClient.read());
+//              ESP8266_SERIAL.print(bufferedClient.read());
 //              //feedbackToTeensyMsg[FEEDBACK_MSG_ALIGN_BYTES] 
 //              //ESP8266_SERIAL.write(bufferedClient.read());
 //            }
-          }
-        }
+//          }
+//        }
     }
     break;
   }
