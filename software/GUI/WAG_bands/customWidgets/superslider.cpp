@@ -33,11 +33,10 @@ SuperSlider::SuperSlider(QWidget *parent)
     //styling
     setOrientation(Qt::Horizontal);
     setAcceptDrops(true);
-    SliderProxy *aSliderProxy = new SliderProxy();
     connect(this, SIGNAL(sliderPressed()), this, SLOT(update()));
 
     setStyleSheet("QSlider::handle { image: url(:/icons/handle.png);}");
-    setStyle(aSliderProxy);
+    setStyle(new SliderProxy());
 
     setValue(QSlider::maximum()+10);
     //setting up the alternate handle
@@ -69,6 +68,10 @@ SuperSliderHandle::SuperSliderHandle(SuperSlider *_parent)
     QPixmap pix = QPixmap(":/icons/handle.png");
     pix =  pix.scaled(10, 20, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     setPixmap(pix);
+}
+
+SuperSliderHandle::~SuperSliderHandle() {
+    delete filter;
 }
 
 SuperSliderTimeBar::SuperSliderTimeBar(SuperSlider *_parent)

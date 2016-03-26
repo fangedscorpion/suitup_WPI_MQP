@@ -4,10 +4,14 @@
 #include <QTimer>
 #include <QDebug>
 
-FrameUpdater::FrameUpdater(int newFrameIncrement):QObject() {
+FrameUpdater::FrameUpdater(int newFrameIncrement) : QObject() {
     currentFrame = 0;
     playing = false;
     frameIncrement = newFrameIncrement;
+}
+
+FrameUpdater::~FrameUpdater() {
+    delete frameUpdateTimer;
 }
 
 bool FrameUpdater::startFrameUpdates(int timerDelay) {

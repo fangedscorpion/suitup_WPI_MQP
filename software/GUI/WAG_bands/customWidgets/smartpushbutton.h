@@ -10,8 +10,8 @@ class SmartPushButton : public QPushButton
 {
     Q_OBJECT
 public:
-    SmartPushButton(const char* name, USER owner);
-    SmartPushButton(const char* name);
+    SmartPushButton(QWidget* parent, const char* name, USER owner);
+    SmartPushButton(QWidget* parent, const char* name);
     void setUser(USER u);
     void setRed(bool t);
 

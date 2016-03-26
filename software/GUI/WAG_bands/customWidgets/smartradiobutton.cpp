@@ -1,10 +1,10 @@
 #include "smartradiobutton.h"
 
-SmartRadioButton::SmartRadioButton(const char *name) : QRadioButton(name) {
+SmartRadioButton::SmartRadioButton(QWidget* parent, const char *name) : QRadioButton(name, parent) {
     setTheme();
 }
 
-SmartRadioButton::SmartRadioButton(const char *name, ACTION_TYPE a) : QRadioButton(name) {
+SmartRadioButton::SmartRadioButton(QWidget* parent, const char *name, ACTION_TYPE a) : QRadioButton(name, parent) {
     setTheme();
     action = a;
     connect(this, SIGNAL(released()), this, SLOT(releaseAction()));

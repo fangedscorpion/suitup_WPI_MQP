@@ -10,11 +10,11 @@ MotionViewer::MotionViewer(QWidget* parent, Model* m) : QWidget(parent){
     // viewer window
     viewer = new GLWidget(m);
     // video controls
-    QHBoxLayout* controls = new QHBoxLayout;
-    playPause = new QPushButton;
-    videoSlider = new SuperSlider;
-    handle1Time = new QLabel("00:00.00");
-    handle2Time = new QLabel("00:10.00");
+    QHBoxLayout* controls = new QHBoxLayout();
+    playPause = new QPushButton(this);
+    videoSlider = new SuperSlider(this);
+    handle1Time = new QLabel("00:00.00", this);
+    handle2Time = new QLabel("00:10.00", this);
     playPause->setIcon(playIcon);
     playPause->setIconSize(QSize(15,15));
     controls->addWidget(playPause);
@@ -23,13 +23,15 @@ MotionViewer::MotionViewer(QWidget* parent, Model* m) : QWidget(parent){
     controls->addWidget(handle2Time);
 
     // add everything
-    QVBoxLayout* viewerPane = new QVBoxLayout;
+    QVBoxLayout* viewerPane = new QVBoxLayout();
     viewerPane->addWidget(viewer,1);
     viewerPane->addLayout(controls);
     this->setLayout(viewerPane);
 }
 
-MotionViewer::~MotionViewer() {}
+MotionViewer::~MotionViewer() {
+    delete viewer;
+}
 
 void MotionViewer::playToggled(bool playing) {
     if (playing) {

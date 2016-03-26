@@ -1,7 +1,7 @@
 #include "recordingcontroller.h"
 
 // takes in record commands (stop/start recording), talks to suit,
-RecordingController::RecordingController(Suit *newSuitObj) : QObject()
+RecordingController::RecordingController(QWidget *parent, Suit *newSuitObj) : QObject(parent)
 {
     suitObj = newSuitObj;
     connect(suitObj, SIGNAL(positionSnapshotReady(qint32,PositionSnapshot*)), this, SLOT(addSnapshotToMotion(qint32, PositionSnapshot*)));

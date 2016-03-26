@@ -8,7 +8,7 @@ class ClosableLabel : public QLabel
 {
     Q_OBJECT
 public:
-    ClosableLabel(QString text);
+    ClosableLabel(QWidget* parent, QString text);
     QString getText() { return label;}
     void closeLabel();
 

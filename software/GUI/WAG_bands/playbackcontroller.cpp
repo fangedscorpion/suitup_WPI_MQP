@@ -15,7 +15,7 @@
 #define MILLISECONDS_PER_FRAME 25
 
 
-PlaybackController::PlaybackController(Suit *newSuitObj) {
+PlaybackController::PlaybackController(QWidget *parent, Suit *newSuitObj) : QObject(parent){
     suitObj = newSuitObj;
     updater = new FrameUpdater(MILLISECONDS_PER_FRAME);
     playing = false;
@@ -34,6 +34,10 @@ PlaybackController::PlaybackController(Suit *newSuitObj) {
     connect(suitObj, SIGNAL(voiceControlCommandReady(MessageType)), this, SLOT(catchVoiceControlCommand(MessageType)));
     connect(this, SIGNAL(frameChanged(qint32)), this, SLOT(catchFrameUpdate(qint32)));
     connect(this, SIGNAL(toleranceChanged(int)), suitObj, SLOT(catchToleranceChange(int)));
+}
+
+PlaybackController::~PlaybackController() {
+    delete updater;
 }
 
 void PlaybackController::togglePlay() {

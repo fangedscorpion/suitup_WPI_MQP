@@ -11,7 +11,8 @@
 class PlaybackController:public QObject {
     Q_OBJECT
 public:
-    PlaybackController(Suit *);
+    PlaybackController(QWidget* parent, Suit *);
+    ~PlaybackController();
     void setActiveMotion(WAGFile *);
 
 protected:

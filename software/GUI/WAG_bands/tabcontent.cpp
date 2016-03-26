@@ -17,8 +17,8 @@ TabContent::TabContent(MainWindow* in_parent, WAGFile* in_motion, USER u, ACTION
 
     createIcons();
 
-    optionsStack = new QStackedWidget;
-    viewerStack = new QStackedWidget;
+    optionsStack = new QStackedWidget(this);
+    viewerStack = new QStackedWidget(this);
     if (u.hasAction(RECORD)) {
         optionsStack->addWidget(createRecordOptionsAndController());
         viewerStack->addWidget(createRecordingWindow());
@@ -37,8 +37,8 @@ TabContent::TabContent(MainWindow* in_parent, WAGFile* in_motion, USER u, ACTION
     }
 
     // contains both options and viewer
-    QHBoxLayout* splitPanes = new QHBoxLayout;
-    QVBoxLayout* vl = new QVBoxLayout;
+    QHBoxLayout* splitPanes = new QHBoxLayout();
+    QVBoxLayout* vl = new QVBoxLayout();
 
     vl->addWidget(optionsStack);
     vl->addWidget(createModeRadios(u));
@@ -134,12 +134,12 @@ void TabContent::show(ACTION_TYPE a) {
 
 // The groupbox of Mode radio buttons
 StyledGroupBox* TabContent::createModeRadios(USER u) {
-    modeRadiosGroup = new StyledGroupBox("Modes");
+    modeRadiosGroup = new StyledGroupBox(this, "Modes");
 
     QVBoxLayout* vl = modeRadiosGroup->getLayout();
-    recordRadio = new SmartRadioButton("Record Motion", RECORD);
-    editRadio = new SmartRadioButton("Edit Motion", EDIT);
-    playbackRadio = new SmartRadioButton("Playback Motion", PLAYBACK);
+    recordRadio = new SmartRadioButton(this, "Record Motion", RECORD);
+    editRadio = new SmartRadioButton(this, "Edit Motion", EDIT);
+    playbackRadio = new SmartRadioButton(this, "Playback Motion", PLAYBACK);
 
     // if there is only 1 action this user can perform, don't show any modes
     int count = 0;
@@ -191,7 +191,7 @@ void TabContent::saveMotion() {
 // OpenGL Motion Viewer window with video slider
 StyledGroupBox* TabContent::createViewer(ACTION_TYPE t) {
 
-    StyledGroupBox* v = new StyledGroupBox("temp");
+    StyledGroupBox* v = new StyledGroupBox(this, "temp");
     QVBoxLayout* viewerPane = v->getLayout();
 
     if (t == EDIT) {

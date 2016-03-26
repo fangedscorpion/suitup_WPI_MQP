@@ -6,7 +6,7 @@
 class StyledCheckBox : public QCheckBox {
     Q_OBJECT
 public:
-    StyledCheckBox(QString title, QWidget *parent = 0);
+    StyledCheckBox(QWidget *parent, QString title);
 };
 
 #endif // STYLEDCHECKBOX_H

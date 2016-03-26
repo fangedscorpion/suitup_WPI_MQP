@@ -18,7 +18,7 @@ class SuperSlider: public QSlider
   Q_OBJECT
 public:
   /** Constructor */
-  SuperSlider(QWidget *parent = 0);
+  SuperSlider(QWidget *parent);
 
   /** Store the alternate handle for this slider*/
   SuperSliderHandle *alt_handle;
@@ -86,7 +86,8 @@ class SuperSliderHandle: public QLabel
   Q_OBJECT
 public:
   /** Constructor */
-  SuperSliderHandle(SuperSlider *parent = 0);
+  SuperSliderHandle(SuperSlider *parent);
+  ~SuperSliderHandle();
 
   /** An overloaded mousePressevent so that we can start grabbing the cursor and using it's position for the value */
   void mousePressEvent(QMouseEvent *event);
@@ -118,7 +119,7 @@ class SuperSliderTimeBar: public QLabel
   Q_OBJECT
 public:
   /** Constructor */
-  SuperSliderTimeBar(SuperSlider *parent = 0);
+  SuperSliderTimeBar(SuperSlider *parent);
 
   /** Returns the value of this handle with respect to the slider */
   int value();

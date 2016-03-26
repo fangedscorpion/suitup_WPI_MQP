@@ -9,8 +9,8 @@ class SmartRadioButton : public QRadioButton
 {
     Q_OBJECT
 public:
-    SmartRadioButton(const char* name, ACTION_TYPE a);
-    SmartRadioButton(const char* name);
+    SmartRadioButton(QWidget* parent, const char* name, ACTION_TYPE a);
+    SmartRadioButton(QWidget* parent, const char* name);
     void setAction(ACTION_TYPE a);
 
 private:

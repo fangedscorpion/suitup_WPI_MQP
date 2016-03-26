@@ -1,25 +1,25 @@
 #include "tabcontent.h"
 
 StyledGroupBox* TabContent::createRecordOptionsAndController() {
-    recordingControls = new RecordingController(suitObj);
+    recordingControls = new RecordingController(this, suitObj);
     recordingControls->setActiveMotion(motion);
-    recordOptionsGroup = new StyledGroupBox("Recording Options");
+    recordOptionsGroup = new StyledGroupBox(this, "Recording Options");
 
-    recordCountDownSpinner = new QDoubleSpinBox;
+    recordCountDownSpinner = new QDoubleSpinBox(this);
     recordCountDownSpinner->setMinimum(0.5);
     recordCountDownSpinner->setValue(5);
     recordCountDownSpinner->setMaximum(30); // consider changing
     recordCountDownSpinner->setDecimals(1);
     recordCountDownSpinner->setSingleStep(.5);
     recordCountDownSpinner->setMaximumWidth(60);
-    QLabel* countDownPreMessage = new QLabel("Count down for");
-    QLabel* countDownMessage = new QLabel("sec(s)");
-    QHBoxLayout* h = new QHBoxLayout;
+    QLabel* countDownPreMessage = new QLabel("Count down for", this);
+    QLabel* countDownMessage = new QLabel("sec(s)", this);
+    QHBoxLayout* h = new QHBoxLayout();
     h->addWidget(countDownPreMessage);
     h->addWidget(recordCountDownSpinner);
     h->addWidget(countDownMessage);
 
-    StyledCheckBox* recordVoiceControl = new StyledCheckBox("Voice Control");
+    StyledCheckBox* recordVoiceControl = new StyledCheckBox(this, "Voice Control");
 
     QVBoxLayout* options = recordOptionsGroup->getLayout();
     options->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
@@ -35,48 +35,48 @@ StyledGroupBox* TabContent::createRecordOptionsAndController() {
 
 // The right panel under record motion
 StyledGroupBox* TabContent::createRecordingWindow() {
-    recordGroup = new StyledGroupBox("Recording: " + motion->getName());
+    recordGroup = new StyledGroupBox(this, "Recording: " + motion->getName());
     // viewer window
 
     QFont bigFont = QFont("Arial", 25);
     QFont timeFont = QFont("Arial", 50);
-    recordCountDownTitleLabel = new QLabel("Count Down");
+    recordCountDownTitleLabel = new QLabel("Count Down", this);
     recordCountDownTitleLabel->setFont(bigFont);
     recordCountDownTitleLabel->setAlignment(Qt::AlignCenter);
-    recordStopwatchTitleLabel = new QLabel("Record Time");
+    recordStopwatchTitleLabel = new QLabel("Record Time", this);
     recordStopwatchTitleLabel->setFont(bigFont);
     recordStopwatchTitleLabel->setAlignment(Qt::AlignCenter);
     recordStopwatchTitleLabel->hide();
-    recordCountdownTime = new QLabel(QString::number(recordCountDownSpinner->value(), 'f', 1));
+    recordCountdownTime = new QLabel(QString::number(recordCountDownSpinner->value(), 'f', 1), this);
     recordCountdownTime->setFont(timeFont);
     recordCountdownTime->setAlignment(Qt::AlignBottom);
-    recordCountdownSecondsTitleLabel = new QLabel("sec(s)");
+    recordCountdownSecondsTitleLabel = new QLabel("sec(s)", this);
     recordCountdownSecondsTitleLabel->setFont(bigFont);
     recordCountdownSecondsTitleLabel->setAlignment(Qt::AlignBottom);
-    recordStopwatchMinutesTitleLabel = new QLabel("min(s)");
+    recordStopwatchMinutesTitleLabel = new QLabel("min(s)", this);
     recordStopwatchMinutesTitleLabel->setFont(bigFont);
     recordStopwatchMinutesTitleLabel->setAlignment(Qt::AlignBottom);
     recordStopwatchMinutesTitleLabel->hide();
-    QHBoxLayout* h = new QHBoxLayout;
+    QHBoxLayout* h = new QHBoxLayout();
     h->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     h->addWidget(recordCountdownTime);
     h->addWidget(recordCountdownSecondsTitleLabel);
     h->addWidget(recordStopwatchMinutesTitleLabel);
     h->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-    resetButton = new SmartPushButton("Reset");
+    resetButton = new SmartPushButton(this, "Reset");
     resetButton->setEnabled(false);
     resetButton->setIcon(resetIcon);
     resetButton->setIconSize(QSize(35,30));
 
-    recordButton = new SmartPushButton("Start Recording");
+    recordButton = new SmartPushButton(this, "Start Recording");
     recordButton->setIcon(recordIcon);
     recordButton->setIconSize(QSize(35,15));
 
     // viewer side of the GUI
     QVBoxLayout* info = recordGroup->getLayout();
     info->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
-    QHBoxLayout* b = new QHBoxLayout;
+    QHBoxLayout* b = new QHBoxLayout();
     b->addWidget(resetButton, 1);
     b->addWidget(recordButton, 2);
     info->addLayout(b);

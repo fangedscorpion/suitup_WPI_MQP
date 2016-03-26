@@ -11,6 +11,7 @@ class FrameUpdater : public QObject
     Q_OBJECT
 public:
     FrameUpdater(int newFrameIncrement);
+    ~FrameUpdater();
     bool startFrameUpdates(int timerDelay);
     bool stopFrameUpdates();
     qint32 getCurrentFrameNum();

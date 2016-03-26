@@ -4,7 +4,7 @@
 
 #define MILLISECONDS_PER_FRAME 25
 
-EditingController::EditingController() : QObject()
+EditingController::EditingController(QWidget *parent) : QObject(parent)
 {
     playing = false;
     //currentFrame = 0;
@@ -14,6 +14,10 @@ EditingController::EditingController() : QObject()
     endPointer = 100;
     connect(this, SIGNAL(endOfTimeRange()), this, SLOT(togglePlay()));
     connect(this, SIGNAL(frameChanged(qint32)), this, SLOT(catchFrameUpdate(qint32)));
+}
+
+EditingController::~EditingController() {
+    delete updater;
 }
 
 void EditingController::beginningSliderChanged(int sliderVal) {

@@ -85,7 +85,7 @@ void WAGFile::updateWAGFile(QString name, QString desc, QString auth,
 QVector<ClosableLabel*> WAGFile::getTagLabels() {
     QVector<ClosableLabel*> c = QVector<ClosableLabel*>();
     for (int i=0; i < tags.size(); i++) {
-        c.push_back(new ClosableLabel(tags[i]));
+        c.push_back(new ClosableLabel(0, tags[i]));
     }
     return c;
 }

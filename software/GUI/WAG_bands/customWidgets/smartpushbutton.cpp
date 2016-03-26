@@ -1,13 +1,13 @@
 #include "smartpushbutton.h"
 
-SmartPushButton::SmartPushButton(const char *name, USER owner) : QPushButton(name) {
+SmartPushButton::SmartPushButton(QWidget *parent, const char *name, USER owner) : QPushButton(name, parent) {
     setTheme();
 
     user = owner;
     connect(this, SIGNAL(released()), this, SLOT(releaseUser()));
 }
 
-SmartPushButton::SmartPushButton(const char* name) : QPushButton(name) {
+SmartPushButton::SmartPushButton(QWidget *parent, const char* name) : QPushButton(name, parent) {
     setTheme();
 }
 

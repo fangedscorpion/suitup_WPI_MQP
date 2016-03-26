@@ -11,7 +11,8 @@ class EditingController : public QObject
 {
     Q_OBJECT
 public:
-    EditingController();
+    EditingController(QWidget* parent);
+    ~EditingController();
     void setActiveMotion(WAGFile *newMotion);
 signals:
     void editingPlayStateChanged(bool);

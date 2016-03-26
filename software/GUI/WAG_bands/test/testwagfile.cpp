@@ -7,8 +7,8 @@ void TestWAGFile::testSetters() {
     QString newDesc = "this is a new desc";
     QString newAuth = "I am the new auth";
     QHBoxLayout* newTags = new QHBoxLayout;
-    newTags->addWidget(new ClosableLabel("new"));
-    newTags->addWidget(new ClosableLabel("ya"));
+    newTags->addWidget(new ClosableLabel(0, "new"));
+    newTags->addWidget(new ClosableLabel(0, "ya"));
     QVector<QString> newTagStrings;
     newTagStrings.push_back("new");
     newTagStrings.push_back("ya");
@@ -16,7 +16,7 @@ void TestWAGFile::testSetters() {
     SAVE_LOCATION newSave = LOCALLY;
 
     QHBoxLayout *old = new QHBoxLayout;
-    old->addWidget(new ClosableLabel("old"));
+    old->addWidget(new ClosableLabel(0, "old"));
     WAGFile *w = new WAGFile("/old/file/path/filename", "old description, is so old",
                              "author me", old, LIBRARY);
     w->updateWAGFile(newFilepath, newDesc, newAuth, newTags, newSave);

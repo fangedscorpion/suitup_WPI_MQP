@@ -12,32 +12,32 @@ void MainWindow::launchUserOptions(USER u) {
     userOptionsWidget = new OverlayWidget(this, ss.str());
     QVBoxLayout* layout = userOptionsWidget->getLayout();
 
-    QLabel* lbl = new QLabel(u.getDescription());
+    QLabel* lbl = new QLabel(u.getDescription(), this);
     lbl->setAlignment(Qt::AlignCenter);
     layout->addWidget(lbl);
     if (u.hasAction(RECORD)) {
-        SmartPushButton* newMotion = new SmartPushButton("Record a new motion", u);
+        SmartPushButton* newMotion = new SmartPushButton(this, "Record a new motion", u);
         connect(newMotion, SIGNAL(released(USER)), this, SLOT(launchNewMotion(USER))); // finish this
         layout->addWidget(newMotion);
     }
     // if a user can only edit (can't playback other user's motions
     if (u.hasAction(EDIT) && !u.hasAction(PLAYBACK)) {
-        SmartPushButton* openFromLib = new SmartPushButton("Open your motion from the library", u);
-        SmartPushButton* openFromComp = new SmartPushButton("Open your motion from your computer", u);
+        SmartPushButton* openFromLib = new SmartPushButton(this, "Open your motion from the library", u);
+        SmartPushButton* openFromComp = new SmartPushButton(this, "Open your motion from your computer", u);
         connect(openFromLib, SIGNAL(released(USER)), this, SLOT(launchOpenFromLibrary(USER))); // finish this
         connect(openFromComp, SIGNAL(released(USER)), this, SLOT(launchOpenFromComputer(USER))); // finish this
         layout->addWidget(openFromLib);
         layout->addWidget(openFromComp);
     }
     if (u.hasAction(PLAYBACK)) {
-        SmartPushButton* openFromLib = new SmartPushButton("Open a motion from the library", u);
-        SmartPushButton* openFromComp = new SmartPushButton("Open a motion from your computer", u);
+        SmartPushButton* openFromLib = new SmartPushButton(this, "Open a motion from the library", u);
+        SmartPushButton* openFromComp = new SmartPushButton(this, "Open a motion from your computer", u);
         connect(openFromLib, SIGNAL(released(USER)), this, SLOT(launchOpenFromLibrary(USER))); // finish this
         connect(openFromComp, SIGNAL(released(USER)), this, SLOT(launchOpenFromComputer(USER))); // finish this
         layout->addWidget(openFromLib);
         layout->addWidget(openFromComp);
     }
-    SmartPushButton* back = new SmartPushButton("Cancel", u);
+    SmartPushButton* back = new SmartPushButton(this, "Cancel", u);
     layout->addWidget(back);
     layout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     connect(back, SIGNAL(released()), this, SLOT(closeUserOptions()));
@@ -78,7 +78,7 @@ void MainWindow::addTag() {
     if (newMotionTagsTextEdit->text().isEmpty())
         return;
 
-    newMotionTagsLayout->addWidget(new ClosableLabel(newMotionTagsTextEdit->text()));
+    newMotionTagsLayout->addWidget(new ClosableLabel(this, newMotionTagsTextEdit->text()));
     newMotionTagsTextEdit->clear();
     addTagBtn->setEnabled(false);
 }
@@ -91,8 +91,7 @@ void MainWindow::launchOpenFromComputer(USER u) {
     if (!f.trimmed().isEmpty()) { // user clicked "open"
         if (userOptionsWidget != NULL)
             handleUserOptions(u); // setup the top bar
-        WAGFile* w = new WAGFile(f.trimmed());
-        addTab(u, w, EDIT);
+        addTab(u, new WAGFile(f.trimmed()), EDIT);
         closeOpenMotionOptions();
     }
 }

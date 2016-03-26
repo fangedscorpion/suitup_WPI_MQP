@@ -9,7 +9,7 @@ class RecordingController : public QObject
 {
     Q_OBJECT
 public:
-    RecordingController(Suit *newSuitObj);
+    RecordingController(QWidget* parent, Suit *newSuitObj);
 
     void stopRecording();
 

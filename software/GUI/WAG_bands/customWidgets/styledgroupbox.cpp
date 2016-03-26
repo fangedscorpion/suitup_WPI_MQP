@@ -4,13 +4,13 @@
 #include <QStyleOption>
 #include <QPainter>
 
-StyledGroupBox::StyledGroupBox(QString in_title, QWidget* parent) : QWidget(parent) {
+StyledGroupBox::StyledGroupBox(QWidget* parent, QString in_title) : QWidget(parent) {
     title = in_title;
 
-    QVBoxLayout* layout = new QVBoxLayout;
+    QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setContentsMargins(20,20,20,20);
 
-    label = new QLabel(title);
+    label = new QLabel(title, this);
     label->setAlignment(Qt::AlignCenter);
     label->setFont(QFont( "Arial", 15, QFont::Bold));
 
