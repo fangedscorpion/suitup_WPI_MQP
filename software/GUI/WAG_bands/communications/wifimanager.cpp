@@ -238,8 +238,8 @@ void WifiManager::sendMessageToBand(BandType destBand, QByteArray msgData, Messa
 }
 
 void WifiManager::sendMessageToBand(BandType destBand, BandMessage *fullMsg) {
-/*     if (fullMsg->getMessageType() == POSITION_ERROR) {
-        qDebug()<<"WifiManager: sending error to band";
-    } */
+//    if (fullMsg->getMessageType() == POSITION_ERROR) {
+//        qDebug()<<"WifiManager: sending error to band "<<fullMsg->getMessageData();
+//    }
     sendRawDataToBand(destBand, fullMsg->getSerializedMessage());
 }

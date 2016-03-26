@@ -75,17 +75,18 @@ void PlaybackController::toggleSuitActive(bool active) {
             connect(this, SIGNAL(goToSnapshot(PositionSnapshot*)), suitObj, SLOT(playSnapshot(PositionSnapshot*)));
             connect(this, SIGNAL(startPlayback()), suitObj, SLOT(catchStartPlayback()));
             connect(this, SIGNAL(stopPlayback()), suitObj, SLOT(catchStopPlayback()));
+            connect(suitObj, SIGNAL(positionSnapshotReady(qint32,PositionSnapshot*)), this, SLOT(catchPositionSnapshots(qint32,PositionSnapshot*)));
             connect(suitObj, SIGNAL(positionMet()), this, SLOT(positionMet()));
         } else {
             // disconnect everything from suit obj
             disconnect(this, SIGNAL(goToSnapshot(PositionSnapshot*)), suitObj, 0);
             disconnect(this, SIGNAL(startPlayback()), suitObj, 0);
             disconnect(this, SIGNAL(stopPlayback()), suitObj, 0);
+            disconnect(suitObj, SIGNAL(positionSnapshotReady(qint32,PositionSnapshot*)), this, 0);
             disconnect(suitObj, SIGNAL(positionMet()), this, 0);
         }
     }
     suitActive = active;
-    //qDebug()<<"PlaybackController: Suit activated: "<<suitActive;
 }
 
 // currentFrameSliderPos ranges from 0 to 1000
@@ -252,7 +253,7 @@ void PlaybackController::catchFrameUpdate(qint32 newFrame) {
     PositionSnapshot *desiredPos = activeMotion->getSnapshot(approxPercentThroughFile, newFrame, CLOSEST);
     // should probably figure out how to handle null snapshots
     // TODO
-    qDebug()<<"Playback controller: emitting snapshot";
+    //qDebug()<<"Playback controller: emitting snapshot";
     emit goToSnapshot(desiredPos);
 }
 
@@ -298,4 +299,9 @@ void PlaybackController::updateFrameWithoutSuitNotification(int newFrame) {
     emit frameChanged(newFrame);
     // restore the suit's active state to what it was before we manually toggled it
     toggleSuitActive(actualSuitActive);
+}
+
+void PlaybackController::catchPositionSnapshots(qint32, PositionSnapshot *comparedSnap) {
+    qDebug("deleting old snap");
+    delete comparedSnap;
 }

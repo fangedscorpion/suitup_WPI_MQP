@@ -80,9 +80,9 @@ void Suit::handleConnectionStatusChange(BandType band, ConnectionStatus newStatu
 }
 
 void Suit::sendData(BandType destBand, BandMessage* sendMsg) {
-    if (sendMsg->getMessageType() == POSITION_ERROR) {
-        qDebug()<<"Sending error message";
-    }
+//    if (sendMsg->getMessageType() == POSITION_ERROR) {
+//        qDebug()<<"Sending error message";
+//    }
     wifiMan->sendMessageToBand(destBand, sendMsg);
 }
 
@@ -93,8 +93,9 @@ void Suit::toggleCollecting(bool shouldCollectData) {
             // stop timer
             //qDebug("Suit: Killing ping timer");
             killTimer(pingTimerID);
-            if (activeSnapshot != 0)
-                delete activeSnapshot;
+            // DO NOT DELETE OLD activeSnapshot
+            // was probably saved in a file
+            // deleting will super mess up the file writing
             activeSnapshot = new PositionSnapshot();
             activeSnapTimes.clear();
         } else {
@@ -165,18 +166,18 @@ void Suit::catchStartPlayback() {
 }
 
 void Suit::playSnapshot(PositionSnapshot *goToSnap) {
-    //qDebug("Suit: Received snap to play\n");
+    //qDebug("Suit: Received snap to play");
     if (collectingData) {
-        // TODO
-        // probably want to set a snapshot to match, and then when we receive a full snapshot, we can compare
-        // and send back error
         QList<BandType> connected = getConnectedBands().toList();
+        //qDebug()<<"Connected bands "<<connected<<"; size "<<connected.length();
         QHash<BandType, AbsState*> snapshotData = goToSnap->getSnapshot();
+        //qDebug()<<"Got snapshot data "<<snapshotData.keys();
         bool posWithinTol = true;
         for (int i = 0; i < connected.size(); i++){
             BandType getBand = connected[i];
             if (snapshotData.contains(getBand)) {
                 //qDebug()<<"Suit: Sending error to band "<<getBand;
+                //qDebug()<<"Suit: band in snapshot, calling move to";
                 posWithinTol &= bands[getBand]->moveTo(snapshotData[getBand]);
                 //qDebug()<<"Suit: Position for band "<<getBand<<" within tolerance "<<posWithinTol;
             }
@@ -293,9 +294,10 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
         }
         emit positionSnapshotReady(avgReadingTime, activeSnapshot);
 
-        if (activeSnapshot != 0)
-            delete activeSnapshot;
+        // DO NOT DELETE ACTIVE SNAPSHOT
+        // address referenced in wagfile (probably)
         activeSnapshot = new PositionSnapshot();
+
         activeSnapTimes.clear();
     }
 }

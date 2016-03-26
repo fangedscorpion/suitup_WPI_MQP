@@ -26,7 +26,7 @@ void ModelGL::updatePose(QHash<QString,NodeState> bandsAndTransforms){
         getNodeByName(bands[i])->setTransformation(bandsAndTransforms[bands[i]].transformation);
         getNodeByName(bands[i])->setMaterial(nodeStatusToMaterial(bandsAndTransforms[bands[i]].status));
     }
-    qDebug()<< "ModelGL::updatePose: received change to nodes";
+    //qDebug()<< "ModelGL::updatePose: received change to nodes";
     emit modelGLChanged();
 }
 

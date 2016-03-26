@@ -34,9 +34,9 @@ void RecordingController::startRecording() {
 void RecordingController::addSnapshotToMotion(qint32 snapTime, PositionSnapshot *snap) {
     if (recording) {
         qint32 newSnapTime = snapTime;
-        maxRecordedTime = snapTime;
+        maxRecordedTime = snapTime;        
         currentMotionData[newSnapTime] = snap;
-        // if the file is longer than 10 minutes, stop recording
+
         if (newSnapTime > MAX_FILE_LENGTH) {
             // stop recording (use voice control signalling protocol)
             emit vcChangeState(false);
