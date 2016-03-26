@@ -43,10 +43,19 @@ Suit::Suit(WifiManager *comms, Model *suitModel):QObject() {
         connect(this, SIGNAL(toleranceChanged(int)), bands[allBands[i]], SLOT(catchTolChange(int)));
         connect(bands[allBands[i]], SIGNAL(connectionProblem(BandType)), this, SLOT(catchConnectionProblem(BandType)));
         connect(bands[allBands[i]], SIGNAL(lowBattery(BandType, bool)), this, SLOT(propagateLowBatteryUpdate(BandType, bool)));
+
+        connect(this,SIGNAL(positionSnapshotReady(qint32,PositionSnapshot*)),model,SLOT(updatePoseWithTime(qint32,PositionSnapshot*)));
     }
 
     collectingData = true;
     toggleCollecting(false);
+    activeSnapshot = new PositionSnapshot();
+}
+
+Suit::~Suit() {
+    delete model;
+    delete activeSnapshot;
+    qDeleteAll(bands);
 }
 
 
@@ -84,6 +93,8 @@ void Suit::toggleCollecting(bool shouldCollectData) {
             // stop timer
             //qDebug("Suit: Killing ping timer");
             killTimer(pingTimerID);
+            if (activeSnapshot != 0)
+                delete activeSnapshot;
             activeSnapshot = new PositionSnapshot();
             activeSnapTimes.clear();
         } else {
@@ -254,9 +265,6 @@ void Suit::propagateLowBatteryUpdate(BandType chargeBand, bool hasLowBattery) {
 
 
 void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime) {
-    //qDebug()<<"Suit: adding pose to snapshot from band "<<bandForPose;
-    qDebug()<<newPose;
-
     /* AbsState *copiedPose = (AbsState*) malloc(newPose->objectSize()); // not sure if can do this for abs
     // TODO figure out where to free this
     *copiedPose = *newPose; */
@@ -285,6 +293,8 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
         }
         emit positionSnapshotReady(avgReadingTime, activeSnapshot);
 
+        if (activeSnapshot != 0)
+            delete activeSnapshot;
         activeSnapshot = new PositionSnapshot();
         activeSnapTimes.clear();
     }

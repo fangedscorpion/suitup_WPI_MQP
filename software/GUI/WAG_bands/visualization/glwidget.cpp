@@ -23,6 +23,9 @@ GLWidget::GLWidget(Model* m) :
 }
 
 GLWidget::~GLWidget(){
+    delete modelGL;
+    m_vao.destroy();
+    m_shaderProgram;
 }
 
 static void qNormalizeAngle(int &angle) {
@@ -79,7 +82,6 @@ void  GLWidget::createShaderProgram(QString vShader, QString fShader) {
         m_error = true;
     }
 }
-
 
 void GLWidget::createBuffers(){
     if(m_error)
@@ -252,3 +254,9 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event) {
     m_lastPos = event->pos();
 }
 
+void GLWidget::mouseDoubleClickEvent(QMouseEvent *event){
+    if (event->buttons() & Qt::LeftButton) {
+        setXRotation(0);
+        setZRotation(0);
+    }
+}

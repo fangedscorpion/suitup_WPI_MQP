@@ -5,7 +5,7 @@ OverlayWidget::OverlayWidget(QWidget* parent, std::string title) : Overlay(paren
 
     // title and layout
     QFont titleFont = QFont( "Arial", 15, QFont::Bold);
-    QVBoxLayout* layout = new QVBoxLayout(this);
+    QVBoxLayout* layout = new QVBoxLayout();
     QLabel* lbl = new QLabel(title.c_str(), this);
     lbl->setFont(titleFont);
     lbl->setAlignment(Qt::AlignCenter);
@@ -16,7 +16,8 @@ OverlayWidget::OverlayWidget(QWidget* parent, std::string title) : Overlay(paren
     // drop shadow
     CustomShadowEffect* bodyShadow = new CustomShadowEffect(this);
     this->setAutoFillBackground(true);
-    this->setGraphicsEffect(bodyShadow);
+//    this->setGraphicsEffect(bodyShadow);
+    // sorry samee :(
 
     // set background
     QPalette Pal(palette());

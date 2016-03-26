@@ -7,7 +7,7 @@
 StyledGroupBox::StyledGroupBox(QWidget* parent, QString in_title) : QWidget(parent) {
     title = in_title;
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
+    QVBoxLayout* layout = new QVBoxLayout();
     layout->setContentsMargins(20,20,20,20);
 
     label = new QLabel(title, this);

@@ -47,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // tabs
     tabs = new QTabWidget(this);
-    tabs->setStyleSheet("QTabBar::tab:!selected {background-color: rgb(82, 190, 128); border: 1px solid grey; border-radius: 2px; padding: 0 5px 0 5px;} ");
+    tabs->setStyleSheet("QTabBar::tab:!selected {background-color: rgb(82, 190, 128); border: 1px solid grey; border-radius: 2px; padding: 0 5px 0 5px;}");
     tabs->setFocusPolicy(Qt::NoFocus);
     tabs->addTab(createUserSelectionWindow(users), "User selection");
     tabs->clearFocus();
@@ -60,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // createSettings needs fullSuit pointer to be set
     modelLoader = new ModelLoader;
+    calibModel = modelLoader->load();
     wifiMan = new WifiManager();
     fullSuit = new Suit(wifiMan,modelLoader->load());
 
@@ -166,25 +167,30 @@ void MainWindow::createSettings() {
     // Settings widget
     settingsWidget = new OverlayWidget(this, "Settings");
     QVBoxLayout* settingsLayout = settingsWidget->getLayout();
-
     QHBoxLayout* h = new QHBoxLayout();
 
+    GLWidget* suitView = new GLWidget(fullSuit->getModel());
+    GLWidget* calibView = new GLWidget(calibModel);
+    suitView->setMinimumSize(250,250);
+    calibView->setMinimumSize(250,250);
+    suitView->setMaximumHeight(250);
+    calibView->setMaximumHeight(250);
 
     // Graphic of bands
-    QGraphicsView* view = new QGraphicsView(this);
-    // looks like a TV screen with a shit signal back from the old antenna days...
-//     GLWidget *view = new GLWidget(fullSuit->getModel());
+    QVBoxLayout* glwidgetLayout = new QVBoxLayout();
+    glwidgetLayout->addWidget(calibView,0,Qt::AlignTop);
+    glwidgetLayout->addWidget(suitView,0,Qt::AlignBottom);
 
-    view->setMinimumHeight(250);
-    view->setMinimumWidth(350);
     QVBoxLayout* left = new QVBoxLayout();
     QVBoxLayout* right = new QVBoxLayout();
+
     right->setAlignment(Qt::AlignLeft);
     left->setAlignment(Qt::AlignRight);
     h->addLayout(left, 1);
-    h->addWidget(view, 2);
+    h->addLayout(glwidgetLayout, 2);
     h->addLayout(right, 1);
     settingsLayout->addLayout(h);
+
     settingsLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     // checkboxes
     leftShoulder = new StyledCheckBox(this, "Left Shoulder");
@@ -423,12 +429,12 @@ void MainWindow::createOpenFromLib(USER u) {
         if (S_ISDIR( filestat.st_mode ))         continue;
 
         // TODO: check that this works... catch error
-        libraryFiles.push_back(new WAGFile(filepath.c_str(), true));
+        libraryFiles.push_back(new WAGFile(filepath.c_str(), LIBRARY, true));
     }
     closedir( dp );
 
     openFromLibTable = new QTableWidget(this);
-    openFromLibTable->setStyleSheet("QTableView {border: 1px solid grey; border-radius: 4px");
+    openFromLibTable->setStyleSheet("QTableView {border: 1px solid grey; border-radius: 4px;}");
     openFromLibTable->setColumnCount(4); // name, desc, tags
     openFromLibTable->setRowCount(libraryFiles.size());
     openFromLibTable->setMinimumHeight(400);

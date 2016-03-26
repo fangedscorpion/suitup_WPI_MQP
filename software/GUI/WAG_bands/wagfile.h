@@ -28,7 +28,7 @@ public:
             QVector<QString> in_tags, SAVE_LOCATION saveLoc);
     WAGFile(QString filename, QString description, QString author,
             QHBoxLayout* container, SAVE_LOCATION saveLoc);
-    WAGFile(QString filename, bool peek = false); // Loads WAGFile content from the given filename.
+    WAGFile(QString filename, SAVE_LOCATION saveLoc, bool peek = false); // Loads WAGFile content from the given filename.
     ~WAGFile();
     // getters
     // returns filename without extension

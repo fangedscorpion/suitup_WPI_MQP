@@ -55,6 +55,13 @@ WifiManager::WifiManager():QObject()
 
 }
 
+WifiManager::~WifiManager() {
+    delete newSocket;
+    delete disconnectedMapper;
+    delete recvdMapper;
+    delete connectedMapper;
+}
+
 void WifiManager::initiateConnection(QList<BandType> bandsToConnect)
 {
 
@@ -79,7 +86,7 @@ void WifiManager::startSingleConnection(BandType bandToConnect) {
     qDebug()<<"WifiManager: portNumber: "<<portNum;
 
     // TODO: make sure portnum and ip addr actually exist
-    QTcpSocket *newSocket = new QTcpSocket();
+    newSocket = new QTcpSocket();
 
     int convertedEnum = (int) bandToConnect;
 

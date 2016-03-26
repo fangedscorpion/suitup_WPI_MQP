@@ -49,7 +49,7 @@ WAGFile::WAGFile(QString filename, QString in_description, QString author,
 }
 
 // If peek is true, this loads only the metadata, not the whole file.
-WAGFile::WAGFile(QString filename, bool peek) {
+WAGFile::WAGFile(QString filename, SAVE_LOCATION saveLoc, bool peek) : saveLoc(saveLoc){
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot*>();
     keys = QList<qint32>();

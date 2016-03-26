@@ -1,4 +1,5 @@
 #include "tabcontent.h"
+#define RECORD_STOPWATCH_INTERVAL 100
 
 StyledGroupBox* TabContent::createRecordOptionsAndController() {
     recordingControls = new RecordingController(this, suitObj);
@@ -105,16 +106,17 @@ void TabContent::changeRecordingState(bool shouldRecord) {
         // disable options when recording
         recordOptionsGroup->setEnabled(false);
         modeRadiosGroup->setEnabled(false);
+        parent->lockOnPlayOrRecord(true);
         // update button
         recordButton->setText("Stop Recording");
         recordButton->setIcon(stopIcon);
         recordButton->setIconSize(QSize(25,15));
         // start countdown timer
-        msecs = 0;
         recordCountdownTimer->start(500); // half a second
     } else {
         // update buttons
         recordButton->setText("Recording Stopped");
+        parent->lockOnPlayOrRecord(false);
         // stopped during countdown
         if (recordCountdownTimer->isActive()) {
             // stop countdown timer
@@ -141,40 +143,9 @@ void TabContent::handleRecordingWindowButtons() {
     // pressed "start recording"
     if (recordButton->text() == QString("Start Recording")) {
         changeRecordingState(true);
-        //        // disable options when recording
-        //        recordOptionsGroup->setEnabled(false);
-        //        modeRadiosGroup->setEnabled(false);
-        //        // update button
-        //        recordButton->setText("Stop Recording");
-        //        recordButton->setIcon(stopIcon);
-        //        recordButton->setIconSize(QSize(25,15));
-        //        // start countdown timer
-        //        msecs = 0;
-        //        recordCountdownTimer->start(500); // half a second
         // pressed "stop recording"
     } else if (recordButton->text() == QString("Stop Recording")){
-        //        // update buttons
-        //        recordButton->setText("Recording Stopped");
-        //        // stopped during countdown
-        //        if (recordCountdownTimer->isActive()) {
-        //            // stop countdown timer
-        //            recordCountdownTimer->stop();
-        //            recordResetCountDownTimer();
-        //            // automatically reset
-        //            handleRecordingWindowButtons();
-        //            return;
-        //        } else {
-        //            recordingControls->stopRecording();
-        //        }
-        //        resetButton->setEnabled(true);
-        //        recordButton->setEnabled(false);
-        //        modeRadiosGroup->setEnabled(true);
-        //        // stop recording timer
-        //        recordStopwatchTimer->stop();
-        //        // save new recording
-        //        saveMotion();
         changeRecordingState(false);
-
         // pressed "reset"
     } else if (recordButton->text() == QString("Recording Stopped")) {
         // update button
@@ -216,8 +187,9 @@ void TabContent::recordCountdownTimerEvent() {
         // stop counting down
         recordCountdownTimer->stop();
         // start counting up
-        recordStopwatchTimer->start(100); // 1 tenth of a second
+        recordStopwatchTimer->start(RECORD_STOPWATCH_INTERVAL); // 1 tenth of a second
         // fix labels
+        recordDisplayTime = 0;
         recordCountDownTitleLabel->hide();
         recordStopwatchTitleLabel->show();
         recordCountdownSecondsTitleLabel->hide();
@@ -228,14 +200,35 @@ void TabContent::recordCountdownTimerEvent() {
 
 // handles the stopwatch counter
 void TabContent::recordStopwatchTimerEvent() {
-    // display the time 00:00.0
-    int hundredths = msecs % 10;
-    int numSeconds = (msecs/10) % 60;
-    int numMinutes = msecs/600;
-    QString minNum = QString("%1").arg(numMinutes, 2, 10, QChar('0'));
-    QString secNum = QString("%1").arg(numSeconds, 2, 10, QChar('0'));
-    // set label
-    recordCountdownTime->setText(minNum + ":" + secNum + "." + QString::number(hundredths));
+    qint32 maxTime = recordingControls->getMaxRecordedTime();
 
-    msecs++;
+    QString displayString = "";
+
+    if (maxTime <= recordDisplayTime) {
+        displayString = convertTimeToString(recordDisplayTime);
+        recordDisplayTime += RECORD_STOPWATCH_INTERVAL;
+    } else {
+        recordDisplayTime = maxTime;
+        displayString = convertTimeToString(recordDisplayTime);
+    }
+
+    recordCountdownTime->setText(displayString);
+}
+
+
+QString TabContent::convertTimeToString(qint32 convertTime) {
+    // round number to nearest 10th of millisecond
+    int modVal = convertTime%10;
+    if (modVal >= 5) {
+        convertTime += (10-modVal);
+    } else {
+        convertTime  -= modVal;
+    }
+
+    QTime time = QTime(0, 0, 0, 0);
+    time = time.addMSecs(convertTime);
+
+    QString timeString = time.toString("mm:ss.zzz");
+    timeString.remove(timeString.length() - 2, 2);
+    return timeString;
 }

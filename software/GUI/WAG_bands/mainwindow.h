@@ -110,6 +110,7 @@ private:
     WifiManager* wifiMan;
     Suit* fullSuit;
     ModelLoader *modelLoader;
+    Model* calibModel;
     QSet<BandType> connectedBands;
 
 private slots:

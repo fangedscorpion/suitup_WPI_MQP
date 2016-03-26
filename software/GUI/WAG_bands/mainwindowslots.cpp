@@ -91,7 +91,7 @@ void MainWindow::launchOpenFromComputer(USER u) {
     if (!f.trimmed().isEmpty()) { // user clicked "open"
         if (userOptionsWidget != NULL)
             handleUserOptions(u); // setup the top bar
-        addTab(u, new WAGFile(f.trimmed()), EDIT);
+        addTab(u, new WAGFile(f.trimmed(), LOCALLY), EDIT);
         closeOpenMotionOptions();
     }
 }
@@ -105,7 +105,7 @@ void MainWindow::openFromLibrary(USER u) {
         return;
     }
     QTableWidgetItem* motionInfo = openFromLibTable->item(selection.at(0).row(), 3);
-    addTab(u, new WAGFile(motionInfo->text()), EDIT);
+    addTab(u, new WAGFile(motionInfo->text(), LIBRARY), EDIT);
     closeOpenFromLibrary();
     closeOpenMotionOptions();
 }
@@ -138,12 +138,14 @@ void MainWindow::closeOpenMotionOptions() {
 
 // opens the settings window
 void MainWindow::launchSettings(){
+    fullSuit->startCollecting();
     overlay->show();
     settingsWidget->show();
 }
 
 // closes the settings window
 void MainWindow::closeSettings() {
+    fullSuit->stopCollecting();
     overlay->hide();
     settingsWidget->hide();
     // TODO: show message box if user has not calibrated the suit yet

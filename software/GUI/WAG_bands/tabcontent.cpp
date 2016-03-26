@@ -152,6 +152,9 @@ StyledGroupBox* TabContent::createModeRadios(USER u) {
 
     if (count == 1) {
         modeRadiosGroup->hide();
+        recordRadio->hide();
+        editRadio->hide();
+        playbackRadio->hide();
         return modeRadiosGroup;
     }
 

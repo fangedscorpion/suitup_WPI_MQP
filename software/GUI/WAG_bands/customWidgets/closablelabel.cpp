@@ -20,7 +20,7 @@ ClosableLabel::ClosableLabel(QWidget *parent, QString text) : QLabel(parent) {
     this->setStyleSheet("ClosableLabel{padding: 0px 0px 0px 0px; border: 1px solid gray; border-radius: 4px; background-color: #A5D6A7;}");
     this->setIndent(0);
 
-    QHBoxLayout* h = new QHBoxLayout(this);
+    QHBoxLayout* h = new QHBoxLayout();
     h->setSpacing(0);
     h->addWidget(lbl, -1, Qt::AlignLeft);
     h->addSpacing(10);

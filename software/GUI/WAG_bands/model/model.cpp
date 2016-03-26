@@ -37,6 +37,10 @@ void Model::updatePose(PositionSnapshot *pose){
         updateNamesAndStates();
 }
 
+void Model::updatePoseWithTime(qint32, PositionSnapshot *pose){
+    updatePose(pose);
+}
+
 void Model::updateNodeStatus(QHash<BandType, NodeStatus> statuses){
     QList<BandType> bands = statuses.keys();
     for (int i = 0; i < bands.size(); ++i){

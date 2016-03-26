@@ -16,6 +16,7 @@ class Suit:public QObject
     Q_OBJECT
 public:
     Suit(WifiManager* comms, Model *suitModel);
+    ~Suit();
     AbsBand* getBand(BandType bt);
     // bool playback(vector<PositionSnapshot> motion)
     // PositionSnapshot takeSnapshot( )
@@ -23,6 +24,8 @@ public:
     // map<enum, BandCalibration> getCalibrationData( )
     void startOrStopMode(MessageType);
     Model* getModel() {return model;}
+    void startCollecting() {toggleCollecting(true);}
+    void stopCollecting() {toggleCollecting(false);}
 
 private:
     QHash<BandType, AbsBand*> bands;

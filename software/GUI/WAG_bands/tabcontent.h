@@ -77,6 +77,8 @@ private:
     StyledGroupBox* recordGroup;
     QIcon stopIcon;
     QIcon recordIcon;
+    qint32 recordDisplayTime;
+    QString convertTimeToString(qint32 convertTime);
     QDoubleSpinBox* recordCountDownSpinner;
     StyledGroupBox* recordOptionsGroup;
     StyledGroupBox* createRecordOptionsAndController();
@@ -93,7 +95,6 @@ private:
     void handleRecordTimeCounter();
     QTimer* recordCountdownTimer;
     QTimer* recordStopwatchTimer;
-    int msecs;
     // edit
     QIcon cropIcon;
     QIcon splitIcon;
