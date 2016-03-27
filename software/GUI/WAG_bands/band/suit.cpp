@@ -292,7 +292,7 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
         else {
             avgReadingTime = 0;
         }
-        if (currentMode == RECORDING) {
+        if (currentMode == RECORD) {
             emit positionSnapshotReady(avgReadingTime, activeSnapshot);
         } else {
             // delete the aggregated snapshot in playback mode
