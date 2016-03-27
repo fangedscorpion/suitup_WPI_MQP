@@ -292,8 +292,12 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
         else {
             avgReadingTime = 0;
         }
-        emit positionSnapshotReady(avgReadingTime, activeSnapshot);
-
+        if (currentMode == RECORDING) {
+            emit positionSnapshotReady(avgReadingTime, activeSnapshot);
+        } else {
+            // delete the aggregated snapshot in playback mode
+            delete activeSnapshot;
+        }
         // DO NOT DELETE ACTIVE SNAPSHOT
         // address referenced in wagfile (probably)
         activeSnapshot = new PositionSnapshot();

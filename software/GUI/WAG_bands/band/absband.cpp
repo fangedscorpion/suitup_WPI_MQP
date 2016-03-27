@@ -104,7 +104,7 @@ void AbsBand::sendIfConnected(BandMessage *sendMsg) {
             pingProblems = 0;
             qDebug("AbsBand: Sending band ping");
         }
-        qDebug()<<"AbsBand: sending message type "<<sendMsg->msgType;
+        qDebug()<<"AbsBand: sending message type "<<sendMsg->getMessageType();
         emit dataToSend(type, sendMsg);
     }
 }
