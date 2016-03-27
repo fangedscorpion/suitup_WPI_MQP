@@ -72,7 +72,7 @@ void PlaybackController::toggleVoiceControl(bool enable) {
 void PlaybackController::toggleSuitActive(bool active) {
     if (active != suitActive) {
         if (active) {
-            connect(this, SIGNAL(goToSnapshot(PositionSnapshot*)), suitObj, SLOT(playSnapshot(PositionSnapshot*)));
+            //connect(this, SIGNAL(goToSnapshot(PositionSnapshot*)), suitObj, SLOT(playSnapshot(PositionSnapshot*)));
             connect(this, SIGNAL(startPlayback()), suitObj, SLOT(catchStartPlayback()));
             connect(this, SIGNAL(stopPlayback()), suitObj, SLOT(catchStopPlayback()));
             connect(suitObj, SIGNAL(positionMet()), this, SLOT(positionMet()));
@@ -149,6 +149,7 @@ void PlaybackController::startPlaying() {
             timerId = startTimer(tempFrameRate);
         }
     } else {
+        qDebug()<<"Playback controller: starting playback";
         int tmpFrameRate = MILLISECONDS_PER_FRAME/frameRate;
         updater->startFrameUpdates(tmpFrameRate);
         timerId = startTimer(tmpFrameRate);
@@ -230,7 +231,7 @@ void PlaybackController::beginningSliderChanged(int sliderVal) {
 
 void PlaybackController::endSliderChanged(int sliderVal) {
     endPointer = sliderVal;
-//    if (currentFrame > (endPointer*lastFrameNum/100)) {
+    //    if (currentFrame > (endPointer*lastFrameNum/100)) {
     if (updater->getCurrentFrameNum() > (endPointer*lastFrameNum/100)) {
         updateFrameWithoutSuitNotification(endPointer *lastFrameNum/100);
     }
@@ -252,7 +253,11 @@ void PlaybackController::catchFrameUpdate(qint32 newFrame) {
     // should probably figure out how to handle null snapshots
     // TODO
     //qDebug()<<"Playback controller: emitting snapshot";
+    if (suitActive) {
+        suitObj->playSnapshot(desiredPos);
+    }
     emit goToSnapshot(desiredPos);
+    //qDebug()<<"Playback controller: emitted snapshot";
 }
 
 void PlaybackController::catchVoiceControlCommand(MessageType vcCommandInstruction) {

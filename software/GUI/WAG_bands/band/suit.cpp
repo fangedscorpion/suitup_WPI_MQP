@@ -80,9 +80,9 @@ void Suit::handleConnectionStatusChange(BandType band, ConnectionStatus newStatu
 }
 
 void Suit::sendData(BandType destBand, BandMessage* sendMsg) {
-//    if (sendMsg->getMessageType() == POSITION_ERROR) {
-//        qDebug()<<"Sending error message";
-//    }
+    //    if (sendMsg->getMessageType() == POSITION_ERROR) {
+    //        qDebug()<<"Sending error message";
+    //    }
     wifiMan->sendMessageToBand(destBand, sendMsg);
 }
 
@@ -176,16 +176,17 @@ void Suit::playSnapshot(PositionSnapshot *goToSnap) {
         for (int i = 0; i < connected.size(); i++){
             BandType getBand = connected[i];
             if (snapshotData.contains(getBand)) {
-                //qDebug()<<"Suit: Sending error to band "<<getBand;
+      //          qDebug()<<"Suit: Sending error to band "<<getBand;
                 //qDebug()<<"Suit: band in snapshot, calling move to";
                 posWithinTol &= bands[getBand]->moveTo(snapshotData[getBand]);
-                //qDebug()<<"Suit: Position for band "<<getBand<<" within tolerance "<<posWithinTol;
+        //        qDebug()<<"Suit: Position for band "<<getBand<<" within tolerance "<<posWithinTol;
             }
         }
 
         if (posWithinTol) {
             emit positionMet();
         }
+        //qDebug()<<"Suit finished playing snap";
     }
 }
 
@@ -296,7 +297,9 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
             emit positionSnapshotReady(avgReadingTime, activeSnapshot);
         } else {
             // delete the aggregated snapshot in playback mode
-            delete activeSnapshot;
+            if (activeSnapshot != 0) {
+                delete activeSnapshot;
+            }
         }
         // DO NOT DELETE ACTIVE SNAPSHOT
         // address referenced in wagfile (probably)
