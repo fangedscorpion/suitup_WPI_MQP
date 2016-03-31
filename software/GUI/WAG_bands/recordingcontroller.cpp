@@ -16,7 +16,7 @@ RecordingController::RecordingController(QWidget *parent, Suit *newSuitObj) : QO
 
 void RecordingController::stopRecording() {
     // stop recording
-    suitObj->startOrStopMode(STOP_RECORDING);
+    suitObj->startOrStopMode(STOP_RECORDING_MODE);
     qDebug("RecordingController: Setting motion data");
 
     activeMotion->updateMotionData(currentMotionData);
@@ -28,7 +28,7 @@ void RecordingController::startRecording() {
     recording = true;
     maxRecordedTime = 0;
     currentMotionData.clear();
-    suitObj->startOrStopMode(START_RECORDING);
+    suitObj->startOrStopMode(START_RECORDING_MODE);
 }
 
 void RecordingController::addSnapshotToMotion(qint32 snapTime, PositionSnapshot *snap) {

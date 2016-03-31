@@ -11,6 +11,8 @@
 #include "user.h"
 #include "model/model.h"
 
+enum StartStopModeType {START_PLAYBACK_MODE, STOP_PLAYBACK_MODE, START_RECORDING_MODE, STOP_RECORDING_MODE, START_CALIBRATION_MODE, STOP_CALIBRATION_MODE};
+
 class Suit:public QObject
 {
     Q_OBJECT
@@ -22,15 +24,15 @@ public:
     // PositionSnapshot takeSnapshot( )
     // void calibrate( )
     // map<enum, BandCalibration> getCalibrationData( )
-    void startOrStopMode(MessageType);
+    void startOrStopMode(StartStopModeType);
     Model* getModel() {return model;}
-    void startCollecting() {toggleCollecting(true);}
-    void stopCollecting() {toggleCollecting(false);}
+    void startCollecting();
+    void stopCollecting();
 
 private:
     QHash<BandType, AbsBand*> bands;
     WifiManager *wifiMan;
-    ACTION_TYPE currentMode;
+    DISPLAY_TYPE currentMode;
     bool collectingData;
     int pingTimerID;
     void toggleCollecting(bool);
@@ -68,7 +70,7 @@ private slots:
     void sendData(BandType destBand, BandMessage* sendMsg);
     void getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTimestamp);
     void handleConnectionStatusChange(BandType band, ConnectionStatus newStatus);
-    void catchModeChanged(ACTION_TYPE);
+    void catchModeChanged(DISPLAY_TYPE);
 
 };
 

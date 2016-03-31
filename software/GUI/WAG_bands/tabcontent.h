@@ -22,14 +22,14 @@ public:
 
     QString getFilename() { return motion->getName();}
 
-    ACTION_TYPE getCurrentMode();
+    DISPLAY_TYPE getCurrentMode();
 
 private:
     MainWindow* parent;
     USER user;
     WAGFile* motion;
     QStackedWidget* optionsStack;
-    ACTION_TYPE currentMode;
+    DISPLAY_TYPE currentMode;
     void createIcons();
     void resizeEvent(QResizeEvent* r);
     Overlay* overlay;
@@ -121,7 +121,7 @@ public slots:
     void show(ACTION_TYPE a);
     void updateSpeedSliderText(QString playbackModeString);
     void handleRecordingWindowButtons();
-    void catchModeChanged(ACTION_TYPE newMode);
+    void catchModeChanged(DISPLAY_TYPE newMode);
     void sliderValueChanged(int newVal);
     void launchMotionInfo();
     void closeMotionInfo();
@@ -147,5 +147,5 @@ public slots:
 
 signals:
     void stepThroughChanged(bool steppingThrough);
-    void modeChanged(ACTION_TYPE);
+    void modeChanged(DISPLAY_TYPE);
 };

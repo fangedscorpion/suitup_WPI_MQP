@@ -8,9 +8,22 @@ TabContent::TabContent(MainWindow* in_parent, WAGFile* in_motion, USER u, ACTION
     suitObj = sysSuit;
     modelLoader = ml;
 
-    connect(this, SIGNAL(modeChanged(ACTION_TYPE)), suitObj, SLOT(catchModeChanged(ACTION_TYPE)));
-    connect(this, SIGNAL(modeChanged(ACTION_TYPE)), this, SLOT(catchModeChanged(ACTION_TYPE)));
-    emit modeChanged(initiallyShow);
+    connect(this, SIGNAL(modeChanged(DISPLAY_TYPE)), suitObj, SLOT(catchModeChanged(DISPLAY_TYPE)));
+    connect(this, SIGNAL(modeChanged(DISPLAY_TYPE)), this, SLOT(catchModeChanged(DISPLAY_TYPE)));
+
+    switch (initiallyShow) {
+    case RECORD:
+        emit modeChanged(RECORD_WIND);
+        break;
+    case PLAYBACK:
+        emit modeChanged(PLAYBACK_WIND);
+        break;
+    case EDIT:
+        emit modeChanged(EDIT_WIND);
+        break;
+    default:
+        break;
+    }
 
     textInputStyleRed = "QLineEdit {border: 2px solid red; background: white; border-radius: 4px;} QTextEdit {border-radius: 4px; border: 2px solid red; background: white;}";
     textInputStyleWhite = "QLineEdit {border: 1px solid gray; border-radius: 4px; background: white;} QTextEdit {border-radius: 4px; border: 1px solid grey; background: white;}";
@@ -100,13 +113,26 @@ void TabContent::show(ACTION_TYPE a) {
     if (user.hasAction(a)) {
         optionsStack->setCurrentIndex(a);
         viewerStack->setCurrentIndex(a);
-        emit modeChanged(a);
-    // EDIT is used when opening a file, so if the user doesn't have edit ability, check playback
+        switch (a) {
+        case RECORD:
+            emit modeChanged(RECORD_WIND);
+            break;
+        case PLAYBACK:
+            emit modeChanged(PLAYBACK_WIND);
+            break;
+        case EDIT:
+            emit modeChanged(EDIT_WIND);
+            break;
+        default:
+            break;
+        }
+
+        // EDIT is used when opening a file, so if the user doesn't have edit ability, check playback
     } else if (a == EDIT && user.hasAction(PLAYBACK)) {
         optionsStack->setCurrentIndex(PLAYBACK);
         viewerStack->setCurrentIndex(PLAYBACK);
-        emit modeChanged(PLAYBACK);
-    // otherwise show any one of the available actions.
+        emit modeChanged(PLAYBACK_WIND);
+        // otherwise show any one of the available actions.
     } else {
         std::set<ACTION_TYPE>::iterator it=user.getActions().begin();
         if (it != user.getActions().end())
@@ -210,10 +236,10 @@ StyledGroupBox* TabContent::createViewer(ACTION_TYPE t) {
     return v;
 }
 
-void TabContent::catchModeChanged(ACTION_TYPE newMode)  {
+void TabContent::catchModeChanged(DISPLAY_TYPE newMode)  {
     currentMode = newMode;
 }
 
-ACTION_TYPE TabContent::getCurrentMode() {
+DISPLAY_TYPE TabContent::getCurrentMode() {
     return currentMode;
 }

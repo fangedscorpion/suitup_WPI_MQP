@@ -138,6 +138,8 @@ void MainWindow::closeOpenMotionOptions() {
 
 // opens the settings window
 void MainWindow::launchSettings(){
+
+    emit modeChanged(SETTINGS_WIND);
     fullSuit->startCollecting();
     overlay->show();
     settingsWidget->show();
@@ -148,6 +150,7 @@ void MainWindow::closeSettings() {
     fullSuit->stopCollecting();
     overlay->hide();
     settingsWidget->hide();
+    emit modeChanged(preSettingsMode);
     // TODO: show message box if user has not calibrated the suit yet
 }
 

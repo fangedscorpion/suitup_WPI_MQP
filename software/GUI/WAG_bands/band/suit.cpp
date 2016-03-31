@@ -10,6 +10,7 @@ Suit::Suit(WifiManager *comms, Model *suitModel):QObject() {
     wifiMan = comms;
     startTime = QElapsedTimer();
     startTime.start();
+    currentMode = HOME_WIND;
 
     try {
         bands[CHEST] = new ChestBand();
@@ -68,7 +69,10 @@ void Suit::getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTime
         processVoiceControlMessage(data);
     }
     targetBand->handleMessage((qint32) elapsedTime, data);
-
+    if ((data->getMessageType() == BAND_CONNECTING) && (currentMode == SETTINGS_WIND)) {
+        BandMessage *newMsg = new BandMessage(START_RECORDING, QByteArray());
+        targetBand->sendIfConnected(newMsg);
+    }
 }
 
 AbsBand* Suit::getBand(BandType bt) {
@@ -120,13 +124,14 @@ void Suit::sendToConnectedBands(BandMessage *sendMsg) {
 }
 
 /*
- * starts or stops playback or recording, depending on the parameters
- * only messagetypes of Start/stop recording and start/stop playback should be used
- */
-void Suit::startOrStopMode(MessageType commandType) {
+         * starts or stops playback or recording, depending on the parameters
+         * only messagetypes of Start/stop recording and start/stop playback should be used
+         */
+void Suit::startOrStopMode(StartStopModeType commandType) {
     BandMessage *newMsg;
     switch (commandType) {
-    case START_RECORDING:
+    case START_CALIBRATION_MODE:
+    case START_RECORDING_MODE:
         qDebug("Suit: starting record");
         toggleCollecting(true);
         startTime = QElapsedTimer();
@@ -134,13 +139,14 @@ void Suit::startOrStopMode(MessageType commandType) {
         newMsg = new BandMessage(START_RECORDING, QByteArray());
         sendToConnectedBands(newMsg);
         break;
-    case STOP_RECORDING:
+    case STOP_CALIBRATION_MODE:
+    case STOP_RECORDING_MODE:
         newMsg = new BandMessage(STOP_RECORDING, QByteArray());
         sendToConnectedBands(newMsg);
         qDebug("Suit: Stopping record");
         toggleCollecting(false);
         break;
-    case START_PLAYBACK:
+    case START_PLAYBACK_MODE:
         qDebug("Suit: Starting playback");
         startTime = QElapsedTimer();
         startTime.start();
@@ -148,7 +154,7 @@ void Suit::startOrStopMode(MessageType commandType) {
         newMsg = new BandMessage(START_PLAYBACK, QByteArray());
         sendToConnectedBands(newMsg);
         break;
-    case STOP_PLAYBACK:
+    case STOP_PLAYBACK_MODE:
         newMsg = new BandMessage(STOP_PLAYBACK, QByteArray());
         sendToConnectedBands(newMsg);
         toggleCollecting(false);
@@ -161,7 +167,7 @@ void Suit::startOrStopMode(MessageType commandType) {
 }
 
 void Suit::catchStartPlayback() {
-    startOrStopMode(START_PLAYBACK);
+    startOrStopMode(START_PLAYBACK_MODE);
 
 }
 
@@ -176,10 +182,10 @@ void Suit::playSnapshot(PositionSnapshot *goToSnap) {
         for (int i = 0; i < connected.size(); i++){
             BandType getBand = connected[i];
             if (snapshotData.contains(getBand)) {
-      //          qDebug()<<"Suit: Sending error to band "<<getBand;
+                //          qDebug()<<"Suit: Sending error to band "<<getBand;
                 //qDebug()<<"Suit: band in snapshot, calling move to";
                 posWithinTol &= bands[getBand]->moveTo(snapshotData[getBand]);
-        //        qDebug()<<"Suit: Position for band "<<getBand<<" within tolerance "<<posWithinTol;
+                //        qDebug()<<"Suit: Position for band "<<getBand<<" within tolerance "<<posWithinTol;
             }
         }
 
@@ -191,10 +197,10 @@ void Suit::playSnapshot(PositionSnapshot *goToSnap) {
 }
 
 void Suit::catchStopPlayback() {
-    startOrStopMode(STOP_PLAYBACK);
+    startOrStopMode(STOP_PLAYBACK_MODE);
 }
 
-void Suit::catchModeChanged(ACTION_TYPE newMode) {
+void Suit::catchModeChanged(DISPLAY_TYPE newMode) {
     qDebug()<<"Suit: mode changed to "<<newMode;
     currentMode = newMode;
 }
@@ -202,7 +208,7 @@ void Suit::catchModeChanged(ACTION_TYPE newMode) {
 void Suit::processVoiceControlMessage(BandMessage *msg) {
     qDebug()<<"Received voice control message";
     qDebug()<<"Suit: voice contrl data"<<msg->getMessageData();
-    if (currentMode == PLAYBACK) {
+    if (currentMode == PLAYBACK_WIND) {
         switch (msg->parseVoiceControlMsg()) {
         case VC_START:
             if (!collectingData) {
@@ -230,7 +236,7 @@ void Suit::processVoiceControlMessage(BandMessage *msg) {
             qDebug()<<"Invalid message type transmitted";
             break;
         }
-    } else if (currentMode == RECORD) {
+    } else if (currentMode == RECORD_WIND) {
         switch (msg->parseVoiceControlMsg()) {
         case VC_START:
             if (!collectingData) {
@@ -268,8 +274,8 @@ void Suit::propagateLowBatteryUpdate(BandType chargeBand, bool hasLowBattery) {
 
 void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime) {
     /* AbsState *copiedPose = (AbsState*) malloc(newPose->objectSize()); // not sure if can do this for abs
-    // TODO figure out where to free this
-    *copiedPose = *newPose; */
+            // TODO figure out where to free this
+            *copiedPose = *newPose; */
 
     // NOTE: may have to make sure changes to this absstate later are not reflected in position snapshot
 
@@ -293,7 +299,7 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
         else {
             avgReadingTime = 0;
         }
-        if (currentMode == RECORD) {
+        if ((currentMode == RECORD_WIND) || (currentMode == SETTINGS_WIND)) {
             emit positionSnapshotReady(avgReadingTime, activeSnapshot);
         } else {
             // delete the aggregated snapshot in playback mode
@@ -338,4 +344,12 @@ void Suit::calibrate() {
             bandArr[i]->calibrate();
         }
     }
+}
+
+void Suit::startCollecting() {
+    startOrStopMode(START_CALIBRATION_MODE);
+    //toggleCollecting(true);
+}
+void Suit::stopCollecting() {
+    startOrStopMode(STOP_CALIBRATION_MODE);
 }

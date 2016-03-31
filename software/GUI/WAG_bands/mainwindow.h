@@ -52,6 +52,7 @@ public:
     void lockOnPlayOrRecord(bool suitRecording);
 
 private:
+    DISPLAY_TYPE preSettingsMode;
     Ui::MainWindow* ui;
     void resizeEvent(QResizeEvent* r);
     void addTab(USER u, WAGFile* w, ACTION_TYPE a);
@@ -148,7 +149,6 @@ private slots:
     void updateConnectionStatus(BandType b, ConnectionStatus c);
     void updateBatteryStatus();
     void catchLowBatterySignal(BandType lowBatteryBand, bool batteryIsLow);
-
 signals:
-    void modeChanged(ACTION_TYPE);
+    void modeChanged(DISPLAY_TYPE);
 };

@@ -26,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QVBoxLayout* applicationLayout(new QVBoxLayout(applicationWidget));
     applicationWidget->setLayout(applicationLayout);
 
+    preSettingsMode = HOME_WIND;
+
     setWindowTitle(tr("WAG bands"));
     setMinimumSize(1100, 650);
     setMaximumSize(1100, 650);
@@ -73,7 +75,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connectedBands = QSet<BandType>();
     connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(indicateConnectionStatusChange(BandType, ConnectionStatus)));
-    connect(this, SIGNAL(modeChanged(ACTION_TYPE)), fullSuit, SLOT(catchModeChanged(ACTION_TYPE)));
+    connect(this, SIGNAL(modeChanged(DISPLAY_TYPE)), fullSuit, SLOT(catchModeChanged(DISPLAY_TYPE)));
     connect(wifiMan, SIGNAL(connectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(updateConnectionStatus(BandType, ConnectionStatus)));
     connect(fullSuit, SIGNAL(bandHasLowBattery(BandType, bool)), this, SLOT(catchLowBatterySignal(BandType, bool)));
     connect(fullSuit, SIGNAL(bandConnectionStatusChanged(BandType,ConnectionStatus)), this, SLOT(updateConnectionStatus(BandType,ConnectionStatus)));
@@ -531,12 +533,15 @@ void MainWindow::catchTabChange(int tabIndex) {
 
     // there's probably a better way to do this, but I can't think of one right now
     if (TabContent* tab = qobject_cast<TabContent*>(current)) {
-        ACTION_TYPE mode = tab->getCurrentMode();
+        DISPLAY_TYPE mode = tab->getCurrentMode();
+        preSettingsMode = mode;
         qDebug()<<"MainWindow: Mode changed to "<<mode;
         emit modeChanged(mode);
     } else {
         // not a tab
         qDebug("MainWindow: Not a tab");
+        preSettingsMode = HOME_WIND;
+        emit modeChanged(HOME_WIND);
     }
 
 }
