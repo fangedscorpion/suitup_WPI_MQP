@@ -54,6 +54,7 @@ public:
     QString getName() const {return name;}
     QMatrix4x4 getTransformation() const {return transformation;}
     QMatrix4x4 getDefaultPose() const {return defaultPose;}
+    QQuaternion getDefaultRotation() const {return rotToOrigin.conjugated();}
     QQuaternion getWorldRotation() const {return worldRotation;}
     bool isRoot() const {return isRootNode;}
     NodeStatus getStatus() const {return status;}

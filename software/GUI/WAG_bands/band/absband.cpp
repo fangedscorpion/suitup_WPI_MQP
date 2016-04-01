@@ -134,16 +134,16 @@ AbsState *AbsBand::deserialize(QByteArray byteRep, PositionRepresentation positi
     switch (positionRep) {
     case QUATERNION:
         float quatFloat[4];
-        quatFloat[0] = ((byteRep[0] << 8) | byteRep[1]) / 16384.0f;
-        quatFloat[1] = ((byteRep[2] << 8) | byteRep[3]) / 16384.0f;
-        quatFloat[2] = ((byteRep[4] << 8) | byteRep[5]) / 16384.0f;
-        quatFloat[3] = ((byteRep[6] << 8) | byteRep[7]) / 16384.0f;
+        quatFloat[0] = (((quint8)byteRep[0] << 8) | (quint8)byteRep[1]) / 16384.0f;
+        quatFloat[1] = (((quint8)byteRep[2] << 8) | (quint8)byteRep[3]) / 16384.0f;
+        quatFloat[2] = (((quint8)byteRep[4] << 8) | (quint8)byteRep[5]) / 16384.0f;
+        quatFloat[3] = (((quint8)byteRep[6] << 8) | (quint8)byteRep[7]) / 16384.0f;
         for (int i = 0; i < 4; i++) {
             if (quatFloat[i] >= 2) {
                 quatFloat[i] = -4 + quatFloat[i];
             }
         }
-        state = new QuatState(quatFloat[0], quatFloat[1], quatFloat[2], quatFloat[3]);
+        state = new QuatState(quatFloat[0], -quatFloat[1], quatFloat[3], quatFloat[2]);
         break;
     default:
         break;
