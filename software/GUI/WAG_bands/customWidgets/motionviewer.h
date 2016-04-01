@@ -41,5 +41,4 @@ public slots:
     void updateFirstLabel(qint32 newTime);
     void updateLastLabel(qint32 newTime);
     void changeSliderRange(qint32 newSliderLen);
-
 };

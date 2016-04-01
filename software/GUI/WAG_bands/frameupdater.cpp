@@ -11,7 +11,7 @@ FrameUpdater::FrameUpdater(int newFrameIncrement) : QObject() {
 }
 
 FrameUpdater::~FrameUpdater() {
-    delete frameUpdateTimer;
+//    delete frameUpdateTimer;
 }
 
 bool FrameUpdater::startFrameUpdates(int timerDelay) {

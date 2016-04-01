@@ -80,6 +80,8 @@ TabContent::TabContent(MainWindow* in_parent, WAGFile* in_motion, USER u, ACTION
 
 TabContent::~TabContent() {
     delete motion;
+    // suitObj deleted in MainWindow
+
     if (playbackControls != 0)
         delete playbackControls;
     if (editingControls != 0)
@@ -89,6 +91,8 @@ TabContent::~TabContent() {
 
     if (playbackMotionViewer != 0)
         delete playbackMotionViewer;
+    if (editMotionViewer != 0)
+        delete editMotionViewer;
 }
 
 void TabContent::createIcons() {

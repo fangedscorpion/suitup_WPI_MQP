@@ -56,10 +56,12 @@ WifiManager::WifiManager():QObject()
 }
 
 WifiManager::~WifiManager() {
-    delete newSocket;
     delete disconnectedMapper;
     delete recvdMapper;
     delete connectedMapper;
+    qDeleteAll(socketMap);
+//    delete serv;
+//    delete newSocket;
 }
 
 void WifiManager::initiateConnection(QList<BandType> bandsToConnect)
@@ -242,4 +244,5 @@ void WifiManager::sendMessageToBand(BandType destBand, BandMessage *fullMsg) {
 //        qDebug()<<"WifiManager: sending error to band "<<fullMsg->getMessageData();
 //    }
     sendRawDataToBand(destBand, fullMsg->getSerializedMessage());
+    // mark fullMsg for delete?
 }

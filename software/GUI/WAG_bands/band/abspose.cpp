@@ -5,6 +5,10 @@ AbsPose::AbsPose() : QObject()
 
 }
 
+AbsPose::~AbsPose(){
+    delete node;
+}
+
 //void AbsPose::update(AbsState *s){
 //     qDebug("Update");
 //}

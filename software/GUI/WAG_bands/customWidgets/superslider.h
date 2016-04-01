@@ -19,7 +19,7 @@ class SuperSlider: public QSlider
 public:
   /** Constructor */
   SuperSlider(QWidget *parent);
-
+    ~SuperSlider(){}
   /** Store the alternate handle for this slider*/
   SuperSliderHandle *alt_handle;
 
@@ -69,6 +69,7 @@ public:
   /** Constructor */
   SliderEventFilter(SuperSlider *_grandParent)
   {grandParent = _grandParent;};
+    ~SliderEventFilter(){}
 
 protected:
   /*
@@ -120,7 +121,7 @@ class SuperSliderTimeBar: public QLabel
 public:
   /** Constructor */
   SuperSliderTimeBar(SuperSlider *parent);
-
+    ~SuperSliderTimeBar(){delete filter;}
   /** Returns the value of this handle with respect to the slider */
   int value();
 

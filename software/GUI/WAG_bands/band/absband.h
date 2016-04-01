@@ -21,7 +21,7 @@ class AbsBand:public QObject
     Q_OBJECT
 public:
     AbsBand(BandType);
-
+    ~AbsBand();
     // updating the pose
     void updateState(AbsState* state, qint32 msgTime);
     void calibrate() {pose->calibrate();}
@@ -73,22 +73,16 @@ signals:
 class ArmBand : public AbsBand {
 public:
     ArmBand(BandType b);
+    ~ArmBand(){}
     void handleMessage(qint32, BandMessage *);
     AbsState* getStateUpdate() const;
     bool moveTo(AbsState* x);
 };
 
-/* class Glove : public AbsBand {
-public:
-    Glove(BandType b);
-    void handleMessage(qint32, BandMessage *);
-    AbsState* getStateUpdate() const;
-    bool moveTo(AbsState* x);
-}; */
-
 class ShoulderBand : public AbsBand {
 public:
     ShoulderBand(BandType b);
+    ~ShoulderBand(){}
     void handleMessage(qint32, BandMessage *);
     AbsState* getStateUpdate() const;
     bool moveTo(AbsState* x);
@@ -97,6 +91,7 @@ public:
 class ChestBand : public AbsBand {
 public:
     ChestBand();
+    ~ChestBand(){}
     void handleMessage(qint32, BandMessage *);
     AbsState* getStateUpdate() const;
     bool moveTo(AbsState* x);

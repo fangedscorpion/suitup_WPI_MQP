@@ -17,6 +17,7 @@ EditingController::EditingController(QWidget *parent) : QObject(parent)
 }
 
 EditingController::~EditingController() {
+    // activeMotion will be deleted by TabContent
     delete updater;
 }
 

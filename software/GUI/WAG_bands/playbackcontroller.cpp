@@ -38,6 +38,8 @@ PlaybackController::PlaybackController(QWidget *parent, Suit *newSuitObj) : QObj
 
 PlaybackController::~PlaybackController() {
     delete updater;
+    // activeMotion is deleted in TabContent
+    // suitObj is deleted in MainWindow
 }
 
 void PlaybackController::togglePlay() {

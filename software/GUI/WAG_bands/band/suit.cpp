@@ -54,6 +54,7 @@ Suit::Suit(WifiManager *comms, Model *suitModel):QObject() {
 }
 
 Suit::~Suit() {
+    // wifiMan deleted in MainWindow
     delete model;
     delete activeSnapshot;
     qDeleteAll(bands);

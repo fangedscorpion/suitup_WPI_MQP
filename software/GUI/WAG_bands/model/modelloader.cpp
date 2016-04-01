@@ -18,6 +18,7 @@ Model *ModelLoader::load() {
     QStringList names = pointsJson.keys();
 
     for (int i = 0; i < names.length(); ++i){
+        // this line has a memory leak...
         QSharedPointer<Node> n(new Node);
         n->setName(names[i]);
         n->setTail(jsonArr3toQVec3(pointsJson.value(names[i]).toObject().value("tail").toArray(),rotateBlenderToOpenGL));

@@ -6,7 +6,7 @@ class OverlayWidget : public Overlay {
     Q_OBJECT
 public:
     OverlayWidget(QWidget* parent, std::string title);
-    ~OverlayWidget();
+    ~OverlayWidget(){}
 
     QVBoxLayout* getLayout();
 

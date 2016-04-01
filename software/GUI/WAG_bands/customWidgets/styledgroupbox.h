@@ -10,7 +10,7 @@ class StyledGroupBox : public QWidget {
     Q_OBJECT
 public:
     StyledGroupBox(QWidget* parent, QString title);
-    ~StyledGroupBox();
+    ~StyledGroupBox(){}
     QVBoxLayout* getLayout() {return static_cast<QVBoxLayout*>(this->layout());}
     void setTitle(QString t);
 private:

@@ -19,6 +19,10 @@ AbsBand::AbsBand(BandType bt):QObject() {
     hasLowBattery = false;
 }
 
+AbsBand::~AbsBand(){
+    delete pose;
+}
+
 void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
     if (newStatus == CONNECTED) {
         // send hi there message
@@ -107,6 +111,7 @@ void AbsBand::sendIfConnected(BandMessage *sendMsg) {
         qDebug()<<"AbsBand: sending message type "<<sendMsg->getMessageType();
         emit dataToSend(type, sendMsg);
     }
+//    delete sendMsg;
 }
 
 void AbsBand::updateState(AbsState* state, qint32 msgTime){

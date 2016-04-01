@@ -53,7 +53,6 @@ public:
 
 private:
     DISPLAY_TYPE preSettingsMode;
-    Ui::MainWindow* ui;
     void resizeEvent(QResizeEvent* r);
     void addTab(USER u, WAGFile* w, ACTION_TYPE a);
     QWidget* getCurrentTabcontent() { return tabs->currentWidget(); }

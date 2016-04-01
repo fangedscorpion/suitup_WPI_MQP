@@ -11,6 +11,7 @@ class SmartRadioButton : public QRadioButton
 public:
     SmartRadioButton(QWidget* parent, const char* name, ACTION_TYPE a);
     SmartRadioButton(QWidget* parent, const char* name);
+    ~SmartRadioButton(){}
     void setAction(ACTION_TYPE a);
 
 private:

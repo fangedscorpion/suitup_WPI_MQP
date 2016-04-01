@@ -21,6 +21,7 @@ class CoordinateFrame {
 public:
     CoordinateFrame() {}
     CoordinateFrame(QVector3D x, QVector3D y, QVector3D z) : xv(x), yv(y), zv(z){}
+    ~CoordinateFrame(){}
     QVector3D x() const {return xv;}
     QVector3D y() const {return yv;}
     QVector3D z() const {return zv;}
@@ -36,7 +37,7 @@ private:
 class Node {
 public:
     Node() {}
-
+    ~Node(){}
     // setters
     void setName(QString name) {this->name = name;}
     void setTransformation(QMatrix4x4 transformation) {this->transformation = transformation;}
@@ -92,6 +93,7 @@ class Model : public QObject{
     Q_OBJECT
 public:
     Model() : QObject() {}
+    ~Model(){}
     Model(QVector<QSharedPointer<Node> > nodes);
     QVector<QSharedPointer<Node> > getNodes() const {return nodes;}
     QSharedPointer<Node> getNodeByName(QString name) const;

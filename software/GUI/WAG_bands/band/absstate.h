@@ -8,6 +8,7 @@ enum PositionRepresentation {QUATERNION};
 class AbsState{
 public:
     AbsState(PositionRepresentation stateRep) : stateRep(stateRep) {}
+    ~AbsState(){}
     PositionRepresentation getStateRep(){return stateRep;}
 protected:
     PositionRepresentation stateRep;
@@ -20,7 +21,7 @@ public:
     QuatState(float scalar, float xpos, float ypos, float zpos) : AbsState(QUATERNION), QQuaternion(scalar,xpos,ypos,zpos){}
     QuatState() : AbsState(QUATERNION), QQuaternion(){}
     QuatState(QQuaternion q) : AbsState(QUATERNION), QQuaternion(q.scalar(),q.vector()){}
-
+    ~QuatState(){}
 };
 
 inline QDataStream & operator<<(QDataStream & str, AbsState*) {

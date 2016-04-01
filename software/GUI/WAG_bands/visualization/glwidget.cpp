@@ -23,9 +23,8 @@ GLWidget::GLWidget(Model* m) :
 }
 
 GLWidget::~GLWidget(){
-    delete modelGL;
-    m_vao.destroy();
-    m_shaderProgram;
+//    delete model;
+//    delete modelGL;
 }
 
 static void qNormalizeAngle(int &angle) {

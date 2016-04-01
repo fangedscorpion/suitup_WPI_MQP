@@ -85,6 +85,8 @@ MainWindow::~MainWindow() {
     delete modelLoader;
     delete wifiMan;
     delete fullSuit;
+    delete calibModel;
+    delete overlay;
 }
 
 void MainWindow::closeTab(int i) {
@@ -162,7 +164,6 @@ QWidget* MainWindow::createUserSelectionWindow(std::vector<USER> u) {
 }
 
 // settings overlay
-// TODO: add a person
 // TODO: add a connected bands indicator
 // TODO: add pop up if they did not calibrate or connect bands
 void MainWindow::createSettings() {

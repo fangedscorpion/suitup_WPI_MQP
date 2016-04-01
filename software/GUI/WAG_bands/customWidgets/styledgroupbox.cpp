@@ -21,8 +21,6 @@ StyledGroupBox::StyledGroupBox(QWidget* parent, QString in_title) : QWidget(pare
     this->setLayout(layout);
 }
 
-StyledGroupBox::~StyledGroupBox() {}
-
 void StyledGroupBox::paintEvent(QPaintEvent *) {
     QStyleOption opt;
     opt.init(this);

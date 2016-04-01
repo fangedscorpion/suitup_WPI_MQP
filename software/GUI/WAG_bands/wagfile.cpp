@@ -26,7 +26,6 @@ QDataStream & operator>>(QDataStream & str, PositionSnapshot *v) {
 }
 
 WAGFile::~WAGFile() {
-    // what to delete here?
     clearHashmapData(motionData);
 }
 

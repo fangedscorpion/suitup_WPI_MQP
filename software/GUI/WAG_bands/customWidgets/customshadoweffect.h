@@ -12,7 +12,7 @@ class CustomShadowEffect : public QGraphicsEffect
     Q_OBJECT
 public:
     explicit CustomShadowEffect(QObject *parent);
-
+    ~CustomShadowEffect(){}
     void draw(QPainter* painter);
     QRectF boundingRectFor(const QRectF& rect) const;
 
