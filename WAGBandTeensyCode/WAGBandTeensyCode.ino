@@ -52,6 +52,8 @@ void setup() {
     
     battMonitor.initLowBatteryInfo();
 
+    mpu6050Jawn.loadAccelGyroOffsets(-3287, -4641, 1556, -14, -2, 5);//int xAccel, int yAccel, int zAccel, int xGyro, int yGyro, int zGyro);
+
     esp8266.zeroErrorCalculations();
 }
 
@@ -65,8 +67,12 @@ void loop() {
     unsigned long time1 = millis();
     battMonitor.checkBattery(); 
 
+    
+//    mpu6050Jawn.extractMPU6050ValsDebug(esp8266.teapotPkt); //Extracts and packs them all in 1 --> For testing the device with the teapot demo to ensure good accelerometer data
+//    esp8266.sendMsgToESP8266DebugMPU();  
+    
     mpu6050Jawn.extractMPU6050Vals(esp8266.msgToESP8266); //Extracts and packs them all in 1
-
+    
     if(battMonitor.hasLowBat()){
       esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA_LOW_BATT);  
     }

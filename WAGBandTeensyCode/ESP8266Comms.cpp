@@ -150,6 +150,13 @@ void ESP8266Comms::sendMsgToESP8266(char cmd, uint8_t* teaPkt){
 }
 
 //This draws from the ESP8266 msg which should be prefilled from the extractMPU6050Vals(uint8_t* espMsg)
+void ESP8266Comms::sendMsgToESP8266DebugMPU(){ 
+    for(int i = 0; i < 14; i++){
+          Serial.print(char(this->teapotPkt[i]));
+      }
+} 
+
+//This draws from the ESP8266 msg which should be prefilled from the extractMPU6050Vals(uint8_t* espMsg)
 void ESP8266Comms::sendMsgToESP8266(char cmd){
     this->setCommand(cmd); //Set the proper cmd in our pkt
    

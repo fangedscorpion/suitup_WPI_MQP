@@ -100,6 +100,7 @@ public:
 
 	void extractMPU6050Vals();
 	void extractMPU6050Vals(uint8_t* espPkt);
+  void extractMPU6050ValsDebug(uint8_t* espPkt);
 
 	uint8_t* getTeapotPkt(); //Gives the packet out to other function calls
 

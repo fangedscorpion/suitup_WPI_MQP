@@ -83,7 +83,7 @@ class ESP8266Comms{
 
 		//	Data to be sent to the ESP8266
 		uint8_t msgToESP8266[MSG_TO_ESP8266_TOTAL_SIZE] = {ESP8266_START_BYTE, ESP8266_START_BYTE, ESP8266_START_BYTE, ESP8266_CMD_NO_AXN, 0,0,0,0, 0,0,0,0};
-
+    uint8_t teapotPkt[14] = {'$',0x02, 0,0,0,0,0,0,0,0, 0x00, 0x00, '\r', '\n'};
 		/*
 
 			FUNCTIONS
@@ -109,6 +109,7 @@ class ESP8266Comms{
 		void sendMsgToESP8266(char cmd, uint8_t* teaPkt); //Sends the msgToESP8266 bytes to the ESP with or without data
 
 		void sendMsgToESP8266(char cmd); //Sends the msgToESP8266 bytes to the ESP with or without data
+    void sendMsgToESP8266DebugMPU(); //Sends the Serial (PC) in the Teapot packet order
 
 		void copyMPU6050DataIntoMsg(uint8_t* teapotPkt); //Copies in the array of data to the teapotPkt
 };
