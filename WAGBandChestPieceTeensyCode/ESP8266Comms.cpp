@@ -156,6 +156,6 @@ void ESP8266Comms::sendMsgToESP8266(char cmd){
     for(int i = 0; i < MSG_TO_ESP8266_TOTAL_SIZE; i++){
 
           ESP8266_SERIAL.write(this->msgToESP8266[i]);
-          DEBUG_SERIAL.print(char(this->msgToESP8266[i]));
+          //DEBUG_SERIAL.print(char(this->msgToESP8266[i]));
       }
 }  

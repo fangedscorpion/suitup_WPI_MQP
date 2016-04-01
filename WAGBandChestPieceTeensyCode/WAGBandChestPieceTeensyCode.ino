@@ -5,8 +5,8 @@
 
 #include "ESP8266Comms.h" //All the listener code for the ESP8266
 #include "BatteryMonitor.h" //Low battery averaging code
-
 #include "MPU6050WAGWrapper.h" //All the boring MPU6050 stuff
+
 
 /* 
  *  EasyVR code and interface to the Arduino
@@ -75,9 +75,13 @@ void setup() {
     
     battMonitor.initLowBatteryInfo();
 
+    esp8266.zeroErrorCalculations();
+
+    enableVoiceControl();
 }
 
-
+#define NUMBER_OF_STOP_MSGS_TO_SEND 8
+#define NUMBER_OF_START_MSGS_TO_SEND 5
 
 // ================================================================
 // ===                    MAIN PROGRAM LOOP                     ===
@@ -105,11 +109,17 @@ void loop() {
     if(battMonitor.hasLowBat()){
       if(gotCMD && receivedCmdFromArduino == 'S'){ // Stop
         DEBUG_SERIAL.println("LB_STOP");
-        esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_STOP_LOW_BATT);
+        for(int i = 0; i < NUMBER_OF_STOP_MSGS_TO_SEND; i++){
+          esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_STOP_LOW_BATT); //So much serial data already into ESP 
+          delay(1); 
+        }
       }
       else if(gotCMD && receivedCmdFromArduino == 'R'){ // RUN
         DEBUG_SERIAL.println("LB_RUN");
-        esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_START_LOW_BATT);
+        for(int i = 0; i < NUMBER_OF_START_MSGS_TO_SEND; i++){
+          esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_START_LOW_BATT); //So much serial data already into ESP
+          delay(1);  
+        }
       }
       else{ //Either didn't get command or wasn't a valid command
         esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA_LOW_BATT);  
@@ -118,16 +128,28 @@ void loop() {
     else{
       if(gotCMD && receivedCmdFromArduino == 'S'){ // Stop
         DEBUG_SERIAL.println("STOP");
-        esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_STOP);
+        for(int i = 0; i < NUMBER_OF_STOP_MSGS_TO_SEND; i++){
+          esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_STOP); //So much serial data already into ESP
+          delay(1);  
+        }
       }
       else if(gotCMD && receivedCmdFromArduino == 'R'){ // RUN
         DEBUG_SERIAL.println("RUN");
-        esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_START);
+        for(int i = 0; i < NUMBER_OF_START_MSGS_TO_SEND; i++){
+          esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_START); //So much serial data already into ESP 
+          delay(1); 
+        }
       }
       else{ //Either didn't get command or wasn't a valid command
         esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA);  
       }
     }
     
-    DEBUG_SERIAL.println(String("Tm:")+(millis()-time1));
+    gotCMD = false;
+    unsigned long timePassed = (millis()-time1);
+    //DEBUG_SERIAL.println(String("Tm:")+timePassed);
+    if(timePassed < 5){ // Fill out time until the 6ms mark to make serial more usable
+      delay(5-timePassed);
+    }
+    DEBUG_SERIAL.println(String("Tm:")+(millis() - time1));
 }

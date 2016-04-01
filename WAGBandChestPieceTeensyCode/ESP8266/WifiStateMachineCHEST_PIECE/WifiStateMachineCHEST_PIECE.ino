@@ -222,17 +222,18 @@ void readTeensySerialSendPkt(boolean printStuff){
         ESP8266_SERIAL.print(char(sbuf[wrapCircularIndex(serialDataTailPointer+2)]));
         ESP8266_SERIAL.print("END_RD");
       }
-      
+
+        char theCMD = sbuf[wrapCircularIndex(serialDataTailPointer+3)];
         if(printStuff){
           ESP8266_SERIAL.print("CMD:");
-          ESP8266_SERIAL.print(char(sbuf[wrapCircularIndex(serialDataTailPointer+3)]));
+          ESP8266_SERIAL.print(char(theCMD));
         }
           serialDataTailPointer = wrapCircularIndex(serialDataTailPointer+4);
 
 
           uint8_t voiceCmd = false;
           
-          switch(sbuf[MSG_TO_ESP8266_ALIGN_BYTES-1]){ //Tell what type of cmd to add
+          switch(theCMD){ //Tell what type of cmd to add
               case ESP8266_CMD_MPU6050_DATA: 
                   recordingMsg[CMD_SLOT] = BAND_POSITION_UPDATE;
                   break;
@@ -307,6 +308,7 @@ void readTeensySerialSendPkt(boolean printStuff){
             
             if(voiceCmd){ //Voice control packet 
               if(printStuff){
+                
                 ESP8266_SERIAL.write(voiceControlMsg, VOICE_CONTROL_LENGTH);  //Write the packet to the PC  
               }
               

@@ -9,6 +9,6 @@
 
 
 #define DEBUG_SERIAL Serial
-#define ESP8266_SERIAL Serial3
+#define ESP8266_SERIAL Serial2 // Only for the Chestband!!!
 
 #endif
