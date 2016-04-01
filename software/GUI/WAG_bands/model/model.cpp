@@ -28,6 +28,8 @@ void Model::updatePose(PositionSnapshot *pose){
         case QUATERNION:
             somethingChanged = true;
             getNodeByName(bandName)->setWorldRotation(*(static_cast<QuatState*>(state)));
+//            qDebug() << bandName;
+//            qDebug() << (static_cast<QuatState*>(state))->length();
             break;
         default:
             qDebug() << "Model::updatePose(): Don't know how to handle given state representation!";
@@ -101,6 +103,7 @@ void Node::init() {
 }
 
 void Node::calibrate(QQuaternion sensedOrientation) {
+    // need to fix
     calibration = sensedOrientation.conjugated() * worldRotation;
 }
 
