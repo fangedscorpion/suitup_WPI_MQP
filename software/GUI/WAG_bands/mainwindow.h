@@ -36,6 +36,8 @@
 #include "band/suit.h"
 #include "model/modelloader.h"
 
+#define ABOUT_TEXT_FILE "../WAG_bands/about.txt"
+
 namespace Ui {
 class MainWindow;
 }
@@ -67,11 +69,15 @@ private:
     SmartPushButton* newBtn;
     SmartPushButton* openBtn;
     SmartPushButton* settingsBtn;
+    SmartPushButton* aboutBtn;
     QHBoxLayout* createMenuButtons();
     // statusbar
     QLabel* connectionStatus;
     QLabel* batteryStatus;
     QHBoxLayout* createStatusBar();
+    // about overlay
+    OverlayWidget* aboutWidget;
+    void createAbout();
     // settings overlay
     StyledCheckBox* leftShoulder;
     StyledCheckBox* leftUpperArm;
@@ -148,6 +154,9 @@ private slots:
     void updateConnectionStatus(BandType b, ConnectionStatus c);
     void updateBatteryStatus();
     void catchLowBatterySignal(BandType lowBatteryBand, bool batteryIsLow);
+    // about WAG bands
+    void launchAbout();
+    void closeAbout();
 signals:
     void modeChanged(DISPLAY_TYPE);
 };

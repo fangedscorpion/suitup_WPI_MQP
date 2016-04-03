@@ -1,0 +1,9 @@
+This project is the result of a Worcester Polytechnic Institute (WPI) Major Qualifying Project. <br>
+The team members are Amanda Adkins, William Barnard, Matthew Beardsley, Charles Frick, and Samantha Swartz. <br>
+The advisors are Michael Gennert, Hugh Lauer, and Fred Looft. <br>
+<br>
+The goal of this project was to create a training tool to improve the efficiency and convenience of teaching and learning new physical skills, while matching or exceeding the quality of feedback received from an in-person trainer. Our solution consists of a computer application and a set of Wearable Action Guidance Bands (WAG Bands), with each band comprising a 3D printed case, an inertial measurement unit, a battery, a ring of vibration motors, and a secure strap. Trainers can use the WAG Bands to record and save motions for distribution to trainees, while trainees can use the bands to play back those motions with directed vibratory feedback. Initial prototypes have attracted potential partners interested in introducing the technology to various markets including athletic training and physical rehabilitation.<br>
+<br>
+This project is protected until March 2017 under a provisional patent filed with WPI's patent office. <br>
+See www.wpi.edu/offices/policies/intell.html. Contact Todd Keiller at tkeiller@wpi.edu for questions.
+

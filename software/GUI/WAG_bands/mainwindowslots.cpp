@@ -137,12 +137,23 @@ void MainWindow::closeOpenMotionOptions() {
 }
 
 // opens the settings window
-void MainWindow::launchSettings(){
-
+void MainWindow::launchSettings() {
     emit modeChanged(SETTINGS_WIND);
     fullSuit->startCollecting();
     overlay->show();
     settingsWidget->show();
+}
+
+// opens the about window
+void MainWindow::launchAbout() {
+    overlay->show();
+    aboutWidget->show();
+}
+
+// closes the about window
+void MainWindow::closeAbout() {
+    overlay->hide();
+    aboutWidget->hide();
 }
 
 // closes the settings window
@@ -261,17 +272,17 @@ void MainWindow::handleConnectedBands() {
 
 // updates the band battery level label
 void MainWindow::updateBatteryStatus() {
-    settingsBtn->setRed(true);
+    settingsBtn->setStyleSheet("QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }");
     batteryStatus->setStyleSheet("QLabel { color : red; }");
 }
 
 void MainWindow::lockOnPlayOrRecord(bool suitRecording) {
     // lock wifi button
-    // lock help button
     // prevent user from switching tabs
     settingsBtn->setEnabled(!suitRecording);
     newBtn->setEnabled(!suitRecording);
     openBtn->setEnabled(!suitRecording);
+    aboutBtn->setEnabled(!suitRecording);
     int currentTabIndex = tabs->currentIndex();
 
     for (int i = 0; i < tabs->count(); i++) {
