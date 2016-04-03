@@ -105,6 +105,7 @@ uint8_t teapotPkt[14] = {'$',0x02, 0,0,0,0,0,0,0,0, 0x00, 0x00, '\r', '\n'};
 #define FEEDBACK_MSG_SIZE (FEEDBACK_MSG_ALIGN_BYTES + FEEDBACK_MSG_DATA_BYTES)
 #define ESP8266_CMD_CONTINUE_PLAYBACK 197
 #define ESP8266_CMD_START_PLAYBACK 196
+#define ESP8266_CMD_STOP_PLAYBACK 198
 
 uint8_t feedbackToTeensyMsg[FEEDBACK_MSG_SIZE] = {ESP8266_START_BYTE, ESP8266_START_BYTE, ESP8266_START_BYTE, ESP8266_CMD_START_PLAYBACK, 'D','D','D','D','D','D','D','D','D','D','D','D'}; 
 uint8_t msgDataNonPosition[20];
@@ -412,7 +413,15 @@ void replyToPCPing(boolean printInfo){
 
 void giveMotorsFeedback(){
 //  Send the positional data to the Teensy
+  feedbackToTeensyMsg[FEEDBACK_MSG_ALIGN_BYTES-1] = ESP8266_CMD_START_PLAYBACK;
   feedbackToTeensyMsg[FEEDBACK_MSG_SIZE-1] = feedbackToTeensyMsg[FEEDBACK_MSG_SIZE-1] + 1;
+  for(int j = 0; j < FEEDBACK_MSG_SIZE; j++){ //print data from msg
+     ESP8266_SERIAL.print(char(feedbackToTeensyMsg[j]));
+   }
+}
+
+void sendStopPlaybackMode(){
+  feedbackToTeensyMsg[FEEDBACK_MSG_ALIGN_BYTES-1] = ESP8266_CMD_STOP_PLAYBACK;
   for(int j = 0; j < FEEDBACK_MSG_SIZE; j++){ //print data from msg
      ESP8266_SERIAL.print(char(feedbackToTeensyMsg[j]));
    }
@@ -580,6 +589,7 @@ void loop() {
         boolean gotStopPlayback = listenForSpecificPacket(STOP_PLAYBACK, true);
         if(gotStopPlayback){
           state = IDLE_CONNECTED_TO_HOST;
+          sendStopPlaybackMode();
         }
         else{
           giveMotorsFeedback();

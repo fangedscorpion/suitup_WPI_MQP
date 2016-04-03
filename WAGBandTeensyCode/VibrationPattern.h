@@ -84,6 +84,9 @@ public:
 	// write out the motor speeds
 	void writeMotorSpeeds(int* motorSpeeds, int nAngles);
 
+  // stops all the motors
+  void stopAllMotors();
+
 	// assign zeros to array (int)
 	void assignZeros(int* arr, int len);
 

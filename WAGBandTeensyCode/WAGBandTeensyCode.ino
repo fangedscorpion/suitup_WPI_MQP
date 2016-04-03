@@ -157,6 +157,10 @@ boolean readESP8266SerialSendPkt(boolean printStuff){
               break;
               case ESP8266_CMD_START_PLAYBACK:
                   isPlaybackMode = true;
+              break;
+              case ESP8266_CMD_STOP_PLAYBACK:
+                  isPlaybackMode = false;
+              break;
               default:
                   
               break;
@@ -206,15 +210,17 @@ boolean readESP8266SerialSendPkt(boolean printStuff){
 
 
    }
-   
-    DEBUG_SERIAL.println("Float errors");
+   if(isPlaybackMode){
     esp8266.RX_trans_angle = esp8266.TransAngleUnion.f;
-    DEBUG_SERIAL.println(esp8266.RX_trans_angle);
     esp8266.RX_err_trans = esp8266.TransErrorUnion.f;
-    DEBUG_SERIAL.println(esp8266.RX_err_trans);
     esp8266.RX_err_rot = esp8266.RotatErrorUnion.f;
-    DEBUG_SERIAL.println(esp8266.RX_err_rot);
-
+    if(printStuff){
+      DEBUG_SERIAL.println("Float errors");
+      DEBUG_SERIAL.println(esp8266.RX_trans_angle);
+      DEBUG_SERIAL.println(esp8266.RX_err_trans);
+      DEBUG_SERIAL.println(esp8266.RX_err_rot); 
+    }
+   }
     return (isPlaybackMode);
 }
 
@@ -278,11 +284,14 @@ void loop() {
     else{
         esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA);  
     }
-     
+
     boolean readValues = readESP8266SerialSendPkt(true);
     if(readValues){
       motorController.updateErrors(esp8266.RX_trans_angle, esp8266.RX_err_trans, esp8266.RX_err_rot);
       motorController.performMotorCalculationsAndRunMotors();
+    }
+    else{
+      motorController.stopAllMotors();
     }
     DEBUG_SERIAL.println(String("Tm:")+(millis()-time1));
 }

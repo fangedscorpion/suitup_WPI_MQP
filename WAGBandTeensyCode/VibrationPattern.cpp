@@ -186,6 +186,12 @@ void VibrationPattern::writeMotorSpeeds(int* motorSpeeds, int nAngles){
   }
 }
 
+void VibrationPattern::stopAllMotors(){
+  for (int i=0; i<NUM_MOTORS; i++){
+    analogWrite(pins[i], 0);
+  }
+}
+
 // assign zeros to array (int)
 void VibrationPattern::assignZeros(int* arr, int len){
   for (int i=0; i<len; i++){
