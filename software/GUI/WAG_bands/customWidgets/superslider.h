@@ -4,6 +4,7 @@
 #include "qlabel.h"
 #include <stdio.h>
 #include <QSharedPointer>
+#include <QProxyStyle>
 
 /*
 *  Super sick nasty awesome double handled slider!
@@ -13,13 +14,27 @@
 class SuperSliderHandle;
 class SuperSliderTimeBar;
 
+class SliderProxy : public QProxyStyle
+{
+public:
+    ~SliderProxy(){}
+    int pixelMetric ( PixelMetric metric, const QStyleOption * option = 0, const QWidget * widget = 0 ) const
+    {
+        switch(metric) {
+        case PM_SliderThickness  : return 25;
+        case PM_SliderLength     : return 25;
+        default                  : return (QProxyStyle::pixelMetric(metric,option,widget));
+        }
+    }
+};
+
 class SuperSlider: public QSlider
 {
   Q_OBJECT
 public:
   /** Constructor */
   SuperSlider(QWidget *parent);
-    ~SuperSlider(){}
+    ~SuperSlider();
   /** Store the alternate handle for this slider*/
   SuperSliderHandle *alt_handle;
 
@@ -49,6 +64,7 @@ public:
 protected:
   bool eventFilter(QObject* obj, QEvent* event);
 private:
+  SliderProxy* proxy;
   bool pressed;
   int getOffset();
   bool handleInitiatedEvent;

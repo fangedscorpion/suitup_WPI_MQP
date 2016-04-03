@@ -31,7 +31,6 @@ MotionViewer::MotionViewer(QWidget* parent, Model* m) : QWidget(parent){
 
 MotionViewer::~MotionViewer() {
     delete viewer;
-//    delete model;
     delete videoSlider;
 }
 

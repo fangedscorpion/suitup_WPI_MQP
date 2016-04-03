@@ -29,8 +29,8 @@ MainWindow::MainWindow(QWidget *parent) :
     preSettingsMode = HOME_WIND;
 
     setWindowTitle(tr("WAG bands"));
-    setMinimumSize(1100, 650);
-    setMaximumSize(1100, 650);
+    setMinimumSize(1100, 660);
+    setMaximumSize(1100, 660);
 
     textInputStyleRed = "QLineEdit {border: 2px solid red; background: white; border-radius: 4px;} QTextEdit {border-radius: 4px; border: 2px solid red; background: white;}";
     textInputStyleWhite = "QLineEdit {border: 1px solid gray; border-radius: 4px; background: white;} QTextEdit {border-radius: 4px; border: 1px solid grey; background: white;}";

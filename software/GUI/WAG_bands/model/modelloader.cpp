@@ -14,12 +14,12 @@ ModelLoader::ModelLoader(){
 }
 
 Model *ModelLoader::load() {
-    QVector<QSharedPointer<Node> > m_nodes;
+    QVector<Node*> m_nodes;
     QStringList names = pointsJson.keys();
 
     for (int i = 0; i < names.length(); ++i){
         // this line has a memory leak...
-        QSharedPointer<Node> n(new Node);
+        Node* n = new Node;
         n->setName(names[i]);
         n->setTail(jsonArr3toQVec3(pointsJson.value(names[i]).toObject().value("tail").toArray(),rotateBlenderToOpenGL));
         n->setHead(jsonArr3toQVec3(pointsJson.value(names[i]).toObject().value("head").toArray(),rotateBlenderToOpenGL));
@@ -27,7 +27,7 @@ Model *ModelLoader::load() {
         m_nodes.push_back(n);
     }
 
-    QSharedPointer<Node> rootNode;
+    Node* rootNode;
     // assign parents
     for (int i = 0; i < m_nodes.size(); ++i){
         QString parentName = pointsJson.value(m_nodes[i]->getName()).toObject().value("parent_name").toString();
@@ -47,7 +47,7 @@ Model *ModelLoader::load() {
     return new Model(m_nodes);
 }
 
-QSharedPointer<Node> ModelLoader::getNodeByName(QVector<QSharedPointer<Node> > nodes, QString name){
+Node* ModelLoader::getNodeByName(QVector<Node* > nodes, QString name){
     for (int i = 0; i < nodes.size(); ++i){
         if (nodes[i]->getName() == name){
             return nodes[i];

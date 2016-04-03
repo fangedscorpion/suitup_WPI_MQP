@@ -15,7 +15,7 @@ public:
 private:
     QVector3D jsonArr3toQVec3(QJsonArray jsonArr3, QQuaternion rotation = QQuaternion());
     CoordinateFrame jsonXYZtoFrame(QJsonObject jsonFrame);
-    static QSharedPointer<Node> getNodeByName(QVector<QSharedPointer<Node> > nodes, QString name);
+    static Node *getNodeByName(QVector<Node *> nodes, QString name);
 
     QQuaternion rotateBlenderToOpenGL;
     QJsonObject pointsJson;

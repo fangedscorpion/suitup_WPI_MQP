@@ -6,6 +6,8 @@ WifiManager::WifiManager():QObject()
     connectedMapper = new QSignalMapper(this);
     disconnectedMapper = new QSignalMapper(this);
     recvdMapper = new QSignalMapper(this);
+    newSocket = 0;
+    serv = 0;
 
     QList<QHostAddress> addrlist = QNetworkInterface::allAddresses();
     qDebug()<<"WifiManager: address list"<<addrlist;
@@ -60,8 +62,8 @@ WifiManager::~WifiManager() {
     delete recvdMapper;
     delete connectedMapper;
     qDeleteAll(socketMap);
-//    delete serv;
-//    delete newSocket;
+    delete serv;
+    delete newSocket;
 }
 
 void WifiManager::initiateConnection(QList<BandType> bandsToConnect)
@@ -244,5 +246,6 @@ void WifiManager::sendMessageToBand(BandType destBand, BandMessage *fullMsg) {
 //        qDebug()<<"WifiManager: sending error to band "<<fullMsg->getMessageData();
 //    }
     sendRawDataToBand(destBand, fullMsg->getSerializedMessage());
+    delete fullMsg;
     // mark fullMsg for delete?
 }

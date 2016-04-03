@@ -1,7 +1,6 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include <QSharedPointer>
 #include <QVector>
 #include <QVector3D>
 #include <QVector4D>
@@ -44,9 +43,9 @@ public:
     void setTail(QVector3D tail) {this->tail = tail;}
     void setHead(QVector3D head) {this->head = head;}
     void setFrame(CoordinateFrame frame) {this->frame = frame;}
-    void setParent(QSharedPointer<Node> parent);
+    void setParent(Node* parent);
     void root(bool isRoot) {this->isRootNode = isRoot;}
-    void addChild(QSharedPointer<Node> child) {children.push_back(child);}
+    void addChild(Node* child) {children.push_back(child);}
     void setStatus(NodeStatus status) {this->status = status;}
     void setWorldRotation(QQuaternion worldRotation);
 
@@ -85,8 +84,8 @@ private:
     QQuaternion worldRotation;
     QQuaternion calibration;
 
-    QSharedPointer<Node> parent;
-    QVector<QSharedPointer<Node> > children;
+    Node* parent;
+    QVector<Node* > children;
 
 };
 
@@ -94,15 +93,15 @@ class Model : public QObject{
     Q_OBJECT
 public:
     Model() : QObject() {}
-    ~Model(){}
-    Model(QVector<QSharedPointer<Node> > nodes);
-    QVector<QSharedPointer<Node> > getNodes() const {return nodes;}
-    QSharedPointer<Node> getNodeByName(QString name) const;
+    ~Model(){qDeleteAll(nodes);}
+    Model(QVector<Node* > nodes);
+    QVector<Node* > getNodes() const {return nodes;}
+    Node* getNodeByName(QString name) const;
     void resetPose();
 
 private:
-    QSharedPointer<Node> rootNode;
-    QVector<QSharedPointer<Node> > nodes;
+    Node* rootNode;
+    QVector<Node* > nodes;
     QHash<QString,NodeState> namesAndStates;
     void updateNamesAndStates();
 

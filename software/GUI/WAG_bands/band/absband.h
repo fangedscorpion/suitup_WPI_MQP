@@ -36,7 +36,7 @@ public:
     bool isActive() const {return active;}
     void handleConnectionStatusChange(ConnectionStatus);
     void handleMessage(qint32, BandMessage *);
-    void sendIfConnected(BandMessage *sendMsg);
+    bool sendIfConnected(BandMessage *sendMsg);
     bool isConnected();
     PositionRepresentation getPositionRepresentation() { return positionRep; }
 

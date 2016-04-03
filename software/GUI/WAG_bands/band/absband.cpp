@@ -90,7 +90,7 @@ void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     }
 }
 
-void AbsBand::sendIfConnected(BandMessage *sendMsg) {
+bool AbsBand::sendIfConnected(BandMessage *sendMsg) {
     if (commsSetUp) {
         if (sendMsg->getMessageType() == COMPUTER_PING) {
             if (pendingBandPing) {
@@ -101,7 +101,7 @@ void AbsBand::sendIfConnected(BandMessage *sendMsg) {
                     emit connectionProblem(type);
                     pendingBandPing = false;
                     pingProblems = 0;
-                    return;
+                    return false;
                 }
             }
             pendingBandPing = true;
@@ -110,8 +110,9 @@ void AbsBand::sendIfConnected(BandMessage *sendMsg) {
         }
         qDebug()<<"AbsBand: sending message type "<<sendMsg->getMessageType();
         emit dataToSend(type, sendMsg);
+        return true;
     }
-//    delete sendMsg;
+    return false;
 }
 
 void AbsBand::updateState(AbsState* state, qint32 msgTime){

@@ -2,11 +2,12 @@
 
 AbsPose::AbsPose() : QObject()
 {
-
+node = 0;
 }
 
 AbsPose::~AbsPose(){
-    delete node;
+    if (node != 0)
+        delete node;
 }
 
 //void AbsPose::update(AbsState *s){

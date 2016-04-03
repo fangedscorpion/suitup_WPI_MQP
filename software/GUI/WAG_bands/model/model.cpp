@@ -2,7 +2,7 @@
 #include "band/suit.h"
 #include <stdexcept>
 
-Model::Model(QVector<QSharedPointer<Node> > nodes) : QObject(){
+Model::Model(QVector<Node*> nodes) : QObject(){
     this->nodes = nodes;
     for (int i = 0; i < nodes.size(); ++i){
         namesAndStates.insert(nodes[i]->getName(),nodes[i]->getState());
@@ -52,7 +52,7 @@ void Model::updateNodeStatus(QHash<BandType, NodeStatus> statuses){
     updateNamesAndStates();
 }
 
-QSharedPointer<Node> Model::getNodeByName(QString name) const {
+Node *Model::getNodeByName(QString name) const {
     for (int i = 0; i < nodes.size(); ++i){
         if (nodes[i]->getName() == name)
             return nodes[i];
@@ -72,7 +72,7 @@ void Model::updateNamesAndStates(){
     emit poseUpdated(namesAndStates);
 }
 
-void Node::setParent(QSharedPointer<Node> parent) {
+void Node::setParent(Node *parent) {
     this->parent = parent;
     root(false);
 }
