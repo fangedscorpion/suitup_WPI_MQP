@@ -94,5 +94,6 @@ QByteArray BandMessage::handleException(IncorrectDataLengthException *e) {
     // shorten the data to what was actually supposed to be int heis message
     this->msgData = this->getMessageData().left(intendedLength);
 
+    delete e;
     return extraPacketData;
 }

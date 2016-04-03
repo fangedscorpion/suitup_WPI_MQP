@@ -261,7 +261,7 @@ void MainWindow::handleConnectedBands() {
 
 // updates the band battery level label
 void MainWindow::updateBatteryStatus() {
-    settingsBtn->setStyleSheet("QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }");
+    settingsBtn->setRed(true);
     batteryStatus->setStyleSheet("QLabel { color : red; }");
 }
 

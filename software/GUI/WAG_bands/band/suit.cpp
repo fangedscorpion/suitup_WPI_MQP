@@ -75,6 +75,7 @@ void Suit::getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTime
         if (!targetBand->sendIfConnected(newMsg))
             delete newMsg;
     }
+    delete data;
 }
 
 AbsBand* Suit::getBand(BandType bt) {

@@ -120,6 +120,7 @@ void AbsBand::updateState(AbsState* state, qint32 msgTime){
     pose->update(state);
 
     emit poseRecvd(pose->getState(), type, poseRecvdTime);
+    delete state;
 }
 
 bool AbsBand::isConnected() {

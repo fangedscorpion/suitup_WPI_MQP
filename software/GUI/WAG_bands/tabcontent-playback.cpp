@@ -89,6 +89,7 @@ StyledGroupBox* TabContent::createPlaybackOptionsAndControls() {
     options->addLayout(positionToleranceLayout);
 
     playbackLayout->addLayout(options);
+    playbackLayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     playbackOptions->setVisible(false);
     //playbackControls
     connect(stepThrough, SIGNAL(currentIndexChanged(QString)), playbackControls, SLOT(setStepThroughMode(QString)));

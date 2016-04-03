@@ -62,8 +62,8 @@ WifiManager::~WifiManager() {
     delete recvdMapper;
     delete connectedMapper;
     qDeleteAll(socketMap);
-    delete serv;
-    delete newSocket;
+    if (serv != 0)
+        delete serv;
 }
 
 void WifiManager::initiateConnection(QList<BandType> bandsToConnect)
@@ -98,6 +98,9 @@ void WifiManager::startSingleConnection(BandType bandToConnect) {
     recvdMapper->setMapping(newSocket, convertedEnum);
     disconnectedMapper->setMapping(newSocket, convertedEnum);
 
+    // if this function is called more than once, the old sockets are lost
+    if (socketMap.contains(bandToConnect))
+        delete socketMap[bandToConnect];
     socketMap[bandToConnect] = newSocket;
 
     connect(newSocket, SIGNAL(connected()), connectedMapper, SLOT(map()));
