@@ -55,6 +55,10 @@
 #define ESP8266_CMD_VOICE_STOP 212
 #define ESP8266_CMD_VOICE_STOP_LOW_BATT 213
 
+
+
+
+
 class ESP8266Comms{
 	public:
 
@@ -93,16 +97,19 @@ class ESP8266Comms{
 		//Sets all errors to zero
 		void zeroErrorCalculations(); 
 
+    
+
 
 		#define COULD_NOT_ALIGN_START_BYTE 0x00
 		// Returns a COULD_NOT_ALIGN_START_BTYE character to indicate it couldn't match the beginning
 		// Or returns the character of the command the beginningChars with numCharsToMatch
 		// Used to sync up the beginning 4 chars of the msg from the ESP8266
 		// The float value is anything larger than 254 254 254 192 which is a 0xFEFEFEFEC0
-		char synchronizeSerialBeginning();
+//		char synchronizeSerialBeginning();
 
+    
 		//Returns a true or false to indicate it received data properly or not
-		int readFromESP8266();
+//		boolean readESP8266SerialSendPkt(boolean printStuff);
 
 		void setCommand(char cmd); //Sets the command within the pkt
 
