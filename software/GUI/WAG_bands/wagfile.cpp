@@ -257,7 +257,6 @@ void WAGFile::saveToFile() {
     qDebug()<<motionData;
     //out << motionData;
     serializeHashmap(&out);
-    serializetwo(&out);
     qDebug()<<"Wrote motion data";
 
     qDebug() << "path: " << path.c_str();
@@ -282,7 +281,6 @@ void WAGFile::loadFromFile(QString f) {
     in >> author;
     in >> tags;
     in >> saveLoc;
-    motionData = deserialize(&in);
     motionData = deserialize(&in);
     //in >> motionData;
     qDebug()<<"Motion data size "<<motionData.size();
@@ -324,14 +322,13 @@ void WAGFile::clearHashmapData(QHash<qint32, PositionSnapshot *> data) {
 void WAGFile::serializeHashmap(QDataStream *ds) {
     // serialize motion file
     QList<qint32> keys = motionData.keys();
-//    for (int i = 0; i < keys.length(); i++) {
-//        (*ds)<<keys[i];
-//        PositionSnapshot *serializeThis = motionData[keys[i]];
-//        serializeThis->serialize(ds);
-//    }
-    for (int i = 0; i < 5; i++) {
-        (*ds)<<i + 65;
+    for (int i = 0; i < 1; i++) {
+        qDebug()<<"Writing snap "<<i;
+        (*ds)<<keys[i];
+        PositionSnapshot *serializeThis = motionData[keys[i]];
+        serializeThis->serialize(ds);
     }
+
     (*ds)<<fileEndInt;
 }
 
@@ -346,24 +343,20 @@ QHash<qint32, PositionSnapshot *> WAGFile::deserialize(QDataStream *ds) {
             qDebug()<<"Adding new snap";
         qDebug()<<"first thing"<<firstThing;
         if (firstThing == fileEndInt) {
+            qDebug("Quitting");
             keepGoing = false;
             break;
-        }
+        } else {
 
-//        PositionSnapshot *newSnap;
-//        newSnap = PositionSnapshot::deserialize(ds);
-//        qDebug()<<newSnap;
-//        deserializedData[firstThing] = newSnap;
+        PositionSnapshot *newSnap;
+        newSnap = PositionSnapshot::deserialize(ds);
+        qDebug()<<newSnap;
+        deserializedData[firstThing] = newSnap;
         (*ds)>>firstThing;
+        }
     }
 
     qDebug()<<"first thing"<<firstThing;
     return deserializedData;
 }
 
-void WAGFile::serializetwo(QDataStream *ds) {
-    for (int i = 0; i < 5; i++) {
-        (*ds)<<i + 75;
-    }
-    (*ds)<<fileEndInt;
-}

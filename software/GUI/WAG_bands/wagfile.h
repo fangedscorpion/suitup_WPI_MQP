@@ -49,7 +49,6 @@ public:
     QHash<qint32, PositionSnapshot*> getChunkInRange(qint32 startTime, qint32 endTime);
     void serializeHashmap(QDataStream *ds);
     QHash<qint32, PositionSnapshot *> deserialize(QDataStream *ds);
-    void serializetwo(QDataStream *ds);
     // setters
     void updateFilename(QString newName);
     void updateDescription(QString desc) {description = desc;}
