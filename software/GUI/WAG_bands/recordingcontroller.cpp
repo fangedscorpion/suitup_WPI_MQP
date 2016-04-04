@@ -18,7 +18,9 @@ void RecordingController::stopRecording() {
     // stop recording
     suitObj->startOrStopMode(STOP_RECORDING_MODE);
     qDebug("RecordingController: Setting motion data");
-
+    if (currentMotionData.size() > 1) {
+        qDebug()<<"first snap size "<<currentMotionData[currentMotionData.keys()[0]]->getSnapshot().keys().size();
+    }
     activeMotion->updateMotionData(currentMotionData);
     qDebug()<<"RecordingController: totalFrames"<<activeMotion->getFrameNums();
     recording = false;
@@ -36,6 +38,7 @@ void RecordingController::addSnapshotToMotion(qint32 snapTime, PositionSnapshot 
         qint32 newSnapTime = snapTime;
         maxRecordedTime = snapTime;        
         currentMotionData[newSnapTime] = snap;
+        qDebug()<<"New snap size"<<snap->getSnapshot().keys().size();
 
         if (newSnapTime > MAX_FILE_LENGTH) {
             // stop recording (use voice control signalling protocol)

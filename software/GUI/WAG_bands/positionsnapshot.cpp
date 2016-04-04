@@ -17,7 +17,9 @@ QSet<BandType> PositionSnapshot::getRecordedBands() {
 
 
 void PositionSnapshot::serialize(QDataStream *ds) {
+    qDebug()<<"Serializing position snap";
     QList<BandType> keys = snapshotData.keys();
+    qDebug()<<keys;
     qDebug()<<"keys.length"<<keys.length();
     for (int i = 0; i < keys.length(); i++) {
         qint32 castedKey = keys[i];
