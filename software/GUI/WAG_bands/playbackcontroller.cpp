@@ -27,7 +27,7 @@ PlaybackController::PlaybackController(QWidget *parent, Suit *newSuitObj) : QObj
     timeToHoldFrameMillis = HOLD_POSE_DEFAULT_MILLIS;
     stepThroughInterval = STEP_THROUGH_INTERVAL_DEFAULT;
     stepThroughTolerance = DEFAULT_TOLERANCE; // how are we expressing this
-    lastFrameNum = 1000; // TODO get from motion
+    lastFrameNum = 0; // TODO get from motion
     beginningPointer = 0;
     endPointer = 100;
     connect(this, SIGNAL(endOfTimeRange()), this, SLOT(togglePlay()));

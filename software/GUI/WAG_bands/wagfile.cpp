@@ -21,6 +21,7 @@ QDataStream & operator<<(QDataStream & str, const PositionSnapshot *v) {
 QDataStream & operator>>(QDataStream & str, PositionSnapshot *v) {
     QHash<BandType, AbsState *> t;
     str >> t;
+    v = new PositionSnapshot();
     v->setSnapshot(t);
     return str;
 }
@@ -267,6 +268,7 @@ void WAGFile::loadFromFile(QString f) {
     in >> tags;
     in >> saveLoc;
     in >> motionData;
+    qDebug()<<"Motion data size "<<motionData.size();
 
     qDebug() << "path: " << path.c_str();
     qDebug() << "name: " << name.toStdString().c_str();
