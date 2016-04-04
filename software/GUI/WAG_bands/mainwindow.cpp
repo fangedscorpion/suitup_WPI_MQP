@@ -106,6 +106,7 @@ void MainWindow::addTab(USER u, WAGFile* w, ACTION_TYPE a) {
     tabs->addTab(tab, tab->getFilename());
     tabs->setCurrentIndex(tabs->indexOf(tab));
     tabs->clearFocus();
+    qDebug()<<"Done adding tab";
 }
 
 // Menubar actions

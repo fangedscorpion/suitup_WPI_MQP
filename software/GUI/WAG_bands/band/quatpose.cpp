@@ -55,3 +55,4 @@ AbsState* QuatPose::getState() const {
 size_t QuatPose::objectSize() {
     return sizeof(QuatPose);
 }
+

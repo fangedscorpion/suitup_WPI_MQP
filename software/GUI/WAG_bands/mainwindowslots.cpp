@@ -105,7 +105,9 @@ void MainWindow::openFromLibrary(USER u) {
         return;
     }
     QTableWidgetItem* motionInfo = openFromLibTable->item(selection.at(0).row(), 3);
+    qDebug("MainWindow: adding tab for open from library");
     addTab(u, new WAGFile(motionInfo->text(), LIBRARY), EDIT);
+    qDebug("MainWindow: done adding tab for open from library");
     closeOpenFromLibrary();
     closeOpenMotionOptions();
 }
