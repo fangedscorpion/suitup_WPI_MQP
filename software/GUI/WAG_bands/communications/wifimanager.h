@@ -56,7 +56,6 @@ public:
     ~WifiManager();
     void initiateConnection(QList<BandType> bandsToConnect);
     void sendRawDataToBand(BandType destBand, QByteArray data);
-    void sendRawDataToBand(BandType destBand, char * bandData);
     void sendMessageToBand(BandType destBand, QByteArray msgData, MessageType msgType);
     void sendMessageToBand(BandType destBand, BandMessage *fullMsg);
     void closeAllConnections();
@@ -79,7 +78,6 @@ private:
 
 
 private slots:
-   // void connectToNewDevice();
     void checkForData(int);
     void socketConnected(int);
 

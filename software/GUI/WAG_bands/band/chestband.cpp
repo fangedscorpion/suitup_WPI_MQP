@@ -7,6 +7,7 @@
 // ChestBand class should probably not be extended
 
 ChestBand::ChestBand() : AbsBand(CHEST) {
+    positionRep = QUAT_REP;
     pose = new QuatPose(QVector3D(1, 0, 0), QVector3D(0, 0, 1));
 }
 
@@ -24,14 +25,5 @@ AbsState *ChestBand::getStateUpdate() const {
 }
 
 void ChestBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
-    switch(recvdMessage->getMessageType()) {
-        //case BAND_POSITION_UPDATE:
-        // do something
-        //break;
-    case VOICE_CONTROL:
-        // do something else
-        break;
-    default:
-        AbsBand::handleMessage(msgTimestamp, recvdMessage);
-    }
+    AbsBand::handleMessage(msgTimestamp, recvdMessage);
 }

@@ -167,26 +167,6 @@ void WifiManager::sendRawDataToBand(BandType destBand, QByteArray bandData) {
 
 }
 
-void WifiManager::sendRawDataToBand(BandType destBand, char * bandData) {
-    if (socketMap.contains(destBand)) {
-        // write to socket
-
-        QTcpSocket *bandSocket = socketMap[destBand];
-
-
-        if (bandSocket->bytesAvailable() != 0) {
-            // if there is data to be read, route it ot the band object to be interpreted
-            routeToBandObject(destBand);
-        }
-
-        if (bandSocket->write(bandData, strlen(bandData)) < strlen(bandData)) {
-            qDebug("ERROR SENDING");
-        }
-    } else {
-        qDebug()<<"Band "<<destBand<<" is not connected ";
-    }
-}
-
 // do not call unless data is available
 void WifiManager::routeToBandObject(BandType bandWithData) {
     QTcpSocket *bandSocket = socketMap[bandWithData];

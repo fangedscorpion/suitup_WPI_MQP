@@ -49,9 +49,9 @@ public slots:
 
 protected:
     AbsPose *pose;
+    PositionRepresentation positionRep;
 private:
     BandType type;
-    PositionRepresentation positionRep;
     bool active;
     bool hasLowBattery;
 

@@ -25,7 +25,7 @@ void Model::updatePose(PositionSnapshot *pose){
         QString bandName = AbsBand::bandTypeToModelName(bands[i]);
         AbsState* state = map[bands[i]];
         switch (state->getStateRep()) {
-        case QUATERNION:
+        case QUAT_REP:
             somethingChanged = true;
             getNodeByName(bandName)->setWorldRotation(*(static_cast<QuatState*>(state)));
 //            qDebug() << bandName;

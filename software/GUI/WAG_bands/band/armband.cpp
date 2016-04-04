@@ -11,9 +11,10 @@
 
 ArmBand::ArmBand(BandType b) : AbsBand(b) {
     if (b != LEFT_LOWER_ARM && b != LEFT_UPPER_ARM &&
-        b != RIGHT_LOWER_ARM && b != RIGHT_UPPER_ARM) {
+            b != RIGHT_LOWER_ARM && b != RIGHT_UPPER_ARM) {
         throw std::invalid_argument("Created ArmBand with bad BandType");
     }
+    positionRep = QUAT_REP;
 
     pose = new QuatPose(QVector3D(1, 0, 0), QVector3D(0, 0, 1));
 }
@@ -32,12 +33,6 @@ AbsState *ArmBand::getStateUpdate() const {
 
 
 void ArmBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
-    switch(recvdMessage->getMessageType()) {
-        //case BAND_POSITION_UPDATE:
-        // do something
-        //break;
-    default:
-        AbsBand::handleMessage(msgTimestamp, recvdMessage);
-    }
+    AbsBand::handleMessage(msgTimestamp, recvdMessage);
 }
 
