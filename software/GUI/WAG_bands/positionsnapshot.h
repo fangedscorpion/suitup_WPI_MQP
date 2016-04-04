@@ -11,7 +11,7 @@ class PositionSnapshot
 {
 public:
     PositionSnapshot();
-    ~PositionSnapshot();
+    ~PositionSnapshot() {qDeleteAll(snapshotData);}
     void setSnapshot(QHash<BandType, AbsState *> s) {snapshotData = s;}
     QHash<BandType, AbsState *> getSnapshot() const { return snapshotData; }
     //Pose getPositionOf(BandType b) { return snapshot[b]; }

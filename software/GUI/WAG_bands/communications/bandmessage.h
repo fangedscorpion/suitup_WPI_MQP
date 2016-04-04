@@ -45,6 +45,7 @@ public:
    // BandMessage();
     BandMessage(MessageType msgType, QByteArray msgData);
     BandMessage();
+    ~BandMessage(){}
     void parseFromByteArray(QByteArray fullMsg);
     QByteArray handleException(IncorrectDataLengthException *e);
 

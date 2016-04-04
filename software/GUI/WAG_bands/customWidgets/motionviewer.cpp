@@ -31,6 +31,7 @@ MotionViewer::MotionViewer(QWidget* parent, Model* m) : QWidget(parent){
 
 MotionViewer::~MotionViewer() {
     delete viewer;
+    delete videoSlider;
 }
 
 void MotionViewer::playToggled(bool playing) {

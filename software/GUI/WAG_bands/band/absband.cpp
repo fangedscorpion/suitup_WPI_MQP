@@ -19,6 +19,10 @@ AbsBand::AbsBand(BandType bt):QObject() {
     hasLowBattery = false;
 }
 
+AbsBand::~AbsBand(){
+    delete pose;
+}
+
 void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
     if (newStatus == CONNECTED) {
         // send hi there message
@@ -86,7 +90,7 @@ void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     }
 }
 
-void AbsBand::sendIfConnected(BandMessage *sendMsg) {
+bool AbsBand::sendIfConnected(BandMessage *sendMsg) {
     if (commsSetUp) {
         if (sendMsg->getMessageType() == COMPUTER_PING) {
             if (pendingBandPing) {
@@ -97,7 +101,7 @@ void AbsBand::sendIfConnected(BandMessage *sendMsg) {
                     emit connectionProblem(type);
                     pendingBandPing = false;
                     pingProblems = 0;
-                    return;
+                    return false;
                 }
             }
             pendingBandPing = true;
@@ -106,14 +110,16 @@ void AbsBand::sendIfConnected(BandMessage *sendMsg) {
         }
         qDebug()<<"AbsBand: sending message type "<<sendMsg->getMessageType();
         emit dataToSend(type, sendMsg);
+        return true;
     }
+    return false;
 }
 
 void AbsBand::updateState(AbsState* state, qint32 msgTime){
     poseRecvdTime = msgTime;
     pose->update(state);
-
     emit poseRecvd(pose->getState(), type, poseRecvdTime);
+    delete state;
 }
 
 bool AbsBand::isConnected() {
@@ -127,18 +133,18 @@ bool AbsBand::isConnected() {
 AbsState *AbsBand::deserialize(QByteArray byteRep, PositionRepresentation positionRep) {
     AbsState *state;
     switch (positionRep) {
-    case QUATERNION:
+    case QUAT_REP:
         float quatFloat[4];
-        quatFloat[0] = ((byteRep[0] << 8) | byteRep[1]) / 16384.0f;
-        quatFloat[1] = ((byteRep[2] << 8) | byteRep[3]) / 16384.0f;
-        quatFloat[2] = ((byteRep[4] << 8) | byteRep[5]) / 16384.0f;
-        quatFloat[3] = ((byteRep[6] << 8) | byteRep[7]) / 16384.0f;
+        quatFloat[0] = (((quint8)byteRep[0] << 8) | (quint8)byteRep[1]) / 16384.0f;
+        quatFloat[1] = (((quint8)byteRep[2] << 8) | (quint8)byteRep[3]) / 16384.0f;
+        quatFloat[2] = (((quint8)byteRep[4] << 8) | (quint8)byteRep[5]) / 16384.0f;
+        quatFloat[3] = (((quint8)byteRep[6] << 8) | (quint8)byteRep[7]) / 16384.0f;
         for (int i = 0; i < 4; i++) {
             if (quatFloat[i] >= 2) {
                 quatFloat[i] = -4 + quatFloat[i];
             }
         }
-        state = new QuatState(quatFloat[0], quatFloat[1], quatFloat[2], quatFloat[3]);
+        state = new QuatState(quatFloat[0], -quatFloat[1], quatFloat[3], quatFloat[2]);
         break;
     default:
         break;

@@ -37,7 +37,7 @@ Suit::Suit(WifiManager *comms, Model *suitModel):QObject() {
 
     QList<BandType> allBands = bands.keys();
     for (int i = 0; i < allBands.length(); i++) {
-        bands[allBands[i]]->addNode(model->getNodeByName(AbsBand::bandTypeToModelName(allBands[i])).data());
+        bands[allBands[i]]->addNode(model->getNodeByName(AbsBand::bandTypeToModelName(allBands[i])));
 
         connect(bands[allBands[i]], SIGNAL(dataToSend(BandType,BandMessage*)), this, SLOT(sendData(BandType, BandMessage*)));
         connect(bands[allBands[i]], SIGNAL(poseRecvd(AbsState *,BandType,qint32)), this, SLOT(catchNewPose(AbsState *, BandType, qint32)));
@@ -54,6 +54,7 @@ Suit::Suit(WifiManager *comms, Model *suitModel):QObject() {
 }
 
 Suit::~Suit() {
+    // wifiMan deleted in MainWindow
     delete model;
     delete activeSnapshot;
     qDeleteAll(bands);
@@ -71,8 +72,10 @@ void Suit::getRecvdData(BandType band, BandMessage *data, QElapsedTimer dataTime
     targetBand->handleMessage((qint32) elapsedTime, data);
     if ((data->getMessageType() == BAND_CONNECTING) && (currentMode == SETTINGS_WIND)) {
         BandMessage *newMsg = new BandMessage(START_RECORDING, QByteArray());
-        targetBand->sendIfConnected(newMsg);
+        if (!targetBand->sendIfConnected(newMsg))
+            delete newMsg;
     }
+    delete data;
 }
 
 AbsBand* Suit::getBand(BandType bt) {
@@ -110,7 +113,7 @@ void Suit::toggleCollecting(bool shouldCollectData) {
     }
 }
 
-void Suit::timerEvent(QTimerEvent *event) {
+void Suit::timerEvent(QTimerEvent *) {
     BandMessage *newMsg = new BandMessage(COMPUTER_PING, QByteArray(""));
     qDebug("Suit: Ping timer event");
     sendToConnectedBands(newMsg);
@@ -118,9 +121,12 @@ void Suit::timerEvent(QTimerEvent *event) {
 
 void Suit::sendToConnectedBands(BandMessage *sendMsg) {
     QList<BandType> allBands = bands.keys();
+    bool sent = false;
     for (int i = 0; i < allBands.length(); i++) {
-        bands[allBands[i]]->sendIfConnected(sendMsg);
+        sent |= bands[allBands[i]]->sendIfConnected(sendMsg);
     }
+    if (!sent)
+        delete sendMsg;
 }
 
 /*

@@ -13,13 +13,14 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <QSharedPointer>
+#include <QPlainTextEdit>
 
 #include "customWidgets/smartpushbutton.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
-    this->setStyleSheet("QMainWindow {background-color: #C8E6C9;}"); // grey rgb(234, 237, 237)
+    this->setStyleSheet("QMainWindow {background-color: #C8E6C9;}");
     // application
     QWidget* applicationWidget(new QWidget(this));
     setCentralWidget(applicationWidget);
@@ -29,8 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
     preSettingsMode = HOME_WIND;
 
     setWindowTitle(tr("WAG bands"));
-    setMinimumSize(1100, 650);
-    setMaximumSize(1100, 650);
+    setMinimumSize(1100, 660);
+    setMaximumSize(1100, 660);
 
     textInputStyleRed = "QLineEdit {border: 2px solid red; background: white; border-radius: 4px;} QTextEdit {border-radius: 4px; border: 2px solid red; background: white;}";
     textInputStyleWhite = "QLineEdit {border: 1px solid gray; border-radius: 4px; background: white;} QTextEdit {border-radius: 4px; border: 1px solid grey; background: white;}";
@@ -67,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     fullSuit = new Suit(wifiMan,modelLoader->load());
 
     createSettings();
+    createAbout();
 
     applicationLayout->setMargin(5);
     applicationLayout->addLayout(createMenuButtons());
@@ -85,6 +87,8 @@ MainWindow::~MainWindow() {
     delete modelLoader;
     delete wifiMan;
     delete fullSuit;
+    delete calibModel;
+    delete overlay;
 }
 
 void MainWindow::closeTab(int i) {
@@ -113,14 +117,14 @@ QHBoxLayout* MainWindow::createMenuButtons() {
     openBtn->hide();
     settingsBtn = new SmartPushButton(this, "Settings");
     connect(settingsBtn, SIGNAL(released()), this, SLOT(launchSettings()));
-    SmartPushButton* helpBtn = new SmartPushButton(this, "Help");
-    //    connect(helpAct, SIGNAL(triggered()), this, SLOT(help()));
+    aboutBtn = new SmartPushButton(this, "About WAG Bands");
+    connect(aboutBtn, SIGNAL(released()), this, SLOT(launchAbout()));
 
     QHBoxLayout* menuLayout = new QHBoxLayout();
     menuLayout->addWidget(newBtn);
     menuLayout->addWidget(openBtn);
     menuLayout->addWidget(settingsBtn);
-    menuLayout->addWidget(helpBtn);
+    menuLayout->addWidget(aboutBtn);
     return menuLayout;
 }
 
@@ -161,8 +165,36 @@ QWidget* MainWindow::createUserSelectionWindow(std::vector<USER> u) {
     return w;
 }
 
+void MainWindow::createAbout() {
+    // Settings widget
+    aboutWidget = new OverlayWidget(this, "About WAG Bands");
+    QVBoxLayout* aboutLayout = aboutWidget->getLayout();
+
+    QFile file(ABOUT_TEXT_FILE);
+    file.open(QIODevice::ReadOnly);
+    QTextStream in(&file);
+    QString about = "";
+    while (!in.atEnd()) {
+        about.append(in.readLine());
+    }
+    file.close();
+
+    QTextEdit* message = new QTextEdit(about, this);
+    message->setReadOnly(true);
+    message->setAlignment(Qt::AlignJustify);
+    message->setStyleSheet("QTextEdit{background-color: #C8E6C9; border: none;}");
+    message->setMinimumHeight(300);
+
+    aboutLayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    aboutLayout->addWidget(message);
+    SmartPushButton* done = new SmartPushButton(this, "Done");
+    aboutLayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    aboutLayout->addWidget(done);
+
+    connect(done, SIGNAL(released()), this, SLOT(closeAbout()));
+}
+
 // settings overlay
-// TODO: add a person
 // TODO: add a connected bands indicator
 // TODO: add pop up if they did not calibrate or connect bands
 void MainWindow::createSettings() {

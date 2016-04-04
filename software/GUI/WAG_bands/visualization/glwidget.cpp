@@ -11,7 +11,8 @@ GLWidget::GLWidget(Model* m) :
     m_yRot(0),
     m_zRot(0),
     m_cam_offset(QVector3D(0,-0.3f,0)),
-    model(m){
+    model(m),
+    modelGL(0){
 
     QSurfaceFormat format;
     format.setDepthBufferSize(24);
@@ -23,9 +24,8 @@ GLWidget::GLWidget(Model* m) :
 }
 
 GLWidget::~GLWidget(){
-    delete modelGL;
-    m_vao.destroy();
-    m_shaderProgram;
+    if (modelGL != 0)
+        delete modelGL;
 }
 
 static void qNormalizeAngle(int &angle) {

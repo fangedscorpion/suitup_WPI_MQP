@@ -12,6 +12,7 @@ class SmartPushButton : public QPushButton
 public:
     SmartPushButton(QWidget* parent, const char* name, USER owner);
     SmartPushButton(QWidget* parent, const char* name);
+    ~SmartPushButton(){}
     void setUser(USER u);
     void setRed(bool t);
 

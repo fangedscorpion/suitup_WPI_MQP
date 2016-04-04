@@ -12,20 +12,6 @@
 #include "qcursor.h"
 #include "qguiapplication.h"
 #include "qdir.h"
-#include <QProxyStyle>
-
-class SliderProxy : public QProxyStyle
-{
-public:
-    int pixelMetric ( PixelMetric metric, const QStyleOption * option = 0, const QWidget * widget = 0 ) const
-    {
-        switch(metric) {
-        case PM_SliderThickness  : return 25;
-        case PM_SliderLength     : return 25;
-        default                  : return (QProxyStyle::pixelMetric(metric,option,widget));
-        }
-    }
-};
 
 SuperSlider::SuperSlider(QWidget *parent)
     : QSlider(parent)
@@ -36,7 +22,8 @@ SuperSlider::SuperSlider(QWidget *parent)
     connect(this, SIGNAL(sliderPressed()), this, SLOT(update()));
 
     setStyleSheet("QSlider::handle { image: url(:/icons/handle.png);}");
-    setStyle(new SliderProxy());
+    proxy = new SliderProxy();
+    setStyle(proxy);
 
     setValue(QSlider::maximum()+10);
     //setting up the alternate handle
@@ -55,6 +42,10 @@ SuperSlider::SuperSlider(QWidget *parent)
 
     time_bar->setValue(alt_handle->value()*10);
     handleInitiatedEvent = false;
+}
+
+SuperSlider::~SuperSlider() {
+    delete proxy;
 }
 
 SuperSliderHandle::SuperSliderHandle(SuperSlider *_parent)

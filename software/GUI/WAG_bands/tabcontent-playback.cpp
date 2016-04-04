@@ -17,7 +17,7 @@ StyledGroupBox* TabContent::createPlaybackOptionsAndControls() {
     stepThrough = new QComboBox(this);
     stepThrough->addItem("Step through mode");
     stepThrough->addItem("Timed mode");
-    playbackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    playbackLayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     // speed/frame slider
     QVBoxLayout* speedSliderLayout = new QVBoxLayout();
     sfi = new QLabel("Frame Interval", this);
@@ -29,10 +29,10 @@ StyledGroupBox* TabContent::createPlaybackOptionsAndControls() {
     minSpeed = new QLabel("8 fpm", this);
     speeds->addWidget(minSpeed);
     midSpeed = new QLabel("2 fpm", this);
-    midSpeed->setAlignment(Qt::AlignCenter);
+    midSpeed->setAlignment(Qt::AlignCenter|Qt::AlignTop);
     speeds->addWidget(midSpeed);
     maxSpeed = new QLabel("1/2 fpm", this);
-    maxSpeed->setAlignment(Qt::AlignRight);
+    maxSpeed->setAlignment(Qt::AlignRight|Qt::AlignTop);
     speeds->addWidget(maxSpeed);
     speedSliderLayout->addLayout(speeds);
     //hold last frame ticket
@@ -55,7 +55,8 @@ StyledGroupBox* TabContent::createPlaybackOptionsAndControls() {
     QHBoxLayout* tolerance = new QHBoxLayout();
     tolerance->addWidget(new QLabel("close", this));
     QLabel* rough = new QLabel("rough", this);
-    rough->setAlignment(Qt::AlignRight);
+    rough->setMinimumHeight(10);
+    rough->setAlignment(Qt::AlignRight|Qt::AlignTop);
     tolerance->addWidget(rough);
     positionToleranceLayout->addLayout(tolerance);
     // countdown spinner
@@ -78,21 +79,20 @@ StyledGroupBox* TabContent::createPlaybackOptionsAndControls() {
     // add everything
     options->addWidget(playOnSuit);
     options->addWidget(playbackVoiceControl);
-    options->addSpacing(10);
+    options->addSpacing(8);
     options->addLayout(h);
-    options->addLayout(holdLast, -1);
-    options->addSpacing(10);
+    options->addLayout(holdLast);
+    options->addSpacing(8);
     options->addWidget(stepThrough);
-    options->addLayout(speedSliderLayout, -1);
-    options->addSpacing(10);
-    options->addLayout(positionToleranceLayout, -1);
-    options->addSpacing(10);
+    options->addLayout(speedSliderLayout);
+    options->addSpacing(8);
+    options->addLayout(positionToleranceLayout);
 
     playbackLayout->addLayout(options);
-    playbackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    playbackLayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     playbackOptions->setVisible(false);
     //playbackControls
-    //connect(stepThrough, SIGNAL(currentIndexChanged(QString)), playbackControls, SLOT(setStepThroughMode(QString)));
+    connect(stepThrough, SIGNAL(currentIndexChanged(QString)), playbackControls, SLOT(setStepThroughMode(QString)));
     connect(this, SIGNAL(stepThroughChanged(bool)), playbackControls, SLOT(setStepThroughMode(bool)));
     connect(stepThrough, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateSpeedSliderText(QString)));
     connect(toleranceSlider, SIGNAL(sliderMoved(int)), playbackControls, SLOT(updateStepThroughTolerance(int)));

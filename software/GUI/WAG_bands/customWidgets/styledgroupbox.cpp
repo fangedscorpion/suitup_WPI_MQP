@@ -17,11 +17,9 @@ StyledGroupBox::StyledGroupBox(QWidget* parent, QString in_title) : QWidget(pare
     layout->addWidget(label);
 
     this->setObjectName("group");
-    this->setStyleSheet("StyledGroupBox#group{background-color: #C8E6C9; border: 1px solid gray; border-radius: 9px; margin-left: 0.25em; margin-right: 0.25em; margin-top: 0.5em;}");
+    this->setStyleSheet("StyledGroupBox#group{background-color: #C8E6C9; border: 1px solid gray; border-radius: 9px; margin-left: 0.25em; margin-right: 0.25em; margin-top: 0.5em; margin-bottom: 0px; padding-bottom: 0px;}");
     this->setLayout(layout);
 }
-
-StyledGroupBox::~StyledGroupBox() {}
 
 void StyledGroupBox::paintEvent(QPaintEvent *) {
     QStyleOption opt;

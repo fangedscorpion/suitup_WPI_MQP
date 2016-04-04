@@ -6,6 +6,8 @@ WifiManager::WifiManager():QObject()
     connectedMapper = new QSignalMapper(this);
     disconnectedMapper = new QSignalMapper(this);
     recvdMapper = new QSignalMapper(this);
+    newSocket = 0;
+    serv = 0;
 
     QList<QHostAddress> addrlist = QNetworkInterface::allAddresses();
     qDebug()<<"WifiManager: address list"<<addrlist;
@@ -56,10 +58,12 @@ WifiManager::WifiManager():QObject()
 }
 
 WifiManager::~WifiManager() {
-    delete newSocket;
     delete disconnectedMapper;
     delete recvdMapper;
     delete connectedMapper;
+    qDeleteAll(socketMap);
+    if (serv != 0)
+        delete serv;
 }
 
 void WifiManager::initiateConnection(QList<BandType> bandsToConnect)
@@ -94,6 +98,9 @@ void WifiManager::startSingleConnection(BandType bandToConnect) {
     recvdMapper->setMapping(newSocket, convertedEnum);
     disconnectedMapper->setMapping(newSocket, convertedEnum);
 
+    // if this function is called more than once, the old sockets are lost
+    if (socketMap.contains(bandToConnect))
+        delete socketMap[bandToConnect];
     socketMap[bandToConnect] = newSocket;
 
     connect(newSocket, SIGNAL(connected()), connectedMapper, SLOT(map()));
@@ -160,26 +167,6 @@ void WifiManager::sendRawDataToBand(BandType destBand, QByteArray bandData) {
 
 }
 
-void WifiManager::sendRawDataToBand(BandType destBand, char * bandData) {
-    if (socketMap.contains(destBand)) {
-        // write to socket
-
-        QTcpSocket *bandSocket = socketMap[destBand];
-
-
-        if (bandSocket->bytesAvailable() != 0) {
-            // if there is data to be read, route it ot the band object to be interpreted
-            routeToBandObject(destBand);
-        }
-
-        if (bandSocket->write(bandData, strlen(bandData)) < strlen(bandData)) {
-            qDebug("ERROR SENDING");
-        }
-    } else {
-        qDebug()<<"Band "<<destBand<<" is not connected ";
-    }
-}
-
 // do not call unless data is available
 void WifiManager::routeToBandObject(BandType bandWithData) {
     QTcpSocket *bandSocket = socketMap[bandWithData];
@@ -242,4 +229,6 @@ void WifiManager::sendMessageToBand(BandType destBand, BandMessage *fullMsg) {
 //        qDebug()<<"WifiManager: sending error to band "<<fullMsg->getMessageData();
 //    }
     sendRawDataToBand(destBand, fullMsg->getSerializedMessage());
+    delete fullMsg;
+    // mark fullMsg for delete?
 }

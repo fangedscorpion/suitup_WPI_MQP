@@ -2,7 +2,7 @@
 #include "band/suit.h"
 #include <stdexcept>
 
-Model::Model(QVector<QSharedPointer<Node> > nodes) : QObject(){
+Model::Model(QVector<Node*> nodes) : QObject(){
     this->nodes = nodes;
     for (int i = 0; i < nodes.size(); ++i){
         namesAndStates.insert(nodes[i]->getName(),nodes[i]->getState());
@@ -25,9 +25,11 @@ void Model::updatePose(PositionSnapshot *pose){
         QString bandName = AbsBand::bandTypeToModelName(bands[i]);
         AbsState* state = map[bands[i]];
         switch (state->getStateRep()) {
-        case QUATERNION:
+        case QUAT_REP:
             somethingChanged = true;
             getNodeByName(bandName)->setWorldRotation(*(static_cast<QuatState*>(state)));
+//            qDebug() << bandName;
+//            qDebug() << (static_cast<QuatState*>(state))->length();
             break;
         default:
             qDebug() << "Model::updatePose(): Don't know how to handle given state representation!";
@@ -50,7 +52,7 @@ void Model::updateNodeStatus(QHash<BandType, NodeStatus> statuses){
     updateNamesAndStates();
 }
 
-QSharedPointer<Node> Model::getNodeByName(QString name) const {
+Node *Model::getNodeByName(QString name) const {
     for (int i = 0; i < nodes.size(); ++i){
         if (nodes[i]->getName() == name)
             return nodes[i];
@@ -70,7 +72,7 @@ void Model::updateNamesAndStates(){
     emit poseUpdated(namesAndStates);
 }
 
-void Node::setParent(QSharedPointer<Node> parent) {
+void Node::setParent(Node *parent) {
     this->parent = parent;
     root(false);
 }
@@ -101,6 +103,7 @@ void Node::init() {
 }
 
 void Node::calibrate(QQuaternion sensedOrientation) {
+    // need to fix
     calibration = sensedOrientation.conjugated() * worldRotation;
 }
 

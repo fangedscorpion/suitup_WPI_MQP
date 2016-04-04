@@ -15,6 +15,7 @@ class AbsPose : public QObject {
 
 public:
     AbsPose();
+    ~AbsPose();
     void addNode(Node* node){this->node = node;}
 
     virtual AbsState* getCalibrationState() const = 0;
@@ -27,10 +28,10 @@ protected:
     Node* node;
 };
 
-class QuatPose : public AbsPose{
+class QuatPose : public AbsPose {
 public:
     QuatPose(QVector3D xAxis, QVector3D zAxis);
-
+    ~QuatPose(){}
     AbsState* getCalibrationState() const;
     AbsState* getState() const;
     void update(AbsState *s);

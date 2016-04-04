@@ -7,10 +7,6 @@ PositionSnapshot::PositionSnapshot()
 
 }
 
-PositionSnapshot::~PositionSnapshot() {
-    qDeleteAll(snapshotData);
-}
-
 void PositionSnapshot::addMapping(BandType band, AbsState *pose) {
     snapshotData[band] = pose;
 }

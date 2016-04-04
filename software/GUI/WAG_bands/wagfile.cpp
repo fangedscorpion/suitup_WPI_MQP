@@ -27,7 +27,6 @@ QDataStream & operator>>(QDataStream & str, PositionSnapshot *v) {
 }
 
 WAGFile::~WAGFile() {
-    // what to delete here?
     clearHashmapData(motionData);
 }
 
@@ -116,7 +115,7 @@ void WAGFile::setFilenameAndPath(QString filename) {
     } else {
         if (!path.has_parent_path()) {
             std::ifstream myfile;
-            myfile.open ("../WAG_bands/.WAGConfig");
+            myfile.open (MOTION_LIBRARY);
             std::string library;
             std::getline(myfile, library);
             myfile.close();

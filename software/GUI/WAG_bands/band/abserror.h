@@ -6,6 +6,7 @@
 
 class IError {
 public:
+    virtual ~IError(){}
     virtual QByteArray toMessage() const = 0;
     virtual bool withinTolerance(int tolerance) const = 0;
 };
@@ -13,6 +14,7 @@ public:
 class QuatError : public IError {
 public:
     QuatError(QQuaternion err, QQuaternion swing, QQuaternion twist, QVector3D zAxis, QVector3D xAxis);
+    ~QuatError(){}
     QByteArray toMessage() const;
     bool withinTolerance(int tolerance) const;
     QQuaternion getErr() const {return err;}

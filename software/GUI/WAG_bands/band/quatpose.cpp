@@ -18,7 +18,8 @@ QuatState* QuatPose::qqinv(AbsState* q1, AbsState* q2) const {
 }
 
 void QuatPose::calibrate() {
-    node->calibrate(node->getWorldRotation());
+    // need to fix
+    node->calibrate(node->getDefaultRotation());
 }
 
 IError* QuatPose::error(AbsState* goal) const {

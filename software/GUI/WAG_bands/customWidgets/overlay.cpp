@@ -10,8 +10,6 @@ void Overlay::resizeWindow() {
     this->move(global.x() - this->width() / 2, global.y() - this->height() / 2);
 }
 
-Overlay::~Overlay() {}
-
 void Overlay::paintEvent(QPaintEvent *)
 {
  QStyleOption opt;

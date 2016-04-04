@@ -14,7 +14,7 @@ class Overlay : public QWidget {
     Q_OBJECT
 public:
     Overlay(QWidget* parent);
-    ~Overlay();
+    ~Overlay(){}
     void paintEvent(QPaintEvent *);
     void makeSemiTransparent();
 

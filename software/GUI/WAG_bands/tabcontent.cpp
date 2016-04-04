@@ -7,6 +7,13 @@ TabContent::TabContent(MainWindow* in_parent, WAGFile* in_motion, USER u, ACTION
     user = u;
     suitObj = sysSuit;
     modelLoader = ml;
+    playbackModel = 0;
+    editModel = 0;
+    playbackControls = 0;
+    editingControls = 0;
+    recordingControls = 0;
+    playbackMotionViewer = 0;
+    editMotionViewer = 0;
 
     connect(this, SIGNAL(modeChanged(DISPLAY_TYPE)), suitObj, SLOT(catchModeChanged(DISPLAY_TYPE)));
     connect(this, SIGNAL(modeChanged(DISPLAY_TYPE)), this, SLOT(catchModeChanged(DISPLAY_TYPE)));
@@ -80,6 +87,9 @@ TabContent::TabContent(MainWindow* in_parent, WAGFile* in_motion, USER u, ACTION
 
 TabContent::~TabContent() {
     delete motion;
+
+    // suitObj deleted in MainWindow
+
     if (playbackControls != 0)
         delete playbackControls;
     if (editingControls != 0)
@@ -89,6 +99,13 @@ TabContent::~TabContent() {
 
     if (playbackMotionViewer != 0)
         delete playbackMotionViewer;
+    if (editMotionViewer != 0)
+        delete editMotionViewer;
+
+    if (playbackModel != 0)
+        delete playbackModel;
+    if (editModel != 0)
+        delete editModel;
 }
 
 void TabContent::createIcons() {

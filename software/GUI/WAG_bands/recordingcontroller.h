@@ -10,6 +10,9 @@ class RecordingController : public QObject
     Q_OBJECT
 public:
     RecordingController(QWidget* parent, Suit *newSuitObj);
+    // suitObj is deleted in MainWindow
+    // activeMotion is deleted in TabContent
+    ~RecordingController(){}
 
     void stopRecording();
 

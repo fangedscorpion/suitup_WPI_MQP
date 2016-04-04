@@ -11,6 +11,7 @@ ShoulderBand::ShoulderBand(BandType b) : AbsBand(b) {
     if (b != LEFT_SHOULDER && b != RIGHT_SHOULDER) {
         throw std::invalid_argument("Created ShoulderBand with bad BandType");
     }
+    positionRep = QUAT_REP;
     pose = new QuatPose(QVector3D(1, 0, 0), QVector3D(0, 0, 1));
 }
 
@@ -28,11 +29,5 @@ AbsState *ShoulderBand::getStateUpdate() const {
 }
 
 void ShoulderBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
-    switch(recvdMessage->getMessageType()) {
-       // case BAND_POSITION_UPDATE:
-        // do something
-        //break;
-    default:
-        AbsBand::handleMessage(msgTimestamp, recvdMessage);
-    }
+    AbsBand::handleMessage(msgTimestamp, recvdMessage);
 }
