@@ -253,9 +253,7 @@ void WAGFile::saveToFile() {
     out << author;
     out << tags;
     out << saveLoc;
-    qDebug()<<"Wrote metadata";
-    qDebug()<<motionData;
-    //out << motionData;
+    qDebug()<<"Motion Data size" <<motionData.size();
     serializeHashmap(&out);
     qDebug()<<"Wrote motion data";
 
@@ -281,7 +279,10 @@ void WAGFile::loadFromFile(QString f) {
     in >> author;
     in >> tags;
     in >> saveLoc;
-    motionData = deserialize(&in);
+    QHash<qint32, PositionSnapshot *> newData = deserialize(&in);
+    //motionData = deserialize(&in);
+    updateMotionData(newData);
+
     //in >> motionData;
     qDebug()<<"Motion data size "<<motionData.size();
 
@@ -322,17 +323,10 @@ void WAGFile::clearHashmapData(QHash<qint32, PositionSnapshot *> data) {
 void WAGFile::serializeHashmap(QDataStream *ds) {
     // serialize motion file
     QList<qint32> keys = motionData.keys();
-    /* int serializeNum = keys.size();
-    if (serializeNum > 1) {
-        serializeNum = 1;
-    } */
     for (int i = 0; i < keys.size(); i++) {
-        qDebug()<<"Writing snap "<<i;
         (*ds)<<keys[i];
         PositionSnapshot *serializeThis = motionData[keys[i]];
-        qDebug()<<"Try to serialize";
         serializeThis->serialize(ds);
-       // (*ds)<<i+65;
     }
 
     (*ds)<<fileEndInt;
@@ -345,24 +339,19 @@ QHash<qint32, PositionSnapshot *> WAGFile::deserialize(QDataStream *ds) {
     qint32 firstThing = 0;
     (*ds)>>firstThing;
     while (keepGoing) {
-   // for (int i = 0; i < 5; i++) {
-            qDebug()<<"Adding new snap";
-        qDebug()<<"first thing"<<firstThing;
         if (firstThing == fileEndInt) {
-            qDebug("Quitting");
             keepGoing = false;
             break;
         } else {
 
-        PositionSnapshot *newSnap;
-        newSnap = PositionSnapshot::deserialize(ds);
-        qDebug()<<newSnap;
-        //deserializedData[firstThing] = newSnap;
-        (*ds)>>firstThing;
+            PositionSnapshot *newSnap;
+            newSnap = PositionSnapshot::deserialize(ds);
+            deserializedData[firstThing] = newSnap;
+            (*ds)>>firstThing;
         }
     }
+    qDebug()<<"Total num snaps"<<deserializedData.size();
 
-    qDebug()<<"first thing"<<firstThing;
     return deserializedData;
 }
 

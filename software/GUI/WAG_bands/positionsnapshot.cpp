@@ -18,8 +18,6 @@ QSet<BandType> PositionSnapshot::getRecordedBands() {
 
 void PositionSnapshot::serialize(QDataStream *ds) {
     QList<BandType> keys = snapshotData.keys();
-    qDebug()<<keys;
-    qDebug()<<"keys.length"<<keys.length();
     for (int i = 0; i < keys.length(); i++) {
         qint32 castedKey = keys[i];
         (*ds)<<castedKey;
@@ -41,13 +39,9 @@ PositionSnapshot * PositionSnapshot::deserialize(QDataStream *ds) {
     (*ds)>>firstThing;
     PositionSnapshot *snapshot;
     snapshot = new PositionSnapshot();
-    int iterations = 0;
     while (keepGoing) {
-        iterations++;
         if (firstThing == END_SNAP_SERIALIZE) {
             keepGoing = false;
-            break;
-        } else if (iterations > 20) {
             break;
         }
         AbsState *newState;

@@ -216,6 +216,7 @@ void PlaybackController::setActiveMotion(WAGFile *newMotion) {
     activeMotion = newMotion;
     qint32 sliderMax = activeMotion->getFrameNums();
     lastFrameNum = sliderMax;
+    qDebug()<<"WAG FILE SET";
     emit totalTimeChanged(lastFrameNum);
     emit changeSliderMax(sliderMax);
     connect(newMotion, SIGNAL(framesChanged(qint32)), this, SLOT(catchFrameNumsChanged(qint32)));
