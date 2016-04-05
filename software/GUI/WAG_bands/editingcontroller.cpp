@@ -144,3 +144,11 @@ void EditingController::currentFrameChanged(int currentFrameSliderPos) {
     //emit frameChanged(currentFrame);
     emit frameChanged(updater->getCurrentFrameNum());
 }
+
+qint32 EditingController::getBeginningHandleTime() {
+    return beginningPointer*lastFrameNum/100;
+}
+
+qint32 EditingController::getEndingHandleTime() {
+    return endPointer*lastFrameNum/100;
+}

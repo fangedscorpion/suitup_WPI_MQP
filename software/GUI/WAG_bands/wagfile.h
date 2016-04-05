@@ -46,6 +46,7 @@ public:
     QHash<qint32, PositionSnapshot*> getMotionData();
     PositionSnapshot *getSnapshot(float approxPercentThroughFile, qint32 snapTime, SNAP_CLOSENESS retrieveType);
     QHash<qint32, PositionSnapshot*> getChunkInRange(qint32 startTime, qint32 endTime);
+    void cropMotion(qint32 startTime, qint32 endTime);
     // setters
     void updateFilename(QString newName);
     void updateDescription(QString desc) {description = desc;}

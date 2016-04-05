@@ -96,13 +96,14 @@ private:
     QTimer* recordCountdownTimer;
     QTimer* recordStopwatchTimer;
     // edit
+    SmartPushButton* cropBtn;
+    SmartPushButton* motionInfoBtn;
     QIcon cropIcon;
-    QIcon splitIcon;
-    QIcon undoIcon;
     QIcon editIcon;
     QIcon resetIcon;
     StyledGroupBox* createEditOptionsAndControls();
     MotionViewer* editMotionViewer;
+    bool cropping;
     // file info
     OverlayWidget* motionInfoWidget;
     void createMotionInfoWindow();
@@ -144,6 +145,7 @@ public slots:
     void lockOnSuitPlayback(bool playingOnSuit);
     void playToggled(bool playing);
     void handleVCChangeState(bool shouldRecord);
+    void toggleCrop();
 
 signals:
     void stepThroughChanged(bool steppingThrough);

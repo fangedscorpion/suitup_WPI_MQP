@@ -111,8 +111,6 @@ TabContent::~TabContent() {
 void TabContent::createIcons() {
     recordIcon = QIcon(QPixmap(":/icons/record.png"));
     cropIcon = QIcon(QPixmap(":/icons/crop.png"));
-    splitIcon = QIcon(QPixmap(":/icons/split.png"));
-    undoIcon = QIcon(QPixmap(":/icons/undo.png"));
     editIcon = QIcon(QPixmap(":/icons/edit.png"));
     stopIcon = QIcon(QPixmap(":/icons/stop.png"));
     resetIcon = QIcon(QPixmap(":/icons/reset.png"));

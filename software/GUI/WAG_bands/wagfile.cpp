@@ -298,3 +298,15 @@ void WAGFile::clearHashmapData(QHash<qint32, PositionSnapshot *> data) {
     qDebug()<<"WAGFile: deleting all hashmap data";
     qDeleteAll(data);
 }
+
+void WAGFile::cropMotion(qint32 startTime, qint32 endTime) {
+    // need to figure out if this makes a deep or shallow copy of the positionsnapshots
+    // should probably only have this get the keys and then do the cropping in another way
+    for (int i = 0; i < keys.length(); i++) {
+        if ((keys[i] < startTime) || (keys[i] > endTime)) {
+            motionData.remove(keys[i]);
+        }
+    }
+
+    saveToFile();
+}
