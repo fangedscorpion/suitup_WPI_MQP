@@ -12,10 +12,10 @@ void AbsState::serialize(QDataStream *ds) {
     switch(stateRep) {
     case QUAT_REP:
 
-//        scalarVar = scalar();
-//        xVar = QuatState::x();
-//        yVar = QuatState::y();
-//        zVar = QuatState::z();
+        //        scalarVar = scalar();
+        //        xVar = QuatState::x();
+        //        yVar = QuatState::y();
+        //        zVar = QuatState::z();
         scalarVar = 65;
         xVar = 66;
         yVar = 67;
@@ -37,9 +37,27 @@ void AbsState::serialize(QDataStream *ds) {
 }
 
 void QuatState::serialize(QDataStream *ds) {
+    qDebug()<<"SERIALIZING IN QUAT STATE ------------------------";
     qint32 serializeType = stateRep;
     (*ds)<<serializeType;
-    float scalarVar = scalar();
+
+    float scalarVar = 0;
+    float xVar = 0;
+    float yVar = 0;
+    float zVar = 0;
+
+    scalarVar = scalar();
+    xVar = x();
+    yVar = y();
+    zVar = z();
+
+
+    (*ds)<<scalarVar;
+    (*ds)<<xVar;
+    (*ds)<<yVar;
+    (*ds)<<zVar;
+
+    /* float scalarVar = scalar();
     float xVar = x();
     float yVar = y();
     float zVar = z();
@@ -53,7 +71,7 @@ void QuatState::serialize(QDataStream *ds) {
     qDebug()<<scalarVar;
     qDebug()<<xVar;
     qDebug()<<yVar;
-    qDebug()<<zVar;
+    qDebug()<<zVar; */
 
 }
 

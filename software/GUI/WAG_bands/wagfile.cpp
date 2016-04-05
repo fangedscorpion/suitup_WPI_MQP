@@ -322,16 +322,17 @@ void WAGFile::clearHashmapData(QHash<qint32, PositionSnapshot *> data) {
 void WAGFile::serializeHashmap(QDataStream *ds) {
     // serialize motion file
     QList<qint32> keys = motionData.keys();
-    int serializeNum = keys.size();
+    /* int serializeNum = keys.size();
     if (serializeNum > 1) {
         serializeNum = 1;
-    }
-    for (int i = 0; i < serializeNum; i++) {
+    } */
+    for (int i = 0; i < keys.size(); i++) {
         qDebug()<<"Writing snap "<<i;
         (*ds)<<keys[i];
         PositionSnapshot *serializeThis = motionData[keys[i]];
         qDebug()<<"Try to serialize";
         serializeThis->serialize(ds);
+       // (*ds)<<i+65;
     }
 
     (*ds)<<fileEndInt;
@@ -356,7 +357,7 @@ QHash<qint32, PositionSnapshot *> WAGFile::deserialize(QDataStream *ds) {
         PositionSnapshot *newSnap;
         newSnap = PositionSnapshot::deserialize(ds);
         qDebug()<<newSnap;
-        deserializedData[firstThing] = newSnap;
+        //deserializedData[firstThing] = newSnap;
         (*ds)>>firstThing;
         }
     }
