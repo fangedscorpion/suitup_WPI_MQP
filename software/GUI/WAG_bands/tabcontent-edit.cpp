@@ -5,6 +5,8 @@
 // TODO: add edit file name and description in here
 StyledGroupBox* TabContent::createEditOptionsAndControls() {
     editingControls = new EditingController(this);
+    connect(editingControls, SIGNAL(totalTimeChanged(qint32)), editMotionViewer, SLOT(updateLastLabel(qint32)));
+
     editingControls->setActiveMotion(motion);
 
     connect(editingControls, SIGNAL(changeSliderMax(qint32)), editMotionViewer, SLOT(changeSliderRange(qint32)));    
@@ -42,7 +44,6 @@ StyledGroupBox* TabContent::createEditOptionsAndControls() {
     connect(editMotionViewer->getSlider(), SIGNAL(timebarChanged(int)), editingControls, SLOT(currentFrameChanged(int)));
     connect(editingControls, SIGNAL(changeSliderVal(int)), editMotionViewer->getSlider(), SLOT(catchCurrentFrameChange(int)));
     connect(editingControls, SIGNAL(frameChanged(qint32)), editMotionViewer, SLOT(updateFirstLabel(qint32)));
-    connect(editingControls, SIGNAL(totalTimeChanged(qint32)), editMotionViewer, SLOT(updateLastLabel(qint32)));
 
 
     return editOptions;
