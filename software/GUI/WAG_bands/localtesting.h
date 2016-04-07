@@ -2,7 +2,7 @@
 #define LOCALTESTING_H
 
 // comment this out if not in testing mode
-#define TESTING
+//#define TESTING
 
 
 class LocalTesting
