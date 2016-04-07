@@ -174,7 +174,6 @@ void Suit::startOrStopMode(StartStopModeType commandType) {
 
 void Suit::catchStartPlayback() {
     startOrStopMode(START_PLAYBACK_MODE);
-
 }
 
 void Suit::playSnapshot(PositionSnapshot *goToSnap) {

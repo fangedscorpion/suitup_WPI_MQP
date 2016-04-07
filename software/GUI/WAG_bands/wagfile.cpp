@@ -179,10 +179,10 @@ PositionSnapshot *WAGFile::getSnapshot(float approxPercentThroughFile, qint32 sn
     int keySize = keys.size();
     while (!found) {
         if ((checkIndex == 0) && (incVal < 0)) {
-            closestKey = pickValue(snapTime, retrieveType, keys[checkIndex], keys[checkIndex + incVal]);
+            closestKey = pickValue(snapTime, retrieveType, keys[checkIndex], keys[checkIndex - incVal]);
             found = true;
         } else if ((checkIndex == (keySize - 1)) && (incVal > 0)) {
-            closestKey = pickValue(snapTime, retrieveType, keys[checkIndex + incVal], keys[checkIndex]);
+            closestKey = pickValue(snapTime, retrieveType, keys[checkIndex - incVal], keys[checkIndex]);
             found = true;
         } else {
             // both greater than snaptime or both less than snaptime
@@ -214,15 +214,12 @@ qint32 WAGFile::pickValue(qint32 target, SNAP_CLOSENESS retrType, qint32 beforeT
     return beforeTarget;
 }
 
-
-
-
 void WAGFile::updateMotionData(QHash<qint32, PositionSnapshot*> newMotionData) {
     this->clearHashmapData(motionData);
     motionData = newMotionData;
     keys = motionData.keys();
-    qDebug()<<"WAGFile: Motion data size: "<<keys.size();
     qSort(keys);
+    qDebug()<<"WAGFile: Motion data size"<<keys.size();
     emit framesChanged(this->getFrameNums());
 }
 
@@ -280,7 +277,6 @@ void WAGFile::loadFromFile(QString f) {
     in >> tags;
     in >> saveLoc;
     QHash<qint32, PositionSnapshot *> newData = deserialize(&in);
-    //motionData = deserialize(&in);
     updateMotionData(newData);
 
     //in >> motionData;
