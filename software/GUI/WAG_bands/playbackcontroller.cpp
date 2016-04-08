@@ -1,4 +1,4 @@
-#include "playbackcontroller.h"
+﻿#include "playbackcontroller.h"
 #include <QDebug>
 #include <QString>
 #include <math.h>
@@ -34,6 +34,7 @@ PlaybackController::PlaybackController(QWidget *parent, Suit *newSuitObj) : QObj
     connect(suitObj, SIGNAL(voiceControlCommandReady(MessageType)), this, SLOT(catchVoiceControlCommand(MessageType)));
     connect(this, SIGNAL(frameChanged(qint32)), this, SLOT(catchFrameUpdate(qint32)));
     connect(this, SIGNAL(toleranceChanged(int)), suitObj, SLOT(catchToleranceChange(int)));
+    connect(this, SIGNAL(metPosition()), this, SLOT(positionMet()));
 }
 
 PlaybackController::~PlaybackController() {
@@ -164,6 +165,7 @@ void PlaybackController::timerEvent(QTimerEvent *event) {
 
         // TO DO remove once we can actually do position met
         emit metPosition();
+        qDebug()<<"Step through timer event";
     } else {
         //currentFrame += MILLISECONDS_PER_FRAME;
         //        if (currentFrame < (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {
@@ -181,8 +183,9 @@ void PlaybackController::timerEvent(QTimerEvent *event) {
 
 void PlaybackController::positionMet() {
     if (playing && stepThrough) {
+        qDebug()<<"Position met";
         //currentFrame += stepThroughInterval*MILLISECONDS_PER_FRAME;
-        updater->setCurrentFrameNum(stepThroughInterval*MILLISECONDS_PER_FRAME);
+        updater->setCurrentFrameNum(updater->getCurrentFrameNum() + stepThroughInterval*MILLISECONDS_PER_FRAME);
         //if (currentFrame < std::min(lastFrameNum, lastFrameNum*endPointer/100)) {
         qint32 frame = updater->getCurrentFrameNum();
         if (frame < std::min(lastFrameNum, lastFrameNum*endPointer/100)) {
