@@ -121,6 +121,13 @@ void loop() {
           delay(1);  
         }
       }
+      else if(gotCMD && receivedCmdFromArduino == 'A'){ // ACTION
+        DEBUG_SERIAL.println("LB_ACTION");
+        for(int i = 0; i < NUMBER_OF_START_MSGS_TO_SEND; i++){
+          esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_ACTION_LOW_BATT); //So much serial data already into ESP
+          delay(1);  
+        }
+      }
       else{ //Either didn't get command or wasn't a valid command
         esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA_LOW_BATT);  
       }
@@ -137,6 +144,13 @@ void loop() {
         DEBUG_SERIAL.println("RUN");
         for(int i = 0; i < NUMBER_OF_START_MSGS_TO_SEND; i++){
           esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_START); //So much serial data already into ESP 
+          delay(1); 
+        }
+      }
+      else if(gotCMD && receivedCmdFromArduino == 'A'){ // ACTION
+        DEBUG_SERIAL.println("ACTION");
+        for(int i = 0; i < NUMBER_OF_START_MSGS_TO_SEND; i++){
+          esp8266.sendMsgToESP8266(ESP8266_CMD_VOICE_ACTION); //So much serial data already into ESP 
           delay(1); 
         }
       }

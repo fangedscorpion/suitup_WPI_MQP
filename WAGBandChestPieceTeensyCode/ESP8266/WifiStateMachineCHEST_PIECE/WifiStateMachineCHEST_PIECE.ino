@@ -91,6 +91,8 @@ pfodESP8266BufferedClient bufferedClient; // http://www.forward.com.au/pfod/pfod
 #define ESP8266_CMD_VOICE_START_LOW_BATT 211
 #define ESP8266_CMD_VOICE_STOP 212
 #define ESP8266_CMD_VOICE_STOP_LOW_BATT 213
+#define ESP8266_CMD_VOICE_ACTION          216
+#define ESP8266_CMD_VOICE_ACTION_LOW_BATT 217
 
 #define CMD_SLOT 1
 #define RECORDING_MSG_SIZE 11
@@ -259,7 +261,17 @@ void readTeensySerialSendPkt(boolean printStuff){
                   voiceControlMsg[VOICE_CONTROL_CMD_BYTE] = VOICE_CONTROL_LOW_BATT;
                   voiceControlMsg[VOICE_CONTROL_DATA_BTYE] = VOICE_CONTROL_STOP;
                   voiceCmd = true;
-              break;            
+              break;         
+              case ESP8266_CMD_VOICE_ACTION:
+                  voiceControlMsg[VOICE_CONTROL_CMD_BYTE] = VOICE_CONTROL;
+                  voiceControlMsg[VOICE_CONTROL_DATA_BTYE] = ESP8266_CMD_VOICE_ACTION;
+                  voiceCmd = true;
+              break;
+              case ESP8266_CMD_VOICE_ACTION_LOW_BATT:
+                  voiceControlMsg[VOICE_CONTROL_CMD_BYTE] = VOICE_CONTROL_LOW_BATT;
+                  voiceControlMsg[VOICE_CONTROL_DATA_BTYE] = ESP8266_CMD_VOICE_ACTION_LOW_BATT;
+                  voiceCmd = true;
+              break;  
               default:
                   
               break;

@@ -72,7 +72,9 @@ void checkMail(){
 
 
 // This is used to supress the print outs from the Arduino for testing the EasyVR
-boolean PRINT_FLUFF_FOR_TESTING = false;
+boolean PRINT_FLUFF_FOR_TESTING = false; //Change this to true for debugging prints!
+
+
 ////////////////////////////////////////
 //EasyVR settings 
 int8_t bits = 4;
@@ -95,7 +97,7 @@ void setup() {
 
     // Setup interrupt on interrupt pin from Teesny
     // Set up comms to Teensy
-    DEBUG_SERIAL.begin(9600);
+    DEBUG_SERIAL.begin(9600); //So sed that 8MHz is too slow to reliably run 115200 baud
     pinMode(ARDUINO_HAS_MAIL_PIN+2, INPUT);
     digitalWrite(ARDUINO_HAS_MAIL_PIN+2, HIGH); // Pull up resistors
     attachInterrupt(ARDUINO_HAS_MAIL_PIN, checkMail, FALLING);
@@ -127,7 +129,7 @@ void setup() {
     DEBUG_SERIAL.print(F("EasyVR detected, version "));
     DEBUG_SERIAL.println(easyvr.getID());
   }
-  easyvr.setTimeout(5);
+  easyvr.setTimeout(2);
   
   lang = EasyVR::ENGLISH;
   easyvr.setLanguage(lang);
@@ -299,24 +301,32 @@ void loop() {
   idx = easyvr.getWord();
   if (idx >= 0)
   {
+    int wordHeard = easyvr.getWord();
     if(PRINT_FLUFF_FOR_TESTING){
       DEBUG_SERIAL.print(F("Word: "));
-      DEBUG_SERIAL.print(easyvr.getWord());
+      DEBUG_SERIAL.print(wordHeard);
     }
 
     //////////////////////////////////
     // Communication with the Teensy
     // The Arduino hears the word and prints the letter to serial 
     // Then tells the Teensy to check for serial
-    if(easyvr.getWord() == 6){ // STOP
+    if(wordHeard == 6){ // STOP
       DEBUG_SERIAL.print(F("S")); //Put stop onto output
       delay(10);
       digitalWrite(OUTPUT_INTERRUPT_PIN, LOW);
       delay(1);
       digitalWrite(OUTPUT_INTERRUPT_PIN, HIGH);
     }
-    if(easyvr.getWord() == 3){ //RUN
+    if(wordHeard == 3){ //RUN
       DEBUG_SERIAL.print(F("R")); //Put run onto output serial
+      delay(10);
+      digitalWrite(OUTPUT_INTERRUPT_PIN, LOW);
+      delay(1);
+      digitalWrite(OUTPUT_INTERRUPT_PIN, HIGH);
+    }
+    if(wordHeard == 0){ //ACTION
+      DEBUG_SERIAL.print(F("A")); //Put run onto output serial
       delay(10);
       digitalWrite(OUTPUT_INTERRUPT_PIN, LOW);
       delay(1);
