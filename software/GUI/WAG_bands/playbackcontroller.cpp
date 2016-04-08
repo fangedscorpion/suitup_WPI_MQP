@@ -162,10 +162,14 @@ void PlaybackController::startPlaying() {
 
 void PlaybackController::timerEvent(QTimerEvent *event) {
     if (stepThrough) {
+        if (!suitActive) {
 
         // TO DO remove once we can actually do position met
         emit metPosition();
         qDebug()<<"Step through timer event";
+        } else {
+            emit frameChanged(updater->getCurrentFrameNum());
+        }
     } else {
         //currentFrame += MILLISECONDS_PER_FRAME;
         //        if (currentFrame < (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {
