@@ -267,6 +267,7 @@ void MainWindow::createSettings() {
     connect(rightUpperArm, SIGNAL(released()), this, SLOT(handleConnectedBands()));
     connect(rightShoulder, SIGNAL(released()), this, SLOT(handleConnectedBands()));
     connect(connectBands, SIGNAL(released()), this, SLOT(connectCheckedBands()));
+    connect(fullSuit, SIGNAL(voiceActionCommandRecvd()), fullSuit, SLOT(calibrate()));
     connect(calibrate, SIGNAL(released()), fullSuit, SLOT(calibrate()));
 }
 

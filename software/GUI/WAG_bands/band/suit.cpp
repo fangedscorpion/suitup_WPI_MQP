@@ -268,6 +268,18 @@ void Suit::processVoiceControlMessage(BandMessage *msg) {
             qDebug()<<"Invalid voice command type";
             break;
         }
+    } else if (currentMode == SETTINGS_WIND) {
+        switch (msg->parseVoiceControlMsg()) {
+        case VC_ACTION:
+            if (collectingData) {
+                qDebug()<<"Action command received for calibrate";
+                emit voiceActionCommandRecvd();
+            }
+            break;
+        default:
+            // do nothing
+            break;
+        }
     }
     // currently shouldn't do anything in edit mode
 }

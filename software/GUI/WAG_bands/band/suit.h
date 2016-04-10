@@ -63,6 +63,7 @@ signals:
     void toleranceChanged(int);
     void positionMet();
     void bandConnectionStatusChanged(BandType, ConnectionStatus);
+    void voiceActionCommandRecvd();
 protected:
     void timerEvent(QTimerEvent *);
 
