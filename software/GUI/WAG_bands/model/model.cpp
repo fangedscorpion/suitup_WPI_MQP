@@ -27,9 +27,7 @@ void Model::updatePose(PositionSnapshot *pose){
         switch (state->getStateRep()) {
         case QUAT_REP:
             somethingChanged = true;
-            getNodeByName(bandName)->setWorldRotation(*(static_cast<QuatState*>(state)));
-//            qDebug() << bandName;
-//            qDebug() << (static_cast<QuatState*>(state))->length();
+//            getNodeByName(bandName)->pushNewOrientation(*(static_cast<QuatState*>(state))); //BAD
             break;
         default:
             qDebug() << "Model::updatePose(): Don't know how to handle given state representation!";
@@ -103,8 +101,8 @@ void Node::init() {
 }
 
 void Node::calibrate(QQuaternion sensedOrientation) {
-    // need to fix
-    calibration = sensedOrientation.conjugated() * worldRotation;
+    calibration = rotToOrigin.conjugated()*worldRotationRaw.conjugated();
+    pushNewOrientation(worldRotationRaw);
 }
 
 NodeState Node::getState() const {
@@ -114,8 +112,13 @@ NodeState Node::getState() const {
     return n;
 }
 
-void Node::setWorldRotation(QQuaternion worldRotation) {
-    this->worldRotation = worldRotation*calibration;
+void Node::pushNewOrientation(QQuaternion worldRotation) {
+    this->worldRotationRaw = worldRotation;
+    this->worldRotation = calibration*worldRotation;
+    setWorldRotation();
+}
+
+void Node::setWorldRotation() {
     rotHead = parent->rotTail + parent->worldRotation.rotatedVector(parent->rotToOrigin.rotatedVector(head - parent->tail));
     rotTail = rotHead + this->worldRotation.rotatedVector(rotToOrigin.rotatedVector(tail - head));
 
@@ -126,7 +129,7 @@ void Node::setWorldRotation(QQuaternion worldRotation) {
     transformation *= transformationToOrigin;
 
     for (int i = 0; i < children.size(); ++i){
-        children[i]->setWorldRotation(children[i]->getWorldRotation());
+        children[i]->setWorldRotation();
     }
 }
 
@@ -135,7 +138,7 @@ void Node::setAllRotIdentity() {
         transformation.translate(-tail);
     }
     for (int i = 0; i < children.size(); ++i){
-        children[i]->setWorldRotation(QQuaternion(1,0,0,0));
+        children[i]->pushNewOrientation(QQuaternion(1,0,0,0));
         children[i]->setAllRotIdentity();
     }
 }
@@ -146,7 +149,7 @@ void Node::setAllRotDefault() {
         transformation.translate(-1000*tail); // TODO fix...
     }
     for (int i = 0; i < children.size(); ++i){
-        children[i]->setWorldRotation(children[i]->rotToOrigin.conjugated());
+        children[i]->pushNewOrientation(children[i]->rotToOrigin.conjugated());
         children[i]->setAllRotDefault();
     }
 }

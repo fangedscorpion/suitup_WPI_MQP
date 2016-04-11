@@ -41,7 +41,9 @@ IError* QuatPose::error(AbsState* goal) const {
 }
 
 void QuatPose::update(AbsState *s){
-    node->setWorldRotation(*((QuatState*)s));
+    QuatState* qs = static_cast<QuatState*>(s);
+    *qs = *qs * QQuaternion::fromAxisAndAngle(0,0,1,-90);
+    node->pushNewOrientation(*qs);
 }
 
 AbsState* QuatPose::getCalibrationState() const {
