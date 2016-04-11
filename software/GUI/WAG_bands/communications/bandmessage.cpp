@@ -78,6 +78,7 @@ VoiceControlMsgType BandMessage::parseVoiceControlMsg() {
         }
     } else {
         // ERROR
+        qDebug()<<"Error in voice control parsing";
         return OTHER;
     }
 }

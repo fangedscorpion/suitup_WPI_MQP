@@ -301,7 +301,6 @@ void MainWindow::catchLowBatterySignal(BandType lowBatteryBand, bool hasLowBatte
     if (hasLowBattery) {
         if (!(lowBatteryBands.contains(lowBatteryBand))) {
             lowBatteryBands<<lowBatteryBand;
-            qDebug()<<lowBatteryBands;
             updated = true;
         }
     } else {

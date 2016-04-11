@@ -121,12 +121,11 @@ void Suit::timerEvent(QTimerEvent *) {
 
 void Suit::sendToConnectedBands(BandMessage *sendMsg) {
     QList<BandType> allBands = bands.keys();
-    bool sent = false;
     for (int i = 0; i < allBands.length(); i++) {
-        sent |= bands[allBands[i]]->sendIfConnected(sendMsg);
+        BandMessage *sendThis = new BandMessage(sendMsg->getMessageType(), sendMsg->getMessageData());
+        bands[allBands[i]]->sendIfConnected(sendThis);
     }
-    if (!sent)
-        delete sendMsg;
+    delete sendMsg;
 }
 
 /*
@@ -365,7 +364,6 @@ void Suit::calibrate() {
 
 void Suit::startCollecting() {
     startOrStopMode(START_CALIBRATION_MODE);
-    //toggleCollecting(true);
 }
 void Suit::stopCollecting() {
     startOrStopMode(STOP_CALIBRATION_MODE);
