@@ -39,7 +39,7 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
 
 void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     bool tmpLowBattery;
-    qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType();
+    //qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType();
     switch (recvdMessage->getMessageType()) {
     case VOICE_CONTROL_LOW_BATT:
     case BAND_CONNECTING_LOW_BATT:

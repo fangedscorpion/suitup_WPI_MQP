@@ -60,6 +60,7 @@ VoiceControlMsgType BandMessage::parseVoiceControlMsg() {
         qDebug()<<"BandMessage: message data"<<constMsgData;
         qDebug()<<"BandMessage start "<<VOICE_CONTROL_START;
         qDebug()<<"BandMessage stop "<<VOICE_CONTROL_STOP;
+        qDebug()<<"BandMessage action"<<VOICE_CONTROL_ACTION;
         // for now, assuming VOICE_CONTROL_DATA_LEN is 1, if not, have to change equality check
         if (constMsgData[0] == VOICE_CONTROL_START) {
             qDebug()<<"voice control start";
@@ -67,8 +68,12 @@ VoiceControlMsgType BandMessage::parseVoiceControlMsg() {
         } else if (constMsgData[0] == VOICE_CONTROL_STOP){
             qDebug()<<"Voice control stop";
             return VC_STOP;
-        } else {
-            qDebug()<<"Voice control other";
+        } else if (constMsgData[0] == ((char) VOICE_CONTROL_ACTION)) {
+            qDebug()<<"Voice control action";
+            return VC_ACTION;
+        }
+        else {
+            qDebug()<<"Voice control other 2";
             return OTHER;
         }
     } else {
