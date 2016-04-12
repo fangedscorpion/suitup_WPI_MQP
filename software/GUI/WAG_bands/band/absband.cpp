@@ -40,7 +40,7 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
 
 void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     bool tmpLowBattery;
-    qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType();
+    qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType()<<" from "<<type;
     switch (recvdMessage->getMessageType()) {
     case VOICE_CONTROL_LOW_BATT:
     case BAND_CONNECTING_LOW_BATT:
@@ -161,7 +161,7 @@ bool AbsBand::moveTo(AbsState* x) {
     IError * posError = pose->error(x);
     QByteArray msgData = posError->toMessage();
     BandMessage *newMsg = new BandMessage(POSITION_ERROR, msgData);
-    //qDebug()<<"AbsBand: sending error message";
+    qDebug()<<"AbsBand: sending error message to "<<type;
     emit dataToSend(type, newMsg);
     if (posError->withinTolerance(tolerance)) {
         if (validData) {

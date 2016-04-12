@@ -140,13 +140,15 @@ void Suit::startOrStopMode(StartStopModeType commandType) {
     case STOP_CALIBRATION_MODE:
     case STOP_RECORDING_MODE:
     case STOP_PLAYBACK_MODE:
-        allBands = bands.keys();
-        for (int i = 0; i < allBands.length(); i++) {
-            bands[allBands[i]]->invalidateData();
-        }
+
         break;
     default:
         break;
+    }
+
+    allBands = bands.keys();
+    for (int i = 0; i < allBands.length(); i++) {
+        bands[allBands[i]]->invalidateData();
     }
 
     BandMessage *newMsg;
