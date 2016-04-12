@@ -205,7 +205,7 @@ void Suit::playSnapshot(PositionSnapshot *goToSnap) {
             BandType getBand = connected[i];
             if (snapshotData.contains(getBand)) {
                 //          qDebug()<<"Suit: Sending error to band "<<getBand;
-                //qDebug()<<"Suit: band in snapshot, calling move to";
+               // qDebug()<<"Suit: band in snapshot, calling move to";
                 posWithinTol &= bands[getBand]->moveTo(snapshotData[getBand]);
                 //        qDebug()<<"Suit: Position for band "<<getBand<<" within tolerance "<<posWithinTol;
             }

@@ -161,14 +161,16 @@ bool AbsBand::moveTo(AbsState* x) {
     IError * posError = pose->error(x);
     QByteArray msgData = posError->toMessage();
     BandMessage *newMsg = new BandMessage(POSITION_ERROR, msgData);
-    qDebug()<<"AbsBand: sending error message to "<<type;
     emit dataToSend(type, newMsg);
+    bool retVal = false;
     if (posError->withinTolerance(tolerance)) {
         if (validData) {
-            return true;
+            retVal = true;
         }
     }
-    return false;
+
+    invalidateData();
+    return retVal;
 }
 
 void AbsBand::catchTolChange(int newTol) {

@@ -142,8 +142,8 @@ void PlaybackController::startPlaying() {
         emit startPlayback();
         if (suitActive) {
             qDebug("PlaybackController: start stepping through");
-            //emit frameChanged(currentFrame);
-            emit frameChanged(updater->getCurrentFrameNum());
+            int tempFrameRate = MILLISECONDS_PER_FRAME*stepThroughInterval;
+            timerId = startTimer(tempFrameRate);
         } else {
             qDebug("PlaybackController: starting timer");
             // TODO: should probably slow this down
@@ -164,20 +164,16 @@ void PlaybackController::timerEvent(QTimerEvent *event) {
     if (stepThrough) {
         if (!suitActive) {
 
-        // TO DO remove once we can actually do position met
-        emit metPosition();
-        qDebug()<<"Step through timer event";
+            // TO DO remove once we can actually do position met
+            emit metPosition();
+            qDebug()<<"Step through timer event";
         } else {
             emit frameChanged(updater->getCurrentFrameNum());
         }
     } else {
-        //currentFrame += MILLISECONDS_PER_FRAME;
-        //        if (currentFrame < (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {
         if (updater->getCurrentFrameNum()< (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {
 
-            //qDebug()<<"PlaybackController: Current frame "<<currentFrame;
             emit frameChanged(updater->getCurrentFrameNum());
-            // emit frameChanged(currentFrame);
         }
         else {
             reachedEndOfTimeRange();
@@ -206,7 +202,7 @@ void PlaybackController::positionMet() {
 void PlaybackController::stopPlaying() {
     if (stepThrough) {
         if (suitActive) {
-
+            killTimer(timerId);
         } else {
             updater->stopFrameUpdates();
             killTimer(timerId);
