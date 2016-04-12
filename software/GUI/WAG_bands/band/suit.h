@@ -43,6 +43,7 @@ private:
     PositionSnapshot *activeSnapshot;
     QSet<BandType> getConnectedBands();
     Model* model;
+    StartStopModeType lastActiveMode;
 
 public slots:
     void catchStartPlayback();

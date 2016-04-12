@@ -17,6 +17,7 @@ AbsBand::AbsBand(BandType bt):QObject() {
     commsSetUp = false;
     pingProblems = 0;
     hasLowBattery = false;
+    validData = false;
 }
 
 AbsBand::~AbsBand(){
@@ -116,6 +117,7 @@ bool AbsBand::sendIfConnected(BandMessage *sendMsg) {
 }
 
 void AbsBand::updateState(AbsState* state, qint32 msgTime){
+    validData = true;
     poseRecvdTime = msgTime;
     pose->update(state);
     emit poseRecvd(pose->getState(), type, poseRecvdTime);
@@ -162,7 +164,9 @@ bool AbsBand::moveTo(AbsState* x) {
     //qDebug()<<"AbsBand: sending error message";
     emit dataToSend(type, newMsg);
     if (posError->withinTolerance(tolerance)) {
-        return true;
+        if (validData) {
+            return true;
+        }
     }
     return false;
 }
@@ -225,4 +229,8 @@ QString AbsBand::bandTypeToModelName(BandType b){
     default:
         throw std::invalid_argument("unknown bandtype");
     }
+}
+
+void AbsBand::invalidateData() {
+    validData = false;
 }
