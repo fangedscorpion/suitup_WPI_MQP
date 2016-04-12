@@ -130,6 +130,7 @@ void Suit::sendToConnectedBands(BandMessage *sendMsg) {
 * only messagetypes of Start/stop recording and start/stop playback should be used
 */
 void Suit::startOrStopMode(StartStopModeType commandType) {
+    QList<BandType> allBands;
     switch (commandType) {
     case START_CALIBRATION_MODE:
     case START_RECORDING_MODE:
@@ -139,7 +140,7 @@ void Suit::startOrStopMode(StartStopModeType commandType) {
     case STOP_CALIBRATION_MODE:
     case STOP_RECORDING_MODE:
     case STOP_PLAYBACK_MODE:
-        QList<BandType> allBands = bands.keys();
+        allBands = bands.keys();
         for (int i = 0; i < allBands.length(); i++) {
             bands[allBands[i]]->invalidateData();
         }
