@@ -12,7 +12,7 @@
 #define DEFAULT_TOLERANCE 1 // how are we expressing tolerance
 #define RECORDING_RATE 60 // 60 fps
 
-#define MILLISECONDS_PER_FRAME 25
+#define MILLISECONDS_PER_FRAME 60
 
 
 PlaybackController::PlaybackController(QWidget *parent, Suit *newSuitObj) : QObject(parent){
