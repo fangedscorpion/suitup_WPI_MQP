@@ -42,7 +42,7 @@ Suit::Suit(WifiManager *comms, Model *suitModel):QObject() {
         connect(bands[allBands[i]], SIGNAL(connectionProblem(BandType)), this, SLOT(catchConnectionProblem(BandType)));
         connect(bands[allBands[i]], SIGNAL(lowBattery(BandType, bool)), this, SLOT(propagateLowBatteryUpdate(BandType, bool)));
 
-        connect(this,SIGNAL(positionSnapshotReady(qint32,PositionSnapshot*)),model,SLOT(updatePoseWithTime(qint32,PositionSnapshot*)));
+        connect(this,SIGNAL(positionSnapshotReady(qint32,PositionSnapshot*)),model,SLOT(updatePoseWithTimeDrawOnly(qint32,PositionSnapshot*)));
     }
 
     collectingData = true;

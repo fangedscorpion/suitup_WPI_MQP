@@ -27,7 +27,7 @@ void Model::updatePose(PositionSnapshot *pose){
         switch (state->getStateRep()) {
         case QUAT_REP:
             somethingChanged = true;
-//            getNodeByName(bandName)->pushNewOrientation(*(static_cast<QuatState*>(state))); //BAD
+            getNodeByName(bandName)->pushNewOrientation(*(static_cast<QuatState*>(state)));
             break;
         default:
             qDebug() << "Model::updatePose(): Don't know how to handle given state representation!";
@@ -39,6 +39,10 @@ void Model::updatePose(PositionSnapshot *pose){
 
 void Model::updatePoseWithTime(qint32, PositionSnapshot *pose){
     updatePose(pose);
+}
+
+void Model::updatePoseWithTimeDrawOnly(qint32, PositionSnapshot *pose){
+    updateNamesAndStates();
 }
 
 void Model::updateNodeStatus(QHash<BandType, NodeStatus> statuses){
