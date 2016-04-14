@@ -292,6 +292,7 @@ void loop() {
     }
     else{
       motorController.stopAllMotors();
+      esp8266.zeroErrorCalculations();
     }
     DEBUG_SERIAL.println(String("Tm:")+(millis()-time1));
 }

@@ -269,7 +269,7 @@ void readTeensySerialSendPkt(boolean printStuff){
               break;
               case ESP8266_CMD_VOICE_ACTION_LOW_BATT:
                   voiceControlMsg[VOICE_CONTROL_CMD_BYTE] = VOICE_CONTROL_LOW_BATT;
-                  voiceControlMsg[VOICE_CONTROL_DATA_BTYE] = ESP8266_CMD_VOICE_ACTION_LOW_BATT;
+                  voiceControlMsg[VOICE_CONTROL_DATA_BTYE] = ESP8266_CMD_VOICE_ACTION;
                   voiceCmd = true;
               break;  
               default:
