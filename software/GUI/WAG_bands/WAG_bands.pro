@@ -57,7 +57,8 @@ SOURCES += main.cpp\
     customWidgets/styledgroupbox.cpp \
     customWidgets/styledcheckbox.cpp \
     test/testwagfile.cpp \
-    frameupdater.cpp
+    frameupdater.cpp \
+    band/absstate.cpp
 
 HEADERS  += mainwindow.h \
     positionsnapshot.h \

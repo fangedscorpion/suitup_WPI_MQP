@@ -17,6 +17,7 @@ AbsBand::AbsBand(BandType bt):QObject() {
     commsSetUp = false;
     pingProblems = 0;
     hasLowBattery = false;
+    validData = false;
 }
 
 AbsBand::~AbsBand(){
@@ -39,7 +40,7 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
 
 void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     bool tmpLowBattery;
-    qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType();
+    qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType()<<" from "<<type;
     switch (recvdMessage->getMessageType()) {
     case VOICE_CONTROL_LOW_BATT:
     case BAND_CONNECTING_LOW_BATT:
@@ -116,6 +117,7 @@ bool AbsBand::sendIfConnected(BandMessage *sendMsg) {
 }
 
 void AbsBand::updateState(AbsState* state, qint32 msgTime){
+    validData = true;
     poseRecvdTime = msgTime;
     pose->update(state);
     emit poseRecvd(pose->getState(), type, poseRecvdTime);
@@ -159,12 +161,16 @@ bool AbsBand::moveTo(AbsState* x) {
     IError * posError = pose->error(x);
     QByteArray msgData = posError->toMessage();
     BandMessage *newMsg = new BandMessage(POSITION_ERROR, msgData);
-    //qDebug()<<"AbsBand: sending error message";
     emit dataToSend(type, newMsg);
+    bool retVal = false;
     if (posError->withinTolerance(tolerance)) {
-        return true;
+        if (validData) {
+            retVal = true;
+        }
     }
-    return false;
+
+    invalidateData();
+    return retVal;
 }
 
 void AbsBand::catchTolChange(int newTol) {
@@ -225,4 +231,8 @@ QString AbsBand::bandTypeToModelName(BandType b){
     default:
         throw std::invalid_argument("unknown bandtype");
     }
+}
+
+void AbsBand::invalidateData() {
+    validData = false;
 }

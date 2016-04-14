@@ -14,14 +14,20 @@ QDataStream & operator>>(QDataStream & str, SAVE_LOCATION & v) {
 }
 
 QDataStream & operator<<(QDataStream & str, const PositionSnapshot *v) {
+    qDebug()<<"Outputting snapshot";
+    qDebug()<<v;
     str << v->getSnapshot();
+    qDebug()<<"returning data stream";
     return str;
 }
 
 QDataStream & operator>>(QDataStream & str, PositionSnapshot *v) {
+    qDebug()<<"snapshot ready";
     QHash<BandType, AbsState *> t;
     str >> t;
+    v = new PositionSnapshot();
     v->setSnapshot(t);
+    //emit snapshotReadIn(v);
     return str;
 }
 
@@ -31,7 +37,8 @@ WAGFile::~WAGFile() {
 
 WAGFile::WAGFile(QString filename, QString in_description, QString author,
                  QVector<QString> in_tags, SAVE_LOCATION saveLoc) : QObject(), description(in_description),
-                 author(author), tags(in_tags), saveLoc(saveLoc) {
+    author(author), tags(in_tags), saveLoc(saveLoc) {
+    qDebug("Wagfile constructor with filename, description, author, in tags, saveloc");
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot*>();
     keys = QList<qint32>();
@@ -39,7 +46,8 @@ WAGFile::WAGFile(QString filename, QString in_description, QString author,
 
 WAGFile::WAGFile(QString filename, QString in_description, QString author,
                  QHBoxLayout* container, SAVE_LOCATION saveLoc) : description(in_description),
-                 author(author), saveLoc(saveLoc) {
+    author(author), saveLoc(saveLoc) {
+    qDebug("WAGFile constructor with filename, descr, author, container, ,saveLoc");
     tags = QVector<QString>();
     updateTags(container);
     setFilenameAndPath(filename);
@@ -49,6 +57,8 @@ WAGFile::WAGFile(QString filename, QString in_description, QString author,
 
 // If peek is true, this loads only the metadata, not the whole file.
 WAGFile::WAGFile(QString filename, SAVE_LOCATION saveLoc, bool peek) : saveLoc(saveLoc){
+    qDebug("WAGFILE: constructor with filename, saveLoc, and peek");
+    qDebug()<<"peek"<<peek;
     setFilenameAndPath(filename);
     motionData = QHash<qint32, PositionSnapshot*>();
     keys = QList<qint32>();
@@ -73,7 +83,7 @@ void WAGFile::updateTags(QHBoxLayout* c) {
 }
 
 void WAGFile::updateWAGFile(QString name, QString desc, QString auth,
-                   QHBoxLayout* cont, SAVE_LOCATION saveLoc) {
+                            QHBoxLayout* cont, SAVE_LOCATION saveLoc) {
     updateFilename(name);
     updateDescription(desc);
     updateAuthor(auth);
@@ -93,9 +103,9 @@ void WAGFile::setFilenameAndPath(QString filename) {
     path = boost::filesystem::path(filename.toStdString());
     if (!path.has_extension())
         path += ".wagz";
-//    else if (path.extension() != ".wagz")
-        // not a wag file!
-        // throw error
+    //    else if (path.extension() != ".wagz")
+    // not a wag file!
+    // throw error
 
     if (saveLoc == LOCALLY) {
         // if filename does not include the full path, add the current working directory
@@ -169,10 +179,10 @@ PositionSnapshot *WAGFile::getSnapshot(float approxPercentThroughFile, qint32 sn
     int keySize = keys.size();
     while (!found) {
         if ((checkIndex == 0) && (incVal < 0)) {
-            closestKey = pickValue(snapTime, retrieveType, keys[checkIndex], keys[checkIndex + incVal]);
+            closestKey = pickValue(snapTime, retrieveType, keys[checkIndex], keys[checkIndex - incVal]);
             found = true;
         } else if ((checkIndex == (keySize - 1)) && (incVal > 0)) {
-            closestKey = pickValue(snapTime, retrieveType, keys[checkIndex + incVal], keys[checkIndex]);
+            closestKey = pickValue(snapTime, retrieveType, keys[checkIndex - incVal], keys[checkIndex]);
             found = true;
         } else {
             // both greater than snaptime or both less than snaptime
@@ -204,15 +214,12 @@ qint32 WAGFile::pickValue(qint32 target, SNAP_CLOSENESS retrType, qint32 beforeT
     return beforeTarget;
 }
 
-
-
-
 void WAGFile::updateMotionData(QHash<qint32, PositionSnapshot*> newMotionData) {
     this->clearHashmapData(motionData);
     motionData = newMotionData;
     keys = motionData.keys();
-    qDebug()<<"WAGFile: Motion data size: "<<keys.size();
     qSort(keys);
+    qDebug()<<"WAGFile: Motion data size"<<keys.size();
     emit framesChanged(this->getFrameNums());
 }
 
@@ -234,6 +241,7 @@ QHash<qint32, PositionSnapshot *> WAGFile::getChunkInRange(qint32 startTime, qin
 }
 
 void WAGFile::saveToFile() {
+    qDebug()<<"Start saving to file";
     QFile file(path.c_str());
     file.open(QIODevice::WriteOnly);
     QDataStream out(&file);
@@ -242,7 +250,9 @@ void WAGFile::saveToFile() {
     out << author;
     out << tags;
     out << saveLoc;
-    out << motionData;
+    qDebug()<<"Motion Data size" <<motionData.size();
+    serializeHashmap(&out);
+    qDebug()<<"Wrote motion data";
 
     qDebug() << "path: " << path.c_str();
     qDebug() << "name: " << name.toStdString().c_str();
@@ -257,6 +267,7 @@ void WAGFile::saveToFile() {
 }
 
 void WAGFile::loadFromFile(QString f) {
+    qDebug("ACtually loaidng file ");
     QFile file(f);
     file.open(QIODevice::ReadOnly);
     QDataStream in(&file);
@@ -265,7 +276,11 @@ void WAGFile::loadFromFile(QString f) {
     in >> author;
     in >> tags;
     in >> saveLoc;
-    in >> motionData;
+    QHash<qint32, PositionSnapshot *> newData = deserialize(&in);
+    updateMotionData(newData);
+
+    //in >> motionData;
+    qDebug()<<"Motion data size "<<motionData.size();
 
     qDebug() << "path: " << path.c_str();
     qDebug() << "name: " << name.toStdString().c_str();
@@ -275,6 +290,7 @@ void WAGFile::loadFromFile(QString f) {
     qDebug() << "tags: " << tags;
 
     file.close();
+    qDebug()<<"Finished loading file";
 }
 
 void WAGFile::loadMetadataFromFile(QString f) {
@@ -289,9 +305,9 @@ void WAGFile::loadMetadataFromFile(QString f) {
 
     file.close();
 
-//    if (description.isEmpty())
-        // not a real wag file!
-        // throw error
+    //    if (description.isEmpty())
+    // not a real wag file!
+    // throw error
 }
 
 void WAGFile::clearHashmapData(QHash<qint32, PositionSnapshot *> data) {
@@ -309,4 +325,39 @@ void WAGFile::cropMotion(qint32 startTime, qint32 endTime) {
     }
 
     saveToFile();
+}
+
+void WAGFile::serializeHashmap(QDataStream *ds) {
+    // serialize motion file
+    QList<qint32> keys = motionData.keys();
+    for (int i = 0; i < keys.size(); i++) {
+        (*ds)<<keys[i];
+        PositionSnapshot *serializeThis = motionData[keys[i]];
+        serializeThis->serialize(ds);
+    }
+
+    (*ds)<<fileEndInt;
+}
+
+QHash<qint32, PositionSnapshot *> WAGFile::deserialize(QDataStream *ds) {
+    QHash<qint32, PositionSnapshot *> deserializedData = QHash<qint32, PositionSnapshot *>();
+
+    bool keepGoing = true;
+    qint32 firstThing = 0;
+    (*ds)>>firstThing;
+    while (keepGoing) {
+        if (firstThing == fileEndInt) {
+            keepGoing = false;
+            break;
+        } else {
+
+            PositionSnapshot *newSnap;
+            newSnap = PositionSnapshot::deserialize(ds);
+            deserializedData[firstThing] = newSnap;
+            (*ds)>>firstThing;
+        }
+    }
+    qDebug()<<"Total num snaps"<<deserializedData.size();
+
+    return deserializedData;
 }

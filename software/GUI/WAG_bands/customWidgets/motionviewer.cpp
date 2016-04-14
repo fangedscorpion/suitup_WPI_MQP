@@ -14,7 +14,7 @@ MotionViewer::MotionViewer(QWidget* parent, Model* m) : QWidget(parent){
     playPause = new QPushButton(this);
     videoSlider = new SuperSlider(this);
     handle1Time = new QLabel("00:00.00", this);
-    handle2Time = new QLabel("00:10.00", this);
+    handle2Time = new QLabel("00:00.00", this);
     playPause->setIcon(playIcon);
     playPause->setIconSize(QSize(15,15));
     controls->addWidget(playPause);

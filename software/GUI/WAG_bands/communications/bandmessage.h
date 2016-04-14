@@ -6,6 +6,7 @@
 
 #define VOICE_CONTROL_START 67
 #define VOICE_CONTROL_STOP 15
+#define VOICE_CONTROL_ACTION 216
 #define VOICE_CONTROL_DATA_LEN 1
 // change these once here from Chas
 
@@ -32,6 +33,7 @@ enum MessageType {
 enum VoiceControlMsgType {
     VC_START = VOICE_CONTROL_START,
     VC_STOP = VOICE_CONTROL_STOP,
+    VC_ACTION = VOICE_CONTROL_ACTION,
     OTHER = 6
 };
 

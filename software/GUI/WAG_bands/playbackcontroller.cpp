@@ -1,4 +1,4 @@
-#include "playbackcontroller.h"
+﻿#include "playbackcontroller.h"
 #include <QDebug>
 #include <QString>
 #include <math.h>
@@ -12,7 +12,7 @@
 #define DEFAULT_TOLERANCE 1 // how are we expressing tolerance
 #define RECORDING_RATE 60 // 60 fps
 
-#define MILLISECONDS_PER_FRAME 25
+#define MILLISECONDS_PER_FRAME 60
 
 
 PlaybackController::PlaybackController(QWidget *parent, Suit *newSuitObj) : QObject(parent){
@@ -27,13 +27,14 @@ PlaybackController::PlaybackController(QWidget *parent, Suit *newSuitObj) : QObj
     timeToHoldFrameMillis = HOLD_POSE_DEFAULT_MILLIS;
     stepThroughInterval = STEP_THROUGH_INTERVAL_DEFAULT;
     stepThroughTolerance = DEFAULT_TOLERANCE; // how are we expressing this
-    lastFrameNum = 1000; // TODO get from motion
+    lastFrameNum = 0; // TODO get from motion
     beginningPointer = 0;
     endPointer = 100;
     connect(this, SIGNAL(endOfTimeRange()), this, SLOT(togglePlay()));
     connect(suitObj, SIGNAL(voiceControlCommandReady(MessageType)), this, SLOT(catchVoiceControlCommand(MessageType)));
     connect(this, SIGNAL(frameChanged(qint32)), this, SLOT(catchFrameUpdate(qint32)));
     connect(this, SIGNAL(toleranceChanged(int)), suitObj, SLOT(catchToleranceChange(int)));
+    connect(this, SIGNAL(metPosition()), this, SLOT(positionMet()));
 }
 
 PlaybackController::~PlaybackController() {
@@ -141,8 +142,8 @@ void PlaybackController::startPlaying() {
         emit startPlayback();
         if (suitActive) {
             qDebug("PlaybackController: start stepping through");
-            //emit frameChanged(currentFrame);
-            emit frameChanged(updater->getCurrentFrameNum());
+            int tempFrameRate = MILLISECONDS_PER_FRAME*stepThroughInterval;
+            timerId = startTimer(tempFrameRate);
         } else {
             qDebug("PlaybackController: starting timer");
             // TODO: should probably slow this down
@@ -161,17 +162,18 @@ void PlaybackController::startPlaying() {
 
 void PlaybackController::timerEvent(QTimerEvent *) {
     if (stepThrough) {
+        if (!suitActive) {
 
-        // TO DO remove once we can actually do position met
-        emit metPosition();
+            // TO DO remove once we can actually do position met
+            emit metPosition();
+            qDebug()<<"Step through timer event";
+        } else {
+            emit frameChanged(updater->getCurrentFrameNum());
+        }
     } else {
-        //currentFrame += MILLISECONDS_PER_FRAME;
-        //        if (currentFrame < (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {
         if (updater->getCurrentFrameNum()< (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {
 
-            //qDebug()<<"PlaybackController: Current frame "<<currentFrame;
             emit frameChanged(updater->getCurrentFrameNum());
-            // emit frameChanged(currentFrame);
         }
         else {
             reachedEndOfTimeRange();
@@ -181,8 +183,9 @@ void PlaybackController::timerEvent(QTimerEvent *) {
 
 void PlaybackController::positionMet() {
     if (playing && stepThrough) {
+        qDebug()<<"Position met";
         //currentFrame += stepThroughInterval*MILLISECONDS_PER_FRAME;
-        updater->setCurrentFrameNum(stepThroughInterval*MILLISECONDS_PER_FRAME);
+        updater->setCurrentFrameNum(updater->getCurrentFrameNum() + stepThroughInterval*MILLISECONDS_PER_FRAME);
         //if (currentFrame < std::min(lastFrameNum, lastFrameNum*endPointer/100)) {
         qint32 frame = updater->getCurrentFrameNum();
         if (frame < std::min(lastFrameNum, lastFrameNum*endPointer/100)) {
@@ -199,7 +202,7 @@ void PlaybackController::positionMet() {
 void PlaybackController::stopPlaying() {
     if (stepThrough) {
         if (suitActive) {
-
+            killTimer(timerId);
         } else {
             updater->stopFrameUpdates();
             killTimer(timerId);
@@ -216,6 +219,7 @@ void PlaybackController::setActiveMotion(WAGFile *newMotion) {
     activeMotion = newMotion;
     qint32 sliderMax = activeMotion->getFrameNums();
     lastFrameNum = sliderMax;
+    qDebug()<<"WAG FILE SET";
     emit totalTimeChanged(lastFrameNum);
     emit changeSliderMax(sliderMax);
     connect(newMotion, SIGNAL(framesChanged(qint32)), this, SLOT(catchFrameNumsChanged(qint32)));

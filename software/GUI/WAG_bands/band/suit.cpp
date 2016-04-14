@@ -11,6 +11,7 @@ Suit::Suit(WifiManager *comms, Model *suitModel):QObject() {
     startTime = QElapsedTimer();
     startTime.start();
     currentMode = HOME_WIND;
+    lastActiveMode = START_RECORDING_MODE;
 
     try {
         bands[CHEST] = new ChestBand();
@@ -20,10 +21,6 @@ Suit::Suit(WifiManager *comms, Model *suitModel):QObject() {
         bands[RIGHT_UPPER_ARM] = new ArmBand(RIGHT_UPPER_ARM);
         bands[LEFT_LOWER_ARM] = new ArmBand(LEFT_LOWER_ARM);
         bands[RIGHT_LOWER_ARM] = new ArmBand(RIGHT_LOWER_ARM);
-        /* bands.insert(std::make_pair<BandType, AbsBand*>(RIGHT_HAND,
-                                                     new Glove(RIGHT_HAND)));
-        bands.insert(std::make_pair<BandType, AbsBand*>(LEFT_HAND,
-                                                     new Glove(LEFT_HAND))); */
 
     } catch (const std::invalid_argument& e) {
         char str[100];
@@ -45,7 +42,7 @@ Suit::Suit(WifiManager *comms, Model *suitModel):QObject() {
         connect(bands[allBands[i]], SIGNAL(connectionProblem(BandType)), this, SLOT(catchConnectionProblem(BandType)));
         connect(bands[allBands[i]], SIGNAL(lowBattery(BandType, bool)), this, SLOT(propagateLowBatteryUpdate(BandType, bool)));
 
-        connect(this,SIGNAL(positionSnapshotReady(qint32,PositionSnapshot*)),model,SLOT(updatePoseWithTime(qint32,PositionSnapshot*)));
+        connect(this,SIGNAL(positionSnapshotReady(qint32,PositionSnapshot*)),model,SLOT(updatePoseWithTimeDrawOnly(qint32,PositionSnapshot*)));
     }
 
     collectingData = true;
@@ -121,19 +118,39 @@ void Suit::timerEvent(QTimerEvent *) {
 
 void Suit::sendToConnectedBands(BandMessage *sendMsg) {
     QList<BandType> allBands = bands.keys();
-    bool sent = false;
     for (int i = 0; i < allBands.length(); i++) {
-        sent |= bands[allBands[i]]->sendIfConnected(sendMsg);
+        BandMessage *sendThis = new BandMessage(sendMsg->getMessageType(), sendMsg->getMessageData());
+        bands[allBands[i]]->sendIfConnected(sendThis);
     }
-    if (!sent)
-        delete sendMsg;
+    delete sendMsg;
 }
 
 /*
-         * starts or stops playback or recording, depending on the parameters
-         * only messagetypes of Start/stop recording and start/stop playback should be used
-         */
+* starts or stops playback or recording, depending on the parameters
+* only messagetypes of Start/stop recording and start/stop playback should be used
+*/
 void Suit::startOrStopMode(StartStopModeType commandType) {
+    QList<BandType> allBands;
+    switch (commandType) {
+    case START_CALIBRATION_MODE:
+    case START_RECORDING_MODE:
+    case START_PLAYBACK_MODE:
+        lastActiveMode = commandType;
+        break;
+    case STOP_CALIBRATION_MODE:
+    case STOP_RECORDING_MODE:
+    case STOP_PLAYBACK_MODE:
+
+        break;
+    default:
+        break;
+    }
+
+    allBands = bands.keys();
+    for (int i = 0; i < allBands.length(); i++) {
+        bands[allBands[i]]->invalidateData();
+    }
+
     BandMessage *newMsg;
     switch (commandType) {
     case START_CALIBRATION_MODE:
@@ -174,7 +191,6 @@ void Suit::startOrStopMode(StartStopModeType commandType) {
 
 void Suit::catchStartPlayback() {
     startOrStopMode(START_PLAYBACK_MODE);
-
 }
 
 void Suit::playSnapshot(PositionSnapshot *goToSnap) {
@@ -189,7 +205,7 @@ void Suit::playSnapshot(PositionSnapshot *goToSnap) {
             BandType getBand = connected[i];
             if (snapshotData.contains(getBand)) {
                 //          qDebug()<<"Suit: Sending error to band "<<getBand;
-                //qDebug()<<"Suit: band in snapshot, calling move to";
+               // qDebug()<<"Suit: band in snapshot, calling move to";
                 posWithinTol &= bands[getBand]->moveTo(snapshotData[getBand]);
                 //        qDebug()<<"Suit: Position for band "<<getBand<<" within tolerance "<<posWithinTol;
             }
@@ -269,6 +285,18 @@ void Suit::processVoiceControlMessage(BandMessage *msg) {
             qDebug()<<"Invalid voice command type";
             break;
         }
+    } else if (currentMode == SETTINGS_WIND) {
+        switch (msg->parseVoiceControlMsg()) {
+        case VC_ACTION:
+            if (collectingData) {
+                qDebug()<<"Action command received for calibrate";
+                emit voiceActionCommandRecvd();
+            }
+            break;
+        default:
+            // do nothing
+            break;
+        }
     }
     // currently shouldn't do anything in edit mode
 }
@@ -279,6 +307,24 @@ void Suit::propagateLowBatteryUpdate(BandType chargeBand, bool hasLowBattery) {
 
 
 void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime) {
+    if (!collectingData) {
+        MessageType msgType;
+        switch (lastActiveMode) {
+        case START_RECORDING_MODE:
+        case START_CALIBRATION_MODE:
+            msgType = STOP_RECORDING;
+            break;
+        case START_PLAYBACK_MODE:
+            msgType = STOP_PLAYBACK;
+            break;
+        default:
+            msgType = STOP_RECORDING;
+            break;
+        }
+        bands[bandForPose]->sendIfConnected(new BandMessage(msgType, QByteArray()));
+
+        return;
+    }
     /* AbsState *copiedPose = (AbsState*) malloc(newPose->objectSize()); // not sure if can do this for abs
             // TODO figure out where to free this
             *copiedPose = *newPose; */
@@ -354,7 +400,6 @@ void Suit::calibrate() {
 
 void Suit::startCollecting() {
     startOrStopMode(START_CALIBRATION_MODE);
-    //toggleCollecting(true);
 }
 void Suit::stopCollecting() {
     startOrStopMode(STOP_CALIBRATION_MODE);

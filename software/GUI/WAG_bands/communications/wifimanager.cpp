@@ -154,9 +154,9 @@ void WifiManager::sendRawDataToBand(BandType destBand, QByteArray bandData) {
 
         if (bandSocket->bytesAvailable() != 0) {
             // read data from bandSocket
+            qDebug()<<"Bytes available";
             routeToBandObject(destBand);
         }
-
 
         if (bandSocket->write(bandData) < bandData.length()) {
             qDebug("WifiManager: ERROR SENDING");
@@ -225,9 +225,9 @@ void WifiManager::sendMessageToBand(BandType destBand, QByteArray msgData, Messa
 }
 
 void WifiManager::sendMessageToBand(BandType destBand, BandMessage *fullMsg) {
-//    if (fullMsg->getMessageType() == POSITION_ERROR) {
-//        qDebug()<<"WifiManager: sending error to band "<<fullMsg->getMessageData();
-//    }
+        if (fullMsg->getMessageType() == START_RECORDING) {
+            qDebug()<<"WifiManager: sending start record to band "<<fullMsg->getMessageData();
+        }
     sendRawDataToBand(destBand, fullMsg->getSerializedMessage());
     delete fullMsg;
     // mark fullMsg for delete?

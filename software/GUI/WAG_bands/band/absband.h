@@ -43,6 +43,7 @@ public:
     static AbsState *deserialize(QByteArray byteRep, PositionRepresentation positionRep);
     static QString bandTypeToString(BandType stringifyThis);
     static QString bandTypeToModelName(BandType b);
+    void invalidateData();
 
 public slots:
     void catchTolChange(int newTol);
@@ -61,6 +62,7 @@ private:
     bool pendingBandPing;
     int tolerance;
     int pingProblems;
+    bool validData;
 signals:
     void dataToSend(BandType, BandMessage *);
     void lowBattery(BandType, bool);

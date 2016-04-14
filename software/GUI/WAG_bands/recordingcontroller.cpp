@@ -48,10 +48,8 @@ void RecordingController::catchVoiceControlCommand(MessageType vcCommandInstruct
     if (voiceEnabled) {
         if (vcCommandInstruction == START_RECORDING) {
             emit vcChangeState(true);
-            //startRecording();
         } else if (vcCommandInstruction == STOP_RECORDING) {
             emit vcChangeState(false);
-            //stopRecording();
         }
     }
 }

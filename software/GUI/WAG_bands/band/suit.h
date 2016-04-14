@@ -20,6 +20,8 @@ public:
     Suit(WifiManager* comms, Model *suitModel);
     ~Suit();
     AbsBand* getBand(BandType bt);
+
+    QSet<BandType> getConnectedBands();
     // bool playback(vector<PositionSnapshot> motion)
     // PositionSnapshot takeSnapshot( )
     // void calibrate( )
@@ -41,8 +43,8 @@ private:
     void processVoiceControlMessage(BandMessage *msg);
     QList<qint32> activeSnapTimes;
     PositionSnapshot *activeSnapshot;
-    QSet<BandType> getConnectedBands();
     Model* model;
+    StartStopModeType lastActiveMode;
 
 public slots:
     void catchStartPlayback();
@@ -63,6 +65,7 @@ signals:
     void toleranceChanged(int);
     void positionMet();
     void bandConnectionStatusChanged(BandType, ConnectionStatus);
+    void voiceActionCommandRecvd();
 protected:
     void timerEvent(QTimerEvent *);
 

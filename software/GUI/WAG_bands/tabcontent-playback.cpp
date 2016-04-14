@@ -6,6 +6,7 @@ StyledGroupBox* TabContent::createPlaybackOptionsAndControls() {
 
     connect(playbackControls, SIGNAL(changeSliderMax(qint32)), playbackMotionViewer, SLOT(changeSliderRange(qint32)));
     connect(playbackControls, SIGNAL(goToSnapshot(PositionSnapshot*)), playbackModel, SLOT(updatePose(PositionSnapshot*)));
+    connect(playbackControls, SIGNAL(totalTimeChanged(qint32)), playbackMotionViewer, SLOT(updateLastLabel(qint32)));
 
     // Playback options
     playbackControls->setActiveMotion(motion);
@@ -92,7 +93,6 @@ StyledGroupBox* TabContent::createPlaybackOptionsAndControls() {
     playbackLayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     playbackOptions->setVisible(false);
     //playbackControls
-    connect(stepThrough, SIGNAL(currentIndexChanged(QString)), playbackControls, SLOT(setStepThroughMode(QString)));
     connect(this, SIGNAL(stepThroughChanged(bool)), playbackControls, SLOT(setStepThroughMode(bool)));
     connect(stepThrough, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateSpeedSliderText(QString)));
     connect(toleranceSlider, SIGNAL(sliderMoved(int)), playbackControls, SLOT(updateStepThroughTolerance(int)));
@@ -113,7 +113,6 @@ StyledGroupBox* TabContent::createPlaybackOptionsAndControls() {
     connect(playbackMotionViewer->getSlider(), SIGNAL(timebarChanged(int)), playbackControls, SLOT(currentFrameChanged(int)));
     connect(playbackControls, SIGNAL(changeSliderVal(int)), playbackMotionViewer->getSlider(), SLOT(catchCurrentFrameChange(int)));
     connect(playbackControls, SIGNAL(frameChanged(qint32)), playbackMotionViewer, SLOT(updateFirstLabel(qint32)));
-    connect(playbackControls, SIGNAL(totalTimeChanged(qint32)), playbackMotionViewer, SLOT(updateLastLabel(qint32)));
 
 
     initializePlaybackSettings();

@@ -11,8 +11,8 @@ GLWidget::GLWidget(Model* m) :
     m_yRot(0),
     m_zRot(0),
     m_cam_offset(QVector3D(0,-0.3f,0)),
-    model(m),
-    modelGL(0){
+    modelGL(0),
+    model(m){
 
     QSurfaceFormat format;
     format.setDepthBufferSize(24);

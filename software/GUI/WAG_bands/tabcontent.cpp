@@ -68,6 +68,7 @@ TabContent::TabContent(MainWindow* in_parent, WAGFile* in_motion, USER u, ACTION
 
     splitPanes->addLayout(vl, 1);
     splitPanes->addWidget(viewerStack, 2);
+    qDebug("HEREEE");
 
     this->setLayout(splitPanes);
     overlay = new Overlay(this);
@@ -81,8 +82,9 @@ TabContent::TabContent(MainWindow* in_parent, WAGFile* in_motion, USER u, ACTION
     connect(recordCountdownTimer, SIGNAL(timeout()), this, SLOT(recordCountdownTimerEvent()));
     connect(recordStopwatchTimer, SIGNAL(timeout()), this, SLOT(recordStopwatchTimerEvent()));
     connect(playbackCountdownTimer, SIGNAL(timeout()), this, SLOT(playbackCountdownTimerEvent()));
-
+    qDebug()<<"Saving motion";
     saveMotion();
+    qDebug()<<"Done saving motion";
 }
 
 TabContent::~TabContent() {

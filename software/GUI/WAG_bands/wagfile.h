@@ -13,6 +13,7 @@
 
 #define MOTION_LIBRARY "../WAG_bands/.WAGConfig"
 
+
 enum SAVE_LOCATION {LIBRARY, LOCALLY};
 enum SNAP_CLOSENESS {
     BEFORE,
@@ -47,6 +48,8 @@ public:
     PositionSnapshot *getSnapshot(float approxPercentThroughFile, qint32 snapTime, SNAP_CLOSENESS retrieveType);
     QHash<qint32, PositionSnapshot*> getChunkInRange(qint32 startTime, qint32 endTime);
     void cropMotion(qint32 startTime, qint32 endTime);
+    void serializeHashmap(QDataStream *ds);
+    QHash<qint32, PositionSnapshot *> deserialize(QDataStream *ds);
     // setters
     void updateFilename(QString newName);
     void updateDescription(QString desc) {description = desc;}
@@ -79,4 +82,6 @@ private:
     void setFilenameAndPath(QString filename);
     void loadFromFile(QString f);
     void loadMetadataFromFile(QString f);
+
+    static const qint32 fileEndInt = -1;
 };

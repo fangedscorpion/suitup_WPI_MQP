@@ -106,6 +106,7 @@ void MainWindow::addTab(USER u, WAGFile* w, ACTION_TYPE a) {
     tabs->addTab(tab, tab->getFilename());
     tabs->setCurrentIndex(tabs->indexOf(tab));
     tabs->clearFocus();
+    qDebug()<<"Done adding tab";
 }
 
 // Menubar actions
@@ -266,6 +267,7 @@ void MainWindow::createSettings() {
     connect(rightUpperArm, SIGNAL(released()), this, SLOT(handleConnectedBands()));
     connect(rightShoulder, SIGNAL(released()), this, SLOT(handleConnectedBands()));
     connect(connectBands, SIGNAL(released()), this, SLOT(connectCheckedBands()));
+    connect(fullSuit, SIGNAL(voiceActionCommandRecvd()), fullSuit, SLOT(calibrate()));
     connect(calibrate, SIGNAL(released()), fullSuit, SLOT(calibrate()));
 }
 

@@ -10,6 +10,8 @@ public:
     AbsState(PositionRepresentation stateRep) : stateRep(stateRep) {}
     ~AbsState(){}
     PositionRepresentation getStateRep(){return stateRep;}
+    void serialize(QDataStream *ds);
+    static AbsState *deserialize(QDataStream *);
 protected:
     PositionRepresentation stateRep;
 };
@@ -22,6 +24,7 @@ public:
     QuatState() : AbsState(QUAT_REP), QQuaternion(){}
     QuatState(QQuaternion q) : AbsState(QUAT_REP), QQuaternion(q.scalar(),q.vector()){}
     ~QuatState(){}
+    void serialize(QDataStream *ds);
 };
 
 inline QDataStream & operator<<(QDataStream & str, AbsState*) {

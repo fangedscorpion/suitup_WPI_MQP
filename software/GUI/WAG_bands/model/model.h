@@ -47,7 +47,8 @@ public:
     void root(bool isRoot) {this->isRootNode = isRoot;}
     void addChild(Node* child) {children.push_back(child);}
     void setStatus(NodeStatus status) {this->status = status;}
-    void setWorldRotation(QQuaternion worldRotation);
+    void pushNewOrientation(QQuaternion worldRotation);
+    void setWorldRotation();
 
     // getters
     QString getName() const {return name;}
@@ -82,6 +83,7 @@ private:
     QVector3D rotHead;
     QVector3D rotTail;
     QQuaternion worldRotation;
+    QQuaternion worldRotationRaw;
     QQuaternion calibration;
 
     Node* parent;
@@ -108,6 +110,7 @@ private:
 public slots:
     void updatePose(PositionSnapshot *pose);
     void updatePoseWithTime(qint32, PositionSnapshot*pose);
+    void updatePoseWithTimeDrawOnly(qint32, PositionSnapshot *pose);
     void updateNodeStatus(QHash<BandType,NodeStatus>);
 
 signals:
