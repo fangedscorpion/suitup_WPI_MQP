@@ -4,6 +4,8 @@
 
 #define PING_INTERVAL 5000
 
+#define TIMEOUT_FOR_SNAPSHOT 200
+
 Suit::Suit(WifiManager *comms, Model *suitModel):QObject() {
 
     model = suitModel;
@@ -136,6 +138,7 @@ void Suit::startOrStopMode(StartStopModeType commandType) {
     case START_RECORDING_MODE:
     case START_PLAYBACK_MODE:
         lastActiveMode = commandType;
+        lastTimeEmitted = 0;
         break;
     case STOP_CALIBRATION_MODE:
     case STOP_RECORDING_MODE:
@@ -330,13 +333,26 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
             *copiedPose = *newPose; */
 
     // NOTE: may have to make sure changes to this absstate later are not reflected in position snapshot
+    qDebug()<<"Collecting";
 
     activeSnapshot->addMapping(bandForPose, newPose);
 
     activeSnapTimes.append(poseTime);
 
+    qint32 min = 2000000000;
+    qint32 max = 0;
+
+    for (int i = 0; i < activeSnapTimes.length(); i++) {
+        if (min > activeSnapTimes[i]) {
+            min = activeSnapTimes[i];
+        }
+        if (max < activeSnapTimes[i]) {
+            max = activeSnapTimes[i];
+        }
+    }
+
     // maybe just want to make it so it's all bands, not just the connected ones
-    if (getConnectedBands() == activeSnapshot->getRecordedBands()) {
+    if (((getConnectedBands() == activeSnapshot->getRecordedBands())) || ((poseTime - min) > TIMEOUT_FOR_SNAPSHOT)) {
         // full snapshot!
 
         qint64 totalTime = 0;
@@ -351,7 +367,11 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
         else {
             avgReadingTime = 0;
         }
+
+        lastTimeEmitted = max;
+
         if ((currentMode == RECORD_WIND) || (currentMode == SETTINGS_WIND)) {
+            qDebug()<<"Position snapshot ready";
             emit positionSnapshotReady(avgReadingTime, activeSnapshot);
         } else {
             // delete the aggregated snapshot in playback mode
@@ -364,6 +384,8 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
         activeSnapshot = new PositionSnapshot();
 
         activeSnapTimes.clear();
+    } else {
+        qDebug()<<"Recorded bands"<<activeSnapshot->getRecordedBands();
     }
 }
 

@@ -45,6 +45,7 @@ private:
     PositionSnapshot *activeSnapshot;
     Model* model;
     StartStopModeType lastActiveMode;
+    qint32 lastTimeEmitted;
 
 public slots:
     void catchStartPlayback();
