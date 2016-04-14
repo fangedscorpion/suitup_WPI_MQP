@@ -160,6 +160,10 @@ bool AbsBand::moveTo(AbsState* x) {
 
     IError * posError = pose->error(x);
     QByteArray msgData = posError->toMessage();
+
+    qDebug()<<msgData.toHex();
+
+
     BandMessage *newMsg = new BandMessage(POSITION_ERROR, msgData);
     emit dataToSend(type, newMsg);
     bool retVal = false;
