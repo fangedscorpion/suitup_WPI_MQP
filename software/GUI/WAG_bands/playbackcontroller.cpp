@@ -159,7 +159,7 @@ void PlaybackController::startPlaying() {
     }
 }
 
-void PlaybackController::timerEvent(QTimerEvent *event) {
+void PlaybackController::timerEvent(QTimerEvent *) {
     if (stepThrough) {
 
         // TO DO remove once we can actually do position met

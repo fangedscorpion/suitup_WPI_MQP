@@ -83,7 +83,7 @@ void EditingController::startPlaying() {
     emit startPlayback();
 }
 
-void EditingController::timerEvent(QTimerEvent *event) {
+void EditingController::timerEvent(QTimerEvent *) {
     //currentFrame += MILLISECONDS_PER_FRAME;
     qint32 frame = updater->getCurrentFrameNum();
     //if (currentFrame < (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {

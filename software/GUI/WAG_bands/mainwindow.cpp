@@ -558,7 +558,7 @@ void MainWindow::indicateConnectionStatusChange(BandType changedBand, Connection
     qDebug()<<"Band "<<changedBand<<" switched conenection status to " <<updatedStatus;
 }
 
-void MainWindow::catchTabChange(int tabIndex) {
+void MainWindow::catchTabChange(int) {
     //
     QWidget* current = tabs->currentWidget();
 
