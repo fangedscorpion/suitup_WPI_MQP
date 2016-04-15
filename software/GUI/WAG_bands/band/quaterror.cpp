@@ -65,36 +65,13 @@ QByteArray QuatError::toMessage() const {
 
     // message contains swing orientation, swing error, twist error
     QByteArray msg = QByteArray();
-    qDebug()<<"Swing orientation"<<swingOrientation;
-    qDebug()<<"swingAngle"<<swingAngle;
-    qDebug()<<"twistAngle"<<twistAngle;
-    //char bytes[4] = reinterpret_cast<const char *>(&swingOrientation);
-    //int swingOrientationInt = (int) swingOrientation;
+//    qDebug()<<"Swing orientation"<<swingOrientation;
+//    qDebug()<<"swingAngle"<<swingAngle;
+//    qDebug()<<"twistAngle"<<twistAngle;
 
-//    htonl()
-//    uchar orientationBytes[4];
-//    qToBigEndian(swingOrientationInt, orientationBytes);
-//    msg.append(orientationBytes);
-//    qint32 swingAngleInt = (qint32) swingAngle;
-//    qToBigEndian(swingAngleInt, orientationBytes);
-//    msg.append(orientationBytes);
-//    qint32 twistAngleInt = (qint32) twistAngle;
-//    qToBigEndian(twistAngleInt, orientationBytes);
-//    msg.append(orientationBytes);
-
-
-    float reversedSwingOrientation = floatHtonl(swingOrientation);
-    float reversedSwingAngle = this->floatHtonl(swingAngle);
-    float reversedTwistAngle = this->floatHtonl(twistAngle);
-
-
-    msg.append(reinterpret_cast<const char*>(&reversedSwingOrientation), sizeof(reversedSwingOrientation));
-    msg.append(reinterpret_cast<const char*>(&reversedSwingAngle), sizeof(reversedSwingAngle));
-    msg.append(reinterpret_cast<const char*>(&reversedTwistAngle), sizeof(reversedTwistAngle));
-
-    //msg.append(reinterpret_cast<const char*>(&swingOrientation), sizeof(swingOrientation));
-    //msg.append(reinterpret_cast<const char*>(&swingAngle), sizeof(swingAngle));
-    //msg.append(reinterpret_cast<const char*>(&twistAngle), sizeof(twistAngle));
+    msg.append(reinterpret_cast<const char*>(&swingOrientation), sizeof(swingOrientation));
+    msg.append(reinterpret_cast<const char*>(&swingAngle), sizeof(swingAngle));
+    msg.append(reinterpret_cast<const char*>(&twistAngle), sizeof(twistAngle));
 
     return msg;
 }
@@ -112,11 +89,4 @@ bool QuatError::withinTolerance(int tolerance) const {
     bool swingWithinTol = abs(swingAngle) < (MAX_SWING_TOL*tolerance/MAX_TOL_INPUT);
 
     return twistWithinTol && swingWithinTol;
-}
-
-
-float QuatError::floatHtonl(float value) {
-      int temp =  htonl(*(unsigned int*)&value);
-      return *(float*) &temp;
-    //return value;
 }
