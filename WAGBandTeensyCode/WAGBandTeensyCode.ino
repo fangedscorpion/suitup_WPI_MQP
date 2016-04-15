@@ -186,6 +186,17 @@ boolean readESP8266SerialSendPkt(boolean printStuff){
                  memcpy( &playbackData[0], &sbuf[serialDataTailPointer], FEEDBACK_MSG_DATA_BYTES); //Only copy over the data bytes
             }
 
+            if(printStuff){
+              DEBUG_SERIAL.print("FB_DATA: ");
+              for(int i = 0; i < FEEDBACK_MSG_DATA_BYTES; i++){
+                 DEBUG_SERIAL.print(playbackData[i], HEX);
+              }
+              DEBUG_SERIAL.println();
+            }
+             
+
+              
+
             //Copy over the errors
             for(int i = 0; i < FEEDBACK_MSG_DATA_BYTES; i++){
                 if(i < 4){
@@ -285,7 +296,7 @@ void loop() {
         esp8266.sendMsgToESP8266(ESP8266_CMD_MPU6050_DATA);  
     }
 
-    boolean readValues = readESP8266SerialSendPkt(true);
+    boolean readValues = readESP8266SerialSendPkt(false);
     if(readValues){
       motorController.updateErrors(esp8266.RX_trans_angle, esp8266.RX_err_trans, esp8266.RX_err_rot);
       motorController.performMotorCalculationsAndRunMotors();
@@ -294,5 +305,5 @@ void loop() {
       motorController.stopAllMotors();
       esp8266.zeroErrorCalculations();
     }
-    DEBUG_SERIAL.println(String("Tm:")+(millis()-time1));
+    //DEBUG_SERIAL.println(String("Tm:")+(millis()-time1));
 }

@@ -421,6 +421,86 @@ char printRXPacket(String msg){
   return msgType;
 }
 
+char wifiBuffer[1024];
+
+boolean listenForPacketsPlayback(char specificPacket, boolean printInfo){
+      char msgTypeRXed = NOTHING_NEW;
+      if(bufferedClient.connected()){
+        
+        // Read all the lines of the reply from server and print them to Serial
+        if(bufferedClient.available() > 0){
+          while(bufferedClient.available()){
+            int readLen = bufferedClient.read(); //Get the length of the packet
+            if(printInfo){
+              Serial.println(String("Received: ") + readLen + " bytes");
+            }
+           
+            for(int i = 0; i < (readLen-1); i++){
+              wifiBuffer[i] = char(bufferedClient.read());
+              if(printInfo){
+                ESP8266_SERIAL.print(wifiBuffer[i]);
+              }
+            }
+            if(printInfo){
+              ESP8266_SERIAL.println();
+            }
+            bufferedClient.read(); //Throw out newline
+            
+            char msgType = wifiBuffer[0]; 
+            
+            if(printInfo){     
+              Serial.print("Message type: ");        
+              
+              switch(msgType){ //Comparing to the values from enum in header
+                case COMPUTER_INITIATE_CONNECTION:  ESP8266_SERIAL.println("COMPUTER_INITIATE_CONNECTION"); break;
+                case BAND_CONNECTING:  ESP8266_SERIAL.println("BAND_CONNECTING"); break;
+                case COMPUTER_PING:  ESP8266_SERIAL.println("COMPUTER_PING"); break;
+                case BAND_PING:  ESP8266_SERIAL.println("BAND_PING"); break;
+                case BAND_POSITION_UPDATE:  ESP8266_SERIAL.println("BAND_POSITION_UPDATE"); break;
+                case POSITION_ERROR:  ESP8266_SERIAL.println("POSITION_ERROR"); break;
+                case START_RECORDING:  ESP8266_SERIAL.println("START_RECORDING"); break;
+                case STOP_RECORDING:  ESP8266_SERIAL.println("STOP_RECORDING"); break;
+                case START_PLAYBACK:  ESP8266_SERIAL.println("START_PLAYBACK"); break;
+                case STOP_PLAYBACK:  ESP8266_SERIAL.println("STOP_PLAYBACK"); break;
+                case VOICE_CONTROL:  ESP8266_SERIAL.println("VOICE_CONTROL"); break;
+                case LOW_BATTERY_UPDATE: ESP8266_SERIAL.println("LOW_BATTERY_UPDATE"); break;
+                default: ESP8266_SERIAL.println("Unrecognized format"); break;
+              }
+            }
+                  
+          if(readLen > 2){ //Normal message
+            if(printInfo){
+              ESP8266_SERIAL.print("Data: ");
+            }
+            
+            
+            if(printInfo){
+              ESP8266_SERIAL.println();  
+            }    
+          }
+            msgTypeRXed = msgType;
+          }          
+        }
+        else{
+          return false;
+        }
+
+        if(msgTypeRXed == specificPacket){
+          return true;
+        }
+      }
+      else{
+        if(printInfo){
+          ESP8266_SERIAL.println("HOST PC DISCONNECTED!");
+        }
+        
+        bufferedClient.stop(); // Close out old TCP stuff?
+        
+        state = FIND_HOST;
+      }
+      return false;
+}
+
 void replyToPCInitiation(){ //Reply to initiation packet
    ESP8266_SERIAL.println("Sending response to COMPUTER_INITIATE_CONNECTION");
    uint8_t msg[3] = {2,BAND_CONNECTING,'\n'};
@@ -592,7 +672,7 @@ void loop() {
 
     case PLAYBACK:
     {
-        boolean gotStopPlayback = listenForSpecificPacket(STOP_PLAYBACK);
+        boolean gotStopPlayback = listenForPacketsPlayback(STOP_PLAYBACK, false);
         
         if(gotStopPlayback){
           state = IDLE_CONNECTED_TO_HOST;

@@ -408,16 +408,17 @@ void replyToPCPing(boolean printInfo){
 void giveMotorsFeedback(){
 //  Send the positional data to the Teensy
   feedbackToTeensyMsg[FEEDBACK_MSG_ALIGN_BYTES-1] = ESP8266_CMD_START_PLAYBACK;
-  feedbackToTeensyMsg[FEEDBACK_MSG_SIZE-1] = feedbackToTeensyMsg[FEEDBACK_MSG_SIZE-1] + 1;
   for(int j = 0; j < FEEDBACK_MSG_SIZE; j++){ //print data from msg
-     ESP8266_SERIAL.print(char(feedbackToTeensyMsg[j]));
+     ESP8266_SERIAL.write(feedbackToTeensyMsg[j]);
+     //ESP8266_SERIAL.print(feedbackToTeensyMsg[j], HEX);
    }
+   //ESP8266_SERIAL.println();
 }
 
 void sendStopPlaybackMode(){
   feedbackToTeensyMsg[FEEDBACK_MSG_ALIGN_BYTES-1] = ESP8266_CMD_STOP_PLAYBACK;
   for(int j = 0; j < FEEDBACK_MSG_SIZE; j++){ //print data from msg
-     ESP8266_SERIAL.print(char(feedbackToTeensyMsg[j]));
+     ESP8266_SERIAL.write(feedbackToTeensyMsg[j]);
    }
 }
 
@@ -477,6 +478,12 @@ void setup() {
   state = IDLE_CONNECTED_TO_AP;
 }
 
+#define PKT_LISTEN_DID_NOT_GET_PACKET 0
+#define PKT_LISTEN_GOT_PACKET 1
+#define PKT_LISTEN_HOST_DISCONNECTED -1
+//Returns PKT_LISTEN_GOT_PACKET if the specified packet was RXed
+//Returns PKT_LISTEN_DID_NOT_GET_PACKET if the specified packet was NOT RXed
+//Returns PKT_LISTEN_HOST_DISCONNECTED if host pc disconnected
 boolean listenForSpecificPacket(char specificPacket, boolean printInfo){
       char msgTypeRXed = NOTHING_NEW;
       if(bufferedClient.connected()){
@@ -487,11 +494,14 @@ boolean listenForSpecificPacket(char specificPacket, boolean printInfo){
           msgTypeRXed = printRXPacket(line, printInfo); // Grabs the feedback data
         }
         else{
-          return false;
+          return PKT_LISTEN_DID_NOT_GET_PACKET;
         }
 
         if(msgTypeRXed == specificPacket){
-          return true;
+          return PKT_LISTEN_GOT_PACKET;
+        }
+        else{
+          return PKT_LISTEN_DID_NOT_GET_PACKET;
         }
       }
       else{
@@ -503,13 +513,16 @@ boolean listenForSpecificPacket(char specificPacket, boolean printInfo){
         
         state = FIND_HOST;
       }
-      return false;
+      return PKT_LISTEN_HOST_DISCONNECTED;
 }
 
 
 char wifiBuffer[1024];
 
-boolean listenForPacketsPlayback(char specificPacket, boolean printInfo){
+//Returns PKT_LISTEN_GOT_PACKET if the specified packet was RXed
+//Returns PKT_LISTEN_DID_NOT_GET_PACKET if the specified packet was NOT RXed
+//Returns PKT_LISTEN_HOST_DISCONNECTED if host pc disconnected
+int listenForPacketsPlayback(char specificPacket, boolean printInfo){
       char msgTypeRXed = NOTHING_NEW;
       if(bufferedClient.connected()){
         
@@ -559,7 +572,7 @@ boolean listenForPacketsPlayback(char specificPacket, boolean printInfo){
               ESP8266_SERIAL.print("Data: ");
             }
             
-            memcpy(&feedbackToTeensyMsg[FEEDBACK_MSG_ALIGN_BYTES], &wifiBuffer[2], FEEDBACK_MSG_DATA_BYTES); //Only copy over the data bytes            
+            memcpy(&feedbackToTeensyMsg[FEEDBACK_MSG_ALIGN_BYTES], &wifiBuffer[1], FEEDBACK_MSG_DATA_BYTES); //Only copy over the data bytes            
             
             giveMotorsFeedback(); //Send the data to the teensy (ONLY IF GOT MORE DATA!!)
             if(printInfo){
@@ -570,11 +583,14 @@ boolean listenForPacketsPlayback(char specificPacket, boolean printInfo){
           }          
         }
         else{
-          return false;
+          return PKT_LISTEN_DID_NOT_GET_PACKET;
         }
 
         if(msgTypeRXed == specificPacket){
-          return true;
+          return PKT_LISTEN_GOT_PACKET;
+        }
+        else{
+          return PKT_LISTEN_DID_NOT_GET_PACKET;
         }
       }
       else{
@@ -586,7 +602,7 @@ boolean listenForPacketsPlayback(char specificPacket, boolean printInfo){
         
         state = FIND_HOST;
       }
-      return false;
+      return PKT_LISTEN_HOST_DISCONNECTED;
 }
 
 void listenForPackets(boolean printInfo){
@@ -652,26 +668,50 @@ void loop() {
 
     case RECORDING:
     {
-        boolean gotStopRecording = listenForSpecificPacket(STOP_RECORDING, true);
-        if(gotStopRecording){
-          state = IDLE_CONNECTED_TO_HOST;
-        }
-        else{
-          readTeensySerialSendPkt(false);
+        int gotStopRecording = listenForSpecificPacket(STOP_RECORDING, true);
+        switch(gotStopRecording){
+          case PKT_LISTEN_GOT_PACKET: {
+            state = IDLE_CONNECTED_TO_HOST;
+          break;
+          }
+          case PKT_LISTEN_DID_NOT_GET_PACKET: {
+            readTeensySerialSendPkt(false);
+          break;
+          }
+          case PKT_LISTEN_HOST_DISCONNECTED: {
+            DEBUG_SERIAL.println("RECORDING: HOST PC DISCONNECTED");
+          break;
+          }
+          default:{
+
+          break;
+          }
         }
     }
     break;
 
     case PLAYBACK:
     {
-        boolean gotStopPlayback = listenForPacketsPlayback(STOP_PLAYBACK, false);
-        if(gotStopPlayback){
-          state = IDLE_CONNECTED_TO_HOST;
-          sendStopPlaybackMode();
-        }
-        else{
-          //giveMotorsFeedback();
-          readTeensySerialSendPkt(false); // Sends the packet 
+        int gotStopPlayback = listenForPacketsPlayback(STOP_PLAYBACK, false);
+        switch(gotStopPlayback){
+          case PKT_LISTEN_GOT_PACKET: {
+            state = IDLE_CONNECTED_TO_HOST;
+            sendStopPlaybackMode();
+          break;
+          }
+          case PKT_LISTEN_DID_NOT_GET_PACKET: {
+            readTeensySerialSendPkt(false);
+          break;
+          }
+          case PKT_LISTEN_HOST_DISCONNECTED: {
+            DEBUG_SERIAL.println("PLAYBACK: HOST PC DISCONNECTED");
+            sendStopPlaybackMode();
+          break;
+          }
+          default:{
+        
+          break;
+          }
         }
     }
     break;
