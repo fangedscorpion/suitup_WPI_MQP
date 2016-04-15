@@ -697,6 +697,8 @@ void loop() {
           case PKT_LISTEN_GOT_PACKET: {
             state = IDLE_CONNECTED_TO_HOST;
             sendStopPlaybackMode();
+            sendStopPlaybackMode();
+            sendStopPlaybackMode();
           break;
           }
           case PKT_LISTEN_DID_NOT_GET_PACKET: {
@@ -704,7 +706,9 @@ void loop() {
           break;
           }
           case PKT_LISTEN_HOST_DISCONNECTED: {
-            DEBUG_SERIAL.println("PLAYBACK: HOST PC DISCONNECTED");
+            //DEBUG_SERIAL.println("PLAYBACK: HOST PC DISCONNECTED");
+            sendStopPlaybackMode();
+            sendStopPlaybackMode();
             sendStopPlaybackMode();
           break;
           }
