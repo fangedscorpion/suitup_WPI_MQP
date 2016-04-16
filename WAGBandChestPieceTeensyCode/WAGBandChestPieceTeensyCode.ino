@@ -2,11 +2,12 @@
 // Written by Team Suit Up!
 // 2015-2016 for MQP
 
-
+#include "WAGBandCommon.h"
 #include "ESP8266Comms.h" //All the listener code for the ESP8266
 #include "BatteryMonitor.h" //Low battery averaging code
 #include "MPU6050WAGWrapper.h" //All the boring MPU6050 stuff
 
+MPU6050WAGWrapper mpu6050Jawn(CHEST_PIECE_BAND_NUM); // Pass this in so it loads the calibration automatically in MPU6050WAGWrapper.cpp // Numbers for bands in WAGBandCommon.h
 
 /* 
  *  EasyVR code and interface to the Arduino
@@ -35,7 +36,6 @@ void enableVoiceControl(){
 
 ESP8266Comms esp8266; //Setup comms to ESP8266 module
 BatteryMonitor battMonitor; //Checking on low battery information
-MPU6050WAGWrapper mpu6050Jawn;
 
 // Friggin ISR for MPU6050 --> No good way to attach ISR in a class :(
 void ISR_MPU6050(){

@@ -7,7 +7,9 @@
 
 #include "MPU6050_6Axis_MotionApps20.h"
 
-MPU6050WAGWrapper::MPU6050WAGWrapper(){
+MPU6050WAGWrapper::MPU6050WAGWrapper(uint8_t bandNum){
+  this->bandNumber = bandNum; // Load in the band number for calibration
+  
 	mpu = new MPU6050();
 }
 
@@ -56,14 +58,49 @@ int MPU6050WAGWrapper::beginConfigureMPU6050(){
     // load and configure the DMP
     DEBUG_SERIAL.println(F("Initializing DMP..."));
     devStatus = mpu->dmpInitialize();
-    
-    this->loadAccelGyroOffsets(-5363, -4791, 1338, -1064, 468, 10);
-//     mpu.setXAccelOffset(-5363);
-//     mpu.setYAccelOffset(-4791);
-//     mpu.setZAccelOffset(1338);
-//     mpu.setXGyroOffset(-1064);
-//     mpu.setYGyroOffset(468);
-//     mpu.setZGyroOffset(10);
+
+    uint8_t bandNumStored = this->bandNumber;
+    /*
+     * 
+     * Calibration data:
+     *  LW {-3387, -4628, 1562, -13, 0, 5}
+        LU {-3364, -2669, 1382, 82, 36, 35}
+        LS {1140, -1823, 1473, 31, -2, 21}
+        RW {-5064, -216, 1062, 69, 46, 61}
+        RU {-2289, 485, 1757, 29, -3, -5}
+        RS {-5305, -4830, 1325, -1027, 445, 0}
+        CP {-2441, 208, 965, 47, -18, 45}
+      */
+    switch(bandNumStored){
+      case RIGHT_SHOULDER_BAND_NUM:{
+        this->loadAccelGyroOffsets(-5305, -4830, 1325, -1027, 445, 0); 
+        break;
+      }
+      case RIGHT_UPPER_ARM_BAND_NUM:{ //Bicep
+      this->loadAccelGyroOffsets(-2289, 485, 1757, 29, -3, -5);
+        break;
+      }
+      case RIGHT_WRIST_BAND_NUM:{
+      this->loadAccelGyroOffsets(-5064, -216, 1062, 69, 46, 61);
+        break;
+      }
+      case LEFT_SHOULDER_BAND_NUM:{
+      this->loadAccelGyroOffsets(1140, -1823, 1473, 31, -2, 21);
+        break;
+      }
+      case LEFT_UPPER_ARM_BAND_NUM:{
+      this->loadAccelGyroOffsets(-3364, -2669, 1382, 82, 36, 35);
+        break;
+      }
+      case LEFT_WRIST_BAND_NUM: {
+      this->loadAccelGyroOffsets(-3387, -4628, 1562, -13, 0, 5);
+        break;
+      }
+      case CHEST_PIECE_BAND_NUM:{
+      this->loadAccelGyroOffsets(-2441, 208, 965, 47, -18, 45);
+        break;
+      }
+    }
 
     // make sure it worked (returns 0 if so)
     if (devStatus == 0) {
@@ -152,7 +189,6 @@ void MPU6050WAGWrapper::extractMPU6050Vals(){
     }
 }
 
-
 void MPU6050WAGWrapper::extractMPU6050Vals(uint8_t* espPkt){
   
     // if programming failed, don't try to do anything
@@ -196,6 +232,68 @@ void MPU6050WAGWrapper::extractMPU6050Vals(uint8_t* espPkt){
         espPkt[9] = fifoBuffer[9];
         espPkt[10] = fifoBuffer[12];
         espPkt[11] = fifoBuffer[13]; 
+        
+        // teapotPacket[2] = fifoBuffer[0];
+        // teapotPacket[3] = fifoBuffer[1];
+        // teapotPacket[4] = fifoBuffer[4];
+        // teapotPacket[5] = fifoBuffer[5];
+        // teapotPacket[6] = fifoBuffer[8];
+        // teapotPacket[7] = fifoBuffer[9];
+        // teapotPacket[8] = fifoBuffer[12];
+        // teapotPacket[9] = fifoBuffer[13];        
+        // teapotPacket[11]++; // packetCount, loops at 0xFF on purpose
+
+        //delayMicroseconds(100);
+
+        // blink LED to indicate activity
+        blinkState = !blinkState;
+        digitalWrite(LED_PIN, blinkState);
+    }
+}
+
+void MPU6050WAGWrapper::extractMPU6050ValsDebug(uint8_t* espPkt){
+  
+    // if programming failed, don't try to do anything
+    if (!dmpReady) return;
+
+    // wait for MPU interrupt or extra packet(s) available
+    // while (!mpuInterrupt && fifoCount < packetSize) {
+    // }
+
+    // reset interrupt flag and get INT_STATUS byte
+    //mpuInterrupt = false;
+    mpuIntStatus = mpu->getIntStatus();
+
+    // get current FIFO count
+    fifoCount = mpu->getFIFOCount();
+
+    // check for overflow (this should never happen unless our code is too inefficient)
+    if ((mpuIntStatus & 0x10) || fifoCount == 1024) {
+        // reset so we can continue cleanly
+        mpu->resetFIFO();
+        DEBUG_SERIAL.println(F("FIFO overflow!"));
+
+    // otherwise, check for DMP data ready interrupt (this should happen frequently)
+    } else if (mpuIntStatus & 0x02) {
+        // wait for correct available data length, should be a VERY short wait
+        while (fifoCount < packetSize) fifoCount = mpu->getFIFOCount();
+
+        // read a packet from FIFO
+        mpu->getFIFOBytes(fifoBuffer, packetSize);
+        
+        // track FIFO count here in case there is > 1 packet available
+        // (this lets us immediately read more without waiting for an interrupt)
+        fifoCount -= packetSize;
+        
+        // display quaternion values in InvenSense Teapot demo format:
+        espPkt[2] = fifoBuffer[0];
+        espPkt[3] = fifoBuffer[1];
+        espPkt[4] = fifoBuffer[4];
+        espPkt[5] = fifoBuffer[5];
+        espPkt[6] = fifoBuffer[8];
+        espPkt[7] = fifoBuffer[9];
+        espPkt[8] = fifoBuffer[12];
+        espPkt[9] = fifoBuffer[13]; 
         
         // teapotPacket[2] = fifoBuffer[0];
         // teapotPacket[3] = fifoBuffer[1];

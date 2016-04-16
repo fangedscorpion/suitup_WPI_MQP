@@ -62,7 +62,7 @@
 
 class MPU6050WAGWrapper{
 public:
-	MPU6050WAGWrapper();
+	MPU6050WAGWrapper(uint8_t bandNum);
 	~MPU6050WAGWrapper();
 
 	// class default I2C address is 0x68
@@ -85,8 +85,12 @@ public:
 	uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
 	uint16_t fifoCount;     // count of all bytes currently in FIFO
 	uint8_t fifoBuffer[64]; // FIFO storage buffer
-	// packet structure for InvenSense teapot demo
-	
+
+  //This corresponds to the IPAddress for the number, but also loads the specific calibration
+  uint8_t bandNumber; 
+
+  
+	// packet structure for InvenSense teapot demo	
 	uint8_t teapotPacket[14] = { '$', 0x02, 0,0, 0,0, 0,0, 0,0, 0x00, 0x00, '\r', '\n' }; // The original packet
 
 	// ================================================================
@@ -100,6 +104,7 @@ public:
 
 	void extractMPU6050Vals();
 	void extractMPU6050Vals(uint8_t* espPkt);
+  void extractMPU6050ValsDebug(uint8_t* espPkt);
 
 	uint8_t* getTeapotPkt(); //Gives the packet out to other function calls
 

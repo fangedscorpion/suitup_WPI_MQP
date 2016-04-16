@@ -7,7 +7,9 @@
 
 #include "MPU6050_6Axis_MotionApps20.h"
 
-MPU6050WAGWrapper::MPU6050WAGWrapper(){
+MPU6050WAGWrapper::MPU6050WAGWrapper(uint8_t bandNum){
+  this->bandNumber = bandNum; // Load in the band number for calibration
+  
 	mpu = new MPU6050();
 }
 
@@ -56,14 +58,49 @@ int MPU6050WAGWrapper::beginConfigureMPU6050(){
     // load and configure the DMP
     DEBUG_SERIAL.println(F("Initializing DMP..."));
     devStatus = mpu->dmpInitialize();
-    
-    this->loadAccelGyroOffsets(-5363, -4791, 1338, -1064, 468, 10);
-//     mpu.setXAccelOffset(-5363);
-//     mpu.setYAccelOffset(-4791);
-//     mpu.setZAccelOffset(1338);
-//     mpu.setXGyroOffset(-1064);
-//     mpu.setYGyroOffset(468);
-//     mpu.setZGyroOffset(10);
+
+    uint8_t bandNumStored = this->bandNumber;
+    /*
+     * 
+     * Calibration data:
+     *  LW {-3387, -4628, 1562, -13, 0, 5}
+        LU {-3364, -2669, 1382, 82, 36, 35}
+        LS {1140, -1823, 1473, 31, -2, 21}
+        RW {-5064, -216, 1062, 69, 46, 61}
+        RU {-2289, 485, 1757, 29, -3, -5}
+        RS {-5305, -4830, 1325, -1027, 445, 0}
+        CP {-2441, 208, 965, 47, -18, 45}
+      */
+    switch(bandNumStored){
+      case RIGHT_SHOULDER_BAND_NUM:{
+        this->loadAccelGyroOffsets(-5305, -4830, 1325, -1027, 445, 0); 
+        break;
+      }
+      case RIGHT_UPPER_ARM_BAND_NUM:{ //Bicep
+      this->loadAccelGyroOffsets(-2289, 485, 1757, 29, -3, -5);
+        break;
+      }
+      case RIGHT_WRIST_BAND_NUM:{
+      this->loadAccelGyroOffsets(-5064, -216, 1062, 69, 46, 61);
+        break;
+      }
+      case LEFT_SHOULDER_BAND_NUM:{
+      this->loadAccelGyroOffsets(1140, -1823, 1473, 31, -2, 21);
+        break;
+      }
+      case LEFT_UPPER_ARM_BAND_NUM:{
+      this->loadAccelGyroOffsets(-3364, -2669, 1382, 82, 36, 35);
+        break;
+      }
+      case LEFT_WRIST_BAND_NUM: {
+      this->loadAccelGyroOffsets(-3387, -4628, 1562, -13, 0, 5);
+        break;
+      }
+      case CHEST_PIECE_BAND_NUM:{
+      this->loadAccelGyroOffsets(-2441, 208, 965, 47, -18, 45);
+        break;
+      }
+    }
 
     // make sure it worked (returns 0 if so)
     if (devStatus == 0) {
