@@ -1,5 +1,6 @@
 #include "abspose.h"
 #include "model/model.h"
+#include <stdexcept>
 
 QuatPose::QuatPose(QVector3D xAxis, QVector3D zAxis) :
     AbsPose(),
@@ -18,7 +19,6 @@ QuatState* QuatPose::qqinv(AbsState* q1, AbsState* q2) const {
 }
 
 void QuatPose::calibrate() {
-    // need to fix
     node->calibrate(node->getDefaultRotation());
 }
 
@@ -40,9 +40,37 @@ IError* QuatPose::error(AbsState* goal) const {
     return new QuatError(*qerr,swing,twist,((QuatState*)getState())->rotatedVector(z),((QuatState*)getState())->rotatedVector(x));
 }
 
-void QuatPose::update(AbsState *s){
+void QuatPose::update(BandType type,AbsState *s){
     QuatState* qs = static_cast<QuatState*>(s);
-    *qs = *qs * QQuaternion::fromAxisAndAngle(0,0,1,-90);
+    QQuaternion adjustment;
+
+    switch (type){
+    case LEFT_LOWER_ARM:
+        adjustment = QQuaternion::fromAxisAndAngle(0,0,1,-90);
+        break;
+    case LEFT_UPPER_ARM:
+        adjustment = QQuaternion::fromAxisAndAngle(0,0,1,-90);
+        break;
+    case LEFT_SHOULDER:
+        adjustment = QQuaternion::fromAxisAndAngle(-1,1,1,120);
+        break;
+    case RIGHT_LOWER_ARM:
+        adjustment = QQuaternion::fromAxisAndAngle(1,1,0,180);
+        break;
+    case RIGHT_UPPER_ARM:
+        adjustment = QQuaternion::fromAxisAndAngle(1,1,0,180);
+        break;
+    case RIGHT_SHOULDER:
+        adjustment = QQuaternion::fromAxisAndAngle(-1,1,1,120);
+        break;
+    case CHEST:
+        adjustment = QQuaternion::fromAxisAndAngle(1,-1,-1,-120);
+        break;
+    default:
+        throw std::invalid_argument("Unrecognized band type.");
+    }
+
+    *qs = *qs * adjustment;
     node->pushNewOrientation(*qs);
 }
 

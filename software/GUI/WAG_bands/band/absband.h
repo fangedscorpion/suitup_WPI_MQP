@@ -10,10 +10,6 @@
 
 #define PING_PROBLEMS_THRESHOLD 5
 
-
-enum BandType {LEFT_HAND, RIGHT_HAND, LEFT_LOWER_ARM, RIGHT_LOWER_ARM,
-                LEFT_UPPER_ARM, RIGHT_UPPER_ARM, LEFT_SHOULDER, RIGHT_SHOULDER,
-                CHEST};
 QDataStream & operator>>(QDataStream & str, BandType & v);
 
 class AbsBand:public QObject
