@@ -20,6 +20,7 @@ public:
     QQuaternion getErr() const {return err;}
     QQuaternion getSwing() const {return swing;}
     QQuaternion getTwist() const {return twist;}
+    static float floatHtonl(float value);
 private:
     QQuaternion err;
     QQuaternion swing;
