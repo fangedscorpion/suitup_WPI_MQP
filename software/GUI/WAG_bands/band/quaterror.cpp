@@ -1,5 +1,6 @@
 #include "abserror.h"
 #include <math.h>
+#include <arpa/inet.h>
 
 #define PI 3.14159265359
 #define TWO_PI 6.28318530718
@@ -64,6 +65,10 @@ QByteArray QuatError::toMessage() const {
 
     // message contains swing orientation, swing error, twist error
     QByteArray msg = QByteArray();
+//    qDebug()<<"Swing orientation"<<swingOrientation;
+//    qDebug()<<"swingAngle"<<swingAngle;
+//    qDebug()<<"twistAngle"<<twistAngle;
+
     msg.append(reinterpret_cast<const char*>(&swingOrientation), sizeof(swingOrientation));
     msg.append(reinterpret_cast<const char*>(&swingAngle), sizeof(swingAngle));
     msg.append(reinterpret_cast<const char*>(&twistAngle), sizeof(twistAngle));
@@ -85,5 +90,3 @@ bool QuatError::withinTolerance(int tolerance) const {
 
     return twistWithinTol && swingWithinTol;
 }
-
-
