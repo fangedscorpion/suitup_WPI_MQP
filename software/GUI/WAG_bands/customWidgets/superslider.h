@@ -77,6 +77,8 @@ public slots:
   void resized();
   void catchCurrentFrameChange(int newPos);
   void lockSliders(bool shouldLock);
+  void setBeginningPointer(int newPos);
+  void setEndPointer(int endPos);
 };
 
 class SliderEventFilter : public QObject

@@ -119,7 +119,7 @@ bool AbsBand::sendIfConnected(BandMessage *sendMsg) {
 void AbsBand::updateState(AbsState* state, qint32 msgTime){
     validData = true;
     poseRecvdTime = msgTime;
-    pose->update(state);
+    pose->update(type,state);
     emit poseRecvd(pose->getState(), type, poseRecvdTime);
     delete state;
 }
@@ -127,10 +127,6 @@ void AbsBand::updateState(AbsState* state, qint32 msgTime){
 bool AbsBand::isConnected() {
     return commsSetUp;
 }
-
-//void AbsBand::assignNode(QSharedPointer<Node> node){
-//    pose->assignNode(node);
-//}
 
 AbsState *AbsBand::deserialize(QByteArray byteRep, PositionRepresentation positionRep) {
     AbsState *state;

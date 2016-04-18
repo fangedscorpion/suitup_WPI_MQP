@@ -9,6 +9,10 @@
 
 class Node;
 
+enum BandType {LEFT_HAND, RIGHT_HAND, LEFT_LOWER_ARM, RIGHT_LOWER_ARM,
+                LEFT_UPPER_ARM, RIGHT_UPPER_ARM, LEFT_SHOULDER, RIGHT_SHOULDER,
+                CHEST};
+
 class AbsPose : public QObject {
 //    Q_PROPERTY(std::vector<QVector3D> points READ getPoints WRITE setPoints)
     Q_OBJECT
@@ -20,7 +24,7 @@ public:
 
     virtual AbsState* getCalibrationState() const = 0;
     virtual AbsState* getState() const = 0;
-    virtual void update(AbsState* s) = 0;
+    virtual void update(BandType type, AbsState *s) = 0;
     virtual void calibrate() = 0;
     virtual IError* error(AbsState* goal) const = 0;
     virtual size_t objectSize() = 0;
@@ -34,7 +38,7 @@ public:
     ~QuatPose(){}
     AbsState* getCalibrationState() const;
     AbsState* getState() const;
-    void update(AbsState *s);
+    void update(BandType type, AbsState *s);
     void calibrate();
     IError* error(AbsState* goal) const;
     size_t objectSize();

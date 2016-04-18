@@ -93,6 +93,14 @@ void SuperSlider::mousePressEvent(QMouseEvent *)
 
 }
 
+void SuperSlider::setEndPointer(int endPos) {
+    this->setValue(endPos);
+}
+
+void SuperSlider::setBeginningPointer(int newPos) {
+    this->alt_setValue(newPos);
+}
+
 // The left handle
 void SuperSlider::alt_update()
 {
