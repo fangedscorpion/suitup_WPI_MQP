@@ -40,7 +40,7 @@ StyledGroupBox* TabContent::createEditOptionsAndControls() {
     connect(editMotionViewer->getSlider(), SIGNAL(timebarChanged(int)), editingControls, SLOT(currentFrameChanged(int)));
     connect(editingControls, SIGNAL(changeSliderVal(int)), editMotionViewer->getSlider(), SLOT(catchCurrentFrameChange(int)));
     connect(editingControls, SIGNAL(frameChanged(qint32)), editMotionViewer, SLOT(updateFirstLabel(qint32)));
-//    connect(editingControls, SIGNAL(totalTimeChanged(qint32)), editMotionViewer, SLOT(updateLastLabel(qint32)));
+    connect(editingControls, SIGNAL(totalTimeChanged(qint32)), editMotionViewer, SLOT(updateLastLabel(qint32)));
     connect(cropBtn, SIGNAL(released()), this, SLOT(toggleCrop()));
 
     return editOptions;
@@ -272,7 +272,7 @@ void TabContent::toggleCrop() {
     } else {
         // get handle times
         qDebug() << "start: " << editingControls->getBeginningHandleTime() << " end: " << editingControls->getEndingHandleTime();
-
+        motion->cropMotion(editingControls->getBeginningHandleTime(), editingControls->getEndingHandleTime());
         cropBtn->setText("Crop");
         cropBtn->setIcon(cropIcon);
         cropBtn->setIconSize(QSize(49,25));
