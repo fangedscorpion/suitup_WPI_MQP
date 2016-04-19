@@ -160,9 +160,13 @@ void EditingController::currentFrameChanged(int currentFrameSliderPos) {
 }
 
 qint32 EditingController::getBeginningHandleTime() {
+    if (beginningPointer == 0)
+        return 0;
     return beginningPointer*lastFrameNum/100;
 }
 
 qint32 EditingController::getEndingHandleTime() {
+    if (endPointer == 99)
+        return lastFrameNum;
     return endPointer*lastFrameNum/100;
 }
