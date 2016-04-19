@@ -77,7 +77,7 @@ void EditingController::startPlaying() {
     emit startPlayback();
 }
 
-void EditingController::timerEvent(QTimerEvent *event) {
+void EditingController::timerEvent(QTimerEvent *) {
     //currentFrame += MILLISECONDS_PER_FRAME;
     qint32 frame = updater->getCurrentFrameNum();
     if (frame < (std::min(lastFrameNum, (endPointer*lastFrameNum/100)))) {
@@ -159,4 +159,16 @@ void EditingController::currentFrameChanged(int currentFrameSliderPos) {
 
     //emit frameChanged(currentFrame);
     emit frameChanged(updater->getCurrentFrameNum());
+}
+
+qint32 EditingController::getBeginningHandleTime() {
+    if (beginningPointer == 0)
+        return 0;
+    return beginningPointer*lastFrameNum/100;
+}
+
+qint32 EditingController::getEndingHandleTime() {
+    if (endPointer == 99)
+        return lastFrameNum;
+    return endPointer*lastFrameNum/100;
 }

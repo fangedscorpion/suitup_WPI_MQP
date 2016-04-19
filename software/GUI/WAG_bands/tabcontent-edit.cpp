@@ -7,38 +7,34 @@ StyledGroupBox* TabContent::createEditOptionsAndControls() {
     editingControls = new EditingController(this);
     connect(editingControls, SIGNAL(totalTimeChanged(qint32)), editMotionViewer, SLOT(updateLastLabel(qint32)));
 
+    editingControls->setActiveMotion(motion);
+    cropping = false;
 
     connect(editingControls, SIGNAL(changeSliderMax(qint32)), editMotionViewer, SLOT(changeSliderRange(qint32)));    
     connect(editingControls, SIGNAL(goToSnapshot(PositionSnapshot*)), editModel, SLOT(updatePose(PositionSnapshot*)));
 
-    editingControls->setActiveMotion(motion);
 
 
     // Edit recording options
     StyledGroupBox* editOptions = new StyledGroupBox(this, "Editing Options");
 
-    SmartPushButton* undoBtn = new SmartPushButton(this, "Undo");
-    undoBtn->setIcon(undoIcon);
-    undoBtn->setIconSize(QSize(51,25));
-    undoBtn->setEnabled(false);
-    SmartPushButton* cropBtn = new SmartPushButton(this, "Crop");
+    cropBtn = new SmartPushButton(this, "Crop");
     cropBtn->setIcon(cropIcon);
     cropBtn->setIconSize(QSize(49,25));
-    SmartPushButton* MotionInfoBtn = new SmartPushButton(this, "Edit Motion Information");
-    MotionInfoBtn->setIcon(editIcon);
-    MotionInfoBtn->setIconSize(QSize(62,25));
+    motionInfoBtn = new SmartPushButton(this, "Edit Motion Information");
+    motionInfoBtn->setIcon(editIcon);
+    motionInfoBtn->setIconSize(QSize(62,25));
     QVBoxLayout* recordPlaybackLayout = editOptions->getLayout();
     recordPlaybackLayout->setContentsMargins(20,20,20,20);
     QVBoxLayout* buttons = new QVBoxLayout();
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
-    buttons->addWidget(undoBtn);
     buttons->addWidget(cropBtn);
-    buttons->addWidget(MotionInfoBtn);
+    buttons->addWidget(motionInfoBtn);
     recordPlaybackLayout->addLayout(buttons, 1);
     recordPlaybackLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
-    connect(MotionInfoBtn, SIGNAL(released()), this, SLOT(launchMotionInfo()));
-    // add connections to crop and split and undo
+    connect(motionInfoBtn, SIGNAL(released()), this, SLOT(launchMotionInfo()));
+    // add connections to crop
     connect(editingControls, SIGNAL(editingPlayStateChanged(bool)), editMotionViewer, SLOT(playToggled(bool)));
     connect(editMotionViewer->getPlayPauseBtn(), SIGNAL(released()), editingControls, SLOT (togglePlay()));
     connect(editMotionViewer->getSlider(), SIGNAL(alt_valueChanged(int)), editingControls, SLOT(beginningSliderChanged(int)));
@@ -48,7 +44,8 @@ StyledGroupBox* TabContent::createEditOptionsAndControls() {
     connect(editingControls, SIGNAL(endSliderPointerChanged(int)), editMotionViewer->getSlider(), SLOT(setEndPointer(int)));
     connect(editingControls, SIGNAL(changeSliderVal(int)), editMotionViewer->getSlider(), SLOT(catchCurrentFrameChange(int)));
     connect(editingControls, SIGNAL(frameChanged(qint32)), editMotionViewer, SLOT(updateFirstLabel(qint32)));
-
+    connect(editingControls, SIGNAL(totalTimeChanged(qint32)), editMotionViewer, SLOT(updateLastLabel(qint32)));
+    connect(cropBtn, SIGNAL(released()), this, SLOT(toggleCrop()));
 
     return editOptions;
 }
@@ -266,4 +263,25 @@ void TabContent::handleInfoMotionRadios() {
         infoMotionSaveLocation->setText(dir.trimmed()); // do something with this
     }
     handleInfoMotionRequiredInput();
+}
+
+void TabContent::toggleCrop() {
+    cropping = !cropping;
+    if(cropping) {
+        cropBtn->setText("Done");
+        cropBtn->setIcon(QIcon());
+        motionInfoBtn->setEnabled(false);
+        modeRadiosGroup->setEnabled(false);
+        // disable playback capabilities
+    } else {
+        // get handle times
+        qDebug() << "start: " << editingControls->getBeginningHandleTime() << " end: " << editingControls->getEndingHandleTime();
+        motion->cropMotion(editingControls->getBeginningHandleTime(), editingControls->getEndingHandleTime());
+        cropBtn->setText("Crop");
+        cropBtn->setIcon(cropIcon);
+        cropBtn->setIconSize(QSize(49,25));
+        motionInfoBtn->setEnabled(true);
+        modeRadiosGroup->setEnabled(true);
+        // enable playback capabilities
+    }
 }

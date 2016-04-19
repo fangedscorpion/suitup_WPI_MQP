@@ -160,7 +160,7 @@ void PlaybackController::startPlaying() {
     }
 }
 
-void PlaybackController::timerEvent(QTimerEvent *event) {
+void PlaybackController::timerEvent(QTimerEvent *) {
     if (stepThrough) {
         if (!suitActive) {
 

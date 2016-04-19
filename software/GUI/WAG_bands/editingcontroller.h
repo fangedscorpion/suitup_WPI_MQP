@@ -14,6 +14,8 @@ public:
     EditingController(QWidget* parent);
     ~EditingController();
     void setActiveMotion(WAGFile *newMotion);
+    qint32 getBeginningHandleTime();
+    qint32 getEndingHandleTime();
 signals:
     void editingPlayStateChanged(bool);
     void changeSliderMax(qint32);
