@@ -7,10 +7,12 @@ StyledGroupBox* TabContent::createEditOptionsAndControls() {
     editingControls = new EditingController(this);
     connect(editingControls, SIGNAL(totalTimeChanged(qint32)), editMotionViewer, SLOT(updateLastLabel(qint32)));
 
-    editingControls->setActiveMotion(motion);
 
     connect(editingControls, SIGNAL(changeSliderMax(qint32)), editMotionViewer, SLOT(changeSliderRange(qint32)));    
     connect(editingControls, SIGNAL(goToSnapshot(PositionSnapshot*)), editModel, SLOT(updatePose(PositionSnapshot*)));
+
+    editingControls->setActiveMotion(motion);
+
 
     // Edit recording options
     StyledGroupBox* editOptions = new StyledGroupBox(this, "Editing Options");
@@ -42,9 +44,8 @@ StyledGroupBox* TabContent::createEditOptionsAndControls() {
     connect(editMotionViewer->getSlider(), SIGNAL(alt_valueChanged(int)), editingControls, SLOT(beginningSliderChanged(int)));
     connect(editMotionViewer->getSlider(), SIGNAL(valueChanged(int)), editingControls, SLOT(endSliderChanged(int)));
     connect(editMotionViewer->getSlider(), SIGNAL(timebarChanged(int)), editingControls, SLOT(currentFrameChanged(int)));
-    connect(editingControls, SIGNAL(beginningSliderPointerChanged(int)), editMotionViewer->getSlider(), SLOT(setBeginningPointer(int newPos)));
-    connect(editingControls, SIGNAL(beginningSliderPointerChanged(int)), editMotionViewer->getSlider(), SLOT(setBeginningPointer(int newPos)));
-    connect(editingControls, SIGNAL(endSliderPointerChanged(int)), editMotionViewer->getSlider(), SLOT(setEndPointer(int newPos)));
+    connect(editingControls, SIGNAL(beginningSliderPointerChanged(int)), editMotionViewer->getSlider(), SLOT(setBeginningPointer(int)));
+    connect(editingControls, SIGNAL(endSliderPointerChanged(int)), editMotionViewer->getSlider(), SLOT(setEndPointer(int)));
     connect(editingControls, SIGNAL(changeSliderVal(int)), editMotionViewer->getSlider(), SLOT(catchCurrentFrameChange(int)));
     connect(editingControls, SIGNAL(frameChanged(qint32)), editMotionViewer, SLOT(updateFirstLabel(qint32)));
 

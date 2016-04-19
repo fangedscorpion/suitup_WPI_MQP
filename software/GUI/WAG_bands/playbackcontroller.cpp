@@ -223,6 +223,7 @@ void PlaybackController::setActiveMotion(WAGFile *newMotion) {
     emit totalTimeChanged(lastFrameNum);
     emit changeSliderMax(sliderMax);
     connect(newMotion, SIGNAL(framesChanged(qint32)), this, SLOT(catchFrameNumsChanged(qint32)));
+    updateFrameWithoutSuitNotification(updater->getCurrentFrameNum());
 }
 
 void PlaybackController::beginningSliderChanged(int sliderVal) {

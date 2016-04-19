@@ -68,6 +68,7 @@ void EditingController::setActiveMotion(WAGFile *newMotion) {
     emit totalTimeChanged(lastFrameNum);
     emit changeSliderMax(sliderMax);
     connect(newMotion, SIGNAL(framesChanged(qint32)), this, SLOT(catchFrameNumsChanged(qint32)));
+    emit frameChanged(updater->getCurrentFrameNum());
 }
 
 void EditingController::startPlaying() {
@@ -115,8 +116,8 @@ void EditingController::catchFrameNumsChanged(qint32 newLastNum) {
         newBeginningPointer = 99;
     }
 
-    emit beginningSliderPointerChanged(newBeginningPointer);
-    emit endSliderPointerChanged(newEndPointer);
+    emit beginningSliderPointerChanged(0);
+    emit endSliderPointerChanged(99);
 
     lastFrameNum = newLastNum;
     emit totalTimeChanged(lastFrameNum);
@@ -143,6 +144,7 @@ void EditingController::catchFrameUpdate(qint32 newFrame) {
     if (lastFrameNum != 0) {
         approxPercentThroughFile = ((float) newFrame)/lastFrameNum;
     }
+    qDebug()<<"frame emitted";
     PositionSnapshot *desiredPos = activeMotion->getSnapshot(approxPercentThroughFile, newFrame, CLOSEST);
     // should probably figure out how to handle null snapshots
     // TODO
