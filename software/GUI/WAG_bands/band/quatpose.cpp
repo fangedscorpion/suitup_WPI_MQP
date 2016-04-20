@@ -2,8 +2,8 @@
 #include "model/model.h"
 #include <stdexcept>
 
-QuatPose::QuatPose(QVector3D xAxis, QVector3D zAxis) :
-    AbsPose(),
+QuatPose::QuatPose(QVector3D xAxis, QVector3D zAxis, BandType b) :
+    AbsPose(b),
     x(xAxis),
     z(zAxis) {
 }
@@ -30,14 +30,23 @@ IError* QuatPose::error(AbsState* goal) const {
     //    p = dot(qerr.v, axis)*axis;
     //    twist = Quaternion([qerr.w; p]).unit();
     //    swing = inv(twist) * qerr;
-    QVector3D axis = x.normalized();
+    QVector3D axis = x.normalized();//((QuatState*)getState())->rotatedVector(x).normalized();
     QuatState* qerr = qqinv(goal,getState());
+
+/* debug */
+    float a = 0;
+    QVector3D v = QVector3D(0,0,0);
+    qerr->getAxisAndAngle(&v,&a);
+    qDebug() << "axis: " << v;
+    qDebug() << "angle: " << a;
+/* /debug */
 
     QVector3D p = QVector3D::dotProduct(qerr->vector(),axis)*axis;
     QQuaternion twist = QQuaternion(qerr->scalar(),p).normalized();
     QQuaternion swing = twist.inverted() * (*qerr);
 
-    return new QuatError(*qerr,swing,twist,((QuatState*)getState())->rotatedVector(z),((QuatState*)getState())->rotatedVector(x));
+    if (bandType == LEFT_SHOULDER) return new QuatError(*qerr,swing,twist,z,x,false);
+    else return new QuatError(*qerr,swing,twist,z,x,true);
 }
 
 void QuatPose::update(BandType type,AbsState *s){
@@ -64,7 +73,7 @@ void QuatPose::update(BandType type,AbsState *s){
         adjustment = QQuaternion::fromAxisAndAngle(-1,1,1,120);
         break;
     case CHEST:
-        adjustment = QQuaternion::fromAxisAndAngle(1,-1,-1,-120);
+        adjustment = QQuaternion::fromAxisAndAngle(1,1,1,-120);
         break;
     default:
         throw std::invalid_argument("Unrecognized band type.");

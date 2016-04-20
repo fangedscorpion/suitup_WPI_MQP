@@ -18,7 +18,7 @@ class AbsPose : public QObject {
     Q_OBJECT
 
 public:
-    AbsPose();
+    AbsPose(BandType b);
     ~AbsPose();
     void addNode(Node* node){this->node = node;}
 
@@ -30,11 +30,12 @@ public:
     virtual size_t objectSize() = 0;
 protected:
     Node* node;
+    BandType bandType;
 };
 
 class QuatPose : public AbsPose {
 public:
-    QuatPose(QVector3D xAxis, QVector3D zAxis);
+    QuatPose(QVector3D xAxis, QVector3D zAxis, BandType b);
     ~QuatPose(){}
     AbsState* getCalibrationState() const;
     AbsState* getState() const;

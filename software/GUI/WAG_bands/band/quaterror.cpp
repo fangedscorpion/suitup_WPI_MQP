@@ -13,12 +13,13 @@
 
 #define MAX_TOL_INPUT 10
 
-QuatError::QuatError(QQuaternion err, QQuaternion swing, QQuaternion twist, QVector3D zAxis, QVector3D xAxis) :
+QuatError::QuatError(QQuaternion err, QQuaternion swing, QQuaternion twist, QVector3D zAxis, QVector3D xAxis, bool flipSwing) :
     err(err),
     swing(swing),
     twist(twist),
-    z(zAxis),
-    x(xAxis) {
+    z(zAxis.normalized()),
+    x(xAxis.normalized()),
+    flipSwing(flipSwing){
 
 }
 
@@ -35,26 +36,29 @@ QByteArray QuatError::toMessage() const {
     swing.getAxisAndAngle(&swingAxis,&swingAngle);
     twist.getAxisAndAngle(&twistAxis,&twistAngle);
 
+    if (flipSwing) swingAxis = QQuaternion::fromAxisAndAngle(z,180).rotatedVector(swingAxis);
+
     // find angle between z and the swing axis about x
-    float det = QVector3D::dotProduct(x.normalized(),QVector3D::crossProduct(z,swingAxis));
+    float det = QVector3D::dotProduct(x,QVector3D::crossProduct(z,swingAxis));
     float dot = QVector3D::dotProduct(z,swingAxis);
     float swingOrientation = atan2(det,dot); // on interval [-pi,+pi]
-    // the force is 90 degrees from the swing orientation
-    swingOrientation += PI_HALF;
+    // the force is +/-90 degrees from the swing orientation
+    if (flipSwing) swingOrientation += PI + PI_HALF; // meh dont feel like making a new constant
+    else swingOrientation += PI_HALF;
+    swingOrientation -= twistAngle*PI/180; // account for twist
     // keep swing orientation on interval [-pi,+pi]
-    if (swingOrientation > PI) swingOrientation -= TWO_PI;
+    while (swingOrientation > PI) swingOrientation -= TWO_PI;
+    while (swingOrientation < -PI) swingOrientation += TWO_PI;
+
+    twistAngle *= -QVector3D::dotProduct(twistAxis,x);
 
     // twist error between -1 and 1
-    if (abs(twistAngle) > MAX_TWIST_ERR)
-        twistAngle = twistAngle / abs(twistAngle); // = +/- 1
-    else
-        twistAngle = twistAngle / MAX_TWIST_ERR; // on interval [-1,+1]
+    if (abs(twistAngle) > MAX_TWIST_ERR) twistAngle = twistAngle / abs(twistAngle); // = +/- 1
+    else twistAngle = twistAngle / MAX_TWIST_ERR; // on interval [-1,+1]
 
     // swing error between -1 and 1
-    if (abs(swingAngle) > MAX_SWING_ERR)
-        swingAngle = swingAngle / abs(swingAngle); // = +/- 1
-    else
-        swingAngle = swingAngle / MAX_SWING_ERR; // on interval [-1,+1]
+    if (abs(swingAngle) > MAX_SWING_ERR) swingAngle = swingAngle / abs(swingAngle); // = +/- 1
+    else swingAngle = swingAngle / MAX_SWING_ERR; // on interval [-1,+1]
 
     // swing error between 0 and 1
     if (swingAngle < 0){
@@ -65,12 +69,9 @@ QByteArray QuatError::toMessage() const {
 
     // message contains swing orientation, swing error, twist error
     QByteArray msg = QByteArray();
-//    qDebug()<<"Swing orientation"<<swingOrientation;
-//    qDebug()<<"swingAngle"<<swingAngle;
-//    qDebug()<<"twistAngle"<<twistAngle;
-
     msg.append(reinterpret_cast<const char*>(&swingOrientation), sizeof(swingOrientation));
-    msg.append(reinterpret_cast<const char*>(&swingAngle), sizeof(swingAngle));
+    msg.append(reinterpret_cast<const char*>(&
+                                             swingAngle), sizeof(swingAngle));
     msg.append(reinterpret_cast<const char*>(&twistAngle), sizeof(twistAngle));
 
     return msg;
