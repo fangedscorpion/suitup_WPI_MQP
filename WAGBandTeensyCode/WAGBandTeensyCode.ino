@@ -15,7 +15,7 @@ BatteryMonitor battMonitor; //Checking on low battery information
 
 //OPTIONS FOR THE BAND ARE LISTED IN WAGBandCommon.h
 // Numbers for bands in WAGBandCommon.h
-MPU6050WAGWrapper mpu6050Jawn(LEFT_UPPER_ARM_BAND_NUM); // Pass this in so it loads the calibration automatically in MPU6050WAGWrapper.cpp 
+MPU6050WAGWrapper mpu6050Jawn(RIGHT_SHOULDER_BAND_NUM); // Pass this in so it loads the calibration automatically in MPU6050WAGWrapper.cpp 
 
 // Friggin ISR for MPU6050 --> No good way to attach ISR in a class :(
 void ISR_MPU6050(){

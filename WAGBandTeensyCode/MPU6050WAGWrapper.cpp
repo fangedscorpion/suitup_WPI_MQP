@@ -64,15 +64,15 @@ int MPU6050WAGWrapper::beginConfigureMPU6050(){
      * 
      * Calibration data:
      *  LW {-3387, -4628, 1562, -13, 0, 5}
-        LU {-3364, -2669, 1382, 82, 36, 35}
+        RS {-3364, -2669, 1382, 82, 36, 35}
         LS {1140, -1823, 1473, 31, -2, 21}
         RW {-5064, -216, 1062, 69, 46, 61}
         RU {-2289, 485, 1757, 29, -3, -5}
-        RS {-5305, -4830, 1325, -1027, 445, 0}
+        LU {-5305, -4830, 1325, -1027, 445, 0}
         CP {-2441, 208, 965, 47, -18, 45}
       */
     switch(bandNumStored){
-      case RIGHT_SHOULDER_BAND_NUM:{
+      case LEFT_UPPER_ARM_BAND_NUM:{
         this->loadAccelGyroOffsets(-5305, -4830, 1325, -1027, 445, 0); 
         break;
       }
@@ -88,7 +88,7 @@ int MPU6050WAGWrapper::beginConfigureMPU6050(){
       this->loadAccelGyroOffsets(1140, -1823, 1473, 31, -2, 21);
         break;
       }
-      case LEFT_UPPER_ARM_BAND_NUM:{
+      case RIGHT_SHOULDER_BAND_NUM:{
       this->loadAccelGyroOffsets(-3364, -2669, 1382, 82, 36, 35);
         break;
       }
