@@ -18,8 +18,10 @@ ShoulderBand::ShoulderBand(BandType b) : AbsBand(b) {
         pose = new QuatPose(QVector3D(-1,0,0), QVector3D(0,-1,0), b);
         break;
     case RIGHT_SHOULDER:
-        pose = new QuatPose(QVector3D(1, 0, 0), QVector3D(0, 0, 1), b); // X
+        pose = new QuatPose(QVector3D(1,0,0), QVector3D(0,-1,0), b);
         break;
+    default:
+        throw std::invalid_argument("Created ShoulderBand with bad BandType");
     }
 }
 

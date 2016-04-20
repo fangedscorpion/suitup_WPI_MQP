@@ -45,7 +45,7 @@ IError* QuatPose::error(AbsState* goal) const {
     QQuaternion twist = QQuaternion(qerr->scalar(),p).normalized();
     QQuaternion swing = twist.inverted() * (*qerr);
 
-    if (bandType == LEFT_SHOULDER) return new QuatError(*qerr,swing,twist,z,x,false);
+    if (bandType == LEFT_SHOULDER || bandType == RIGHT_SHOULDER) return new QuatError(*qerr,swing,twist,z,x,false);
     else return new QuatError(*qerr,swing,twist,z,x,true);
 }
 
