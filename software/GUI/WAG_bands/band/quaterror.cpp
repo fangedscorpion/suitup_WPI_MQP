@@ -38,6 +38,10 @@ QByteArray QuatError::toMessage() const {
 
     if (flipSwing) swingAxis = QQuaternion::fromAxisAndAngle(z,180).rotatedVector(swingAxis);
 
+    // TODO: maybe backwards?
+    if (flipSwing) twistAngle *= QVector3D::dotProduct(twistAxis,x);
+    else twistAngle *= -QVector3D::dotProduct(twistAxis,x);
+
     // find angle between z and the swing axis about x
     float det = QVector3D::dotProduct(x,QVector3D::crossProduct(z,swingAxis));
     float dot = QVector3D::dotProduct(z,swingAxis);
@@ -49,12 +53,6 @@ QByteArray QuatError::toMessage() const {
     // keep swing orientation on interval [-pi,+pi]
     while (swingOrientation > PI) swingOrientation -= TWO_PI;
     while (swingOrientation < -PI) swingOrientation += TWO_PI;
-
-
-    // TODO: maybe backwards?
-    if (flipSwing) twistAngle *= QVector3D::dotProduct(twistAxis,x);
-    else twistAngle *= -QVector3D::dotProduct(twistAxis,x);
-
 
     // twist error between -1 and 1
     if (abs(twistAngle) > MAX_TWIST_ERR) twistAngle = twistAngle / abs(twistAngle); // = +/- 1
@@ -70,6 +68,14 @@ QByteArray QuatError::toMessage() const {
         swingOrientation += PI;
         if (swingOrientation > PI) swingOrientation -= TWO_PI;
     }
+
+    twistAngle *= -1;
+
+
+    // !! TEMP FOR DEMO -- REMOVE
+    twistAngle = 0;
+    // !!
+
 
     // message contains swing orientation, swing error, twist error
     QByteArray msg = QByteArray();
