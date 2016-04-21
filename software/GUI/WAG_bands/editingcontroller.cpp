@@ -29,7 +29,8 @@ void EditingController::beginningSliderChanged(int sliderVal) {
         updater->setCurrentFrameNum(beginningPointer *lastFrameNum/100);
         emit frameChanged(updater->getCurrentFrameNum());
     }
-    emit beginningTimeChanged(beginningPointer*lastFrameNum/100);
+
+    qDebug() << "EditingController::beginningSliderChanged " << sliderVal;
 }
 
 void EditingController::endSliderChanged(int sliderVal) {
@@ -96,33 +97,13 @@ void EditingController::stopPlaying() {
 
 
 void EditingController::catchFrameNumsChanged(qint32 newLastNum) {
-    int oldLastFrameNum = lastFrameNum;
-    int newBeginningPointer;
-    int newEndPointer;
-    if (oldLastFrameNum != 0) {
-        qint32 beginningTime = beginningPointer*oldLastFrameNum/100;
-        qint32 endTime = endPointer*oldLastFrameNum/100;
-
-        if (newLastNum != 0) {
-            newBeginningPointer = std::min(beginningTime*100/newLastNum, 99);
-            newEndPointer = std::min(endTime*100/newLastNum, 99);
-        } else {
-            // nothing?
-            newEndPointer = 99;
-            newBeginningPointer = 99;
-        }
-    } else {
-        newEndPointer = 99;
-        newBeginningPointer = 99;
-    }
-
     emit beginningSliderPointerChanged(0);
     emit endSliderPointerChanged(99);
 
     lastFrameNum = newLastNum;
     emit totalTimeChanged(lastFrameNum);
     // need to change beginning pointer and end pointer here
-    updater->setCurrentFrameNum(std::min(lastFrameNum, updater->getCurrentFrameNum()));
+    updater->setCurrentFrameNum(0);
     emit frameChanged(updater->getCurrentFrameNum());
 }
 
@@ -164,11 +145,13 @@ void EditingController::currentFrameChanged(int currentFrameSliderPos) {
 qint32 EditingController::getBeginningHandleTime() {
     if (beginningPointer == 0)
         return 0;
+    qDebug() << "beginningPointer: " << beginningPointer;
     return beginningPointer*lastFrameNum/100;
 }
 
 qint32 EditingController::getEndingHandleTime() {
     if (endPointer == 99)
         return lastFrameNum;
+    qDebug() << "endPointer: " << endPointer;
     return endPointer*lastFrameNum/100;
 }

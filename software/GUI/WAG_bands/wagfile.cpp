@@ -324,7 +324,6 @@ void WAGFile::cropMotion(qint32 startTime, qint32 endTime) {
         if ((keys[i] < startTime) || (keys[i] > endTime)) {
             motionData.remove(keys[i]);
         }
-        qDebug() << keys[i];
     }
 
     keys = motionData.keys();
@@ -337,7 +336,6 @@ void WAGFile::cropMotion(qint32 startTime, qint32 endTime) {
         newData.insert(newKey, motionData[keys[i]]);
     }
 
-//    qDeleteAll(motionData);
     motionData = newData;
     keys = motionData.keys();
     qSort(keys);

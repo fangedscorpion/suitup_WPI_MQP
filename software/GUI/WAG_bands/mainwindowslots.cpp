@@ -273,9 +273,11 @@ void MainWindow::handleConnectedBands() {
 }
 
 // updates the band battery level label
-void MainWindow::updateBatteryStatus() {
-    settingsBtn->setStyleSheet("QPushButton { color : red; border-style: outset; border-width: 2px; border-color: red; }");
-    batteryStatus->setStyleSheet("QLabel { color : red; }");
+void MainWindow::updateBatteryStatus(bool low) {
+    if (low)
+        batteryStatus->setStyleSheet("QLabel { color : red; }");
+    else
+       batteryStatus->setStyleSheet("QLabel { color : green; }");
 }
 
 void MainWindow::lockOnPlayOrRecord(bool suitRecording) {
@@ -314,6 +316,7 @@ void MainWindow::catchLowBatterySignal(BandType lowBatteryBand, bool hasLowBatte
         QString lowBatteryText;
         if (lowBatteryBands.size() == 0) {
             lowBatteryText = "Battery full";
+            updateBatteryStatus(false);
         } else {
             lowBatteryText = "Low Battery: ";
             QList<BandType> bandList = lowBatteryBands.toList();
@@ -327,10 +330,9 @@ void MainWindow::catchLowBatterySignal(BandType lowBatteryBand, bool hasLowBatte
                 lowBatteryText += "and ";
                 lowBatteryText += AbsBand::bandTypeToString(bandList[bandList.size() - 1]);
             }
+            updateBatteryStatus(true);
         }
         batteryStatus->setText(lowBatteryText);
-
-        updateBatteryStatus();
     }
 }
 

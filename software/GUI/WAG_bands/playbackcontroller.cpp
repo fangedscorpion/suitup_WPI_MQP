@@ -233,7 +233,6 @@ void PlaybackController::beginningSliderChanged(int sliderVal) {
     if (updater->getCurrentFrameNum() < (beginningPointer*lastFrameNum/100)) {
         updateFrameWithoutSuitNotification(beginningPointer *lastFrameNum/100);
     }
-    emit beginningTimeChanged(beginningPointer*lastFrameNum/100);
 }
 
 void PlaybackController::endSliderChanged(int sliderVal) {

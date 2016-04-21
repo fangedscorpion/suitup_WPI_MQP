@@ -40,3 +40,7 @@ void SmartPushButton::setRed(bool t) {
 
     }
 }
+
+void SmartPushButton::makeGreen(void) {
+    this->setRed(false);
+}
