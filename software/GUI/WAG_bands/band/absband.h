@@ -8,7 +8,8 @@
 #include <QObject>
 #include "abserror.h"
 
-#define PING_PROBLEMS_THRESHOLD 5
+#define PING_PROBLEMS_THRESHOLD 3
+#define MISSED_RECORDING_THRESHOLD 3
 
 QDataStream & operator>>(QDataStream & str, BandType & v);
 

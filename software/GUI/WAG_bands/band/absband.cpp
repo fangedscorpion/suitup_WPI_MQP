@@ -72,6 +72,7 @@ void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     case BAND_PING:
         if (pendingBandPing) {
             pendingBandPing = false;
+            pingProblems = 0;
         }
         break;
     case BAND_POSITION_UPDATE_LOW_BATT:
@@ -106,10 +107,8 @@ bool AbsBand::sendIfConnected(BandMessage *sendMsg) {
                 }
             }
             pendingBandPing = true;
-            pingProblems = 0;
-            qDebug("AbsBand: Sending band ping");
         }
-        qDebug()<<"AbsBand: sending message type "<<sendMsg->getMessageType();
+        //qDebug()<<"AbsBand: sending message type "<<sendMsg->getMessageType();
         emit dataToSend(type, sendMsg);
         return true;
     }
