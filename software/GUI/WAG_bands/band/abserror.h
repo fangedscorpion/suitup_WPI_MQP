@@ -13,7 +13,7 @@ public:
 
 class QuatError : public IError {
 public:
-    QuatError(QQuaternion err, QQuaternion swing, QQuaternion twist, QVector3D zAxis, QVector3D xAxis);
+    QuatError(QQuaternion err, QQuaternion swing, QQuaternion twist, QVector3D zAxis, QVector3D xAxis, bool flipSwing);
     ~QuatError(){}
     QByteArray toMessage() const;
     bool withinTolerance(int tolerance) const;
@@ -27,6 +27,7 @@ private:
     QQuaternion twist;
     QVector3D z;
     QVector3D x;
+    bool flipSwing;
 };
 
 #endif // ABSERROR_H

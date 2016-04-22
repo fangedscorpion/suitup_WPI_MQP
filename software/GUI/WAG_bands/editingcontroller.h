@@ -20,7 +20,6 @@ signals:
     void editingPlayStateChanged(bool);
     void changeSliderMax(qint32);
     void frameChanged(qint32);
-    void beginningTimeChanged(qint32 beginTime);
     void endTimeChanged(qint32 endTime);
     void totalTimeChanged(qint32 totalTime);
     void beginningSliderPointerChanged(int newPointerPos);

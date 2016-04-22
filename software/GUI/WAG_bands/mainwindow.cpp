@@ -269,6 +269,7 @@ void MainWindow::createSettings() {
     connect(connectBands, SIGNAL(released()), this, SLOT(connectCheckedBands()));
     connect(fullSuit, SIGNAL(voiceActionCommandRecvd()), fullSuit, SLOT(calibrate()));
     connect(calibrate, SIGNAL(released()), fullSuit, SLOT(calibrate()));
+    connect(calibrate, SIGNAL(released()), calibrate, SLOT(makeGreen()));
 }
 
 // create new file overlay

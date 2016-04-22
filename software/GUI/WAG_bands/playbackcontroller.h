@@ -37,7 +37,6 @@ public slots: // some of these might be better as normal functions
 
 signals:
     void frameChanged(qint32 newFrame);
-    void beginningTimeChanged(qint32 beginTime);
     void endTimeChanged(qint32 endTime);
     void totalTimeChanged(qint32 totalTime);
 

@@ -27,4 +27,5 @@ signals:
 
 private slots:
     void releaseUser();
+    void makeGreen();
 };

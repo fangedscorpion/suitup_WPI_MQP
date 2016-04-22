@@ -95,10 +95,13 @@ void SuperSlider::mousePressEvent(QMouseEvent *)
 
 void SuperSlider::setEndPointer(int endPos) {
     this->setValue(endPos);
+    alt_update();
 }
 
 void SuperSlider::setBeginningPointer(int newPos) {
+    qDebug() << "superSlider::setBeginningPointer " << newPos;
     this->alt_setValue(newPos);
+    alt_update();
 }
 
 // The left handle
@@ -118,6 +121,8 @@ void SuperSlider::alt_update()
         alt_handle->setValue(max-offset);
     else if (!greaterThanMin)
         alt_handle->setValue(min);
+
+    qDebug() << "superSlider::alt_update " << alt_value();
     emit alt_valueChanged(alt_value());
 }
 

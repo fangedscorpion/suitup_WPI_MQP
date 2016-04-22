@@ -1,7 +1,6 @@
 #include "abspose.h"
 
-AbsPose::AbsPose() : QObject()
-{
+AbsPose::AbsPose(BandType b) : QObject(), bandType(b){
 }
 
 AbsPose::~AbsPose(){

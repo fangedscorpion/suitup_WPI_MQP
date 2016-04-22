@@ -8,7 +8,7 @@
 
 ChestBand::ChestBand() : AbsBand(CHEST) {
     positionRep = QUAT_REP;
-    pose = new QuatPose(QVector3D(1, 0, 0), QVector3D(0, 0, 1));
+    pose = new QuatPose(QVector3D(0,-1,0), QVector3D(0,0,-1), CHEST);
 }
 
 bool ChestBand::moveTo(AbsState* x) {
@@ -21,7 +21,7 @@ bool ChestBand::moveTo(AbsState* x) {
 AbsState *ChestBand::getStateUpdate() const {
     // query for IMU position
     // parse value into Quaternion
-    return static_cast<QuatState*>(new QQuaternion());
+    return new QuatState(QQuaternion());
 }
 
 void ChestBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {

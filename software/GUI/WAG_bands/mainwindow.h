@@ -152,7 +152,7 @@ private slots:
     void catchTabChange(int);
     // statusbar
     void updateConnectionStatus(BandType b, ConnectionStatus c);
-    void updateBatteryStatus();
+    void updateBatteryStatus(bool low);
     void catchLowBatterySignal(BandType lowBatteryBand, bool batteryIsLow);
     // about WAG bands
     void launchAbout();
