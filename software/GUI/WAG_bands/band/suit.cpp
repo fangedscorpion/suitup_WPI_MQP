@@ -2,7 +2,7 @@
 #include <QHash>
 #include <stdexcept>
 
-#define PING_INTERVAL 5000
+#define PING_INTERVAL 2000
 
 #define TIMEOUT_FOR_SNAPSHOT 200
 
@@ -49,6 +49,8 @@ Suit::Suit(WifiManager *comms, Model *suitModel):QObject() {
 
     collectingData = true;
     toggleCollecting(false);
+
+    pingTimerID = startTimer(PING_INTERVAL);
     activeSnapshot = new PositionSnapshot();
 }
 
@@ -98,7 +100,7 @@ void Suit::toggleCollecting(bool shouldCollectData) {
         if (collectingData) {
             // stop timer
             //qDebug("Suit: Killing ping timer");
-            killTimer(pingTimerID);
+            //killTimer(pingTimerID);
             // DO NOT DELETE OLD activeSnapshot
             // was probably saved in a file
             // deleting will super mess up the file writing
@@ -107,15 +109,21 @@ void Suit::toggleCollecting(bool shouldCollectData) {
         } else {
             // start timer
             //qDebug("Suit: Starting ping timer");
-            pingTimerID = startTimer(PING_INTERVAL);
+            //pingTimerID = startTimer(PING_INTERVAL);
         }
     }
 }
 
 void Suit::timerEvent(QTimerEvent *) {
-    BandMessage *newMsg = new BandMessage(COMPUTER_PING, QByteArray(""));
-    qDebug("Suit: Ping timer event");
-    sendToConnectedBands(newMsg);
+    if (!collectingData) {
+        BandMessage *newMsg = new BandMessage(COMPUTER_PING, QByteArray(""));
+        qDebug("Suit: Ping timer event");
+        sendToConnectedBands(newMsg);
+    }
+    QList<BandType> allBands = bands.keys();
+    for (int i = 0; i < allBands.length(); i++) {
+        bands[allBands[i]]->checkConnectionStatus();
+    }
 }
 
 void Suit::sendToConnectedBands(BandMessage *sendMsg) {
@@ -208,7 +216,7 @@ void Suit::playSnapshot(PositionSnapshot *goToSnap) {
             BandType getBand = connected[i];
             if (snapshotData.contains(getBand)) {
                 //          qDebug()<<"Suit: Sending error to band "<<getBand;
-               // qDebug()<<"Suit: band in snapshot, calling move to";
+                // qDebug()<<"Suit: band in snapshot, calling move to";
                 posWithinTol &= bands[getBand]->moveTo(snapshotData[getBand]);
                 //        qDebug()<<"Suit: Position for band "<<getBand<<" within tolerance "<<posWithinTol;
             }

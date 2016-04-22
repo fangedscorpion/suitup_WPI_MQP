@@ -41,6 +41,7 @@ public:
     static QString bandTypeToString(BandType stringifyThis);
     static QString bandTypeToModelName(BandType b);
     void invalidateData();
+    void checkConnectionStatus();
 
 public slots:
     void catchTolChange(int newTol);
@@ -56,10 +57,10 @@ private:
     qint32 poseRecvdTime;
 
     bool commsSetUp;
-    bool pendingBandPing;
     int tolerance;
-    int pingProblems;
     bool validData;
+    bool pendingData;
+    int numDataMissed;
 signals:
     void dataToSend(BandType, BandMessage *);
     void lowBattery(BandType, bool);
