@@ -311,7 +311,7 @@ void readTeensySerialSendPkt(boolean printStuff){
             
             //Actually send out WiFi packets for checking stuff
             if(state == RECORDING || state == PLAYBACK){ //Check that in proper state to send data!!!
-              if(count == 50){
+              if(count == 37){// found to be the best
                bufferedClient.write((const uint8_t *)recordingMsg, RECORDING_MSG_SIZE);
                count = 0;
               }

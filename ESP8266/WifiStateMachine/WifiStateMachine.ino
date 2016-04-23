@@ -94,6 +94,7 @@ pfodESP8266BufferedClient bufferedClient; // http://www.forward.com.au/pfod/pfod
 
 char recordingMsg[RECORDING_MSG_SIZE] = {0x0A, BAND_POSITION_UPDATE, 0,0,0,0,0,0,0,0,'\n'};
 uint8_t count = 0; //For delaying how many WiFi packets get sent
+uint8_t recordingcount = 0;
 
 #define PLAYBACK_MSG_SIZE 11
 char playbackMsg[PLAYBACK_MSG_SIZE] = {0x0A, BAND_POSITION_UPDATE, 0,0,0,0,0,0,0,0,'\n'};
@@ -268,14 +269,23 @@ void readTeensySerialSendPkt(boolean printStuff){
             }
             
             //Actually send out WiFi packets for checking stuff
-            if(state == RECORDING || state == PLAYBACK){ //Check that in proper state to send data!!!
-              if(count == 50){          
+            if(state == RECORDING){
+              if(recordingcount == 37){ // empirically found this to be good for recording
+                bufferedClient.write((const uint8_t *)recordingMsg, RECORDING_MSG_SIZE);
+               
+                recordingcount = 0;
+                }
+                recordingcount++;
+            }
+            else if(state == PLAYBACK){ //Check that in proper state to send data!!!
+              if(count == 25){ //Empirically found for delay for playback
                 bufferedClient.write((const uint8_t *)recordingMsg, RECORDING_MSG_SIZE);
                
                count = 0;
               }
-              count++;
+             count++; 
             }
+            
   }
             
 }
