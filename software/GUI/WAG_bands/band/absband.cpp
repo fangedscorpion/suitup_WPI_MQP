@@ -34,6 +34,8 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
         emit dataToSend(type, newMsg);
         pendingData = false;
         numDataMissed = 0;
+        errorUpdates = 0;
+        positionUpdates = 0;
     }
     else {
         // do we try to reconnect??
@@ -43,7 +45,7 @@ void AbsBand::handleConnectionStatusChange(ConnectionStatus newStatus) {
 
 void AbsBand::handleMessage(qint32 msgTimestamp, BandMessage *recvdMessage) {
     bool tmpLowBattery;
-    qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType()<<" from "<<type;
+    //qDebug()<<"AbsBand: message type:"<<recvdMessage->getMessageType()<<" from "<<type;
     switch (recvdMessage->getMessageType()) {
     case VOICE_CONTROL_LOW_BATT:
     case BAND_CONNECTING_LOW_BATT:
@@ -107,6 +109,19 @@ void AbsBand::checkConnectionStatus() {
 
 bool AbsBand::sendIfConnected(BandMessage *sendMsg) {
     if (commsSetUp) {
+        switch (sendMsg->getMessageType()) {
+        case START_RECORDING:
+        case START_PLAYBACK:
+            positionUpdates = 0;
+            errorUpdates = 0;
+            break;
+        case STOP_PLAYBACK:
+        case STOP_RECORDING:
+            qDebug()<<"Packets received from band"<<type<<positionUpdates;
+            qDebug()<<"Packets sent to band"<<type<<errorUpdates;
+            break;
+        }
+
         emit dataToSend(type, sendMsg);
         return true;
     }
@@ -117,6 +132,7 @@ void AbsBand::updateState(AbsState* state, qint32 msgTime){
     validData = true;
     poseRecvdTime = msgTime;
     pose->update(type,state);
+    positionUpdates++;
     emit poseRecvd(pose->getState(), type, poseRecvdTime);
     delete state;
 }
@@ -155,6 +171,7 @@ bool AbsBand::moveTo(AbsState* x) {
     QByteArray msgData = posError->toMessage();
 
     BandMessage *newMsg = new BandMessage(POSITION_ERROR, msgData);
+    errorUpdates++;
     emit dataToSend(type, newMsg);
     bool retVal = false;
     if (posError->withinTolerance(tolerance)) {

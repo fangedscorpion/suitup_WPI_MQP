@@ -341,8 +341,6 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
             *copiedPose = *newPose; */
 
     // NOTE: may have to make sure changes to this absstate later are not reflected in position snapshot
-    qDebug()<<"Collecting";
-
     activeSnapshot->addMapping(bandForPose, newPose);
 
     activeSnapTimes.append(poseTime);
@@ -360,7 +358,7 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
     }
 
     // maybe just want to make it so it's all bands, not just the connected ones
-    if (((getConnectedBands() == activeSnapshot->getRecordedBands())) || ((poseTime - min) > TIMEOUT_FOR_SNAPSHOT)) {
+    if (((getConnectedBands() == activeSnapshot->getRecordedBands()) || ((poseTime - min) > TIMEOUT_FOR_SNAPSHOT))) {
         // full snapshot!
 
         qint64 totalTime = 0;
@@ -379,7 +377,6 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
         lastTimeEmitted = max;
 
         if ((currentMode == RECORD_WIND) || (currentMode == SETTINGS_WIND)) {
-            qDebug()<<"Position snapshot ready";
             emit positionSnapshotReady(avgReadingTime, activeSnapshot);
         } else {
             // delete the aggregated snapshot in playback mode
@@ -392,8 +389,6 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
         activeSnapshot = new PositionSnapshot();
 
         activeSnapTimes.clear();
-    } else {
-        qDebug()<<"Recorded bands"<<activeSnapshot->getRecordedBands();
     }
 }
 

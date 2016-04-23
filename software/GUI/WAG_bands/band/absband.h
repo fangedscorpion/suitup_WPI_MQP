@@ -50,6 +50,8 @@ protected:
     AbsPose *pose;
     PositionRepresentation positionRep;
 private:
+    int positionUpdates;
+    int errorUpdates;
     BandType type;
     bool active;
     bool hasLowBattery;
