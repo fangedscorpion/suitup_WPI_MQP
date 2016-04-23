@@ -376,7 +376,7 @@ void Suit::catchNewPose(AbsState* newPose, BandType bandForPose, qint32 poseTime
 
         lastTimeEmitted = max;
 
-        if ((currentMode == RECORD_WIND) || (currentMode == SETTINGS_WIND)) {
+        if ((currentMode == RECORD_WIND) || (currentMode == SETTINGS_WIND) || (currentMode == PLAYBACK_WIND)) {
             emit positionSnapshotReady(avgReadingTime, activeSnapshot);
         } else {
             // delete the aggregated snapshot in playback mode

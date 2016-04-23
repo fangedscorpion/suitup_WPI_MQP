@@ -34,6 +34,7 @@ public slots: // some of these might be better as normal functions
     void catchFrameUpdate(qint32 newFrame);
     void catchVoiceControlCommand(MessageType vcCommandInstruction);
     void catchFrameNumsChanged(qint32 newLastNum);
+    void catchGhost(PositionSnapshot *ghostSnap, qint32 time);
 
 signals:
     void frameChanged(qint32 newFrame);

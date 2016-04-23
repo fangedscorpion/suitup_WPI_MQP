@@ -35,6 +35,7 @@ PlaybackController::PlaybackController(QWidget *parent, Suit *newSuitObj) : QObj
     connect(this, SIGNAL(frameChanged(qint32)), this, SLOT(catchFrameUpdate(qint32)));
     connect(this, SIGNAL(toleranceChanged(int)), suitObj, SLOT(catchToleranceChange(int)));
     connect(this, SIGNAL(metPosition()), this, SLOT(positionMet()));
+    connect(suitObj, SIGNAL(positionSnapshotReady(qint32,PositionSnapshot*)), this, SLOT(catchGhost(PositionSnapshot*,qint32)));
 }
 
 PlaybackController::~PlaybackController() {
@@ -308,4 +309,9 @@ void PlaybackController::updateFrameWithoutSuitNotification(int newFrame) {
     emit frameChanged(newFrame);
     // restore the suit's active state to what it was before we manually toggled it
     toggleSuitActive(actualSuitActive);
+}
+
+void PlaybackController::catchGhost(PositionSnapshot *ghostSnap, qint32 time) {
+    // could put update to visualization here
+    delete ghostSnap;
 }
