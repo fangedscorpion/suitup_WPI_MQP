@@ -374,3 +374,21 @@ void MainWindow::handleOpenFromLibFilter(QString) {
             openFromLibTable->showRow(i);
     }
 }
+
+void MainWindow::settingsCountdownTimerEvent() {
+    qDebug() << "settingsCoundownTimerEvent";
+    if (settingsCountdownTime->text().toDouble() > 0) {
+        settingsCountdownTime->setText(QString::number(settingsCountdownTime->text().toDouble() - 0.5, 'f', 1));
+    } else {    // countdown over
+        settingsCountdownTimer->stop();
+        fullSuit->calibrate();
+        // reset countdown
+        settingsCountdownTime->setText(QString::number(5, 'f', 1));
+    }
+}
+
+void MainWindow::calibrate() {
+    qDebug() << "calibrate";
+    settingsCountdownTime->setText(QString::number(5, 'f', 1));
+    settingsCountdownTimer->start(500); // half a second
+}

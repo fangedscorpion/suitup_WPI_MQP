@@ -58,7 +58,7 @@ StyledGroupBox* TabContent::createRecordingWindow() {
     recordStopwatchMinutesTitleLabel->setFont(bigFont);
     recordStopwatchMinutesTitleLabel->setAlignment(Qt::AlignBottom);
     recordStopwatchMinutesTitleLabel->hide();
-    QHBoxLayout* h = new QHBoxLayout();
+    QHBoxLayout* h = new QHBoxLayout(this);
     h->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     h->addWidget(recordCountdownTime);
     h->addWidget(recordCountdownSecondsTitleLabel);

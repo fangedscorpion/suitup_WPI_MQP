@@ -202,31 +202,20 @@ void MainWindow::createSettings() {
     // Settings widget
     settingsWidget = new OverlayWidget(this, "Settings");
     QVBoxLayout* settingsLayout = settingsWidget->getLayout();
-    QHBoxLayout* h = new QHBoxLayout();
+    QHBoxLayout* h = new QHBoxLayout(this);
 
     GLWidget* suitView = new GLWidget(fullSuit->getModel());
     GLWidget* calibView = new GLWidget(calibModel);
-    suitView->setMinimumSize(250,250);
-    calibView->setMinimumSize(250,250);
-    suitView->setMaximumHeight(250);
-    calibView->setMaximumHeight(250);
+    suitView->setMaximumSize(300,300);
+    calibView->setMaximumSize(300,300);
+    suitView->setMinimumHeight(300);
+    calibView->setMinimumHeight(300);
 
-    // Graphic of bands
-    QVBoxLayout* glwidgetLayout = new QVBoxLayout();
-    glwidgetLayout->addWidget(calibView,0,Qt::AlignTop);
-    glwidgetLayout->addWidget(suitView,0,Qt::AlignBottom);
+    QVBoxLayout* leftBands = new QVBoxLayout(this);
+    QVBoxLayout* rightBands = new QVBoxLayout(this);
+    rightBands->setAlignment(Qt::AlignLeft);
+    leftBands->setAlignment(Qt::AlignRight);
 
-    QVBoxLayout* left = new QVBoxLayout();
-    QVBoxLayout* right = new QVBoxLayout();
-
-    right->setAlignment(Qt::AlignLeft);
-    left->setAlignment(Qt::AlignRight);
-    h->addLayout(left, 1);
-    h->addLayout(glwidgetLayout, 2);
-    h->addLayout(right, 1);
-    settingsLayout->addLayout(h);
-
-    settingsLayout->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     // checkboxes
     leftShoulder = new StyledCheckBox(this, "Left Shoulder");
     leftShoulder->setChecked(true);
@@ -240,12 +229,86 @@ void MainWindow::createSettings() {
     rightUpperArm->setChecked(true);
     rightLowerArm = new StyledCheckBox(this, "Right Lower Arm");
     rightLowerArm->setChecked(true);
-    left->addWidget(leftShoulder);
-    left->addWidget(leftUpperArm);
-    left->addWidget(leftLowerArm);
-    right->addWidget(rightShoulder);
-    right->addWidget(rightUpperArm);
-    right->addWidget(rightLowerArm);
+    leftBands->addWidget(leftShoulder);
+    leftBands->addWidget(leftUpperArm);
+    leftBands->addWidget(leftLowerArm);
+    rightBands->addWidget(rightShoulder);
+    rightBands->addWidget(rightUpperArm);
+    rightBands->addWidget(rightLowerArm);
+
+    // models
+    QVBoxLayout* poses = new QVBoxLayout(this);
+    QLabel* calibrateLbl = new QLabel("Calibrate Bands", this);
+    calibrateLbl->setAlignment(Qt::AlignCenter);
+    calibrateLbl->setFont(QFont( "Arial", 12, QFont::Bold));
+    poses->addWidget(calibrateLbl);
+    poses->addSpacing(20);
+    QHBoxLayout* glwidgetLayout = new QHBoxLayout(this);
+    QVBoxLayout* calib = new QVBoxLayout(this);
+    QVBoxLayout* suit = new QVBoxLayout(this);
+    QLabel* calibLabel = new QLabel("Match this pose", this);
+    calibLabel->setAlignment(Qt::AlignCenter);
+    QLabel* poseLabel = new QLabel("This is your pose", this);
+    poseLabel->setAlignment(Qt::AlignCenter);
+    calib->addWidget(calibLabel);
+    calib->addWidget(calibView,0,Qt::AlignTop);
+    suit->addWidget(poseLabel);
+    suit->addWidget(suitView,0,Qt::AlignBottom);
+    glwidgetLayout->addLayout(calib);
+    glwidgetLayout->addLayout(suit);
+    poses->addSpacing(7);
+    poses->addLayout(glwidgetLayout);
+    // countdown
+    settingsCountdownTimer = new QTimer(this);
+    connect(settingsCountdownTimer, SIGNAL(timeout()), this, SLOT(settingsCountdownTimerEvent()));
+    settingsCountdownTime = new QLabel(QString::number(5, 'f', 1), this);
+    settingsCountdownTime->setFont(QFont("Arial", 30));
+    settingsCountdownTime->setAlignment(Qt::AlignBottom);
+    QLabel* countdownLbl = new QLabel("Countdown: ", this);
+    countdownLbl->setFont(QFont("Arial", 15));
+    countdownLbl->setAlignment(Qt::AlignBottom);
+    QLabel* settingsCountdownSecondsTitleLabel = new QLabel("sec(s)", this);
+    settingsCountdownSecondsTitleLabel->setFont(QFont("Arial", 15));
+    settingsCountdownSecondsTitleLabel->setAlignment(Qt::AlignBottom);
+    QHBoxLayout* cdt = new QHBoxLayout(this);
+    cdt->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    cdt->addWidget(countdownLbl);
+    cdt->addWidget(settingsCountdownTime);
+    cdt->addWidget(settingsCountdownSecondsTitleLabel);
+    cdt->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    poses->addSpacing(20);
+    poses->addLayout(cdt);
+
+    QVBoxLayout* options = new QVBoxLayout(this);
+    QLabel* connectLbl = new QLabel("Connect Bands", this);
+    connectLbl->setAlignment(Qt::AlignCenter);
+    connectLbl->setFont(QFont( "Arial", 12, QFont::Bold));
+    QLabel* endisable = new QLabel("Enable/Disable WAG Bands", this);
+    endisable->setAlignment(Qt::AlignCenter);
+    options->addWidget(connectLbl);
+    options->addSpacing(20);
+    options->addWidget(endisable);
+    QHBoxLayout* bandBox = new QHBoxLayout(this);
+    bandBox->addLayout(leftBands, 1);
+    bandBox->addLayout(rightBands, 1);
+    options->addSpacing(7);
+    options->addLayout(bandBox);
+    options->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+
+    QFrame* line = new QFrame(this);
+    line->setObjectName(QString::fromUtf8("line"));
+    line->setGeometry(QRect(320, 150, 118, 3));
+    line->setFrameShape(QFrame::VLine);
+    line->setFrameShadow(QFrame::Sunken);
+
+    h->addLayout(options, 1);
+    h->addWidget(line, -1);
+    h->addLayout(poses, 2);
+
+    settingsLayout->addSpacing(0);
+    settingsLayout->addLayout(h);
+    settingsLayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+
     // Buttons on bottom of settings
     QHBoxLayout* settingsButtons = new QHBoxLayout();
     SmartPushButton* calibrate = new SmartPushButton(this, "Calibrate Bands");
@@ -255,6 +318,7 @@ void MainWindow::createSettings() {
     SmartPushButton* done = new SmartPushButton(this, "Done");
     settingsButtons->addWidget(connectBands);
     settingsButtons->addWidget(calibrate);
+
     settingsButtons->addWidget(done);
     settingsLayout->addLayout(settingsButtons);
 
@@ -268,8 +332,8 @@ void MainWindow::createSettings() {
     connect(rightShoulder, SIGNAL(released()), this, SLOT(handleConnectedBands()));
     connect(connectBands, SIGNAL(released()), this, SLOT(connectCheckedBands()));
     connect(fullSuit, SIGNAL(voiceActionCommandRecvd()), fullSuit, SLOT(calibrate()));
-    connect(calibrate, SIGNAL(released()), fullSuit, SLOT(calibrate()));
     connect(calibrate, SIGNAL(released()), calibrate, SLOT(makeGreen()));
+    connect(calibrate, SIGNAL(released()), this, SLOT(calibrate()));
 }
 
 // create new file overlay

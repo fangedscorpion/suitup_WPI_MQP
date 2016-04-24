@@ -87,6 +87,9 @@ private:
     StyledCheckBox* rightLowerArm;
     SmartPushButton* connectBands;
     OverlayWidget* settingsWidget;
+    QLabel* settingsCountdownTime;
+    QLabel* settingsCountDownTitleLabel;
+    QTimer* settingsCountdownTimer;
     void createSettings();
     // open (from lib)
     OverlayWidget* openFromLibWidget;
@@ -133,6 +136,8 @@ private slots:
     void launchSettings();
     void closeSettings();
     void handleConnectedBands();
+    void calibrate();
+    void settingsCountdownTimerEvent();
     // new file
     void saveNewMotion(USER u);
     void closeNewMotion();
