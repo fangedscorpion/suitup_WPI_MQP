@@ -148,6 +148,7 @@ QHBoxLayout* MainWindow::createStatusBar() {
 // The first window a user sees on launch.
 QWidget* MainWindow::createUserSelectionWindow(std::vector<USER> u) {
     QWidget* w = new QWidget(this);
+    QVBoxLayout* v = new QVBoxLayout();
     QHBoxLayout* l = new QHBoxLayout();
     int i;
     for(i=0; i < (int)u.size(); i++) {
@@ -162,7 +163,17 @@ QWidget* MainWindow::createUserSelectionWindow(std::vector<USER> u) {
         l->addLayout(v);
         connect(btn, SIGNAL(released(USER)), this, SLOT(launchUserOptions(USER)));
     }
-    w->setLayout(l);
+
+    QLabel* instructions = new QLabel("Connect and calibrate the WAG Bands in the settings window before use", this);
+    instructions->setAlignment(Qt::AlignCenter);
+    instructions->setStyleSheet("QLabel{color: red;}");
+
+    v->addSpacing(25);
+    v->addWidget(instructions);
+    v->addSpacing(20);
+    v->addLayout(l);
+    v->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    w->setLayout(v);
     return w;
 }
 
@@ -202,7 +213,7 @@ void MainWindow::createSettings() {
     // Settings widget
     settingsWidget = new OverlayWidget(this, "Settings");
     QVBoxLayout* settingsLayout = settingsWidget->getLayout();
-    QHBoxLayout* h = new QHBoxLayout(this);
+    QHBoxLayout* h = new QHBoxLayout();
 
     GLWidget* suitView = new GLWidget(fullSuit->getModel());
     GLWidget* calibView = new GLWidget(calibModel);
@@ -211,8 +222,8 @@ void MainWindow::createSettings() {
     suitView->setMinimumHeight(300);
     calibView->setMinimumHeight(300);
 
-    QVBoxLayout* leftBands = new QVBoxLayout(this);
-    QVBoxLayout* rightBands = new QVBoxLayout(this);
+    QVBoxLayout* leftBands = new QVBoxLayout();
+    QVBoxLayout* rightBands = new QVBoxLayout();
     rightBands->setAlignment(Qt::AlignLeft);
     leftBands->setAlignment(Qt::AlignRight);
 
@@ -237,15 +248,15 @@ void MainWindow::createSettings() {
     rightBands->addWidget(rightLowerArm);
 
     // models
-    QVBoxLayout* poses = new QVBoxLayout(this);
+    QVBoxLayout* poses = new QVBoxLayout();
     QLabel* calibrateLbl = new QLabel("Calibrate Bands", this);
     calibrateLbl->setAlignment(Qt::AlignCenter);
     calibrateLbl->setFont(QFont( "Arial", 12, QFont::Bold));
     poses->addWidget(calibrateLbl);
     poses->addSpacing(20);
-    QHBoxLayout* glwidgetLayout = new QHBoxLayout(this);
-    QVBoxLayout* calib = new QVBoxLayout(this);
-    QVBoxLayout* suit = new QVBoxLayout(this);
+    QHBoxLayout* glwidgetLayout = new QHBoxLayout();
+    QVBoxLayout* calib = new QVBoxLayout();
+    QVBoxLayout* suit = new QVBoxLayout();
     QLabel* calibLabel = new QLabel("Match this pose", this);
     calibLabel->setAlignment(Qt::AlignCenter);
     QLabel* poseLabel = new QLabel("This is your pose", this);
@@ -270,7 +281,7 @@ void MainWindow::createSettings() {
     QLabel* settingsCountdownSecondsTitleLabel = new QLabel("sec(s)", this);
     settingsCountdownSecondsTitleLabel->setFont(QFont("Arial", 15));
     settingsCountdownSecondsTitleLabel->setAlignment(Qt::AlignBottom);
-    QHBoxLayout* cdt = new QHBoxLayout(this);
+    QHBoxLayout* cdt = new QHBoxLayout();
     cdt->addSpacerItem(new QSpacerItem(500, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
     cdt->addWidget(countdownLbl);
     cdt->addWidget(settingsCountdownTime);
@@ -279,7 +290,7 @@ void MainWindow::createSettings() {
     poses->addSpacing(20);
     poses->addLayout(cdt);
 
-    QVBoxLayout* options = new QVBoxLayout(this);
+    QVBoxLayout* options = new QVBoxLayout();
     QLabel* connectLbl = new QLabel("Connect Bands", this);
     connectLbl->setAlignment(Qt::AlignCenter);
     connectLbl->setFont(QFont( "Arial", 12, QFont::Bold));
