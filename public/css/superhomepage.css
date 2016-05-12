@@ -11,6 +11,10 @@ a, a:focus, a:hover {
 
 .full_page {
   background-image: url("../images/whole_system.jpg");
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
 /* Custom default button */
