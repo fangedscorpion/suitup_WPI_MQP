@@ -10,7 +10,7 @@ a, a:focus, a:hover {
 }
 
 .full_page {
-  background-image: url("images/whole_system.jpg");
+  background-image: url("../images/whole_system.jpg");
 }
 
 /* Custom default button */
