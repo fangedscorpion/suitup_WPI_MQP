@@ -9,6 +9,10 @@ a, a:focus, a:hover {
   color: #fff;
 }
 
+.full_page {
+  background-image: url("images/whole_system.jpg");
+}
+
 /* Custom default button */
 
 .btn-default, .btn-default:hover, .btn-default:focus {
