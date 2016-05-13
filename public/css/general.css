@@ -5,3 +5,8 @@ header {
 .carousel-image {
   object-fit: contain;
 }
+
+.suitup-logo {
+  width: auto;
+  height: 20em;
+}
