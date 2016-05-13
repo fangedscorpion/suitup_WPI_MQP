@@ -9,6 +9,11 @@ a, a:focus, a:hover {
   color: #fff;
 }
 
+.suitup-logo {
+  width: auto;
+  height: 20em;
+}
+
 .full_page {
   background-image: url("../images/whole_system.jpg");
   -webkit-background-size: cover;
